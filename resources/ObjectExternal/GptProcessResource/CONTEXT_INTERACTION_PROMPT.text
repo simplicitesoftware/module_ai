@@ -1,0 +1,51 @@
+give me this modele using this json template, complete and extrapolate data if necessary:
+```json{
+  "classes": [
+    	{
+			"name": "",
+			"trigram": "",(mandatory unique)
+			"bootstrapIcon":"",
+			"en":"",
+			"fr":"",
+			"comment": "",
+			"attributes": [
+				{
+					"name": "",
+					"fr":"",
+					"en":"",
+					"key":Boolean,(mandatory)
+					"required":Boolean,
+					"type": "",//("Short text", "Long text", "Integer", "Decimal", "BigDecimal", "Date", "Date and time", "Time", "Enumeration", "Multiple enumeration", "Boolean", "URL", "HTML content", "Email", "Document", "Password", "External file", "Image", "Notepad", "Phone number", "Color", "Geographical coordinates")
+					"Enumeration":{
+						"Values":[
+							{
+								"code":"",
+								"en":"",
+								"fr":"",
+								"next":"",
+							},
+							...
+        				]
+							
+					},
+					"class":""
+				},
+				...
+			]
+    	},
+    	...
+  	],
+	"relationships": [
+		{
+		"class1": "",
+		"class2": "",
+		"type":""//ManyToMany|ManyToOne|OneToMany
+		},
+		...
+	
+	]
+
+	
+		
+	
+}```

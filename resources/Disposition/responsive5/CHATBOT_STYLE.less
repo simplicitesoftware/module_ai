@@ -1,0 +1,30 @@
+/* Variables */
+@chat-popup-color: #f9f9f9;
+@chat-popup-border: #ccc;
+
+/* Style the chat popup */
+.chat-popup {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  border: 1px solid @chat-popup-border;
+  background-color: @chat-popup-color;
+  padding: 10px;
+  
+  .chat-content {
+    height: 300px;
+    overflow-y: scroll;
+  }
+  
+  /* Style input and button */
+  #userInput {
+    width: calc(100% - 70px);
+    margin-right: 5px;
+  }
+  
+  #sendMessage {
+    width: 60px;
+  }
+}

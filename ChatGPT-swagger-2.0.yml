@@ -1,0 +1,710 @@
+#  ___ _            _ _    _ _    __
+# / __(_)_ __  _ __| (_)__(_) |_ /_/
+# \__ \ | '  \| '_ \ | / _| |  _/ -_)
+# |___/_|_|_|_| .__/_|_\__|_|\__\___|
+#             |_| Module: ChatGPT 0.1
+basePath: /api
+paths:
+  /rest/GptExemple/{row_id}:
+    post:
+      summary: Create a new GptExemple business object record
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gptexemple-create
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/GptExemple'
+          description: Success in creating a new business object record
+        '400':
+          schema:
+            $ref: '#/definitions/Error400'
+          description: Bad request
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+      parameters:
+      - in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        type: string
+        required: true
+      - schema:
+          $ref: '#/definitions/GptExemple'
+        in: body
+        name: body
+      tags:
+      - GptExemple
+      consumes:
+      - application/json
+    get:
+      summary: Get a GptExemple business object record
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gptexemple-get
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/GptExemple'
+          description: Success in getting a single business object record
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+        '404':
+          schema:
+            $ref: '#/definitions/Error404'
+          description: Not found
+      parameters:
+      - in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        type: string
+        required: true
+      - in: query
+        name: _inline_documents
+        description: Inline documents?
+        type: boolean
+        required: false
+      - in: query
+        name: _inline_thumbnails
+        description: Inline documents' thumbnails?
+        type: boolean
+        required: false
+      - in: query
+        name: _inline_objects
+        description: Inline objects?
+        type: boolean
+        required: false
+      tags:
+      - GptExemple
+    delete:
+      summary: Delete a GptExemple business object record
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gptexemple-delete
+      responses:
+        '200':
+          description: Success in deleting a business object record
+        '400':
+          schema:
+            $ref: '#/definitions/Error400'
+          description: Bad request
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+        '404':
+          schema:
+            $ref: '#/definitions/Error404'
+          description: Not found
+      parameters:
+      - in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        type: string
+        required: true
+      tags:
+      - GptExemple
+    put:
+      summary: Update a GptExemple business object record
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gptexemple-update
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/GptExemple'
+          description: Success in updating a business object record
+        '400':
+          schema:
+            $ref: '#/definitions/Error400'
+          description: Bad request
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+        '404':
+          schema:
+            $ref: '#/definitions/Error404'
+          description: Not found
+      parameters:
+      - in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        type: string
+        required: true
+      - schema:
+          $ref: '#/definitions/GptExemple'
+        in: body
+        name: body
+      tags:
+      - GptExemple
+      consumes:
+      - application/json
+  /login:
+    get:
+      summary: Login (obtain bearer token)
+      security:
+      - basicAuth: []
+      produces:
+      - text/plain
+      - application/json
+      operationId: login
+      responses:
+        '200':
+          description: Successful login
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+      parameters:
+      - in: query
+        name: _output
+        description: Optional output format
+        type: string
+        required: false
+        enum:
+        - json
+        - oauth2
+        - token
+      tags:
+      - session
+  /logout:
+    get:
+      summary: Logout (revoke bearer token)
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: logout
+      responses:
+        '200':
+          description: Successfull logout
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+      tags:
+      - session
+  /rest/GptExemple:
+    get:
+      summary: Search GptExemple business object records or get contextualized metadata
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gptexemple-search
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/ArrayOfGptExemple'
+          description: Success in searching business object records (or in getting
+            contextualized business object metadata, documentation, ...)
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+      parameters:
+      - in: query
+        name: _metadata
+        description: Metadata?
+        type: boolean
+        required: false
+      - in: query
+        name: _count
+        description: Count?
+        type: boolean
+        required: false
+      - in: query
+        name: _doc
+        description: Documentation?
+        type: boolean
+        required: false
+      - in: query
+        name: gptExPrompt
+        description: Search filter for Prompt
+        type: string
+        required: false
+      - in: query
+        name: gptExResponse
+        description: Search filter for Response
+        type: string
+        required: false
+      - in: query
+        name: gptExType
+        description: Search filter for You need help with
+        type: string
+        required: false
+        enum:
+        - CODE
+        - OTHER
+      - in: query
+        name: gptExSpecification
+        description: Search filter for Specification
+        type: string
+        required: false
+      - in: query
+        name: gptExOldPrompt
+        description: Search filter for Old answer
+        type: string
+        required: false
+      - in: query
+        name: gptExName
+        description: Search filter for Name
+        type: string
+        required: false
+      tags:
+      - GptExemple
+  /rest/GptTest/{row_id}:
+    post:
+      summary: Create a new GptTest business object record
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gpttest-create
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/GptTest'
+          description: Success in creating a new business object record
+        '400':
+          schema:
+            $ref: '#/definitions/Error400'
+          description: Bad request
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+      parameters:
+      - in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        type: string
+        required: true
+      - schema:
+          $ref: '#/definitions/GptTest'
+        in: body
+        name: body
+      tags:
+      - GptTest
+      consumes:
+      - application/json
+    get:
+      summary: Get a GptTest business object record
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gpttest-get
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/GptTest'
+          description: Success in getting a single business object record
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+        '404':
+          schema:
+            $ref: '#/definitions/Error404'
+          description: Not found
+      parameters:
+      - in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        type: string
+        required: true
+      - in: query
+        name: _inline_documents
+        description: Inline documents?
+        type: boolean
+        required: false
+      - in: query
+        name: _inline_thumbnails
+        description: Inline documents' thumbnails?
+        type: boolean
+        required: false
+      - in: query
+        name: _inline_objects
+        description: Inline objects?
+        type: boolean
+        required: false
+      tags:
+      - GptTest
+    delete:
+      summary: Delete a GptTest business object record
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gpttest-delete
+      responses:
+        '200':
+          description: Success in deleting a business object record
+        '400':
+          schema:
+            $ref: '#/definitions/Error400'
+          description: Bad request
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+        '404':
+          schema:
+            $ref: '#/definitions/Error404'
+          description: Not found
+      parameters:
+      - in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        type: string
+        required: true
+      tags:
+      - GptTest
+    put:
+      summary: Update a GptTest business object record
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gpttest-update
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/GptTest'
+          description: Success in updating a business object record
+        '400':
+          schema:
+            $ref: '#/definitions/Error400'
+          description: Bad request
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+        '404':
+          schema:
+            $ref: '#/definitions/Error404'
+          description: Not found
+      parameters:
+      - in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        type: string
+        required: true
+      - schema:
+          $ref: '#/definitions/GptTest'
+        in: body
+        name: body
+      tags:
+      - GptTest
+      consumes:
+      - application/json
+  /rest/GptTest:
+    get:
+      summary: Search GptTest business object records or get contextualized metadata
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-gpttest-search
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/ArrayOfGptTest'
+          description: Success in searching business object records (or in getting
+            contextualized business object metadata, documentation, ...)
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+      parameters:
+      - in: query
+        name: _metadata
+        description: Metadata?
+        type: boolean
+        required: false
+      - in: query
+        name: _count
+        description: Count?
+        type: boolean
+        required: false
+      - in: query
+        name: _doc
+        description: Documentation?
+        type: boolean
+        required: false
+      - in: query
+        name: gptTestId
+        description: Search filter for id
+        type: integer
+        required: false
+      - in: query
+        name: gptNotepad
+        description: Search filter for test notepad
+        type: string
+        required: false
+      - in: query
+        name: gptTestLongString
+        description: Search filter for Description
+        type: string
+        required: false
+      tags:
+      - GptTest
+  /:
+    get:
+      summary: Get user session information
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: info
+      responses:
+        '200':
+          description: Success in getting user session information
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+      parameters:
+      - in: query
+        name: texts
+        description: Texts?
+        type: boolean
+        required: false
+      tags:
+      - session
+securityDefinitions:
+  basicAuth:
+    type: basic
+  bearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+definitions:
+  Error404:
+    type: object
+    properties:
+      error:
+        description: Error message
+        type: string
+      status:
+        description: Error status
+        type: integer
+        enum:
+        - 404
+  PublicationResult:
+    type: object
+    properties:
+      mime:
+        description: MIME type
+        type: string
+      content:
+        description: Content (plain text or base64 encoded)
+        type: string
+  PlaceData:
+    type: object
+    properties:
+      coord:
+        description: Geographical coordinates
+        type: string
+      address:
+        description: Address
+        type: string
+      row_id:
+        description: Row ID
+        type: string
+      label1:
+        description: 'Label #1'
+        type: string
+      label2:
+        description: 'Label #2'
+        type: string
+      label3:
+        description: 'Label #3'
+        type: string
+  PlaceMapData:
+    type: object
+    properties:
+      places:
+        description: Places
+        type: array
+        items:
+          $ref: '#/definitions/PlaceData'
+      name:
+        description: Name
+        type: string
+  GptExemple:
+    type: object
+    properties:
+      gptExPrompt:
+        description: Prompt
+        type: string
+      gptExOldPrompt:
+        description: Old answer
+        type: string
+      gptExName:
+        description: Name
+        type: string
+      gptExType:
+        description: You need help with
+        type: string
+        enum:
+        - CODE
+        - OTHER
+      gptExSpecification:
+        description: Specification
+        type: string
+      row_id:
+        description: Unique technical row ID
+        type: string
+      gptExResponse:
+        description: Response
+        type: string
+  ArrayOfGptTest:
+    type: array
+    items:
+      $ref: '#/definitions/GptTest'
+  ArrayOfGptExemple:
+    type: array
+    items:
+      $ref: '#/definitions/GptExemple'
+  ActionResult:
+    type: object
+    properties:
+      result:
+        description: Action result
+        type: string
+  TreeviewData:
+    type: object
+    properties:
+      item:
+        description: Object item with lists of linked objects' items
+        type: object
+  Error400:
+    type: object
+    properties:
+      error:
+        description: Error message
+        type: string
+      status:
+        description: Error status
+        type: integer
+        enum:
+        - 400
+  Error401:
+    type: object
+    properties:
+      error:
+        description: Error message
+        type: string
+      status:
+        description: Error status
+        type: integer
+        enum:
+        - 401
+  Error500:
+    type: object
+    properties:
+      error:
+        description: Error message
+        type: string
+      status:
+        description: Error status
+        type: integer
+        enum:
+        - 500
+  GptTest:
+    type: object
+    properties:
+      gptNotepad:
+        description: test notepad
+        type: string
+      gptTestId:
+        description: id
+        type: integer
+      gptTestLongString:
+        description: Description
+        type: string
+      row_id:
+        description: Unique technical row ID
+        type: string
+  Error403:
+    type: object
+    properties:
+      error:
+        description: Error message
+        type: string
+      status:
+        description: Error status
+        type: integer
+        enum:
+        - 403
+swagger: '2.0'
+info:
+  license:
+    name: Simplicite license
+    url: http://www.simplicitesoftware.com
+  contact:
+    name: Simplicite Software
+    url: http://www.simplicitesoftware.com
+    email: contact@simplicitesoftware.com
+  description: API for module ChatGPT
+  title: ChatGPT
+  version: '0.1'
+tags:
+- name: GptExemple
+  description: Exemple
+- name: GptTest
+  description: GptTest

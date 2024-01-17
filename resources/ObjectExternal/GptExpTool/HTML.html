@@ -1,0 +1,22 @@
+<script>
+    {{{script}}}
+</script>
+<div id="gptexptool" onload="GptExpTool" >
+<table>
+    <tr>
+        <th colspan="3">Valeur du champ</th>
+    </tr>
+    <tr>
+        <td  id="fields-select-td"><select name="fields" id="fields-select" onchange="getValueFormat();">
+            <option value="">--Please choose an option--</option>
+            {{#fields}}
+            <option value="{{Value}}">{{Display}}</option>
+            {{/fields}}
+        </select></td>
+        <td  ><input id="result" type="text" class="result" style="width: {{width}}em;" value="" readonly></td>
+    </tr>
+   
+ 
+</table>
+</div>
+<div class="field" data-field="gptWActPrompt"><label for="gptWActPrompt" class="gotodef" data-fieldid="8955" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" data-bs-container="body" data-bs-original-title="gptWActPrompt">Gpt act prompt</label><div class="field-container"><textarea class="form-control" id="gptWActPrompt" name="gptWActPrompt_idGPTButton" maxlength="1000000" autocomplete="off" data-type="13" rows="3"></textarea></div></div>

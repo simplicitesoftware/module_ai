@@ -1,0 +1,9 @@
+{
+    "date": "2024-01-17 18:54:49",
+    "name": "ChatGPT",
+    "format": "json",
+    "files": ["ChatGPT.json"],
+    "repository": {},
+    "version": "0.1",
+    "platform": "6.0.0-beta"
+}
