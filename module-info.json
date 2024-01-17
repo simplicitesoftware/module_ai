@@ -3,7 +3,7 @@
     "name": "ChatGPT",
     "format": "json",
     "files": ["ChatGPT.json"],
-    "repository": {},
+    "repository": {"origin": {"uri": "https://github.com/simplicitesoftware/module_ai"}},
     "version": "0.1",
     "platform": "6.0.0-beta"
 }

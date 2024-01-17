@@ -7,7 +7,7 @@
   "mdl_version": "0.1",
   "mdl_type": "T",
   "mdl_icon": null,
-  "mdl_url": null,
+  "mdl_url": "{\n  \"type\": \"git\",\n  \"origin\": {\n    \"uri\": \"https://github.com/simplicitesoftware/module_ai\",\n    \n  }\n}",
   "mdl_comment": "Exploratory module on the use of AI"
  },
  "links": [
