@@ -38,7 +38,7 @@ function callApi(prompt,specialisation=null,ctn=null){
 		$('#GptProcess').show();
 
 		app._call(useAsync, url, postParams, function callback(rslt){
-			console.log(rslt);
+			//console.log(rslt);
 			ctn.text(rslt.response.choices[0].message.content);
 			$('#GptProcess').hide();
 		 });

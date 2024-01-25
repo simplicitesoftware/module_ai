@@ -6,9 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.api.client.json.Json;
+
 import com.simplicite.bpm.*;
-import com.simplicite.commons.ChatGPT.GPTData;
 import com.simplicite.commons.ChatGPT.GptModel;
 import com.simplicite.commons.ChatGPT.GptTools;
 import com.simplicite.util.*;
@@ -16,10 +15,6 @@ import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 import com.simplicite.webapp.ObjectContextWeb;
 
-import ch.simschla.minify.cli.App;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Process GPTModuleCreate
@@ -82,16 +77,25 @@ public class GPTModuleCreate extends Processus {
 	 * @return The generated response as a String.
 	 */
 	public String gpt(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
-		int histDepth = Grant.getSystemAdmin().getJSONObjectParameter("GPT_API_PARAM").getInt("hist_depth");
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
-		String previousStep = getPreviousContext(context).getActivity().getStep();
+		List<String> listResult = getJsonAi( getPreviousContext(context).getActivity().getStep(), g);
+		if(Tool.isEmpty(listResult)) return EMPTY_TEXTAREA;
+		if(listResult.size()!=3)return Message.formatError(null, listResult.get(0),null );
+		return "<p>"+listResult.get(0)+"</p>"+"<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" id=\"json_return\" name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>";
+		
+		
+	}
+	private List<String> getJsonAi(String previousStep, Grant g){
+		int histDepth = Grant.getSystemAdmin().getJSONObjectParameter("GPT_API_PARAM").getInt("hist_depth");
+		
+		
 		JSONArray historic = new JSONArray();
 		String prompt = "";
 		if(previousStep.equals(ACTIVITY_PROMPT)){
 			prompt = getContext(getActivity(ACTIVITY_PROMPT)).getDataValue("Data", "gpt_prompt");
 			if(Tool.isEmpty(prompt)){//for test
-				return EMPTY_TEXTAREA;
+				return null;
 			}
 			JSONObject data = new JSONObject().put("prompt", prompt);
 			prompt = MustacheTool.apply(new String(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceContent(Resource.TYPE_OTHER,"CONTEXT_DIRECT_PROMPT")), data);
@@ -99,7 +103,7 @@ public class GPTModuleCreate extends Processus {
 		}else if(previousStep.equals(ACTIVITY_INTERACTION)){
 			String historicString = getContext(getActivity(ACTIVITY_INTERACTION)).getDataValue("Data", "gpt_data");
 			if(Tool.isEmpty(historicString)){//for test
-				return EMPTY_TEXTAREA;
+				return null;
 			}
 			if (!Tool.isEmpty(historicString)){
 				
@@ -112,29 +116,27 @@ public class GPTModuleCreate extends Processus {
 					i++;
 				}
 			}
-			AppLog.info("historic: "+historic.toString(0), g);
 			prompt =new String(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceContent(Resource.TYPE_OTHER,"CONTEXT_INTERACTION_PROMPT"));
 			
 		}
 		if(Tool.isEmpty(prompt)){//for test
-			return EMPTY_TEXTAREA;
+			return null;
 		}
-		AppLog.info(prompt, g);
 		String result = GptTools.gptCaller(g, "you help to create UML in json for application, your answers are automatically processed in java", prompt, historic,false).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-		String form="";
+		List<String> listResult = new ArrayList<String>();
 		if(!GptTools.isValidJson(result)){	
-			List<String> listResult = GptTools.getJSONBlock(result,getGrant());
+			listResult = GptTools.getJSONBlock(result,getGrant());
 			if(Tool.isEmpty(listResult) || !GptTools.isValidJson(listResult.get(1))){
-				return Message.formatError(null, "Sorry GPT do not return interpretable json: \n"+result,null );
-			}else{
+				listResult = new ArrayList<String>();
+				listResult.add("Sorry GPT do not return interpretable json: \n");
 				
-				form="<p>"+listResult.get(0)+"</p>"+"<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" id=\"json_return\" name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>";
 			}
 		}else{
-			form="<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" id=\"json_return\" name=\"json_return\">"+result+"</textarea>";
+			listResult.add("");
+			listResult.add(result);
+			listResult.add("");	
 		}
-		return form;
-		
+		return listResult;
 	}
 	/**
 	 * Generates a string based on the provided parameters.
@@ -147,9 +149,19 @@ public class GPTModuleCreate extends Processus {
 	 */
 	public String gen(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE){
-			AppLog.info( "ids: "+String.join(",",getContext(getActivity(ACTIVITY_GEN_DATA)).getDataFile("Data","ids",false).getValues()),g);
 			return null;}
-		String json = getContext(getActivity(ACTIVITY_GPT)).getDataValue("Data", "json_return");
+		String json = "";
+		if (!getActivity(ACTIVITY_GPT).isUserDialog()){
+			List<String> result = getJsonAi(getPreviousContext(getPreviousContext(context)).getActivity().getStep(), g);
+			if(!Tool.isEmpty(result) && result.size()==3) json = result.get(1); //isEmpty check null
+			
+		}else{
+			json = getContext(getActivity(ACTIVITY_GPT)).getDataValue("Data", "json_return");
+		}
+		
+		if (Tool.isEmpty(json)){
+			return Message.formatError("GPT_ERROR",null,null );
+		}
 		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
 		String[] groupIds = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataFile(FIELD, ROW_ID,false).getValues();
 		String domainId = getContext(getActivity(ACTIVITY_SELECT_DOMAIN)).getDataValue(FIELD, ROW_ID);
@@ -157,9 +169,6 @@ public class GPTModuleCreate extends Processus {
 			List<String> ids = GptModel.genModule(moduleId,	groupIds,domainId,new JSONObject(json));
 			DataFile dataFile = getContext(getActivity(ACTIVITY_GEN_DATA)).addDataFile("Data","ids");
 			dataFile.setValues(ids);
-			
-			AppLog.info(String.join(",",getContext(getActivity(ACTIVITY_GEN_DATA)).getDataFile("Data","ids",false).getValues()),g);
-			
 			return "<p>SUCESS</p><script>" + g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("GPT_GEN_MODEL")+"\n"+ "gptNewModel("+ids.toString()+",\""+ModuleDB.getModuleName(moduleId)+"\",\""+moduleId+"\");"+"</script>";
 		} catch (GetException | ValidateException | SaveException e) {
 			AppLog.error(e, g);

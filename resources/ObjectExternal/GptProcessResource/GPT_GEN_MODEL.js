@@ -7,14 +7,14 @@ function gptNewModel(ids,moduleName,moduleID) {
 		return;
 	}
 	$(ids).each(function(i,id) {
-		
+		console.log("id",id);
 		list.push({
 			object: "ObjectInternal", // node object
 			id: id, // node row_id
-			template: "BusinessObject", // node template name
+			template: "BusinessObject" , // node template name
 			x: i*50 + 30, // dummy position
-			y: i*30 + 30,
-			container: null // no container
+			y: i*30 + 30
+			//container: null // no container 
 		});
 	});
 	// Load SVG engine
@@ -24,32 +24,26 @@ function gptNewModel(ids,moduleName,moduleID) {
 			var name = moduleName + "Objects";
 			$ui.diagram.create("ModelBusinessObject", name, {
 				hidden: true, // hide the modeler
+				docked: false,
 				nodes: list,  // nodes to insert
-				module:moduleID,
-				fetch: true,   // then fetch related 
-				popup: false
-
+				module: moduleID,
+				fetch: false,   // then fetch related
 			},
 			function(diagram) {
 				// auto-placement
-				var tmp =diagram.layoutSprings;
-				diagram.layoutSprings && diagram.layoutSprings({
+				diagram.layoutSprings?.({
 					stiffness: 0,
 					repulsion: 750,
 					damping: 0,
 					remoteness: 75,
 					gravity: 70,
 					maxDuration: 5000, // 5sec
+					
 					callback: function() {
 						// Save and close
+						diagram.save();						
 						diagram.canClose(false, function() { // confirm=false means auto-save
-							/* diagram.save();
-							diagram.layoutSprings=null; */
-
-							/* for (const property in diagram.springs) {
-								console.log(property + ": "+ diagram.springs[property]);
-
-							  } */
+							
 							diagram.close();
 							// Re-open in a window
 							$ui.displayModeler(null, diagram.modelId, {
@@ -57,7 +51,6 @@ function gptNewModel(ids,moduleName,moduleID) {
 								docked: false,
 								popup: false
 							});
-
 						});
 					}
 				});

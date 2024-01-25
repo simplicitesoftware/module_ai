@@ -27,7 +27,7 @@ function sendMessage() {
 		historic.push(JSON.stringify(text));
 		
 	});
-	console.log(historic);
+	//console.log(historic);
 
 	// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
 	
@@ -45,14 +45,14 @@ function sendMessage() {
 	// Faites défiler vers le bas pour afficher les messages les plus récents
 	chatMessages.scrollTop = chatMessages.scrollHeight;
 	// Call Webservice (POST requests only)
-	console.log(JSON.stringify(postParams));
+	//console.log(JSON.stringify(postParams));
 	app._call(useAsync, url, postParams, function callback(botResponse){
 		if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
 			var result = botResponse.response.choices[0].message.content;
 			result = result.replaceAll("\n","<br>");
 			$(".bot-messages:last-child span").html(result);	
 		}else{
-			console.log(botResponse);
+			//console.log(botResponse);
 			$(".bot-messages:last-child span").text("Sorry, an error occurred");
 		}
 			

@@ -57,7 +57,6 @@ public class GPTField implements java.io.Serializable {
 	 * 
 	 */
 	public static String calculGPTField(ObjectField fld,ObjectDB obj,boolean update,Grant g){
-		AppLog.info("DEBUG IN CALCUL: "+Tool.isEmpty(fld),g);
 		List<String> msgs = new ArrayList<>();
 		switch(fld.getType()){
 			case ObjectField.TYPE_NOTEPAD:
@@ -144,7 +143,6 @@ public class GPTField implements java.io.Serializable {
 			String sentence = m.group(1);
 			try {
 				sentence = GptTools.parseExpresion(sentence, obj);
-				AppLog.info("parsed = "+sentence,g );
 			} catch (ScriptException e) {
 				msgs.add(Message.formatError(GPT_ERROR_RETURN,e.toString(),fld.getName()));
 				return msgs;
@@ -156,10 +154,8 @@ public class GPTField implements java.io.Serializable {
 			}
 
 			fld.addNotepad(g.getLogin(), sentence);
-			AppLog.info(fld.getValue(), g);
 			fld.setOldValue(fld.getValue());
 			fld.addNotepad("ChatGPT",result.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content"));
-			AppLog.info(fld.getValue(), g);
 		}
 		return msgs;
 	}
@@ -200,7 +196,6 @@ public class GPTField implements java.io.Serializable {
 				String sentence =m.group(1);
 				try {
 					sentence = GptTools.parseExpresion(sentence, obj);
-					AppLog.info("parsed = "+prompt,g );
 				} catch (ScriptException e) {
 					msgs.add(Message.formatError(GPT_ERROR_RETURN,e.toString(),fld.getName()));
 					return msgs;

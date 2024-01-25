@@ -20,14 +20,13 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 	private static final String PARAMS_PROMPT_KEY = "prompt";
 	@Override
 	public Object get(Parameters params) throws HTTPException {
+		AppLog.info("get "+params.toJSON(), getGrant());
 		return error(400, "Call me in POST please!");
 	}
 
 	@Override
 	public Object post(Parameters params) throws HTTPException {
 		try {
-			AppLog.info("PARAMS: "+params, getGrant());
-			AppLog.info("DEBUG API", getGrant());
 			String prompt =params.getParameter(PARAMS_PROMPT_KEY);
 			String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 			String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
@@ -94,11 +93,9 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 		int histDepth = Grant.getSystemAdmin().getJSONObjectParameter("GPT_API_PARAM").getInt("hist_depth");
 		JSONObject res;
 		String specialisation = params.getParameter("specialisation");
-		AppLog.info("specialisation: "+specialisation, getGrant());
 		String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 		String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 		String historicString = params.getParameter("historic");
-		AppLog.info("historicString: "+historicString, getGrant());
 		if(!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID)){
 			ObjectDB obj = Grant.getSystemAdmin().getTmpObject(objectName);
 			synchronized(obj.getLock()){
@@ -116,11 +113,8 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 					historic.put(GptTools.formatMessageHistoric(new JSONObject((String) hist)));
 				i++;
 			}
-			AppLog.info(historic.toString(0), getGrant());
 			res = GptTools.gptCaller(getGrant(), specialisation, historic, prompt);
-			AppLog.info(res.toString(0),getGrant());
 		}else{
-			AppLog.info(specialisation+" "+prompt, getGrant());
 			res = GptTools.gptCaller(getGrant(), specialisation, prompt);
 		}
 

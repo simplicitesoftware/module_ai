@@ -42,8 +42,6 @@ public class GptChatBot extends com.simplicite.util.ExternalObject {
 									if(!Tool.isEmpty(fieldObj)){
 										contextBuilder.append(fieldObj.getDisplay()).append(": ").append(fieldObj.getValue()).append("\n");
 								
-									}else{
-										AppLog.info(fld, getGrant());
 									}
 								}
 							}

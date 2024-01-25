@@ -2,7 +2,7 @@ package com.simplicite.commons.ChatGPT;
 
 import java.util.*;
 
-import org.apache.xmlbeans.SchemaAttributeGroup.Ref;
+import org.checkerframework.checker.units.qual.s;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +16,7 @@ import com.simplicite.util.tools.*;
  * Shared code GPTData
  */
 public class GPTData implements java.io.Serializable {
+	
 	private static HashMap<Integer,String> typeTrad;
 	String html = "";
 	private static class CreatedObject {
@@ -70,14 +71,27 @@ public class GPTData implements java.io.Serializable {
 		typeTrad.put(ObjectField.TYPE_COLOR,"Color");
 		typeTrad.put( ObjectField.TYPE_GEOCOORDS,"Geographical coordinates");
 	}
-
-	public static JSONObject formatObjectInJson(String name, Grant g){
+	public static String genDataForModule(String moduleName,Grant g){
+		try {
+			AppLog.info("Start genDataForModule", g);
+			String[] ids = getObjectIdsModule(moduleName, g);
+			if(Tool.isEmpty(ids))throw new PlatformException("Not found or not granted object to generate for module: \n"+moduleName);
+			JSONObject response = GPTData.callIADataOnModule(ids, g);
+			response = GPTData.jsonPreprocessing(response, g);
+			JSONObject formatResponse = GPTData.createObjects(ids,response, g);
+			return "Done: "+formatResponse.toString(1);
+		}catch (PlatformException e) {
+			AppLog.error(e, g);
+			return e.getMessage();
+		}
+	}
+	private static JSONObject formatObjectInJson(String name, Grant g){
 		ObjectDB obj = g.getTmpObject(name);
 		JSONObject json = new JSONObject(obj.toJSON());
 		json.remove("row_id");
 		Iterator<String> keys = json.keys();
 		List<String> toRemove = new ArrayList<>();
-		List<String> RefToAdd = new ArrayList<>();
+		List<String> refToAdd = new ArrayList<>();
 		while (keys.hasNext()) {
 			String key = keys.next();
 			ObjectField field = obj.hasField(key)?obj.getField(key):null;
@@ -88,7 +102,7 @@ public class GPTData implements java.io.Serializable {
 				String idField = key;
 				if(obj.hasField(idField)){
 					String refObj = obj.getField(idField).getRefObjectName();
-					RefToAdd.add(refObj);
+					refToAdd.add(refObj);
 				}
 			}else if(!field.isForeignKey() && !field.isInternalForeignKey()){
 				int type = field.getType();
@@ -113,7 +127,7 @@ public class GPTData implements java.io.Serializable {
 			json.remove(key);
 		}
 		JSONObject reference = new JSONObject();
-		for(String key : RefToAdd){
+		for(String key : refToAdd){
 			reference.put(key,"id");
 		}
 
@@ -122,7 +136,8 @@ public class GPTData implements java.io.Serializable {
 		
 		return json;
 	}
-	public static String[] getObjectIdsModule(String moduleName, Grant g) throws PlatformException{
+	private static String[] getObjectIdsModule(String moduleName, Grant g) throws PlatformException{
+		
 		String mdlId = ModuleDB.getModuleId(moduleName);
 		if(Tool.isEmpty(mdlId))throw new PlatformException("Unknow module: \n"+moduleName);
 		ObjectDB objI = g.getTmpObject("ObjectInternal");
@@ -132,12 +147,14 @@ public class GPTData implements java.io.Serializable {
 		synchronized(objI.getLock()){
 			objI.resetFilters();
 			objI.setFieldFilter("row_module_id", mdlId);
-			List<String[]> objIs = objI.search();
+			List<String[]> objIs = removeNotCreatable(objI.search(),nameIndex, g);
 			ids = new String[objIs.size()];
+			
 			int begin = 0;
 			int end = objIs.size()-1;
 			for(String[] row : objIs){
 				ObjectDB obj = g.getTmpObject(row[nameIndex]);
+				
 				if(Tool.isEmpty(obj.getRefObjects())){// process first the object without ref to empty ref
 					ids[begin] = row[idIndex];
 					begin++;
@@ -152,9 +169,19 @@ public class GPTData implements java.io.Serializable {
 		return ids;
 		
 	}
-	public static JSONObject getJsonModel(String moduleName, Grant g) throws PlatformException{
+	private static List<String[]> removeNotCreatable(List<String[]> list,int nameIndex, Grant g){
+		Map<String, String> creatables = g.getCreatable();
+		List<String[]> res = new ArrayList<>();
+		for(String[] row : list){
+			if(creatables.getOrDefault(row[nameIndex],"N").equals("Y")){
+				res.add(row);
+			}
+		}
+		return res;
+
+	}
+	private static JSONObject getJsonModel(String[] ids, Grant g){
 		JSONObject data = new JSONObject();
-		String[] ids = getObjectIdsModule(moduleName, g);
 		List<JSONObject> nnToAdd = new ArrayList<>();
 		for(String id : ids){
 			String name = ObjectCore.getObjectName(id);
@@ -180,27 +207,23 @@ public class GPTData implements java.io.Serializable {
 		}
 		return data;
 	}
-	public static JSONObject callIADataOnModule(String moduleName, Grant g) throws RuntimeException, PlatformException{
-		JSONObject data = getJsonModel(moduleName, g);
-		AppLog.info("befor call", g);
+
+	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
+		JSONObject data = getJsonModel(ids, g);
 		String response = GptTools.gptCaller(g, /* "module uml: "+json */"", " generates consistent data according to the model: ```json "+data.toString(1)+"```",false).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-		AppLog.info("affter call: "+response, g);
 		if(!GptTools.isValidJson(response)){	
 			
 			List<String> listResult = GptTools.getJSONBlock(response,g);
 			if(Tool.isEmpty(listResult) || !GptTools.isValidJson(listResult.get(1))){
-				throw new RuntimeException("Sorry GPT do not return interpretable json: \n"+response);
+				throw new PlatformException("Sorry GPT do not return interpretable json: \n"+response);
 			}else{
 				response = listResult.get(1);
 			}
 		}
 		return new JSONObject(response);
 	}
-	public static JSONObject createObjects(String moduleName, JSONObject json, Grant g) throws JSONException, PlatformException{
-		String[] ids = getObjectIdsModule(moduleName, g);
-		return createObjects(ids, json, g);
-	}
-	public static JSONObject createObjects(String[] ids, JSONObject json, Grant g) throws SearchException, JSONException, GetException, ValidateException, SaveException{
+
+	private static JSONObject createObjects(String[] ids, JSONObject json, Grant g) throws JSONException, GetException, ValidateException, SaveException{
 		
 		JSONObject created = new JSONObject();
 		List<CreatedObject> toUpdate = new ArrayList<>();
@@ -301,12 +324,12 @@ public class GPTData implements java.io.Serializable {
 				objT.validateAndSave();
 			}
 		}
-		AppLog.info(res.toString(1), g);
+		//AppLog.info(res.toString(1), g);
 		return res;
 	}
-	public static CreatedObject objectbyJSON(String name, JSONObject json, JSONObject existed, Grant g) throws SearchException, GetException, ValidateException, SaveException {
+	private static CreatedObject objectbyJSON(String name, JSONObject json, JSONObject existed, Grant g){
 		Random random = new Random();
-		AppLog.info(name, g);
+		//AppLog.info(name, g);
 		CreatedObject res = new CreatedObject(name);
 		
 		ObjectDB obj = g.getTmpObject(name);
@@ -341,16 +364,23 @@ public class GPTData implements java.io.Serializable {
 					}		
 				}
 			}else if(json.has(field.getName())){
-				AppLog.info("not FK: "+field.getName() +" "+ json.optString(field.getName(),"not found"), g);
 				if(field.isNumeric()){
 					int precision = field.getFloatPrecision();
+					int size = field.getSize();
+					
 					if (!(json.get(field.getName()) instanceof Number)) {
-						
-						res.objectCreate.put(field.getName(), random.nextInt(99));
+						int max = (int) Math.pow(10, size) - 1;
+						res.objectCreate.put(field.getName(), random.nextInt(max));
 					}else if(precision>0){
-						res.objectCreate.put(field.getName(), json.getFloat(field.getName()));
+						float max = getMax(size, precision);
+						float value = json.getFloat(field.getName());
+						if(value>max) value = random.nextFloat(max);
+						res.objectCreate.put(field.getName(), value);
 					}else{
-						res.objectCreate.put(field.getName(), json.getInt(field.getName()));
+						int max = (int) Math.pow(10, size) - 1;
+						int value = json.getInt(field.getName());
+						if(value>max) value = random.nextInt(max);
+						res.objectCreate.put(field.getName(), value);
 					}
 				}else{
 					String value;
@@ -395,8 +425,13 @@ public class GPTData implements java.io.Serializable {
 							break;
 						case ObjectField.TYPE_GEOCOORDS:
 							value =json.optString(field.getName());
-							double[] test2 = Tool.parseCoordinates(value);
-							AppLog.info(test, g);
+							//TODO
+							AppLog.info("TODO GEOCOORDS "+test, g);
+							break;
+						case ObjectField.TYPE_EMAIL:
+							value =json.optString(field.getName());
+							if(!Tool.checkEmail(value)) value = "email@exemple.com";
+							res.objectCreate.put(field.getName(), value);
 							break;
 						default:
 							res.objectCreate.put(field.getName(), json.optString(field.getName()));
@@ -411,7 +446,7 @@ public class GPTData implements java.io.Serializable {
 
 		return res;
 	}
-	public static boolean isNNObject(String objectName, Grant g){
+	/* private static boolean isNNObject(String objectName, Grant g){
 		int fkCount = 0;
 		ObjectDB obj = g.getTmpObject(objectName);
 		for(ObjectField f : obj.getFields()){
@@ -424,7 +459,7 @@ public class GPTData implements java.io.Serializable {
 		}
 		return true;
 	}
-	public static JSONObject getNNInfo(String objectName, Grant g){
+	private static JSONObject getNNInfo(String objectName, Grant g){
 		int fkCount = 0;
 		ObjectDB obj = g.getTmpObject(objectName);
 		JSONObject res = new JSONObject();
@@ -441,9 +476,9 @@ public class GPTData implements java.io.Serializable {
 			}
 		}
 		return res;
-	}
+	} */
 
-	/* public static String getSwagger(String moduleName, Grant g) throws HTTPException{
+	/* private static String getSwagger(String moduleName, Grant g) throws HTTPException{
 		Map<String,Object> param = new HashMap<>();
 		String baseurl = "https://candicetest.demo.simplicite.io"+Globals.WEB_API_PATH+Globals.WEB_REST_PATH+"/";
 		param.put("_doc", "true");
@@ -452,13 +487,13 @@ public class GPTData implements java.io.Serializable {
 			
 			String url= baseurl +ObjectCore.getObjectName(id);
 			url = HTTPTool.append(url, param);
-			AppLog.info(url, g);
+			//AppLog.info(url, g);
 			
-			AppLog.info(RESTTool.get(url,g.getLogin(),g.getPassword()), g);
+			//AppLog.info(RESTTool.get(url,g.getLogin(),g.getPassword()), g);
 		}
 		return "";
 	} */
-	public static JSONObject jsonPreprocessing(JSONObject json, Grant g) {
+	private static JSONObject jsonPreprocessing(JSONObject json, Grant g) {
 		JSONObject res = new JSONObject();
 		int idProcess = 1;
 		Iterator<String> keys = json.keys();
@@ -554,6 +589,14 @@ public class GPTData implements java.io.Serializable {
 			}
 		}
 		return true;
+	}
+
+	private static float getMax(int size, int precision) {
+		int maxInt = (int) Math.pow(10, size) - 1;
+		float  denary = (float) Math.pow(10, precision);
+		denary = (denary-1)/denary;
+		float maxFloat = maxInt + denary;
+		return maxFloat;
 	}
 	
 }

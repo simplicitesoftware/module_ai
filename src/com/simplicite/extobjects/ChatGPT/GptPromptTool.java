@@ -29,7 +29,6 @@ public class GptPromptTool extends ExternalObject { // or com.simplicite.webapp.
 			addMustache();
 			String id =params.getParameter("row_id");
 			String obj = params.getParameter("object");
-			AppLog.info("DEBUG PROMPT TOOL: "+obj+" "+id, getGrant());
 			List<ObjectField> fields = getGrant().getTmpObject(obj).getFields();
 			JSONArray fieldJsonArray = new JSONArray();
 			for(ObjectField fld : fields){

@@ -312,7 +312,6 @@ public class GptModel implements java.io.Serializable {
 		int domainOrder=100;	
 		ModuleInfo mInfo = new ModuleInfo(moduleId, SyntaxTool.getModulePrefix(moduleId), groupIds, domainID);
 		Grant g = Grant.getSystemAdmin();
-		AppLog.info("JSON: "+json.toString(1),g);
 
 		DataMapObject dataMaps = new DataMapObject();
 		
@@ -336,7 +335,6 @@ public class GptModel implements java.io.Serializable {
 				objPrefix = objName.substring(0, 3).toLowerCase();
 			}
 			
-			AppLog.info("DEBUG: objName "+objName, g);
 			 
 			//createObject
 			String oboId = createObject(jsonObj, objName, objPrefix, domainOrder,mInfo, dataMaps, g);
@@ -446,12 +444,8 @@ public class GptModel implements java.io.Serializable {
 		String fldId;
 		
 		String fieldName = jsonFld.getString("name").replaceAll(NOT_WORD_CHAR_REGEX,"").replaceAll("\\s","");
-		AppLog.info("DEBUG: fld "+fieldName, g);
-
 		String fldType =jsonFld.getString("type");
 		synchronized(fld.getLock()){
-			
-			AppLog.info("TYPE: "+fldType,g);
 			int type = ObjectField.TYPE_STRING;
 			if(typeTrad.containsKey(fldType)){
 				type = typeTrad.get(jsonFld.getString("type"));
@@ -545,7 +539,6 @@ public class GptModel implements java.io.Serializable {
 		int linkorder = 10;
 		for (Object link : relationship) {
 			JSONObject jsonLink = (JSONObject) link;
-			AppLog.info("JSON: " + jsonLink.toString(0), g);
 			String relationshipsType = jsonLink.getString("type");
 			String class1Name = getClassFromJsonLink(jsonLink, JSON_LINK_CLASS_FROM_KEY);
 			String class2Name = getClassFromJsonLink(jsonLink, JSON_LINK_CLASS_TO_KEY);
@@ -816,7 +809,6 @@ public class GptModel implements java.io.Serializable {
 			if(Tool.isEmpty(jsonValue)){
 				return;
 			}
-			AppLog.info("DEBUG type: "+value, g);
 			String enumId;
 			synchronized(enumCode.getLock()){
 				enumCodeT.getForCreate();
@@ -882,7 +874,6 @@ public class GptModel implements java.io.Serializable {
 	}
 	
 	private static void grantGroup(String groupId,String objectId,String moduleId,Grant g) throws GetException, CreateException, ValidateException{
-		AppLog.info(GrantCore.FUNCTION_ALL, g);
 		ObjectDB grantObj = g.getTmpObject("Grant");
 		BusinessObjectTool grantObjT = grantObj.getTool();
 		ObjectDB funcObj = g.getTmpObject("Function");

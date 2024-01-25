@@ -57,7 +57,6 @@ public class GptTools implements java.io.Serializable {
             connection.setDoOutput(true);
             // format data
             JSONObject postData = new JSONObject();
-            AppLog.info("DEBUG ACTION max_token: "+maxToken, g);
             if(maxToken>0)
                 postData.put("max_tokens", maxToken);
             postData.put("model", "gpt-3.5-turbo");
