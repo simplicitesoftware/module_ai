@@ -17,6 +17,8 @@ import com.simplicite.webapp.ObjectContextWeb;
 public class GPTGenData extends Processus {
 	private static final long serialVersionUID = 1L;
 	public String genData(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
+		if(context.getStatus() != ActivityFile.STATE_RUNNING)
+			return null;
 		String moduleId = getContext(getActivity("GGD_0100")).getDataValue("Field", "mdl_name");
 		return GPTData.genDataForModule(moduleId,getGrant());
 	}

@@ -87,7 +87,7 @@
       "mod_doc": {
        "path": "files/Model/Model-GPTGenData.svg",
        "mime": "image/svg+xml",
-       "name": "model.svg"
+       "name": "Model-GPTGenData.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-GPTGenData.png",
@@ -108,7 +108,7 @@
       "mod_doc": {
        "path": "files/Model/Model-GPTModuleCreate.svg",
        "mime": "image/svg+xml",
-       "name": "model.svg"
+       "name": "Model-GPTModuleCreate.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-GPTModuleCreate.png",
@@ -437,23 +437,23 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "GPT_EX_TYPE~CODE~FRA",
-     "item": {
-      "lov_code_id__lov_list_id__lov_name": "GPT_EX_TYPE",
-      "lov_code_id__lov_code": "CODE",
-      "lov_lang": "FRA",
-      "lov_value": "Code",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "FieldListValue",
      "userkey": "GPT_EX_TYPE~OTHER~FRA",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "GPT_EX_TYPE",
       "lov_code_id__lov_code": "OTHER",
       "lov_lang": "FRA",
       "lov_value": "Autres",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "FieldListValue",
+     "userkey": "GPT_EX_TYPE~CODE~FRA",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "GPT_EX_TYPE",
+      "lov_code_id__lov_code": "CODE",
+      "lov_lang": "FRA",
+      "lov_value": "Code",
       "row_module_id__mdl_name": "ChatGPT"
      }
     }
@@ -3631,19 +3631,6 @@
    "list": [
     {
      "object": "BPMHelp",
-     "userkey": "GPTModuleCreate~GPTC_0400~ENU",
-     "item": {
-      "hlp_activity_id__acy_process_id__pcs_name": "GPTModuleCreate",
-      "hlp_activity_id__acy_step": "GPTC_0400",
-      "hlp_activity_id__acy_name": "Prompt",
-      "hlp_lang": "ENU",
-      "hlp_abstract": null,
-      "hlp_content": "<p>Express your need as concisely as possible<\/p>",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "BPMHelp",
      "userkey": "GPTModuleCreate~GPTC_0400~FRA",
      "item": {
       "hlp_activity_id__acy_process_id__pcs_name": "GPTModuleCreate",
@@ -3652,6 +3639,19 @@
       "hlp_lang": "FRA",
       "hlp_abstract": null,
       "hlp_content": "<p>Exprimez votre besoin de la mani&egrave;re la plus concise possible<\/p>",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "BPMHelp",
+     "userkey": "GPTModuleCreate~GPTC_0400~ENU",
+     "item": {
+      "hlp_activity_id__acy_process_id__pcs_name": "GPTModuleCreate",
+      "hlp_activity_id__acy_step": "GPTC_0400",
+      "hlp_activity_id__acy_name": "Prompt",
+      "hlp_lang": "ENU",
+      "hlp_abstract": null,
+      "hlp_content": "<p>Express your need as concisely as possible<\/p>",
       "row_module_id__mdl_name": "ChatGPT"
      }
     }
@@ -4115,6 +4115,150 @@
     },
     {
      "object": "Resource",
+     "userkey": "ObjectExternal(GptExpTool)~ANY~STYLES",
+     "item": {
+      "res_object": {
+       "item": {"obe_name": "GptExpTool"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptExpTool",
+       "object": "ObjectExternal"
+      },
+      "res_type": "CSS",
+      "res_lang": "ANY",
+      "res_code": "STYLES",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectExternal/GptExpTool/STYLES.less",
+       "mime": "text/less",
+       "name": "STYLES.less"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "Resource",
+     "userkey": "ObjectExternal(GptExpTool)~ANY~HTML",
+     "item": {
+      "res_object": {
+       "item": {"obe_name": "GptExpTool"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptExpTool",
+       "object": "ObjectExternal"
+      },
+      "res_type": "HTML",
+      "res_lang": "ANY",
+      "res_code": "HTML",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectExternal/GptExpTool/HTML.html",
+       "mime": "text/html",
+       "name": "HTML.html"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "Resource",
+     "userkey": "ObjectExternal(GptExpTool)~ANY~SCRIPT",
+     "item": {
+      "res_object": {
+       "item": {"obe_name": "GptExpTool"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptExpTool",
+       "object": "ObjectExternal"
+      },
+      "res_type": "JS",
+      "res_lang": "ANY",
+      "res_code": "SCRIPT",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectExternal/GptExpTool/SCRIPT.js",
+       "mime": "text/javascript",
+       "name": "SCRIPT.js"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "Resource",
+     "userkey": "ObjectExternal(GptPromptTool)~ANY~STYLES",
+     "item": {
+      "res_object": {
+       "item": {"obe_name": "GptPromptTool"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptPromptTool",
+       "object": "ObjectExternal"
+      },
+      "res_type": "CSS",
+      "res_lang": "ANY",
+      "res_code": "STYLES",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectExternal/GptPromptTool/STYLES.less",
+       "mime": "text/less",
+       "name": "STYLES.less"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "Resource",
+     "userkey": "ObjectExternal(GptPromptTool)~ANY~HTML",
+     "item": {
+      "res_object": {
+       "item": {"obe_name": "GptPromptTool"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptPromptTool",
+       "object": "ObjectExternal"
+      },
+      "res_type": "HTML",
+      "res_lang": "ANY",
+      "res_code": "HTML",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectExternal/GptPromptTool/HTML.html",
+       "mime": "text/html",
+       "name": "HTML.html"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "Resource",
+     "userkey": "ObjectExternal(GptPromptTool)~ANY~SCRIPT",
+     "item": {
+      "res_object": {
+       "item": {"obe_name": "GptPromptTool"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptPromptTool",
+       "object": "ObjectExternal"
+      },
+      "res_type": "JS",
+      "res_lang": "ANY",
+      "res_code": "SCRIPT",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectExternal/GptPromptTool/SCRIPT.js",
+       "mime": "text/javascript",
+       "name": "SCRIPT.js"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "Resource",
      "userkey": "ObjectExternal(GptChatBot)~ANY~STYLES",
      "item": {
       "res_object": {
@@ -4348,150 +4492,6 @@
        "path": "resources/ObjectExternal/GptProcessResource/MODELE_CLASSE.text",
        "mime": "application/octet-stream",
        "name": "MODELE_CLASSE.text"
-      },
-      "res_image": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "Resource",
-     "userkey": "ObjectExternal(GptExpTool)~ANY~STYLES",
-     "item": {
-      "res_object": {
-       "item": {"obe_name": "GptExpTool"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptExpTool",
-       "object": "ObjectExternal"
-      },
-      "res_type": "CSS",
-      "res_lang": "ANY",
-      "res_code": "STYLES",
-      "res_cached": false,
-      "res_file": {
-       "path": "resources/ObjectExternal/GptExpTool/STYLES.less",
-       "mime": "text/less",
-       "name": "STYLES.less"
-      },
-      "res_image": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "Resource",
-     "userkey": "ObjectExternal(GptExpTool)~ANY~HTML",
-     "item": {
-      "res_object": {
-       "item": {"obe_name": "GptExpTool"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptExpTool",
-       "object": "ObjectExternal"
-      },
-      "res_type": "HTML",
-      "res_lang": "ANY",
-      "res_code": "HTML",
-      "res_cached": false,
-      "res_file": {
-       "path": "resources/ObjectExternal/GptExpTool/HTML.html",
-       "mime": "text/html",
-       "name": "HTML.html"
-      },
-      "res_image": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "Resource",
-     "userkey": "ObjectExternal(GptExpTool)~ANY~SCRIPT",
-     "item": {
-      "res_object": {
-       "item": {"obe_name": "GptExpTool"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptExpTool",
-       "object": "ObjectExternal"
-      },
-      "res_type": "JS",
-      "res_lang": "ANY",
-      "res_code": "SCRIPT",
-      "res_cached": false,
-      "res_file": {
-       "path": "resources/ObjectExternal/GptExpTool/SCRIPT.js",
-       "mime": "text/javascript",
-       "name": "SCRIPT.js"
-      },
-      "res_image": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "Resource",
-     "userkey": "ObjectExternal(GptPromptTool)~ANY~STYLES",
-     "item": {
-      "res_object": {
-       "item": {"obe_name": "GptPromptTool"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptPromptTool",
-       "object": "ObjectExternal"
-      },
-      "res_type": "CSS",
-      "res_lang": "ANY",
-      "res_code": "STYLES",
-      "res_cached": false,
-      "res_file": {
-       "path": "resources/ObjectExternal/GptPromptTool/STYLES.less",
-       "mime": "text/less",
-       "name": "STYLES.less"
-      },
-      "res_image": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "Resource",
-     "userkey": "ObjectExternal(GptPromptTool)~ANY~HTML",
-     "item": {
-      "res_object": {
-       "item": {"obe_name": "GptPromptTool"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptPromptTool",
-       "object": "ObjectExternal"
-      },
-      "res_type": "HTML",
-      "res_lang": "ANY",
-      "res_code": "HTML",
-      "res_cached": false,
-      "res_file": {
-       "path": "resources/ObjectExternal/GptPromptTool/HTML.html",
-       "mime": "text/html",
-       "name": "HTML.html"
-      },
-      "res_image": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "Resource",
-     "userkey": "ObjectExternal(GptPromptTool)~ANY~SCRIPT",
-     "item": {
-      "res_object": {
-       "item": {"obe_name": "GptPromptTool"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptPromptTool",
-       "object": "ObjectExternal"
-      },
-      "res_type": "JS",
-      "res_lang": "ANY",
-      "res_code": "SCRIPT",
-      "res_cached": false,
-      "res_file": {
-       "path": "resources/ObjectExternal/GptPromptTool/SCRIPT.js",
-       "mime": "text/javascript",
-       "name": "SCRIPT.js"
       },
       "res_image": null,
       "row_module_id__mdl_name": "ChatGPT"
@@ -4742,6 +4742,40 @@
     },
     {
      "object": "TranslateAction",
+     "userkey": "Action(GPT_SENT)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"act_name": "GPT_SENT"},
+       "icon": "img/system/action_btn",
+       "label": "Action",
+       "userkeylabel": "GPT_SENT",
+       "object": "Action"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Sent",
+      "tsl_simplehelp": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateAction",
+     "userkey": "Action(GPT_SENT)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"act_name": "GPT_SENT"},
+       "icon": "img/system/action_btn",
+       "label": "Action",
+       "userkeylabel": "GPT_SENT",
+       "object": "Action"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Envoyé",
+      "tsl_simplehelp": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateAction",
      "userkey": "Action(GPT_CLEAR_HIST)~ENU",
      "item": {
       "tsl_object": {
@@ -4776,34 +4810,34 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(GPT_SENT)~ENU",
+     "userkey": "Action(GPTAddData)~ENU",
      "item": {
       "tsl_object": {
-       "item": {"act_name": "GPT_SENT"},
+       "item": {"act_name": "GPTAddData"},
        "icon": "img/system/action_btn",
        "label": "Action",
-       "userkeylabel": "GPT_SENT",
+       "userkeylabel": "GPTAddData",
        "object": "Action"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Sent",
+      "tsl_value": "Data generation",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "ChatGPT"
      }
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(GPT_SENT)~FRA",
+     "userkey": "Action(GPTAddData)~FRA",
      "item": {
       "tsl_object": {
-       "item": {"act_name": "GPT_SENT"},
+       "item": {"act_name": "GPTAddData"},
        "icon": "img/system/action_btn",
        "label": "Action",
-       "userkeylabel": "GPT_SENT",
+       "userkeylabel": "GPTAddData",
        "object": "Action"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Envoyé",
+      "tsl_value": "Génération de données",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "ChatGPT"
      }
@@ -4878,68 +4912,34 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(GPTAddData)~ENU",
+     "userkey": "Action(gptCalculateFieldJs)~ENU",
      "item": {
       "tsl_object": {
-       "item": {"act_name": "GPTAddData"},
+       "item": {"act_name": "gptCalculateFieldJs"},
        "icon": "img/system/action_btn",
        "label": "Action",
-       "userkeylabel": "GPTAddData",
+       "userkeylabel": "gptCalculateFieldJs",
        "object": "Action"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Data generation",
+      "tsl_value": "Save with AI",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "ChatGPT"
      }
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(GPTAddData)~FRA",
+     "userkey": "Action(gptCalculateFieldJs)~FRA",
      "item": {
       "tsl_object": {
-       "item": {"act_name": "GPTAddData"},
+       "item": {"act_name": "gptCalculateFieldJs"},
        "icon": "img/system/action_btn",
        "label": "Action",
-       "userkeylabel": "GPTAddData",
+       "userkeylabel": "gptCalculateFieldJs",
        "object": "Action"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Génération de données",
-      "tsl_simplehelp": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateAction",
-     "userkey": "Action(GPTAutoGenModule)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"act_name": "GPTAutoGenModule"},
-       "icon": "img/system/action_btn",
-       "label": "Action",
-       "userkeylabel": "GPTAutoGenModule",
-       "object": "Action"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Module generation by AI",
-      "tsl_simplehelp": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateAction",
-     "userkey": "Action(GPTAutoGenModule)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"act_name": "GPTAutoGenModule"},
-       "icon": "img/system/action_btn",
-       "label": "Action",
-       "userkeylabel": "GPTAutoGenModule",
-       "object": "Action"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Génération de modules par l'IA",
+      "tsl_value": "Enregistrer avec IA",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "ChatGPT"
      }
@@ -4980,34 +4980,34 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(gptCalculateFieldJs)~ENU",
+     "userkey": "Action(GPTAutoGenModule)~ENU",
      "item": {
       "tsl_object": {
-       "item": {"act_name": "gptCalculateFieldJs"},
+       "item": {"act_name": "GPTAutoGenModule"},
        "icon": "img/system/action_btn",
        "label": "Action",
-       "userkeylabel": "gptCalculateFieldJs",
+       "userkeylabel": "GPTAutoGenModule",
        "object": "Action"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Save with AI",
+      "tsl_value": "Module generation by AI",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "ChatGPT"
      }
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(gptCalculateFieldJs)~FRA",
+     "userkey": "Action(GPTAutoGenModule)~FRA",
      "item": {
       "tsl_object": {
-       "item": {"act_name": "gptCalculateFieldJs"},
+       "item": {"act_name": "GPTAutoGenModule"},
        "icon": "img/system/action_btn",
        "label": "Action",
-       "userkeylabel": "gptCalculateFieldJs",
+       "userkeylabel": "GPTAutoGenModule",
        "object": "Action"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Enregistrer avec IA",
+      "tsl_value": "Génération de modules par l'IA",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "ChatGPT"
      }
@@ -5089,6 +5089,50 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Prompt",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(gptExType)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "gptExType"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "gptExType",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "You need help with",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(gptExType)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "gptExType"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "gptExType",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Vous avez besoin d'aide pour",
       "tsl_simplehelp": null,
       "tsl_plural_value": null,
       "tsl_short_value": null,
@@ -5188,94 +5232,6 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(gptFldSpe)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "gptFldSpe"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "gptFldSpe",
-       "object": "Field"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Specification AI",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(gptFldSpe)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "gptFldSpe"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "gptFldSpe",
-       "object": "Field"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Spécification IA",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(gptExType)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "gptExType"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "gptExType",
-       "object": "Field"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "You need help with",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(gptExType)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "gptExType"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "gptExType",
-       "object": "Field"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Vous avez besoin d'aide pour",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateField",
      "userkey": "Field(gptFieldsParam)~ENU",
      "item": {
       "tsl_object": {
@@ -5320,6 +5276,50 @@
     },
     {
      "object": "TranslateField",
+     "userkey": "Field(gptFldSpe)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "gptFldSpe"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "gptFldSpe",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Specification AI",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(gptFldSpe)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "gptFldSpe"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "gptFldSpe",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Spécification IA",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateField",
      "userkey": "Field(gptNotepad)~ENU",
      "item": {
       "tsl_object": {
@@ -5353,6 +5353,50 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "bloc-notes de test",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(gptExResponse)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "gptExResponse"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "gptExResponse",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Response",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(gptExResponse)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "gptExResponse"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "gptExResponse",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Réponse",
       "tsl_simplehelp": null,
       "tsl_plural_value": null,
       "tsl_short_value": null,
@@ -5452,50 +5496,6 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(gptExResponse)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "gptExResponse"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "gptExResponse",
-       "object": "Field"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Response",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(gptExResponse)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "gptExResponse"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "gptExResponse",
-       "object": "Field"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Réponse",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateField",
      "userkey": "Field(gptTestActFld)~ENU",
      "item": {
       "tsl_object": {
@@ -5529,50 +5529,6 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Action de test",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(gptTestLongString)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "gptTestLongString"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "gptTestLongString",
-       "object": "Field"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Description",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(gptTestLongString)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "gptTestLongString"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "gptTestLongString",
-       "object": "Field"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Description",
       "tsl_simplehelp": null,
       "tsl_plural_value": null,
       "tsl_short_value": null,
@@ -5625,6 +5581,50 @@
       "tsl_tooltip": null,
       "row_module_id__mdl_name": "ChatGPT"
      }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(gptTestLongString)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "gptTestLongString"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "gptTestLongString",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Description",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(gptTestLongString)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "gptTestLongString"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "gptTestLongString",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Description",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
     }
    ]
   },
@@ -5634,38 +5634,6 @@
    "icon": "img/system/translation",
    "field": "row_module_id",
    "list": [
-    {
-     "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(GptExemple-1)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"ofa_name": "GptExemple-1"},
-       "icon": "img/system/field_area",
-       "label": "Fields area",
-       "userkeylabel": "GptExemple-1",
-       "object": "ObjectFieldArea"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "GptExemple-1",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(GptExemple-1)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"ofa_name": "GptExemple-1"},
-       "icon": "img/system/field_area",
-       "label": "Fields area",
-       "userkeylabel": "GptExemple-1",
-       "object": "ObjectFieldArea"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "GptExemple-1",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
     {
      "object": "TranslateFieldArea",
      "userkey": "ObjectFieldArea(GptTest-1)~ENU",
@@ -5695,6 +5663,38 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "GptTest-1",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateFieldArea",
+     "userkey": "ObjectFieldArea(GptExemple-1)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"ofa_name": "GptExemple-1"},
+       "icon": "img/system/field_area",
+       "label": "Fields area",
+       "userkeylabel": "GptExemple-1",
+       "object": "ObjectFieldArea"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "GptExemple-1",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateFieldArea",
+     "userkey": "ObjectFieldArea(GptExemple-1)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"ofa_name": "GptExemple-1"},
+       "icon": "img/system/field_area",
+       "label": "Fields area",
+       "userkeylabel": "GptExemple-1",
+       "object": "ObjectFieldArea"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "GptExemple-1",
       "row_module_id__mdl_name": "ChatGPT"
      }
     }
@@ -5794,114 +5794,6 @@
    "list": [
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(GptChatBot)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"obe_name": "GptChatBot"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptChatBot",
-       "object": "ObjectExternal"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Chatbot",
-      "tsl_plural_value": null,
-      "tsl_help": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateExternal",
-     "userkey": "ObjectExternal(GptChatBot)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"obe_name": "GptChatBot"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptChatBot",
-       "object": "ObjectExternal"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Chatbot",
-      "tsl_plural_value": null,
-      "tsl_help": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateExternal",
-     "userkey": "ObjectExternal(GptProcessResource)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"obe_name": "GptProcessResource"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptProcessResource",
-       "object": "ObjectExternal"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Process resource",
-      "tsl_plural_value": null,
-      "tsl_help": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateExternal",
-     "userkey": "ObjectExternal(GptProcessResource)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"obe_name": "GptProcessResource"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptProcessResource",
-       "object": "ObjectExternal"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Ressources du processus",
-      "tsl_plural_value": null,
-      "tsl_help": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateExternal",
-     "userkey": "ObjectExternal(GptRestAPI)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"obe_name": "GptRestAPI"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptRestAPI",
-       "object": "ObjectExternal"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Rest API",
-      "tsl_plural_value": null,
-      "tsl_help": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateExternal",
-     "userkey": "ObjectExternal(GptRestAPI)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"obe_name": "GptRestAPI"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptRestAPI",
-       "object": "ObjectExternal"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Rest API",
-      "tsl_plural_value": null,
-      "tsl_help": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateExternal",
      "userkey": "ObjectExternal(GptExpTool)~ENU",
      "item": {
       "tsl_object": {
@@ -5974,6 +5866,78 @@
     },
     {
      "object": "TranslateExternal",
+     "userkey": "ObjectExternal(GptChatBot)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"obe_name": "GptChatBot"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptChatBot",
+       "object": "ObjectExternal"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Chatbot",
+      "tsl_plural_value": null,
+      "tsl_help": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateExternal",
+     "userkey": "ObjectExternal(GptChatBot)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"obe_name": "GptChatBot"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptChatBot",
+       "object": "ObjectExternal"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Chatbot",
+      "tsl_plural_value": null,
+      "tsl_help": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateExternal",
+     "userkey": "ObjectExternal(GptProcessResource)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"obe_name": "GptProcessResource"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptProcessResource",
+       "object": "ObjectExternal"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Process resource",
+      "tsl_plural_value": null,
+      "tsl_help": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateExternal",
+     "userkey": "ObjectExternal(GptProcessResource)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"obe_name": "GptProcessResource"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptProcessResource",
+       "object": "ObjectExternal"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Ressources du processus",
+      "tsl_plural_value": null,
+      "tsl_help": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateExternal",
      "userkey": "ObjectExternal(GptShortcut)~ENU",
      "item": {
       "tsl_object": {
@@ -6003,6 +5967,42 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Raccourci",
+      "tsl_plural_value": null,
+      "tsl_help": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateExternal",
+     "userkey": "ObjectExternal(GptRestAPI)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"obe_name": "GptRestAPI"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptRestAPI",
+       "object": "ObjectExternal"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Rest API",
+      "tsl_plural_value": null,
+      "tsl_help": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateExternal",
+     "userkey": "ObjectExternal(GptRestAPI)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"obe_name": "GptRestAPI"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptRestAPI",
+       "object": "ObjectExternal"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Rest API",
       "tsl_plural_value": null,
       "tsl_help": null,
       "row_module_id__mdl_name": "ChatGPT"
@@ -6102,39 +6102,39 @@
    "list": [
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTGenData GGD-BEG)~ENU",
+     "userkey": "BPMActivity(GPTGenData GGD_0100)~ENU",
      "item": {
       "tsl_object": {
        "item": {
         "acy_process_id__pcs_name": "GPTGenData",
-        "acy_step": "GGD-BEG"
+        "acy_step": "GGD_0100"
        },
        "icon": "img/system/activity",
        "label": "Activity",
-       "userkeylabel": "GPTGenData GGD-BEG",
+       "userkeylabel": "GPTGenData GGD_0100",
        "object": "BPMActivity"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Begin",
+      "tsl_value": "Select module",
       "row_module_id__mdl_name": "ChatGPT"
      }
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTGenData GGD-BEG)~FRA",
+     "userkey": "BPMActivity(GPTGenData GGD_0100)~FRA",
      "item": {
       "tsl_object": {
        "item": {
         "acy_process_id__pcs_name": "GPTGenData",
-        "acy_step": "GGD-BEG"
+        "acy_step": "GGD_0100"
        },
        "icon": "img/system/activity",
        "label": "Activity",
-       "userkeylabel": "GPTGenData GGD-BEG",
+       "userkeylabel": "GPTGenData GGD_0100",
        "object": "BPMActivity"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Begin",
+      "tsl_value": "Séléction du module",
       "row_module_id__mdl_name": "ChatGPT"
      }
     },
@@ -6216,16 +6216,92 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTGenData GGD_0100)~ENU",
+     "userkey": "BPMActivity(GPTGenData GGD-BEG)~ENU",
      "item": {
       "tsl_object": {
        "item": {
         "acy_process_id__pcs_name": "GPTGenData",
-        "acy_step": "GGD_0100"
+        "acy_step": "GGD-BEG"
        },
        "icon": "img/system/activity",
        "label": "Activity",
-       "userkeylabel": "GPTGenData GGD_0100",
+       "userkeylabel": "GPTGenData GGD-BEG",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Begin",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(GPTGenData GGD-BEG)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "GPTGenData",
+        "acy_step": "GGD-BEG"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "GPTGenData GGD-BEG",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Begin",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC_0400)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "GPTModuleCreate",
+        "acy_step": "GPTC_0400"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "GPTModuleCreate GPTC_0400",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Specifications",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC_0400)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "GPTModuleCreate",
+        "acy_step": "GPTC_0400"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "GPTModuleCreate GPTC_0400",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Cahier des charges",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC_0100)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "GPTModuleCreate",
+        "acy_step": "GPTC_0100"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "GPTModuleCreate GPTC_0100",
        "object": "BPMActivity"
       },
       "tsl_lang": "ENU",
@@ -6235,20 +6311,20 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTGenData GGD_0100)~FRA",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC_0100)~FRA",
      "item": {
       "tsl_object": {
        "item": {
-        "acy_process_id__pcs_name": "GPTGenData",
-        "acy_step": "GGD_0100"
+        "acy_process_id__pcs_name": "GPTModuleCreate",
+        "acy_step": "GPTC_0100"
        },
        "icon": "img/system/activity",
        "label": "Activity",
-       "userkeylabel": "GPTGenData GGD_0100",
+       "userkeylabel": "GPTModuleCreate GPTC_0100",
        "object": "BPMActivity"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Séléction du module",
+      "tsl_value": "Sélectionner un module",
       "row_module_id__mdl_name": "ChatGPT"
      }
     },
@@ -6292,82 +6368,6 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC-END)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC-END"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC-END",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "End",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC-END)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC-END"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC-END",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Fin",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC_0200)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC_0200"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC_0200",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Select groups",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC_0200)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC_0200"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC_0200",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Sélectionner les groupes",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateActivity",
      "userkey": "BPMActivity(GPTModuleCreate GPTC-BEG)~ENU",
      "item": {
       "tsl_object": {
@@ -6406,39 +6406,77 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC_0400)~ENU",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC_0800)~ENU",
      "item": {
       "tsl_object": {
        "item": {
         "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC_0400"
+        "acy_step": "GPTC_0800"
        },
        "icon": "img/system/activity",
        "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC_0400",
+       "userkeylabel": "GPTModuleCreate GPTC_0800",
        "object": "BPMActivity"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Specifications",
+      "tsl_value": "Gen data",
       "row_module_id__mdl_name": "ChatGPT"
      }
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC_0400)~FRA",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC_0800)~FRA",
      "item": {
       "tsl_object": {
        "item": {
         "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC_0400"
+        "acy_step": "GPTC_0800"
        },
        "icon": "img/system/activity",
        "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC_0400",
+       "userkeylabel": "GPTModuleCreate GPTC_0800",
        "object": "BPMActivity"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Cahier des charges",
+      "tsl_value": "Gen data",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC-END)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "GPTModuleCreate",
+        "acy_step": "GPTC-END"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "GPTModuleCreate GPTC-END",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "End",
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC-END)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "GPTModuleCreate",
+        "acy_step": "GPTC-END"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "GPTModuleCreate GPTC-END",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Fin",
       "row_module_id__mdl_name": "ChatGPT"
      }
     },
@@ -6520,44 +6558,6 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC_0100)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC_0100"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC_0100",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Select module",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC_0100)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC_0100"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC_0100",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Sélectionner un module",
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "TranslateActivity",
      "userkey": "BPMActivity(GPTModuleCreate GPTC_0600)~ENU",
      "item": {
       "tsl_object": {
@@ -6596,39 +6596,39 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC_0800)~ENU",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC_0200)~ENU",
      "item": {
       "tsl_object": {
        "item": {
         "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC_0800"
+        "acy_step": "GPTC_0200"
        },
        "icon": "img/system/activity",
        "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC_0800",
+       "userkeylabel": "GPTModuleCreate GPTC_0200",
        "object": "BPMActivity"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Gen data",
+      "tsl_value": "Select groups",
       "row_module_id__mdl_name": "ChatGPT"
      }
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(GPTModuleCreate GPTC_0800)~FRA",
+     "userkey": "BPMActivity(GPTModuleCreate GPTC_0200)~FRA",
      "item": {
       "tsl_object": {
        "item": {
         "acy_process_id__pcs_name": "GPTModuleCreate",
-        "acy_step": "GPTC_0800"
+        "acy_step": "GPTC_0200"
        },
        "icon": "img/system/activity",
        "label": "Activity",
-       "userkeylabel": "GPTModuleCreate GPTC_0800",
+       "userkeylabel": "GPTModuleCreate GPTC_0200",
        "object": "BPMActivity"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Gen data",
+      "tsl_value": "Sélectionner les groupes",
       "row_module_id__mdl_name": "ChatGPT"
      }
     }
@@ -6734,66 +6734,6 @@
     },
     {
      "object": "Permission",
-     "userkey": "GPT_GROUP~ObjectExternal(GptChatBot)~",
-     "item": {
-      "prm_group_id__grp_name": "GPT_GROUP",
-      "prm_object": {
-       "item": {"obe_name": "GptChatBot"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptChatBot",
-       "object": "ObjectExternal"
-      },
-      "prm_perm": true,
-      "prm_upd": false,
-      "prm_req": false,
-      "prm_prop": null,
-      "prm_value": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "Permission",
-     "userkey": "GPT_GROUP~ObjectExternal(GptProcessResource)~",
-     "item": {
-      "prm_group_id__grp_name": "GPT_GROUP",
-      "prm_object": {
-       "item": {"obe_name": "GptProcessResource"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptProcessResource",
-       "object": "ObjectExternal"
-      },
-      "prm_perm": true,
-      "prm_upd": false,
-      "prm_req": false,
-      "prm_prop": null,
-      "prm_value": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "Permission",
-     "userkey": "GPT_GROUP~ObjectExternal(GptRestAPI)~",
-     "item": {
-      "prm_group_id__grp_name": "GPT_GROUP",
-      "prm_object": {
-       "item": {"obe_name": "GptRestAPI"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "GptRestAPI",
-       "object": "ObjectExternal"
-      },
-      "prm_perm": true,
-      "prm_upd": false,
-      "prm_req": false,
-      "prm_prop": null,
-      "prm_value": null,
-      "row_module_id__mdl_name": "ChatGPT"
-     }
-    },
-    {
-     "object": "Permission",
      "userkey": "GPT_GROUP~ObjectExternal(GptExpTool)~",
      "item": {
       "prm_group_id__grp_name": "GPT_GROUP",
@@ -6834,6 +6774,46 @@
     },
     {
      "object": "Permission",
+     "userkey": "GPT_GROUP~ObjectExternal(GptChatBot)~",
+     "item": {
+      "prm_group_id__grp_name": "GPT_GROUP",
+      "prm_object": {
+       "item": {"obe_name": "GptChatBot"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptChatBot",
+       "object": "ObjectExternal"
+      },
+      "prm_perm": true,
+      "prm_upd": false,
+      "prm_req": false,
+      "prm_prop": null,
+      "prm_value": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "Permission",
+     "userkey": "GPT_GROUP~ObjectExternal(GptProcessResource)~",
+     "item": {
+      "prm_group_id__grp_name": "GPT_GROUP",
+      "prm_object": {
+       "item": {"obe_name": "GptProcessResource"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptProcessResource",
+       "object": "ObjectExternal"
+      },
+      "prm_perm": true,
+      "prm_upd": false,
+      "prm_req": false,
+      "prm_prop": null,
+      "prm_value": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "Permission",
      "userkey": "GPT_GROUP~ObjectExternal(GptShortcut)~",
      "item": {
       "prm_group_id__grp_name": "GPT_GROUP",
@@ -6842,6 +6822,26 @@
        "icon": "img/system/external_object",
        "label": "External object",
        "userkeylabel": "GptShortcut",
+       "object": "ObjectExternal"
+      },
+      "prm_perm": true,
+      "prm_upd": false,
+      "prm_req": false,
+      "prm_prop": null,
+      "prm_value": null,
+      "row_module_id__mdl_name": "ChatGPT"
+     }
+    },
+    {
+     "object": "Permission",
+     "userkey": "GPT_GROUP~ObjectExternal(GptRestAPI)~",
+     "item": {
+      "prm_group_id__grp_name": "GPT_GROUP",
+      "prm_object": {
+       "item": {"obe_name": "GptRestAPI"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "GptRestAPI",
        "object": "ObjectExternal"
       },
       "prm_perm": true,

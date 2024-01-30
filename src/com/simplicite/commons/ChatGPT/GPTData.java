@@ -78,6 +78,7 @@ public class GPTData implements java.io.Serializable {
 			if(Tool.isEmpty(ids))throw new PlatformException("Not found or not granted object to generate for module: \n"+moduleName);
 			JSONObject response = GPTData.callIADataOnModule(ids, g);
 			response = GPTData.jsonPreprocessing(response, g);
+			//AppLog.info(response.toString(1), g);
 			JSONObject formatResponse = GPTData.createObjects(ids,response, g);
 			return "Done: "+formatResponse.toString(1);
 		}catch (PlatformException e) {
@@ -367,7 +368,7 @@ public class GPTData implements java.io.Serializable {
 				if(field.isNumeric()){
 					int precision = field.getFloatPrecision();
 					int size = field.getSize();
-					
+					if (size > 6) size = 6;
 					if (!(json.get(field.getName()) instanceof Number)) {
 						int max = (int) Math.pow(10, size) - 1;
 						res.objectCreate.put(field.getName(), random.nextInt(max));
@@ -382,6 +383,7 @@ public class GPTData implements java.io.Serializable {
 						if(value>max) value = random.nextInt(max);
 						res.objectCreate.put(field.getName(), value);
 					}
+					
 				}else{
 					String value;
 					switch (field.getType()) {
@@ -592,7 +594,7 @@ public class GPTData implements java.io.Serializable {
 	}
 
 	private static float getMax(int size, int precision) {
-		int maxInt = (int) Math.pow(10, size) - 1;
+		int maxInt = (int) Math.pow(10, size-precision) - 1;
 		float  denary = (float) Math.pow(10, precision);
 		denary = (denary-1)/denary;
 		float maxFloat = maxInt + denary;
