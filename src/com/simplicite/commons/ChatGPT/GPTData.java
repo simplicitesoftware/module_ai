@@ -2,7 +2,6 @@ package com.simplicite.commons.ChatGPT;
 
 import java.util.*;
 
-import org.checkerframework.checker.units.qual.s;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,7 +79,7 @@ public class GPTData implements java.io.Serializable {
 			response = GPTData.jsonPreprocessing(response, g);
 			//AppLog.info(response.toString(1), g);
 			JSONObject formatResponse = GPTData.createObjects(ids,response, g);
-			return "Done: "+formatResponse.toString(1);
+			return formatResult(formatResponse, g);
 		}catch (PlatformException e) {
 			AppLog.error(e, g);
 			return e.getMessage();
@@ -211,7 +210,7 @@ public class GPTData implements java.io.Serializable {
 
 	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
-		String response = GptTools.gptCaller(g, /* "module uml: "+json */"", " generates consistent data according to the model: ```json "+data.toString(1)+"```",false).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		String response = GptTools.gptCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"```",false).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		if(!GptTools.isValidJson(response)){	
 			
 			List<String> listResult = GptTools.getJSONBlock(response,g);
@@ -249,10 +248,13 @@ public class GPTData implements java.io.Serializable {
 							objT.validateAndCreate();
 						}
 						objectToCreate.rowId = obj.getRowId();
+						if(!Tool.isEmpty(objectToCreate.rowId)){
+							arrayRes.put(toDysplayJson(obj, g));
+						}
 					}
 				}
 				if(!Tool.isEmpty(objectToCreate.rowId)){
-					arrayRes.put(objectToCreate.objectCreate);
+					
 					String objid =json.getJSONObject(name).optString("id");
 					
 					if(!Tool.isEmpty(objid)){
@@ -285,10 +287,12 @@ public class GPTData implements java.io.Serializable {
 								}
 						
 								objectToCreate.rowId = obj.getRowId();
+								if(!Tool.isEmpty(objectToCreate.rowId)){
+									arrayRes.put(toDysplayJson(obj, g));
+								}
 							}
 						}
 						if(!Tool.isEmpty(objectToCreate.rowId)){
-							arrayRes.put(objectToCreate.objectCreate);
 							String objid = array.getJSONObject(i).optString("id");
 							
 							if(!Tool.isEmpty(objid)){
@@ -305,7 +309,7 @@ public class GPTData implements java.io.Serializable {
 					
 				}
 			}
-			res.put(name, arrayRes);
+			res.put(g.getTmpObject(name).getDisplay(), arrayRes);
 		}
 		for(CreatedObject objectToUpdate: toUpdate){
 			ObjectDB obj = g.getTmpObject(objectToUpdate.objectName);
@@ -600,5 +604,65 @@ public class GPTData implements java.io.Serializable {
 		float maxFloat = maxInt + denary;
 		return maxFloat;
 	}
-	
+	private static String formatResult(JSONObject json, Grant g) {
+		StringBuilder html = new StringBuilder();
+		html.append("<ul>");
+		formatJson(json, html);
+		html.append("</ul>");
+		return html.toString();
+	}
+
+	private static void formatJson(JSONObject json, StringBuilder html) {
+		for (String key : json.keySet()) {
+			Object value = json.get(key);
+			html.append("<li>");
+			html.append("<strong>").append(key).append("</strong>: ");
+			if (value instanceof JSONObject) {
+				html.append("<ul>");
+				formatJson((JSONObject) value, html);
+				html.append("</ul>");
+			} else if (value instanceof JSONArray) {
+				html.append("<ul>");
+				formatJsonArray((JSONArray) value, html);
+				html.append("</ul>");
+			} else {
+				html.append(value);
+			}
+			html.append("</li>");
+		}
+	}
+
+	private static void formatJsonArray(JSONArray jsonArray, StringBuilder html) {
+		for (int i = 0; i < jsonArray.length(); i++) {
+			Object value = jsonArray.get(i);
+			html.append("<li>");
+			if (value instanceof JSONObject) {
+				html.append("<ul>");
+				formatJson((JSONObject) value, html);
+				html.append("</ul>");
+			} else if (value instanceof JSONArray) {
+				html.append("<ul>");
+				formatJsonArray((JSONArray) value, html);
+				html.append("</ul>");
+			} else {
+				html.append(value);
+			}
+			html.append("</li>");
+		}
+	}
+	private static JSONObject toDysplayJson(ObjectDB obj, Grant g){
+
+		JSONObject res = new JSONObject();
+		res.put("id", obj.getRowId());
+		for(ObjectField f : obj.getFields()){
+			if(!f.isTechnicalField() && !f.isReferenced()){
+				if(f.isForeignKey()){
+					res.put(f.getRefObjectDisplay()+" id",f.getDisplayValue() );
+				}else{
+					res.put(f.getDisplay(), f.getDisplayValue() );
+				}
+			}
+		}
+		return res;
+	}
 }
