@@ -1,9 +1,9 @@
 {
-    "date": "2024-01-30 18:07:29",
+    "date": "2024-02-01 04:36:19",
     "name": "ChatGPT",
     "format": "json",
     "files": ["ChatGPT.json"],
     "repository": {"origin": {"uri": "https://github.com/simplicitesoftware/module_ai"}},
     "version": "0.2",
-    "platform": "6.0.0-beta"
+    "platform": "6.0.0"
 }

@@ -459,8 +459,10 @@ public class GptModel implements java.io.Serializable {
 			fld.setFieldValue("fld_fonctid", isKey);
 			fld.setFieldValue("fld_required", isRequired);
 			fld.setFieldValue(MODULE_ID_FIELD,	mInfo.moduleId);
-			if(type == ObjectField.TYPE_FLOAT || type == ObjectField.TYPE_BIGDECIMAL || type == ObjectField.TYPE_INT){
+			if(type == ObjectField.TYPE_FLOAT || type == ObjectField.TYPE_BIGDECIMAL ){
 				fld.setFieldValue("fld_precision", 2);
+				fld.setFieldValue("fld_size", 5);
+			}else if(type == ObjectField.TYPE_INT){
 				fld.setFieldValue("fld_size", 5);
 			}else{
 				fld.setFieldValue("fld_size", 100);
