@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.simplicite.util.*;
-
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 
@@ -17,6 +16,7 @@ import com.simplicite.util.tools.*;
 public class GPTData implements java.io.Serializable {
 	
 	private static HashMap<Integer,String> typeTrad;
+	private static Random random = new Random();
 	String html = "";
 	private static class CreatedObject {
 		private JSONObject objectCreate;
@@ -32,6 +32,27 @@ public class GPTData implements java.io.Serializable {
 			this.rowId = "";
 
 		}
+		@Override 
+		public String toString() { 
+			
+			return this.toJSON().toString(1); 
+		}
+		
+		public JSONObject toJSON() {
+			JSONObject res = new JSONObject();
+			res.put("objectCreate", this.objectCreate);
+			res.put("objectName", this.objectName);
+			if(this.toUpdate){
+				JSONArray array = new JSONArray();
+				for(RefField field : this.fieldToUpdate){
+					array.put(field.toJSON());
+				}
+				res.put("fieldToUpdate", array);
+			}
+			res.put("rowId", this.rowId);
+			
+			return res;
+		}
 	}
 	private static class RefField{
 		private String objectName;
@@ -42,7 +63,17 @@ public class GPTData implements java.io.Serializable {
 			this.fieldName = fieldName;
 			this.id = id;
 		}
-		
+		@Override
+		public String toString() {
+			return this.toJSON().toString(1);
+		}
+		public JSONObject toJSON() {
+			JSONObject res = new JSONObject();
+			res.put("objectName", this.objectName);
+			res.put("fieldName", this.fieldName);
+			res.put("id", this.id);
+			return res;
+		}
 	}
 	static {
 		typeTrad = new HashMap<>();
@@ -70,48 +101,111 @@ public class GPTData implements java.io.Serializable {
 		typeTrad.put(ObjectField.TYPE_COLOR,"Color");
 		typeTrad.put( ObjectField.TYPE_GEOCOORDS,"Geographical coordinates");
 	}
+	/**
+	 * Generates data for a specific module.
+	 * 
+	 * @param moduleName the name of the module
+	 * @param g the Grant object
+	 * @return the formatted result as a String
+	 */
 	public static String genDataForModule(String moduleName,Grant g){
 		try {
-			AppLog.info("Start genDataForModule", g);
 			String[] ids = getObjectIdsModule(moduleName, g);
 			if(Tool.isEmpty(ids))throw new PlatformException("Not found or not granted object to generate for module: \n"+moduleName);
 			JSONObject response = GPTData.callIADataOnModule(ids, g);
 			response = GPTData.jsonPreprocessing(response, g);
-			//AppLog.info(response.toString(1), g);
 			JSONObject formatResponse = GPTData.createObjects(ids,response, g);
-			return formatResult(formatResponse, g);
+			return formatResult(formatResponse);
 		}catch (PlatformException e) {
 			AppLog.error(e, g);
 			return e.getMessage();
 		}
 	}
-	private static JSONObject formatObjectInJson(String name, Grant g){
+
+	/**
+	 * Represents a JSON object, which is an unordered collection of key-value pairs.
+	 * This class provides methods to manipulate and access the data stored in a JSON object.
+	 */
+	private static JSONObject formatObjectInJson(String name, Grant g) {
 		ObjectDB obj = g.getTmpObject(name);
 		JSONObject json = new JSONObject(obj.toJSON());
 		json.remove("row_id");
+		removeInvalidFieldsAndFormatReference(json, obj);
+		addComment(json, obj);
+		json.put("id", "");
+		return json;
+	}
+
+	/**
+	 * Removes invalid fields from the JSON object and formats the reference fields.
+	 * Invalid fields are those that do not exist in the given ObjectDB.
+	 * Reference fields are added to the JSON object based on the given ObjectDB.
+	 * 
+	 * @param json The JSON object to remove invalid fields and format reference fields from.
+	 * @param obj The ObjectDB containing the valid fields for reference.
+	 */
+	private static void removeInvalidFieldsAndFormatReference(JSONObject json, ObjectDB obj) {
 		Iterator<String> keys = json.keys();
 		List<String> toRemove = new ArrayList<>();
-		List<String> refToAdd = new ArrayList<>();
 		while (keys.hasNext()) {
 			String key = keys.next();
-			ObjectField field = obj.hasField(key)?obj.getField(key):null;
-			if(Tool.isEmpty(field)){
+			
+			if (!obj.hasField(key)) {
 				toRemove.add(key);
-			}else if(field.isForeignKey()){
+			}
+		}
+		toRemove.addAll(addReferenceFields(json, obj));
+		for (String key : toRemove) {
+			json.remove(key);
+		}
+	}
+
+	/**
+	 * Adds reference fields to the given JSON object based on the foreign key fields of the ObjectDB object.
+	 * 
+	 * @param json The JSON object to which the reference fields will be added.
+	 * @param obj The ObjectDB object containing the fields.
+	 * @return A list of keys that were removed from the JSON object.
+	 */
+	private static List<String> addReferenceFields(JSONObject json, ObjectDB obj) {
+		Iterator<String> keys = json.keys();
+		JSONObject reference = new JSONObject();
+		List<String> toRemove = new ArrayList<>();
+		while (keys.hasNext()) {
+			String key = keys.next();
+			ObjectField field = obj.hasField(key) ? obj.getField(key) : null;
+			if (field != null && field.isForeignKey()) {
 				toRemove.add(key);
-				String idField = key;
-				if(obj.hasField(idField)){
-					String refObj = obj.getField(idField).getRefObjectName();
-					refToAdd.add(refObj);
-				}
-			}else if(!field.isForeignKey() && !field.isInternalForeignKey()){
+				String refObj = field.getRefObjectName();
+				reference.put(refObj, "id");
+				
+			}
+		}
+
+		if (!Tool.isEmpty(reference)) {
+			json.put("link", reference);
+		}
+		return toRemove;
+	}
+	/**
+	 * Adds comments to the given JSONObject based on the fields of the ObjectDB.
+	 * 
+	 * @param json The JSONObject to add comments to.
+	 * @param obj The ObjectDB containing the fields.
+	 */
+	private static void addComment(JSONObject json, ObjectDB obj) {
+		Iterator<String> keys = json.keys();
+		while (keys.hasNext()) {
+			String key = keys.next();
+			ObjectField field = obj.hasField(key) ? obj.getField(key) : null;
+			if (field != null && !field.isForeignKey() && !field.isInternalForeignKey() ) {
 				int type = field.getType();
 				switch (type) {
 					case ObjectField.TYPE_REGEXP:
-						json.put(key, "Validated text //"+field.getRegExp());
+						json.put(key, "regex: "+field.getRegExp());
 						break;
 					case ObjectField.TYPE_ENUM :
-						json.put(key, "Enumeration //("+String.join(", ", field.getList().getCodes(true))+")");
+						json.put(key, "Enumeration //("+String.join(", ", field.getList().getCodes(false))+")");
 						break;
 					case ObjectField.TYPE_ENUM_MULTI :
 						json.put(key, "Multiple enumeration //("+String.join(", ", field.getList().getCodes(true))+")");
@@ -123,19 +217,16 @@ public class GPTData implements java.io.Serializable {
 				
 			}
 		}
-		for(String key : toRemove){
-			json.remove(key);
-		}
-		JSONObject reference = new JSONObject();
-		for(String key : refToAdd){
-			reference.put(key,"id");
-		}
-
-		if(!Tool.isEmpty(reference))json.put("link", reference);
-		json.put("id", "");
-		
-		return json;
 	}
+
+	/**
+	 * Retrieves the object IDs for a given module.
+	 * 
+	 * @param moduleName the name of the module
+	 * @param g the Grant object
+	 * @return an array of object IDs
+	 * @throws PlatformException if the module is unknown
+	 */
 	private static String[] getObjectIdsModule(String moduleName, Grant g) throws PlatformException{
 		
 		String mdlId = ModuleDB.getModuleId(moduleName);
@@ -169,6 +260,15 @@ public class GPTData implements java.io.Serializable {
 		return ids;
 		
 	}
+
+	/**
+	 * Removes the elements from the given list that are not creatable based on the provided name index and grant.
+	 * 
+	 * @param list The list of elements to filter.
+	 * @param nameIndex The index of the name field in each element of the list.
+	 * @param g The grant object containing the creatable information.
+	 * @return The filtered list containing only the creatable elements.
+	 */
 	private static List<String[]> removeNotCreatable(List<String[]> list,int nameIndex, Grant g){
 		Map<String, String> creatables = g.getCreatable();
 		List<String[]> res = new ArrayList<>();
@@ -180,37 +280,33 @@ public class GPTData implements java.io.Serializable {
 		return res;
 
 	}
+
+	/**
+	 * Retrieves a JSON object model based on the given IDs and Grant.
+	 *
+	 * @param ids The array of IDs used to retrieve the JSON object model.
+	 * @param g The Grant object used for retrieving object information.
+	 * @return The JSON object model.
+	 */
 	private static JSONObject getJsonModel(String[] ids, Grant g){
 		JSONObject data = new JSONObject();
-		List<JSONObject> nnToAdd = new ArrayList<>();
 		for(String id : ids){
 			String name = ObjectCore.getObjectName(id);
 			data.put(name, new JSONArray().put(formatObjectInJson(name, g)).put("//"+g.getTmpObject(name).getDesc()));
-			/* if(!isNNObject(name, g)){
-				data.put(name, new JSONArray().put(formatObjectInJson(name, g)));
-			}else{
-				nnToAdd.add(getNNInfo(name, g));
-			} */
-			
-		}
-		for(JSONObject json : nnToAdd){
-			String from = json.optString("from");
-			String to = json.optString("to");
-			if(!Tool.isEmpty(from) && !Tool.isEmpty(to)){
-				JSONArray fromArray = data.optJSONArray(from);
-				if(!Tool.isEmpty(fromArray)){
-					if(!fromArray.getJSONObject(0).has("link"))fromArray.getJSONObject(0).put("link", new JSONObject());
-					fromArray.getJSONObject(0).getJSONObject("link").put(to, "[id,...]");
-				}
-				
-			}
 		}
 		return data;
 	}
-
+	/**
+		 * Calls the IA for data of the module based on the given IDs.
+		 *
+		 * @param ids the array of IDs
+		 * @param g the Grant object
+		 * @return the JSON object containing the data
+		 * @throws PlatformException if there is an error in the platform
+	*/
 	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
-		String response = GptTools.gptCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"```",false).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		String response = GptTools.gptCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"```",false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		if(!GptTools.isValidJson(response)){	
 			
 			List<String> listResult = GptTools.getJSONBlock(response,g);
@@ -223,94 +319,49 @@ public class GPTData implements java.io.Serializable {
 		return new JSONObject(response);
 	}
 
+	/**
+	 * Creates simplicité objects based on the given IDs, JSON data, and grant.
+	 * 
+	 * @param ids   the array of object IDs
+	 * @param json  the JSON data
+	 * @param g     the grant
+	 * @return      the created objects as a JSONObject
+	 * @throws JSONException       if there is an error with JSON parsing
+	 * @throws GetException        if there is an error retrieving an object
+	 * @throws ValidateException   if there is an error validating an object
+	 * @throws SaveException       if there is an error saving an object
+	 */
 	private static JSONObject createObjects(String[] ids, JSONObject json, Grant g) throws JSONException, GetException, ValidateException, SaveException{
-		
 		JSONObject created = new JSONObject();
 		List<CreatedObject> toUpdate = new ArrayList<>();
 		JSONObject res = new JSONObject();
 		for(String id : ids){
 			String name = ObjectCore.getObjectName(id);
-			ObjectDB obj = g.getTmpObject(name);
-			
 			JSONArray arrayRes = new JSONArray();
-			if(json.has(name) && json.get(name) instanceof JSONObject){
-				CreatedObject objectToCreate = objectbyJSON(name, json.getJSONObject(name),created,g);
-				synchronized(obj.getLock()){
-					BusinessObjectTool objT = obj.getTool();
-					if(checkFuncIdAndRequired(objectToCreate.objectCreate, obj, g)){
-						JSONObject filters = getFilter(objectToCreate.objectCreate, obj);
-						if(Tool.isEmpty(filters)){
-							objT.selectForCreate();
-							obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
-							objT.validateAndCreate();
-						}else if(!objT.selectForCreateOrUpdate(filters)){
-							obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
-							objT.validateAndCreate();
-						}
-						objectToCreate.rowId = obj.getRowId();
-						if(!Tool.isEmpty(objectToCreate.rowId)){
-							arrayRes.put(toDysplayJson(obj, g));
-						}
-					}
-				}
-				if(!Tool.isEmpty(objectToCreate.rowId)){
-					
-					String objid =json.getJSONObject(name).optString("id");
-					
-					if(!Tool.isEmpty(objid)){
-						if(!created.has(name)){
-							created.put(name, new JSONObject());
-						}
-						created.getJSONObject(name).put(objid, objectToCreate.rowId);
-					}
-					if(objectToCreate.toUpdate){
+			for (Object obj : json.optJSONArray(name, new JSONArray())) {
+				if (obj instanceof JSONObject) {
+					CreatedObject objectToCreate = validateJsonAndCreate(name, (JSONObject) obj, created, arrayRes, g);
+					if (objectToCreate != null) {
 						toUpdate.add(objectToCreate);
 					}
-				}
-			}else if(json.has(name) && json.get(name) instanceof JSONArray){
-				JSONArray array = json.getJSONArray(name);
-				for(int i=0; i<array.length();i++){
-					if(array.get(i) instanceof JSONObject){
-						CreatedObject objectToCreate = objectbyJSON(name, array.getJSONObject(i),created,g);
-						
-						synchronized(obj.getLock()){
-							BusinessObjectTool objT = obj.getTool();
-							if(checkFuncIdAndRequired(objectToCreate.objectCreate, obj, g)){
-								JSONObject filters = getFilter(objectToCreate.objectCreate, obj);
-								if(Tool.isEmpty(filters)){
-									objT.selectForCreate();
-									obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
-									objT.validateAndCreate();
-								}else if(!objT.selectForCreateOrUpdate(filters)){
-									obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
-									objT.validateAndCreate();
-								}
-						
-								objectToCreate.rowId = obj.getRowId();
-								if(!Tool.isEmpty(objectToCreate.rowId)){
-									arrayRes.put(toDysplayJson(obj, g));
-								}
-							}
-						}
-						if(!Tool.isEmpty(objectToCreate.rowId)){
-							String objid = array.getJSONObject(i).optString("id");
-							
-							if(!Tool.isEmpty(objid)){
-								if(!created.has(name)){
-									created.put(name, new JSONObject());
-								}
-								created.getJSONObject(name).put( objid, objectToCreate.rowId);
-							}
-							if(objectToCreate.toUpdate){
-								toUpdate.add(objectToCreate);
-							}
-						}
-					}
-					
 				}
 			}
 			res.put(g.getTmpObject(name).getDisplay(), arrayRes);
 		}
+		updateObjects(toUpdate,created,g);
+		return res;
+	}
+	/**
+	 * Updates the objects based on the provided parameters.
+	 * 
+	 * @param toUpdate the list of objects to update
+	 * @param created the JSON object containing the created objects
+	 * @param g the Grant object
+	 * @throws GetException if there is an error retrieving data
+	 * @throws ValidateException if there is an error validating the object
+	 * @throws SaveException if there is an error saving the object
+	 */
+	private static void updateObjects(List<CreatedObject> toUpdate,JSONObject created,Grant g) throws GetException, ValidateException, SaveException{
 		for(CreatedObject objectToUpdate: toUpdate){
 			ObjectDB obj = g.getTmpObject(objectToUpdate.objectName);
 			synchronized(obj.getLock()){
@@ -329,177 +380,310 @@ public class GPTData implements java.io.Serializable {
 				objT.validateAndSave();
 			}
 		}
-		//AppLog.info(res.toString(1), g);
-		return res;
 	}
-	private static CreatedObject objectbyJSON(String name, JSONObject json, JSONObject existed, Grant g){
-		Random random = new Random();
-		//AppLog.info(name, g);
-		CreatedObject res = new CreatedObject(name);
+	/**
+	 * Validates and passes or creates a new object based on the provided parameters.
+	 * 
+	 * @param objectToCreate The object to create or update.
+	 * @param obj The ObjectDB instance.
+	 * @param arrayRes The JSONArray to store the resulting objects.
+	 * @param g The Grant instance.
+	 * @throws GetException If there is an error retrieving data.
+	 * @throws CreateException If there is an error creating the object.
+	 * @throws ValidateException If there is an error validating the object.
+	 */
+	private static CreatedObject validateJsonAndCreate(String name, JSONObject json,JSONObject created,JSONArray arrayRes,Grant g) throws GetException, CreateException, ValidateException{
+		ObjectDB obj = g.getTmpObject(name);
+		CreatedObject objectToCreate = objectbyJSON(name, json,created,g);
+		synchronized(obj.getLock()){
+			BusinessObjectTool objT = obj.getTool();
+			if(checkFuncIdAndRequired(objectToCreate.objectCreate, obj)){
+				JSONObject filters = getFilter(objectToCreate.objectCreate, obj);
+				if(Tool.isEmpty(filters)){
+					objT.selectForCreate();
+					obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
+					objT.validateAndCreate();
+				}else if(!objT.selectForCreateOrUpdate(filters)){
+					obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
+					objT.validateAndCreate();
+				}
 		
+				objectToCreate.rowId = obj.getRowId();
+				if(!Tool.isEmpty(objectToCreate.rowId)){
+					arrayRes.put(toDysplayJson(obj));
+				}
+			}
+		}
+		if(!Tool.isEmpty(objectToCreate.rowId)){
+			String objid = json.optString("id");
+
+			if (!Tool.isEmpty(objid)) {
+				if (!created.has(name)) {
+					created.put(name, new JSONObject());
+				}
+				created.getJSONObject(name).put(objid, objectToCreate.rowId);
+			}
+			if (objectToCreate.toUpdate) {
+				return objectToCreate;
+			}
+		}
+		return null;
+		
+	}
+
+	/**
+	 * Creates a new object based on the provided parameters.
+	 * 
+	 * @param name The name of the object to create.
+	 * @param json The JSON object containing the data to create the object.
+	 * @param existed The JSON object containing the existing objects.
+	 * @param g The Grant object.
+	 * @return The created object.
+	 */
+	private static CreatedObject objectbyJSON(String name, JSONObject json, JSONObject existed, Grant g){
+		CreatedObject res = new CreatedObject(name);
 		ObjectDB obj = g.getTmpObject(name);
 		for (ObjectField field :obj.getFields()){
-			String test = field.getName();
 			if(field.isForeignKey()){
-				String objName = field.getRefObjectName();
-				if (json.has(objName) && json.get(objName) instanceof JSONObject){
-					String id = json.getJSONObject(objName).optString("id");
-					if(!Tool.isEmpty(id) && existed.has(objName) && existed.getJSONObject(objName).has(id)){
-						String refRowId =existed.getJSONObject(objName).getString(id);
-						res.objectCreate.put(field.getName(), refRowId);
-					}else if(!Tool.isEmpty(id)){
-						res.toUpdate = true;
-						res.fieldToUpdate.add(new RefField(objName, field.getName(), id));
-					}
-				}else if(json.has("link") && json.get("link") instanceof JSONObject){
-					JSONObject link = json.getJSONObject("link");
-					if(link.has(objName)){
-						String id=link.optString(objName,"");
-						if(link.get(objName) instanceof JSONObject){
-							id = link.getJSONObject(objName).optString("id");
-							
-						} 
-						if(!Tool.isEmpty(id) && existed.has(objName) && existed.getJSONObject(objName).has(id)){
-							String refRowId =existed.getJSONObject(objName).getString(id);
-							res.objectCreate.put(field.getName(), refRowId);
-						}else if(!Tool.isEmpty(id)){
-							res.toUpdate = true;
-							res.fieldToUpdate.add(new RefField(objName, field.getName(), id));
-						}
-					}		
-				}
-			}else if(json.has(field.getName())){
-				if(field.isNumeric()){
-					int precision = field.getFloatPrecision();
-					int size = field.getSize();
-					if (size > 6) size = 6;
-					if (!(json.get(field.getName()) instanceof Number)) {
-						int max = (int) Math.pow(10, size) - 1;
-						res.objectCreate.put(field.getName(), random.nextInt(max));
-					}else if(precision>0){
-						float max = getMax(size, precision);
-						float value = json.getFloat(field.getName());
-						if(value>max) value = random.nextFloat(max);
-						res.objectCreate.put(field.getName(), value);
-					}else{
-						int max = (int) Math.pow(10, size) - 1;
-						int value = json.getInt(field.getName());
-						if(value>max) value = random.nextInt(max);
-						res.objectCreate.put(field.getName(), value);
-					}
-					
-				}else{
-					String value;
-					switch (field.getType()) {
-						case ObjectField.TYPE_PHONENUM:
-							String phoneNum = json.optString(field.getName());
-							try {
-								if(!new PhoneNumTool().isValid(phoneNum)){
-									res.objectCreate.put(field.getName(), "0000000000");
-								}else{
-									res.objectCreate.put(field.getName(), phoneNum);
-								}
-							} catch (ParamsException e) {
-								AppLog.error(e, g);
-								res.objectCreate.put(field.getName(), "0000000000");
-							}
-							break;
-						case ObjectField.TYPE_ENUM:
-							String[] listCode = field.getList().getCodes(true);
-					
-							value = "";
-							if(json.get(field.getName()) instanceof JSONArray){
-								JSONArray array = json.getJSONArray(field.getName());
-								if(array.length()>0){
-									value = array.getString(random.nextInt(array.length()));
-								}
-							}else if(json.get(field.getName()) instanceof String){ 
-								value = json.getString(field.getName());
-								
-							}	
-							res.objectCreate.put(field.getName(),Arrays.asList(listCode).contains(value)?value:listCode[random.nextInt(listCode.length)]);
-							break;
-						case ObjectField.TYPE_DATE:
-							value =json.optString(field.getName());
-							if(!Tool.isDate(value)) value = Tool.getCurrentDate();
-							res.objectCreate.put(field.getName(), value);
-							break;
-						case ObjectField.TYPE_DATETIME:
-							value =json.optString(field.getName());
-							if(!Tool.isDateTime(value)) value = Tool.getCurrentDateTime();
-							res.objectCreate.put(field.getName(), value);
-							break;
-						case ObjectField.TYPE_GEOCOORDS:
-							value =json.optString(field.getName());
-							//TODO
-							AppLog.info("TODO GEOCOORDS "+test, g);
-							break;
-						case ObjectField.TYPE_EMAIL:
-							value =json.optString(field.getName());
-							if(!Tool.checkEmail(value)) value = "email@exemple.com";
-							res.objectCreate.put(field.getName(), value);
-							break;
-						default:
-							res.objectCreate.put(field.getName(), json.optString(field.getName()));
-							break;
-					}
-				}
-
-				
-			}
-
-		}
-
-		return res;
-	}
-	/* private static boolean isNNObject(String objectName, Grant g){
-		int fkCount = 0;
-		ObjectDB obj = g.getTmpObject(objectName);
-		for(ObjectField f : obj.getFields()){
-			String test = f.getName();
-			boolean test2 = f.isReferenced();
-			if(!f.isTechnicalField() && !f.isReferenced()){
-				if(!(f.isInternalForeignKey() && f.isFunctId() && fkCount<2))return false;
-				fkCount++;
-			}
-		}
-		return true;
-	}
-	private static JSONObject getNNInfo(String objectName, Grant g){
-		int fkCount = 0;
-		ObjectDB obj = g.getTmpObject(objectName);
-		JSONObject res = new JSONObject();
-		for(ObjectField f : obj.getFields()){
-			
-			if(f.isInternalForeignKey()){
-				fkCount++;
-				if(fkCount == 1){
-					res.put("from", f.getRefObjectName());
-					
-				}else if(fkCount == 2){
-					res.put("to", f.getRefObjectName());
-				}
+				processForeignKeyField(field, json, existed, res);
+			} else if(json.has(field.getName())){
+				processJsonField(field, json.get(field.getName()), res, g);
+			} else if(!field.isTechnicalField() && (field.isRequired() || field.isFunctId())){
+				processJsonField(field,null, res, g);
 			}
 		}
 		return res;
-	} */
+	}
 
-	/* private static String getSwagger(String moduleName, Grant g) throws HTTPException{
-		Map<String,Object> param = new HashMap<>();
-		String baseurl = "https://candicetest.demo.simplicite.io"+Globals.WEB_API_PATH+Globals.WEB_REST_PATH+"/";
-		param.put("_doc", "true");
-		param.put("_output", "swagger-2.0");
-		for(String id: getObjectIdsModule(moduleName, g)){
-			
-			String url= baseurl +ObjectCore.getObjectName(id);
-			url = HTTPTool.append(url, param);
-			//AppLog.info(url, g);
-			
-			//AppLog.info(RESTTool.get(url,g.getLogin(),g.getPassword()), g);
+
+	/**
+	 * Processes a foreign key field in the JSON object.
+	 * If the field exists in the JSON object and is of type JSONObject, it extracts the ID and sets the foreign ID if it is created.
+	 * If the field exists in the "link" object of the JSON and is of type JSONObject, it extracts the ID and sets the foreign ID if it is created.
+	 * 
+	 * @param field the ObjectField representing the foreign key field
+	 * @param json the JSONObject containing the data
+	 * @param existed the JSONObject representing the existing data
+	 * @param res the CreatedObject to set the foreign ID on
+	 */
+	private static void processForeignKeyField(ObjectField field, JSONObject json, JSONObject existed, CreatedObject res) {
+		String objName = field.getRefObjectName();
+		if (json.has(objName) && json.get(objName) instanceof JSONObject){
+			String id = json.getJSONObject(objName).optString("id");
+			setForeingIdIfCreated(id, objName, field.getName(), existed, res);
+		} else if(json.has("link") && json.get("link") instanceof JSONObject){
+			JSONObject link = json.getJSONObject("link");
+			if(link.has(objName)){
+				String id=link.optString(objName,"");
+				if(link.get(objName) instanceof JSONObject){
+					id = link.getJSONObject(objName).optString("id");
+				} 
+				setForeingIdIfCreated(id, objName, field.getName(), existed, res);
+			}		
 		}
-		return "";
-	} */
+	}
+
+	/**
+	 * Sets the foreign ID if it already exists in the provided JSON object.
+	 * If the ID exists, it is added to the "objectToCreate" .
+	 * If the ID does not exist, it is added to "fieldToUpdate".
+	 * 
+	 * @param id The ID to check and set.
+	 * @param objName The name of the object in the JSON.
+	 * @param fieldName The name of the field to update.
+	 * @param existed The JSON object containing existing data.
+	 * @param res The object to update with the foreign ID.
+	 */
+	private static void setForeingIdIfCreated(String id, String objName,String fieldName, JSONObject existed, CreatedObject res){
+		if(!Tool.isEmpty(id) && existed.has(objName) && existed.getJSONObject(objName).has(id)){
+			String refRowId =existed.getJSONObject(objName).getString(id);
+			res.objectCreate.put(fieldName, refRowId);
+		} else if(!Tool.isEmpty(id)){
+			res.toUpdate = true;
+			res.fieldToUpdate.add(new RefField(objName, fieldName, id));
+		}
+	}
+
+
+	/**
+	 * Processes a JSON field and add default value if the value is not valid.
+	 * 
+	 * @param field The object field to process.
+	 * @param val The value of the field.
+	 * @param res The created object to add the field to.
+	 * @param g The grant object.
+	 */
+	private static void processJsonField(ObjectField field, Object val, CreatedObject res, Grant g) {
+		int type = field.getType();
+		Object param = null;
+		if(type == ObjectField.TYPE_ENUM || type == ObjectField.TYPE_ENUM_MULTI ) param = field.getList().getCodes(true);
+		if(type == ObjectField.TYPE_REGEXP) param = field.getRegExp();
+		String value = field.isNumeric()?getValidNumericValue(val, field.getFloatPrecision(),field.getSize(), type):getValidValue(val,type,param,field.getDisplay(),g);
+		res.objectCreate.put(field.getName(), value);
+	}
+
+	/**
+	 * Returns a valid numeric value as a string based on the given parameters.
+	 * 
+	 * @param val the value to be converted to a string
+	 * @param precision the number of decimal places to include in the string representation
+	 * @param size the maximum number of digits in the string representation
+	 * @param type the type of the value (ObjectField.TYPE_INT for integer, other values for non-integer)
+	 * @return a valid numeric value as a string
+	 */
+	private static String getValidNumericValue(Object val, int precision,int size, int type){
+		if (size > 6) size = 6;
+		if (!(val instanceof Number)) {
+			int max = (int) Math.pow(10, (size-precision)) - 1;
+			return String.valueOf(random.nextInt(max));
+		}else if((type != ObjectField.TYPE_INT) && precision>0 ){
+			float max = getMax(size, precision);
+			Number test= (Number)val;
+			float value = Float.parseFloat(test.toString());
+			if(value>max) value = random.nextFloat(max);
+			return String.valueOf(value);
+		}else{
+			int max = (int) Math.pow(10,(size-precision)) - 1;
+			int value = (int)val;
+			if(value>max) value = random.nextInt(max);
+			return String.valueOf(value);
+		}
+	}
+	
+	/**
+	 * Returns a valid value based on the given parameters.
+	 *
+	 * @param val the value to validate
+	 * @param type the type of the value
+	 * @param param the parameter for validation
+	 * @param fieldName the name of the field
+	 * @param g the Grant object
+	 * @return a valid value based on the given parameters
+	 */
+	private static String getValidValue(Object val, int type, Object param, String fieldName, Grant g) {
+		String value = "";
+		switch (type) {
+			case ObjectField.TYPE_PHONENUM:
+				value = getValidPhoneNumValue(val, g);
+				break;
+			case ObjectField.TYPE_ENUM_MULTI:
+			case ObjectField.TYPE_ENUM:
+				value = getValidEnumValue(val, param);
+				break;
+			case ObjectField.TYPE_DATE:
+				value = getValidDateValue(val);
+				break;
+			case ObjectField.TYPE_DATETIME:
+				value = getValidDateTimeValue(val);
+				break;
+			case ObjectField.TYPE_GEOCOORDS:
+				value = getValidGeoCoordsValue(val);
+				break;
+			case ObjectField.TYPE_EMAIL:
+				value = getValidEmailValue(val);
+				break;
+			case ObjectField.TYPE_REGEXP:
+				value = getValidRegExpValue(val, param);
+				break;
+			default:
+				value = getValidDefaultValue(val, fieldName);
+				break;
+		}
+
+		return value;
+	}
+
+	private static String getValidPhoneNumValue(Object val, Grant g) {
+		String value = (val instanceof String) ? (String) val : "";
+		try {
+			if (!new PhoneNumTool().isValid(value)) {
+				value = "0000000000";
+			}
+		} catch (ParamsException e) {
+			AppLog.error(e, g);
+			value = "0000000000";
+		}
+		return value;
+	}
+
+	private static String getValidEnumValue(Object val, Object param) {
+		String value = "";
+		if (val instanceof JSONArray) {
+			JSONArray array = (JSONArray) val;
+			if (array.length() > 0) {
+				value = array.getString(random.nextInt(array.length()));
+			}
+		} else if (val instanceof String) {
+			value = (String) val;
+		}
+		String[] list = (String[]) param;
+		if (!Arrays.asList(list).contains(value)) {
+			value = list[random.nextInt(list.length)];
+		}
+		return value;
+	}
+
+	private static String getValidDateValue(Object val) {
+		String value = (val instanceof String) ? (String) val : "";
+		if (!Tool.isDate(value)) {
+			value = Tool.getCurrentDate();
+		}
+		return value;
+	}
+
+	private static String getValidDateTimeValue(Object val) {
+		String value = (val instanceof String) ? (String) val : "";
+		if (!Tool.isDateTime(value)) {
+			value = Tool.getCurrentDateTime();
+		}
+		return value;
+	}
+
+	private static String getValidGeoCoordsValue(Object val) {
+		String value = (val instanceof String) ? (String) val : "";
+		double[] geo = Tool.parseCoordinates(value);
+		if (geo[0] == 0 && geo[1] == 0) {
+			value = "48.8534100;2.3488000"; // Default coordinates for Paris
+		} else {
+			value = geo[0] + ";" + geo[1];
+		}
+		return value;
+	}
+
+	private static String getValidEmailValue(Object val) {
+		String value = (val instanceof String) ? (String) val : "";
+		if (!Tool.checkEmail(value)) {
+			value = "email@example.com";
+		}
+		return value;
+	}
+
+	private static String getValidRegExpValue(Object val, Object param) {
+		String value = (val instanceof String) ? (String) val : "";
+		String regex = (String) param;
+		if (!value.matches(regex)) {
+			value = "";
+		}
+		return value;
+	}
+
+	private static String getValidDefaultValue(Object val,String fieldName) {
+		return (val instanceof String) ? (String) val : fieldName + "_" + random.nextInt(3);
+	}
+
+	/**
+	 * This method performs preprocessing on a JSONObject.
+	 * It iterates through the keys of the JSONObject and processes each object based on its type.
+	 * If the object is an array, it iterates through the elements and processes each nested JSONObject.
+	 * If the object is a JSONObject, it processes the object and converts it into a JSONArray.
+	 * The processed objects are stored in a new JSONObject and returned.
+	 *
+	 * @param json The JSONObject to be preprocessed.
+	 * @param g The Grant object used for processing.
+	 * @return The preprocessed JSONObject.
+	 */
 	private static JSONObject jsonPreprocessing(JSONObject json, Grant g) {
+
 		JSONObject res = new JSONObject();
 		int idProcess = 1;
 		Iterator<String> keys = json.keys();
@@ -516,46 +700,32 @@ public class GPTData implements java.io.Serializable {
 			}else if(json.get(objName) instanceof JSONObject){
 				JSONObject obj = json.getJSONObject(objName);
 				idProcess = processObject(objName, obj, res, idProcess, g);
+				json.put(objName,new JSONArray().put(obj));
 			}
+
 			
 		}
 		return res;
 	}
+	
+
+	/**
+	 * Processes an object and adds it to the result JSON.
+	 * If the object has a "link" property, it processes the linked object recursively.
+	 * If the result JSON does not have an array for the given object name, it creates one.
+	 * Finally, it adds the processed object to the array in the result JSON.
+	 *
+	 * @param objName   the name of the object
+	 * @param obj       the object to be processed
+	 * @param res       the result JSON object
+	 * @param idProcess the current process ID
+	 * @param g         the Grant object
+	 * @return the updated process ID
+	 */
 	private static int processObject(String objName, JSONObject obj, JSONObject res, int idProcess, Grant g){
-		if(!obj.has("id")){
-			for(String key : obj.keySet()){
-				if (key.matches(".*[i,I][d,D]$")){
-					obj.put("id" ,obj.get(key));
-					break;
-				}
-			}
-		}
+		checkId(obj);
 		if(obj.has("link") && obj.get("link") instanceof JSONObject){
-			JSONObject link = obj.getJSONObject("link");
-			Iterator<String> keysLink = link.keys();
-			while (keysLink.hasNext()) {
-				String linkName = keysLink.next();
-				if(link.get(linkName) instanceof JSONObject){
-					JSONObject linkObj = link.getJSONObject(linkName);
-					if(linkObj.length()>1){
-						if(!linkObj.has("id")){
-							linkObj.put("id", "prc_"+idProcess);
-							idProcess++;
-						}else if(linkObj.get("id") instanceof Number){
-							linkObj.put("id", String.valueOf(linkObj.get("id")));
-						}
-										
-						link.put(linkName, linkObj.getString("id"));
-						idProcess = processObject(linkName, linkObj, res, idProcess, g);
-					}else if (linkObj.has("id")){
-						if(linkObj.get("id") instanceof Number){
-							linkObj.put("id", String.valueOf(linkObj.get("id")));
-						}
-						link.put(linkName, linkObj.getString("id"));
-					}
-							
-				}
-			}
+           idProcess = processLink(obj.getJSONObject("link"),idProcess,res,g);
 		}
 		if(!res.has(objName)){
 			res.put(objName, new JSONArray());
@@ -564,6 +734,45 @@ public class GPTData implements java.io.Serializable {
 
 		return idProcess;
 	}
+    private static void checkId(JSONObject obj){
+        if(!obj.has("id")){
+			for(String key : obj.keySet()){
+				if (key.matches(".*[i,I][d,D]$")){
+					obj.put("id" ,obj.get(key));
+					break;
+				}
+			}
+		}
+    }
+    private static int checkLinkId(JSONObject linkObj,int idProcess){
+        if(!linkObj.has("id")){
+            linkObj.put("id", "prc_"+idProcess);
+            idProcess++;
+        }else if(linkObj.get("id") instanceof Number){
+            linkObj.put("id", String.valueOf(linkObj.get("id")));
+        }
+        return idProcess;
+    }
+    private static int processLink(JSONObject link, int idProcess,JSONObject res , Grant g){
+			Iterator<String> keysLink = link.keys();
+			while (keysLink.hasNext()) {
+				String linkName = keysLink.next();
+				if(link.get(linkName) instanceof JSONObject){
+					JSONObject linkObj = link.getJSONObject(linkName);
+					if(linkObj.length()>1){
+						idProcess = checkLinkId(linkObj,idProcess);				
+						link.put(linkName, linkObj.getString("id"));
+						idProcess = processObject(linkName, linkObj, res, idProcess, g);
+					}else if (linkObj.has("id")){
+						if(linkObj.get("id") instanceof Number){
+							linkObj.put("id", String.valueOf(linkObj.get("id")));
+						}
+						link.put(linkName, linkObj.getString("id"));
+					}
+				}
+			}
+        return idProcess;
+    }
 	private static JSONObject getFilter(JSONObject json, ObjectDB obj){
 		JSONObject res = new JSONObject();
 		List<ObjectField> funcIds = obj.getFunctId();
@@ -575,82 +784,90 @@ public class GPTData implements java.io.Serializable {
 		}
 		return res;
 	}
-	private static boolean checkFuncIdAndRequired(JSONObject json , ObjectDB obj,Grant g ){
+	private static boolean checkFuncIdAndRequired(JSONObject json , ObjectDB obj){
 		List<ObjectField> fields = obj.getFields();
 		if(Tool.isEmpty(fields)) return true;
 		for(ObjectField f : fields){
-			String test = f.getName();
 			if(!json.has(f.getName()) && !f.isTechnicalField() && (f.isRequired() || f.isFunctId()) ){
-				if(f.isForeignKey() ) return false;
-				if(f.isString()){
-					//String res = GptTools.gptCaller(g,"","Value for "+f.getName()+"field").getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-					String res = f.getDisplay()+"_"+new Random().nextInt(99);
-					json.put(f.getName(),res );
-				}else if(f.isNumeric()){
-					json.put(f.getName(), new Random().nextInt(99));
-				}else{
-					return false;
-				}
-				
+				return false;
 			}
 		}
 		return true;
 	}
-
 	private static float getMax(int size, int precision) {
-		int maxInt = (int) Math.pow(10, size-precision) - 1;
+		int maxInt = (int) Math.pow(10, (size-precision)) - 1;
 		float  denary = (float) Math.pow(10, precision);
 		denary = (denary-1)/denary;
-		float maxFloat = maxInt + denary;
-		return maxFloat;
+		return maxInt + denary;
+		 
 	}
-	private static String formatResult(JSONObject json, Grant g) {
+	/**
+	 * Formats the result as a string.
+	 *
+	 * @param json the JSON object to format
+	 * @return the formatted result as a string
+	 */
+	private static String formatResult(JSONObject json) {
 		StringBuilder html = new StringBuilder();
-		html.append("<ul>");
 		formatJson(json, html);
-		html.append("</ul>");
 		return html.toString();
 	}
 
+	/**
+	 * Formats a JSON object into an HTML unordered list.
+	 * Recursively iterates through the JSON object and its nested objects and arrays,
+	 * appending the formatted HTML to the provided StringBuilder.
+	 *
+	 * @param json The JSON object to format.
+	 * @param html The StringBuilder to append the formatted HTML to.
+	 */
 	private static void formatJson(JSONObject json, StringBuilder html) {
+		html.append("<ul>");
 		for (String key : json.keySet()) {
 			Object value = json.get(key);
 			html.append("<li>");
 			html.append("<strong>").append(key).append("</strong>: ");
 			if (value instanceof JSONObject) {
-				html.append("<ul>");
 				formatJson((JSONObject) value, html);
-				html.append("</ul>");
 			} else if (value instanceof JSONArray) {
-				html.append("<ul>");
 				formatJsonArray((JSONArray) value, html);
-				html.append("</ul>");
 			} else {
 				html.append(value);
 			}
 			html.append("</li>");
 		}
+		html.append("</ul>");
 	}
 
+	/**
+	 * Formats a JSON array into an HTML unordered list.
+	 * 
+	 * @param jsonArray the JSON array to format
+	 * @param html the StringBuilder to append the formatted HTML to
+	 */
 	private static void formatJsonArray(JSONArray jsonArray, StringBuilder html) {
+		html.append("<ul>");
 		for (int i = 0; i < jsonArray.length(); i++) {
 			Object value = jsonArray.get(i);
 			html.append("<li>");
 			if (value instanceof JSONObject) {
-				html.append("<ul>");
 				formatJson((JSONObject) value, html);
-				html.append("</ul>");
 			} else if (value instanceof JSONArray) {
-				html.append("<ul>");
 				formatJsonArray((JSONArray) value, html);
-				html.append("</ul>");
 			} else {
 				html.append(value);
 			}
 			html.append("</li>");
 		}
+		html.append("</ul>");
 	}
-	private static JSONObject toDysplayJson(ObjectDB obj, Grant g){
+	/**
+	 * Converts an ObjectDB instance to a JSONObject for display purposes.
+	 *
+	 * @param obj The ObjectDB instance to convert.
+	 * @return The converted JSONObject.
+	 */
+	private static JSONObject toDysplayJson(ObjectDB obj){
 
 		JSONObject res = new JSONObject();
 		res.put("id", obj.getRowId());
@@ -665,4 +882,6 @@ public class GPTData implements java.io.Serializable {
 		}
 		return res;
 	}
+	
+
 }

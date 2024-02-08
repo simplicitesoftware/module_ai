@@ -50,8 +50,6 @@ public class GptChatBot extends com.simplicite.util.ExternalObject {
 					}
 				}
 			}
-			
-			AppLog.info("Debug objId: "+objId, getGrant());
 			return javascript(getName() + ".render(ctn,\""+HTMLTool.toSafeTextHTML(context)+"\");");
 		}
 		catch (Exception e) {

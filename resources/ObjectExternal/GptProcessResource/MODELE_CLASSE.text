@@ -13,13 +13,13 @@
 			"bootstrapIcon":"",
 			"required":Boolean,
 			"type": "",//("Short text", "Long text", "Integer", "Decimal", "BigDecimal", "Date", "Date and time", "Time", "Enumeration", "Multiple enumeration", "Boolean", "URL", "HTML content", "Email", "Document", "Password", "External file", "Image", "Notepad", "Phone number", "Color", "Geographical coordinates")
+			"isStatus":Boolean,
 			"Enumeration":{
 				"Values":[
 					{
 						"code":"",
 						"en":"",
 						"fr":"",
-						"next":"",
 					},
 					...
         		]

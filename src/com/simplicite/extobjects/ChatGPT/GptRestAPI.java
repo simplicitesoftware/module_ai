@@ -20,7 +20,6 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 	private static final String PARAMS_PROMPT_KEY = "prompt";
 	@Override
 	public Object get(Parameters params) throws HTTPException {
-		AppLog.info("get "+params.toJSON(), getGrant());
 		return error(400, "Call me in POST please!");
 	}
 

@@ -13,25 +13,25 @@ function gptNewModel(ids,moduleName,moduleID) {
 			id: id, // node row_id
 			template: "BusinessObject" , // node template name
 			x: i*50 + 30, // dummy position
-			y: i*30 + 30
+			y: i*30 + 30,
 			//container: null // no container 
 		});
 	});
 	// Load SVG engine
-	$ui.loadDiagramEngine(true, function() {
+	$ui.loadDiagramEngine(false, function() {
 		try {
 			// Create the model in silent mode
 			var name = moduleName + "Objects";
-			$ui.diagram.create("ModelBusinessObject", name, {
+			$ui.diagram.create("GPTModelBusinessObject", name, {
 				hidden: true, // hide the modeler
 				docked: false,
 				nodes: list,  // nodes to insert
 				module: moduleID,
-				fetch: false,   // then fetch related
+				fetch: false
 			},
 			function(diagram) {
 				// auto-placement
-				diagram.layoutSprings?.({
+				if(diagram.layoutSprings) diagram.layoutSprings({
 					stiffness: 0,
 					repulsion: 750,
 					damping: 0,
@@ -40,15 +40,14 @@ function gptNewModel(ids,moduleName,moduleID) {
 					maxDuration: 5000, // 5sec
 					
 					callback: function() {
-						// Save and close
-						diagram.save();						
+						// Save and close					
 						diagram.canClose(false, function() { // confirm=false means auto-save
 							
 							diagram.close();
 							// Re-open in a window
 							$ui.displayModeler(null, diagram.modelId, {
 								svg: true,
-								docked: false,
+								docked: true,
 								popup: false
 							});
 						});

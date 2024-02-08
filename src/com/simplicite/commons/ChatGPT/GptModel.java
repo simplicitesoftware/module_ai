@@ -1,14 +1,16 @@
 package com.simplicite.commons.ChatGPT;
 
-import java.util.*;
 
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.simplicite.bpm.ActivityFile;
+import com.simplicite.bpm.DataFile;
+import com.simplicite.bpm.Processus;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
@@ -106,7 +108,7 @@ public class GptModel implements java.io.Serializable {
 		typeTrad.put("Date", ObjectField.TYPE_DATE);
 		typeTrad.put("Date and time", ObjectField.TYPE_DATETIME);
 		typeTrad.put("Time", ObjectField.TYPE_TIME);
-		typeTrad.put("Enumeration", ObjectField.TYPE_ENUM);
+		typeTrad.put(JSON_ENUM_KEY, ObjectField.TYPE_ENUM);
 		typeTrad.put("Multiple enumeration", ObjectField.TYPE_ENUM_MULTI);
 		typeTrad.put("Boolean", ObjectField.TYPE_BOOLEAN);
 		typeTrad.put("URL", ObjectField.TYPE_URL);
@@ -316,7 +318,6 @@ public class GptModel implements java.io.Serializable {
 		DataMapObject dataMaps = new DataMapObject();
 		
 		ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
-		BusinessObjectTool objT = obj.getTool();
 		
 		if(!json.has(JSON_LINK_KEY)){
 			json.put(JSON_LINK_KEY, new JSONArray());
@@ -445,11 +446,12 @@ public class GptModel implements java.io.Serializable {
 		
 		String fieldName = jsonFld.getString("name").replaceAll(NOT_WORD_CHAR_REGEX,"").replaceAll("\\s","");
 		String fldType =jsonFld.getString("type");
+		int type = ObjectField.TYPE_STRING;
+		if(typeTrad.containsKey(fldType)){
+			type = typeTrad.get(jsonFld.getString("type"));
+		}
 		synchronized(fld.getLock()){
-			int type = ObjectField.TYPE_STRING;
-			if(typeTrad.containsKey(fldType)){
-				type = typeTrad.get(jsonFld.getString("type"));
-			}
+			
 			fldT.selectForCreate();
 			fld.setFieldValue("fld_name", SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,objPrefix,fieldName}));
 			fld.setFieldValue("fld_dbname", SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,objPrefix,fieldName}));
@@ -474,9 +476,12 @@ public class GptModel implements java.io.Serializable {
 					completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY), g);
 				}else if(jsonFld.has(JSON_ENUM_KEY) && (jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) || jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_UPPER_KEY) ) ){
 					completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY), g);
+				}else if(jsonFld.has(JSON_ENUM_KEY.toLowerCase()) && (jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) || jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_UPPER_KEY) ) ){
+					completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY), g);
 				}
 			}
 			fldT.validateAndCreate();
+			
 			fld.populate(true);
 			fldId = fld.getRowId();
 			dataMaps.fieldCreate.put(fieldName, fldId);
@@ -502,6 +507,7 @@ public class GptModel implements java.io.Serializable {
 			}
 			updateTradField(Grant.getTranslateFieldId(fldId, Globals.LANG_ENGLISH),en, g);
 			updateTradField(Grant.getTranslateFieldId(fldId, Globals.LANG_FRENCH), fr, g);
+
 			dataMaps.fldEn.put(fldId, en);
 			dataMaps.fldFr.put(fldId, fr);
 			
@@ -509,10 +515,116 @@ public class GptModel implements java.io.Serializable {
 		}
 						
 		
-		createObjectField(oboId, fieldName, fieldOrder, mInfo, dataMaps, g);
+		String oboFldId = createObjectField(oboId, fieldName, fieldOrder, mInfo, dataMaps, g);
+		if(type == ObjectField.TYPE_ENUM && (fieldName.equalsIgnoreCase("status") || jsonFld.has("isStatus") && jsonFld.getBoolean("isStatus"))){
+			addStateModel(oboId,  oboFldId,mInfo, g);
+		}
 		return fldId;
 	}
-	private static void createObjectField(String oboId,String fieldName,int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
+	private static void addStateModel(String oboId, String oboFldId,ModuleInfo mInfo, Grant g){
+		String pcs = "CreateStateModel";
+		Processus p = g.getProcessus(pcs, null);
+		ObjectDB action = g.getTmpObject("Action");
+		p.instantiate();
+		Message m = p.activate();
+		if(m.isOk()){
+			//select module
+			ActivityFile act = (ActivityFile)m.get("Activity");
+			m = p.lock(act.getActivity(), act.getAID());
+			act.addDataFile("Field", "row_id", mInfo.moduleId);
+			ObjectDB o = g.getProcessObject("Module");
+			m = p.validate(act, o);
+			//select Object
+			act = (ActivityFile)m.get("Activity");
+			m = p.lock(act.getActivity(), act.getAID());
+			act.addDataFile("Field", "row_id", oboId);
+			o = g.getProcessObject("ObjectInternal");
+			m = p.validate(act, o);
+			//select field
+			act = (ActivityFile)m.get("Activity");
+			m = p.lock(act.getActivity(), act.getAID());
+			act.addDataFile("Field", "row_id", oboFldId);
+			o = g.getProcessObject("ObjectFieldSystem");
+			m = p.validate(act, o);
+			//Transition
+			act = (ActivityFile)m.get("Activity");
+			m = p.lock(act.getActivity(), act.getAID());
+			try {
+				p.invokePageMethod(act, null, act.getDataValue("Page", "Method"));
+			} catch (MethodException e) {
+				AppLog.error(e, g);
+			}
+			for(DataFile data : act.getDataFiles("Data")){
+				String name = data.getName();
+				if(name.startsWith("chk")){
+					data.setValue(0,"true");
+				}
+			}
+			m = p.validate(act, null);
+			//Grant
+			act = (ActivityFile)m.get("Activity");
+			m = p.lock(act.getActivity(), act.getAID());
+			try {
+				p.invokePageMethod(act, null, act.getDataValue("Page", "Method"));
+			} catch (MethodException e) {
+				AppLog.error(e, g);
+			}
+			for(DataFile data : act.getDataFiles("Data")){
+				String name = data.getName();
+				if(name.startsWith("chk")){
+					for(String grpId : mInfo.groupIds){
+						if(name.startsWith("chk"+grpId)){
+							data.setValue(0,"true");
+						}
+					}
+					
+				}else if(name.startsWith("btn")){
+					data.setValue(0,"true");
+				}
+			}
+			m = p.validate(act, null);
+			
+			//Translation
+			act = (ActivityFile)m.get("Activity");
+			if(act.getActivity().getStep().equals("CSTM-TSL")){
+				m = p.lock(act.getActivity(), act.getAID());
+				try {
+					 p.invokePageMethod(act, null, act.getDataValue("Page", "Method"));
+					
+				} catch (MethodException e) {
+					AppLog.error(e, g);
+				}
+				for(DataFile data : act.getDataFiles("Data")){
+					String name = data.getName();
+					if(name.startsWith("tsl")){
+						String idAct = name.substring(6);
+						String val ="";
+						synchronized(action.getLock()){
+							action.select(idAct);
+							val = action.getFieldValue("act_name");
+						}
+						if (val.contains("-")) {
+							String[] part = val.split("-");
+							val = part[part.length-1];
+							
+						}
+						data.setValue(0,val);
+					}
+				} 
+				m = p.validate(act, null);
+				act = (ActivityFile)m.get("Activity");
+			}
+			
+
+			//end
+	
+			m = p.lock(act.getActivity(), act.getAID());
+			m = p.validate(act, null);
+		}
+		
+		
+	}
+	private static String createObjectField(String oboId,String fieldName,int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
 		ObjectDB oboFld = g.getTmpObject(OBJECT_FIELD_SYSTEM_NAME);
 		BusinessObjectTool oboFldT = oboFld.getTool();
 		synchronized(oboFld.getLock()){
@@ -523,7 +635,7 @@ public class GptModel implements java.io.Serializable {
 			oboFld.setFieldValue(MODULE_ID_FIELD,mInfo.moduleId);
 			oboFld.populate(true);
 			oboFldT.validateAndSave();
-			
+			return oboFld.getRowId();
 		}
 	}
 	private static String createListOfValue(String objPrefix,String fieldName,ModuleInfo mInfo,Grant g) throws GetException, ValidateException, SaveException{
@@ -805,7 +917,6 @@ public class GptModel implements java.io.Serializable {
 		BusinessObjectTool enumCodeT = enumCode.getTool();
 		ObjectDB oTra = g.getTmpObject("FieldListValue");
 		BusinessObjectTool oTraT = oTra.getTool();
-		JSONArray stateTransition=new JSONArray();
 		for( Object value : values){
 			JSONObject jsonValue = getJsonValue(value,g);
 			if(Tool.isEmpty(jsonValue)){
@@ -835,13 +946,7 @@ public class GptModel implements java.io.Serializable {
 				oTra.setFieldValue("lov_value", jsonValue.getString("fr"));
 				oTraT.validateAndUpdate();
 			} 
-			if(jsonValue.has("next")){
-				stateTransition.put(new JSONObject().put("from",jsonValue.getString("code")).put("to",jsonValue.getString("next")));
-			}
-				order+=1;
-		}
-		if(!Tool.isEmpty(stateTransition)){
-			genStateModel(stateTransition,listId);
+			order+=1;
 		}
 	}
 	private static JSONObject getJsonValue(Object value, Grant g){
@@ -855,11 +960,6 @@ public class GptModel implements java.io.Serializable {
 		}else{
 			return new JSONObject();
 		}
-	}
-	private static void genStateModel(JSONArray transition,String listId){
-		//AppLog.info("DEBUG genStateModel: "+transition.toString(1) + "\n"+listId, null);
-		//TODO
-
 	}
 	private static void addToDomain(String domainID,String objectId,String moduleId,int domainOrder,Grant g) throws GetException, CreateException, ValidateException{
 		ObjectDB mapObj = g.getTmpObject("Map");

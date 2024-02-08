@@ -3,7 +3,6 @@ package com.simplicite.workflows.ChatGPT;
 import java.util.*;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -33,7 +32,6 @@ public class GPTModuleCreate extends Processus {
 	private static final String ACTIVITY_GPT ="GPTC_0500";
 	//private static final String ACTIVITY_GENERATION ="GPTC_0600";
 	//private static final String ACTIVITY_REMOVE_MODULE ="GPTC_0700";
-	private static final String ACTIVITY_GEN_DATA ="GPTC_0800";
 	
 
 	/**
@@ -122,7 +120,7 @@ public class GPTModuleCreate extends Processus {
 		if(Tool.isEmpty(prompt)){//for test
 			return null;
 		}
-		String result = GptTools.gptCaller(g, "you help to create UML in json for application, your answers are automatically processed in java", prompt, historic,false).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		String result = GptTools.gptCaller(g, "you help to create UML in json for application, your answers are automatically processed in java", prompt, historic,false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		List<String> listResult = new ArrayList<String>();
 		if(!GptTools.isValidJson(result)){	
 			listResult = GptTools.getJSONBlock(result,getGrant());
@@ -167,8 +165,6 @@ public class GPTModuleCreate extends Processus {
 		String domainId = getContext(getActivity(ACTIVITY_SELECT_DOMAIN)).getDataValue(FIELD, ROW_ID);
 		try{
 			List<String> ids = GptModel.genModule(moduleId,	groupIds,domainId,new JSONObject(json));
-			DataFile dataFile = getContext(getActivity(ACTIVITY_GEN_DATA)).addDataFile("Data","ids");
-			dataFile.setValues(ids);
 			return "<p>SUCESS</p><script>" + g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("GPT_GEN_MODEL")+"\n"+ "gptNewModel("+ids.toString()+",\""+ModuleDB.getModuleName(moduleId)+"\",\""+moduleId+"\");"+"</script>";
 		} catch (GetException | ValidateException | SaveException e) {
 			AppLog.error(e, g);
@@ -191,42 +187,4 @@ public class GPTModuleCreate extends Processus {
 		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
 		return "<div id=\"deleteModule\"></div><script>$ui.displayModuleDelete($(\"#deleteModule\"),"+ moduleId +" )</script>";
 	}
-	public String genData(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
-		if(context.getStatus() == ActivityFile.STATE_DONE)
-			return null;
-		return "todo";
-		// AppLog.info(String.join(",",context.getDataFile("Data","ids",false).getValues()),g);
-		// String[] ids = context.getDataFile("Data","ids",true).getValues();
-		// //String json = getContext(getActivity(ACTIVITY_GPT)).getDataValue("Data", "json_return");
-		// JSONObject data = new JSONObject();
-		// for(String id : ids){
-		// 	String name = ObjectDB.getObjectName(id);
-		// 	data.put(name, new JSONArray().put(GPTData.formatObjectInJson(name, g)));
-			
-		// }
-		// AppLog.info(": ```json "+data.toString(1)+"```", g);
-		// String response = GptTools.gptCaller(g, /* "module uml: "+json */"", " generates test data according to the model: ```json "+data.toString(1)+"``` becarfull of the order for relationship",false).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-		// AppLog.info("getdata: "+response, g);
-		// if(!GptTools.isValidJson(response)){	
-		// 	List<String> listResult = GptTools.getJSONBlock(response,getGrant());
-		// 	if(Tool.isEmpty(listResult) || !GptTools.isValidJson(listResult.get(1))){
-		// 		return Message.formatError(null, "Sorry GPT do not return interpretable json: \n"+response,null );
-		// 	}else{
-		// 		response = listResult.get(1);
-		// 	}
-		// }
-		// /* try {
-		// 	GPTData.createObjects(ids, new JSONObject(response), g);
-		// } catch (SearchException | JSONException | GetException | ValidateException | SaveException e) {
-		// 	AppLog.error(e, g);
-		// } */
-		// String html = "<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" >"+  response +"</textarea>";
-		// return html;
-		
-	}
-
-	
-
-	
-	
 }

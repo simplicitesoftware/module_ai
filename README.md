@@ -81,7 +81,6 @@ Auomatic model generation process
 * `GPT`: AI for modeling
 * `Generation`: Module generation based on ia feedback
 * `RemoveModule`: Remove module
-* `GenData`: TODO
 
 `GptChatBot` external object definition
 ---------------------------------------

@@ -1,5 +1,6 @@
 package com.simplicite.commons.ChatGPT;
 
+import org.checkerframework.checker.units.qual.g;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.*;
@@ -35,15 +36,16 @@ public class GptTools implements java.io.Serializable {
 	 * @return If API return code is 200: API answer else: error return.
 	 */
     
-	private static String gptCaller(Grant g, String specialisation, String prompt ,JSONArray historic, int maxToken){
+	private static String gptCaller(Grant g, String specialisation, String prompt ,JSONArray historic, boolean secure, int maxToken){
         int histDepth = gptApiParam.getInt("hist_depth");
 		String apiKey = Grant.getSystemAdmin().getParameter("GPT_API_KEY");
         String apiUrl = Grant.getSystemAdmin().getParameter("GPT_API_URL");
-        if(apiKey.equals("/") || apiUrl.equals("/")){
+        if(/* apiKey.equals("/") || */ apiUrl.equals("/")){
             AppLog.info("GPT_API_KEY or GPT_API_URL not set", g);
             return "";
         }
-        prompt=normalize(prompt);
+        if(apiKey.equals("/"))apiKey = "";
+        prompt=normalize(prompt,secure);
         if(!Tool.isEmpty(specialisation))
             specialisation=normalize(specialisation);
        
@@ -80,50 +82,76 @@ public class GptTools implements java.io.Serializable {
             messages.put(new JSONObject().put("role","user").put(CONTENT_KEY,prompt));
            
             postData.put("messages", messages);
-
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
                 outputStream.writeBytes(postData.toString());
                 outputStream.flush();
             }
-
+            
             int responseCode = connection.getResponseCode();
             if(responseCode!=200){
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()))) {
-                String line;
-                StringBuilder response = new StringBuilder();
-
-                while ((line = in.readLine()) != null) {
-                    response.append(line);
-                }
-                JSONObject error = new JSONObject(response.toString());
-
-                return "{\"code\":\""+responseCode+"\",\"error\":\""+error.getJSONObject("error").getString("message")+"\" }";
-
-            } catch (IOException e) {
-                AppLog.error(e,g);
-            }
+                return readError(connection,responseCode,g);
                 
             }
            
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                String line;
-                StringBuilder response = new StringBuilder();
+           return readResponse(connection,g);
 
-                while ((line = in.readLine()) != null) {
-                    response.append(line);
-                }
-
-                return response.toString();
-            } catch (IOException e) {
-                AppLog.error(e,g);
-            }
-
-            connection.disconnect();
+            
         } catch (IOException e) {
             AppLog.error(e,g);
         }
         return "";
 
+    }
+
+    /**
+     * Reads the error response from an HTTP connection and returns a formatted error message.
+     *
+     * @param connection The HttpURLConnection object representing the connection.
+     * @param responseCode The HTTP response code.
+     * @param g The Grant object.
+     * @return A JSON-formatted error message containing the response code and error message.
+     */
+    public static String readError(HttpURLConnection connection,int responseCode,Grant g){
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()))) {
+            String line;
+            StringBuilder response = new StringBuilder();
+
+            while ((line = in.readLine()) != null) {
+                response.append(line);
+            }
+            JSONObject error = new JSONObject(response.toString());
+            connection.disconnect();
+            return "{\"code\":\""+responseCode+"\",\"error\":\""+error.getJSONObject("error").getString("message")+"\" }";
+
+        } catch (IOException e) {
+            AppLog.error(e,g);
+        }
+        connection.disconnect();
+        return "";
+    }
+    
+    /**
+     * Reads the response from an HTTP connection and returns it as a string.
+     *
+     * @param connection the HTTP connection to read the response from
+     * @param g the Grant object for logging errors
+     * @return the response from the HTTP connection as a string
+     */
+    public static String readResponse(HttpURLConnection connection,Grant g){
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            String line;
+            StringBuilder response = new StringBuilder();
+
+            while ((line = in.readLine()) != null) {
+                response.append(line);
+            }
+            connection.disconnect();
+            return response.toString();
+        } catch (IOException e) {
+            AppLog.error(e,g);
+        }
+        connection.disconnect();
+        return "";
     }
     /**
      * call gptCaller with default value
@@ -140,15 +168,26 @@ public class GptTools implements java.io.Serializable {
         String res = gptCaller(g, specialisation,prompt,null,maxToken?gptApiParam.getInt(MAX_TOKEN_PARAM_KEY):0);
         return new JSONObject(res);
     }
+    public static JSONObject gptCaller(Grant g, String specialisation, String prompt, boolean maxToken,boolean secure){
+        String res = gptCaller(g, specialisation,prompt,null,secure,maxToken?gptApiParam.getInt(MAX_TOKEN_PARAM_KEY):0);
+        return new JSONObject(res);
+    }
     public static JSONObject gptCaller(Grant g, String specialisation, String prompt, JSONArray historic,boolean maxToken){
         String res = gptCaller(g, specialisation,prompt,historic,maxToken?gptApiParam.getInt(MAX_TOKEN_PARAM_KEY):0);
+        return new JSONObject(res);
+    }
+    public static JSONObject gptCaller(Grant g, String specialisation, String prompt, JSONArray historic,boolean maxToken,boolean secure){
+        String res = gptCaller(g, specialisation,prompt,historic,secure,maxToken?gptApiParam.getInt(MAX_TOKEN_PARAM_KEY):0);
         return new JSONObject(res);
     }
      public static JSONObject gptCaller(Grant g, String specialisation, JSONArray historic, String prompt){
         String res = gptCaller(g, specialisation,prompt,historic,gptApiParam.getInt(MAX_TOKEN_PARAM_KEY));
         return new JSONObject(res);
     }
-   
+    private static String gptCaller(Grant g, String specialisation, String prompt ,JSONArray historic, int maxToken){
+        return gptCaller(g, specialisation,prompt,historic,false,maxToken);
+    
+    }
 	/**
      * call gptCaller with specification for code usable in Simplicité.
 	 * @param g
@@ -249,6 +288,9 @@ public class GptTools implements java.io.Serializable {
     private static String normalize(String text){
         return  Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^a-zA-Z0-9]", " ");
     }
+    private static String normalize(String text, boolean secure){
+        return secure?Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^\\w:\\(\\),`{}.\\[\\]\"]", " "):normalize(text);
+    }
     /**
      * reverse the historic array to have the exchange in the correct order
      * @param arr
@@ -335,8 +377,9 @@ public class GptTools implements java.io.Serializable {
 	public static boolean isValidJson(String json){
 		try {
 			new JSONObject(json);
+
 		} catch (Exception e) {
-			return false;
+            return false;
 		}
 		return true;
 	}
