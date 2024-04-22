@@ -1,0 +1,35 @@
+#aimetricschat {
+	/* Custom styles */
+	width: 100%;
+	display: flex;
+	flex-direction: row; /* Add this line to change the flex direction to column */
+	height:50vh;
+	.chat-space {
+		width: calc(33.33% - 10px); /* Adjust the width as needed */
+		margin-right: 10px; /* Adjust the margin as needed */
+		height: 100%;
+	}
+	
+	.result-space {
+		width: calc(66.66% - 10px); /* Adjust the width as needed */
+		height: 100%;
+		margin-left: 10px; /* Adjust the margin as needed */
+	}
+	.chat-messages{
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 15px;
+		overflow-y: scroll;
+		height: calc(100% - 40px);
+	}
+	.user-message{
+		width: 80%;
+		height: 40px;
+		
+	}
+	#send-button{
+		width: 15%;
+	}
+
+}

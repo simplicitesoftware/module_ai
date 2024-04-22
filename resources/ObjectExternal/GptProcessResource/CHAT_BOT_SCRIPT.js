@@ -23,8 +23,15 @@ function sendMessage() {
 	var chatMessages = document.getElementById('chat-messages');
 	var botTemplate = $("#botTemplate").html();
 	var userTemplate = $("#userTemplate").html();
-	// Ajoutez ici la logique de votre chatbot pour générer une réponse en fonction de userMessage
-	var historic =[];
+	var historic = [];
+	console.log("here");
+	if ($("#context").length >0) {
+		text = {};
+		text.role = "assistant";
+		text.content = $("#context").text();
+		historic.push(JSON.stringify(text));
+	}
+
 	$(".user-messages").each(function() {
 		var text ={};
 		text.role = "user";

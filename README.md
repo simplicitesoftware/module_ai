@@ -5,7 +5,7 @@
 |___/_|_|_|_| .__/_|_\__|_|\__\___|
             |_| 
 -->
-![](https://docs.simplicite.io//logos/logo250.png)
+![](https://platform.simplicite.io/logos/standard/logo250.png)
 * * *
 
 `ChatGPT` module definition
@@ -81,6 +81,13 @@ Auomatic model generation process
 * `GPT`: AI for modeling
 * `Generation`: Module generation based on ia feedback
 * `RemoveModule`: Remove module
+
+`AIMetricsChat` external object definition
+------------------------------------------
+
+AI contextual chat for personalised metrics. 
+Use parameter "module" to specify context.
+
 
 `GptChatBot` external object definition
 ---------------------------------------

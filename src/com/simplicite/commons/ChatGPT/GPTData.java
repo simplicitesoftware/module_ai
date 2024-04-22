@@ -6,10 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
-
 /**
  * Shared code GPTData
  */
@@ -110,7 +110,7 @@ public class GPTData implements java.io.Serializable {
 	 */
 	public static String genDataForModule(String moduleName,Grant g){
 		try {
-			String[] ids = getObjectIdsModule(moduleName, g);
+			String[] ids = GptTools.getObjectIdsModule(moduleName, g);
 			if(Tool.isEmpty(ids))throw new PlatformException("Not found or not granted object to generate for module: \n"+moduleName);
 			JSONObject response = GPTData.callIADataOnModule(ids, g);
 			response = GPTData.jsonPreprocessing(response, g);
@@ -219,67 +219,8 @@ public class GPTData implements java.io.Serializable {
 		}
 	}
 
-	/**
-	 * Retrieves the object IDs for a given module.
-	 * 
-	 * @param moduleName the name of the module
-	 * @param g the Grant object
-	 * @return an array of object IDs
-	 * @throws PlatformException if the module is unknown
-	 */
-	private static String[] getObjectIdsModule(String moduleName, Grant g) throws PlatformException{
-		
-		String mdlId = ModuleDB.getModuleId(moduleName);
-		if(Tool.isEmpty(mdlId))throw new PlatformException("Unknow module: \n"+moduleName);
-		ObjectDB objI = g.getTmpObject("ObjectInternal");
-		int idIndex =objI.getRowIdFieldIndex();
-		int nameIndex =objI.getFieldIndex("obo_name");
-		String[]ids;
-		synchronized(objI.getLock()){
-			objI.resetFilters();
-			objI.setFieldFilter("row_module_id", mdlId);
-			List<String[]> objIs = removeNotCreatable(objI.search(),nameIndex, g);
-			ids = new String[objIs.size()];
-			
-			int begin = 0;
-			int end = objIs.size()-1;
-			for(String[] row : objIs){
-				ObjectDB obj = g.getTmpObject(row[nameIndex]);
-				
-				if(Tool.isEmpty(obj.getRefObjects())){// process first the object without ref to empty ref
-					ids[begin] = row[idIndex];
-					begin++;
-				}else{
-					ids[end] = row[idIndex];
-					end--;
-				}
-				
-				
-			}
-		}
-		return ids;
-		
-	}
-
-	/**
-	 * Removes the elements from the given list that are not creatable based on the provided name index and grant.
-	 * 
-	 * @param list The list of elements to filter.
-	 * @param nameIndex The index of the name field in each element of the list.
-	 * @param g The grant object containing the creatable information.
-	 * @return The filtered list containing only the creatable elements.
-	 */
-	private static List<String[]> removeNotCreatable(List<String[]> list,int nameIndex, Grant g){
-		Map<String, String> creatables = g.getCreatable();
-		List<String[]> res = new ArrayList<>();
-		for(String[] row : list){
-			if(creatables.getOrDefault(row[nameIndex],"N").equals("Y")){
-				res.add(row);
-			}
-		}
-		return res;
-
-	}
+	
+	
 
 	/**
 	 * Retrieves a JSON object model based on the given IDs and Grant.
@@ -306,17 +247,22 @@ public class GPTData implements java.io.Serializable {
 	*/
 	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
+		JSONObject json = new JSONObject();
 		String response = GptTools.gptCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"```",false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-		if(!GptTools.isValidJson(response)){	
+		json = GptTools.getValidJson(response);
+		if(Tool.isEmpty(json)){	
 			
 			List<String> listResult = GptTools.getJSONBlock(response,g);
-			if(Tool.isEmpty(listResult) || !GptTools.isValidJson(listResult.get(1))){
+			if(Tool.isEmpty(listResult) ){
 				throw new PlatformException("Sorry GPT do not return interpretable json: \n"+response);
 			}else{
-				response = listResult.get(1);
+				json =GptTools.getValidJson(listResult.get(1));
+				if(Tool.isEmpty(json)){
+					throw new PlatformException("Sorry GPT do not return interpretable json: \n"+listResult.get(1));
+				}
 			}
 		}
-		return new JSONObject(response);
+		return json;
 	}
 
 	/**
@@ -540,7 +486,7 @@ public class GPTData implements java.io.Serializable {
 			float max = getMax(size, precision);
 			Number test= (Number)val;
 			float value = Float.parseFloat(test.toString());
-			if(value>max) value = random.nextFloat(max);
+			if(value>max) value = randomFloat(max) ;
 			return String.valueOf(value);
 		}else{
 			int max = (int) Math.pow(10,(size-precision)) - 1;
@@ -881,6 +827,11 @@ public class GPTData implements java.io.Serializable {
 			}
 		}
 		return res;
+	}
+
+
+	private static float randomFloat(float max){
+		return max * random.nextFloat();
 	}
 	
 

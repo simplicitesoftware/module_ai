@@ -95,7 +95,7 @@ public class GPTField implements java.io.Serializable {
 		ObjectDB fldObj = Grant.getSystemAdmin().getTmpObject("Field");
 		synchronized(fldObj){
 			fldObj.select(fld.getId());
-			if(!(fldObj.getFieldValue("fld_type").equals(String.valueOf(ObjectField.TYPE_NOTEPAD)) && fldObj.getFieldValue("fld_rendering").equals("GPT"))){
+			if(!(String.valueOf(ObjectField.TYPE_NOTEPAD).equals(fldObj.getFieldValue("fld_type")) && "GPT".equals(fldObj.getFieldValue("fld_rendering")))){
 				msgs.add(Message.formatError("GPT_NO_NOTEPAD_GPT",null,null));
 				return msgs;
 			}
@@ -179,7 +179,7 @@ public class GPTField implements java.io.Serializable {
 		ObjectDB fldObj = Grant.getSystemAdmin().getTmpObject("Field");
 		synchronized(fldObj){
 			fldObj.select(fld.getId());
-			if(!(fldObj.getFieldValue("fld_type").equals(String.valueOf(ObjectField.TYPE_LONG_STRING)) && fldObj.getFieldValue("fld_rendering").equals("GPT"))){
+			if(!(String.valueOf(ObjectField.TYPE_LONG_STRING).equals(fldObj.getFieldValue("fld_type")) && "GPT".equals(fldObj.getFieldValue("fld_rendering")))){
 				msgs.add(Message.formatError("GPT_NO_LONGSTRING_GPT",null,null));
 				return msgs;
 			}

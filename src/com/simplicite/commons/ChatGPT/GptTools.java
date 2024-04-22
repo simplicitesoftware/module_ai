@@ -1,9 +1,9 @@
 package com.simplicite.commons.ChatGPT;
 
-import org.checkerframework.checker.units.qual.g;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.*;
+
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import java.io.BufferedReader;
@@ -11,11 +11,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.Normalizer;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.simplicite.util.tools.*;
 /**
  * Shared code GptTools
  */
@@ -37,31 +40,40 @@ public class GptTools implements java.io.Serializable {
 	 */
     
 	private static String gptCaller(Grant g, String specialisation, String prompt ,JSONArray historic, boolean secure, int maxToken){
+        AppLog.info("GPT API CALL", g);
         int histDepth = gptApiParam.getInt("hist_depth");
 		String apiKey = Grant.getSystemAdmin().getParameter("GPT_API_KEY");
         String apiUrl = Grant.getSystemAdmin().getParameter("GPT_API_URL");
-        if(/* apiKey.equals("/") || */ apiUrl.equals("/")){
-            AppLog.info("GPT_API_KEY or GPT_API_URL not set", g);
+        String model =gptApiParam.optString("model","");
+        String projet = gptApiParam.optString("OpenAI-Project","");
+        String org = gptApiParam.optString("OpenAI-Organization","");
+        if("/".equals(apiUrl)){
+            AppLog.info("GPT_API_URL not set", g);
             return "";
         }
-        if(apiKey.equals("/"))apiKey = "";
+        if("/".equals(apiKey))apiKey = "";
         prompt=normalize(prompt,secure);
         if(!Tool.isEmpty(specialisation))
             specialisation=normalize(specialisation);
        
         try {
-            URL url = new URL(apiUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URI url = new URI(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
 
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+            if(!Tool.isEmpty(projet) && !Tool.isEmpty(org)){
+                connection.setRequestProperty("OpenAI-Project", projet);
+                connection.setRequestProperty("OpenAI-Organization", org);
+            }
             connection.setDoOutput(true);
             // format data
             JSONObject postData = new JSONObject();
             if(maxToken>0)
                 postData.put("max_tokens", maxToken);
-            postData.put("model", "gpt-3.5-turbo");
+            if(!Tool.isEmpty(model))
+                postData.put("model", model);
             JSONArray messages = new JSONArray();
             // format specialisation.
             if(!Tool.isEmpty(specialisation))
@@ -89,6 +101,7 @@ public class GptTools implements java.io.Serializable {
             
             int responseCode = connection.getResponseCode();
             if(responseCode!=200){
+                
                 return readError(connection,responseCode,g);
                 
             }
@@ -96,7 +109,7 @@ public class GptTools implements java.io.Serializable {
            return readResponse(connection,g);
 
             
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             AppLog.error(e,g);
         }
         return "";
@@ -161,28 +174,27 @@ public class GptTools implements java.io.Serializable {
      * @return
      */
     public static JSONObject gptCaller(Grant g, String specialisation, String prompt){
-        String res = gptCaller(g, specialisation,prompt,null,gptApiParam.getInt(MAX_TOKEN_PARAM_KEY));
-        return new JSONObject(res);
+        return gptCaller(g, specialisation,prompt,null,true,false);
     }
     public static JSONObject gptCaller(Grant g, String specialisation, String prompt, boolean maxToken){
-        String res = gptCaller(g, specialisation,prompt,null,maxToken?gptApiParam.getInt(MAX_TOKEN_PARAM_KEY):0);
-        return new JSONObject(res);
+        return gptCaller(g, specialisation,prompt,null,maxToken,false);
     }
     public static JSONObject gptCaller(Grant g, String specialisation, String prompt, boolean maxToken,boolean secure){
-        String res = gptCaller(g, specialisation,prompt,null,secure,maxToken?gptApiParam.getInt(MAX_TOKEN_PARAM_KEY):0);
-        return new JSONObject(res);
+        return gptCaller(g, specialisation,prompt,null,maxToken,secure);
     }
     public static JSONObject gptCaller(Grant g, String specialisation, String prompt, JSONArray historic,boolean maxToken){
-        String res = gptCaller(g, specialisation,prompt,historic,maxToken?gptApiParam.getInt(MAX_TOKEN_PARAM_KEY):0);
-        return new JSONObject(res);
+        return gptCaller(g, specialisation,prompt,historic,maxToken,false);
     }
     public static JSONObject gptCaller(Grant g, String specialisation, String prompt, JSONArray historic,boolean maxToken,boolean secure){
-        String res = gptCaller(g, specialisation,prompt,historic,secure,maxToken?gptApiParam.getInt(MAX_TOKEN_PARAM_KEY):0);
+        int tokens = 1500;
+        if(!Tool.isEmpty(gptApiParam)) {
+            tokens = maxToken?gptApiParam.getInt(MAX_TOKEN_PARAM_KEY):0;
+        }
+        String res = gptCaller(g, specialisation,prompt,historic,secure,tokens);
         return new JSONObject(res);
     }
      public static JSONObject gptCaller(Grant g, String specialisation, JSONArray historic, String prompt){
-        String res = gptCaller(g, specialisation,prompt,historic,gptApiParam.getInt(MAX_TOKEN_PARAM_KEY));
-        return new JSONObject(res);
+       return gptCaller(g, specialisation,prompt,historic,true,false);
     }
     private static String gptCaller(Grant g, String specialisation, String prompt ,JSONArray historic, int maxToken){
         return gptCaller(g, specialisation,prompt,historic,false,maxToken);
@@ -213,6 +225,10 @@ public class GptTools implements java.io.Serializable {
 
     }
     public static JSONObject formatMessageHistoric(JSONObject json){
+        if(json.has("trusted")){
+            json.remove("trusted");
+            return json;
+        } 
         json.put(CONTENT_KEY,normalize( json.getString(CONTENT_KEY)));
         return json;
     }
@@ -237,7 +253,7 @@ public class GptTools implements java.io.Serializable {
 						note = note.length()>2 ? note.substring(0,note.length() - 2):"";
 
                     //if user role and trigger ignore msg without trigger.
-                    if(text.getString("role").equals("user") && !Tool.isEmpty(trigger)){
+                    if("user".equals(text.getString("role")) && !Tool.isEmpty(trigger)){
                         Matcher mTrigger = pTrigger.matcher(note);
                         if (mTrigger.matches()){
                             text.put(CONTENT_KEY, normalize(mTrigger.group(1)));
@@ -270,7 +286,7 @@ public class GptTools implements java.io.Serializable {
         if (text.has("role")){
 			if("\n\n".equals(note.length()>2 ? note.substring(note.length() - 2):note))
 				note = note.length()>2 ? note.substring(0,note.length() - 2):"";
-            if(text.getString("role").equals("user") && !Tool.isEmpty(trigger)){
+            if("user".equals(text.getString("role")) && !Tool.isEmpty(trigger)){
                 Matcher mTrigger = pTrigger.matcher(note);
                 if (mTrigger.matches()){
                     text.put(CONTENT_KEY, normalize(mTrigger.group(1)));
@@ -383,7 +399,112 @@ public class GptTools implements java.io.Serializable {
 		}
 		return true;
 	}
-   
+    public static JSONObject getValidJson(String json){
+        json =json.replace("...","");
+        JSONObject res = null;
+		try {
+            res = new JSONObject(json);
+		} catch (Exception e) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Object> map = mapper.readValue(json, new TypeReference<Map<String, Object>>(){});
+                res = new JSONObject(map);
+            } catch (Exception e2) {
+                return null;
+            }
+		}
+		return res;
+	}
+    /**
+	 * Removes the elements from the given list that are not creatable based on the provided name index and grant.
+	 * 
+	 * @param list The list of elements to filter.
+	 * @param nameIndex The index of the name field in each element of the list.
+	 * @param g The grant object containing the creatable information.
+	 * @return The filtered list containing only the creatable elements.
+	 */
+	private static List<String[]> removeNotCreatable(List<String[]> list,int nameIndex, Grant g){
+		Map<String, String> creatables = g.getCreatable();
+		List<String[]> res = new ArrayList<>();
+		for(String[] row : list){
+			if("Y".equals(creatables.getOrDefault(row[nameIndex],"N"))){
+				res.add(row);
+			}
+		}
+		return res;
+
+	}
+   /**
+	 * Retrieves the object IDs for a given module.
+	 * 
+	 * @param moduleName the name of the module
+	 * @param g the Grant object
+	 * @return an array of object IDs
+	 * @throws PlatformException if the module is unknown
+	 */
+	public static String[] getObjectIdsModule(String moduleName, Grant g) throws PlatformException{
+		
+		String mdlId = ModuleDB.getModuleId(moduleName);
+		if(Tool.isEmpty(mdlId))throw new PlatformException("Unknow module: \n"+moduleName);
+		ObjectDB objI = g.getTmpObject("ObjectInternal");
+		int idIndex =objI.getRowIdFieldIndex();
+		int nameIndex =objI.getFieldIndex("obo_name");
+		String[]ids;
+		synchronized(objI.getLock()){
+			objI.resetFilters();
+			objI.setFieldFilter("row_module_id", mdlId);
+			List<String[]> objIs = removeNotCreatable(objI.search(),nameIndex, g);
+			ids = new String[objIs.size()];
+			
+			int begin = 0;
+			int end = objIs.size()-1;
+			for(String[] row : objIs){
+				ObjectDB obj = g.getTmpObject(row[nameIndex]);
+				
+				if(Tool.isEmpty(obj.getRefObjects())){// process first the object without ref to empty ref
+					ids[begin] = row[idIndex];
+					begin++;
+				}else{
+					ids[end] = row[idIndex];
+					end--;
+				}
+				
+				
+			}
+		}
+		return ids;
+		
+	}
+
+    public static JSONObject getSwagger(String moduleName,Grant g) throws PlatformException {
+		String[] ids = getObjectIdsModule(moduleName, g);
+		String mdlId = ModuleDB.getModuleId(moduleName);
+		ObjectDB obj = g.getTmpObject("Module");
+		obj.select(mdlId);
+		ModuleDB module = new ModuleDB(obj);
+		JSONObject swagger = new JSONObject(module.openAPI(JSONTool.OPENAPI_OAS3,true));
+		JSONObject newSchemas = new JSONObject();
+		JSONObject schemas = swagger.getJSONObject("components").getJSONObject("schemas");
+		for(String id : ids){
+			String name = ObjectCore.getObjectName(id);
+			newSchemas.put(name, new JSONObject(schemas.getJSONObject(name).toString()));
+		}
+        
+		swagger.getJSONObject("components").put("schemas", newSchemas);
+		JSONObject paths = swagger.getJSONObject("paths");
+		JSONObject newPaths = new JSONObject();
+		for(String key : paths.keySet()){
+			if(key.matches(".*\\{row_id\\}")) {
+				Object get = paths.getJSONObject(key).get("get");
+				newPaths.put(key, new JSONObject().put("get", get));
+			}else{
+				newPaths.put(key, paths.getJSONObject(key));
+			}
+		}
+		swagger.put("paths", newPaths);
+		AppLog.info(swagger.toString(), g);
+		return swagger;
+	}	
 
 
 }

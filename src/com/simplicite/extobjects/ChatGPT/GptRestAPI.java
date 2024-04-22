@@ -1,12 +1,11 @@
 package com.simplicite.extobjects.ChatGPT;
 
+import com.simplicite.commons.ChatGPT.AiMetrics;
 import com.simplicite.commons.ChatGPT.GPTField;
 import com.simplicite.commons.ChatGPT.GptTools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
-
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,6 +17,8 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 	private static final String JSON_OBJECT_NAME_KEY = "objectName";
 	private static final String JSON_OBJECT_ID_KEY = "objectID";
 	private static final String PARAMS_PROMPT_KEY = "prompt";
+	private static final String OBJ_FIELD_NAME = "fieldName";
+	private static final String JSON_REQ_TYPE = "reqType";
 	@Override
 	public Object get(Parameters params) throws HTTPException {
 		return error(400, "Call me in POST please!");
@@ -26,20 +27,33 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 	@Override
 	public Object post(Parameters params) throws HTTPException {
 		try {
+			//AppLog.info("post params=" + params, getGrant());
 			String prompt =params.getParameter(PARAMS_PROMPT_KEY);
 			String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
+			String type = params.getParameter(JSON_REQ_TYPE);
 			String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 			JSONObject req = params.getJSONObject();
-			
-			if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
-				return updateFieldByRequest(req);
-			}else if (!Tool.isEmpty(prompt) ) {
-				return updateFieldByParam(prompt,params);
-			}else if(Tool.isEmpty(prompt) && !Tool.isEmpty(objectName) && !Tool.isEmpty(objectID)){
-				return frontGptCaller(objectName, objectID);
-			} else {
-				return error(400, "Call me with a prompt or a object param please!");
+			if (Tool.isEmpty(type)) type = "default";
+			switch (type) {
+				case "metrics":
+					JSONObject swagger = new JSONObject(params.getParameter("swagger"));
+					AppLog.info("metrics: "+objectName, getGrant());
+					return AiMetrics.getJavaScriptMetrics(prompt, swagger).toString(1);	
+				default:
+					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
+						AppLog.info("updateFieldByRequest", getGrant());
+						return updateFieldByRequest(req);
+					}else if (!Tool.isEmpty(prompt) ) {
+						AppLog.info("updateFieldByParam(prompt,params)", getGrant());
+						return updateFieldByParam(prompt,params);
+					}else if(Tool.isEmpty(prompt) && !Tool.isEmpty(objectName) && !Tool.isEmpty(objectID)){
+						AppLog.info("frontGptCaller", getGrant());
+						return frontGptCaller(objectName, objectID);
+					} else {
+						return error(400, "Call me with a prompt or a object param please!");
+					}
 			}
+			
 		} catch (Exception e) {
 			return error(e);
 		}
@@ -49,12 +63,11 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 		JSONArray res = new JSONArray();
 		synchronized(obj.getLock()){
 			obj.select(objectID);
-			List<ObjectField> test = obj.getFields();
 			for(ObjectField fld : obj.getFields()){
 				if(isGPTField(fld)){
 					String response = GPTField.calculGPTField(fld, obj,true, getGrant());
 					res.put(new JSONObject()
-						.put("fieldName", fld.getName())
+						.put(OBJ_FIELD_NAME, fld.getName())
 						.put("value", response)
 					);
 					fld.setValue(response);
@@ -73,8 +86,8 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 		// Update the prompt value based on the request parameters
 		 String prompt = req.getString(PARAMS_PROMPT_KEY);
 		// Check if the request contains the necessary parameters for updating a field value
-		if (req.has("fieldName") && req.has(JSON_OBJECT_NAME_KEY) && req.has(JSON_OBJECT_ID_KEY)){
-			String fieldName = req.getString("fieldName");
+		if (req.has(OBJ_FIELD_NAME) && req.has(JSON_OBJECT_NAME_KEY) && req.has(JSON_OBJECT_ID_KEY)){
+			String fieldName = req.getString(OBJ_FIELD_NAME);
 			String objectName = req.getString(JSON_OBJECT_NAME_KEY);
 			String objectID = req.getString(JSON_OBJECT_ID_KEY);
 			ObjectDB obj = Grant.getSystemAdmin().getTmpObject(objectName);
@@ -121,10 +134,6 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 			.put("request", prompt)
 			.put("response", res);
 	}
-	/* public void call(String url){
-		var body = {"prompt":"","objectName":String([OBJNAME]),"fieldName":"gptNotepad","objectID":String([ROWID])};
-		RESTTool.request(JSON.stringify(body),null,url, "POST", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJHUFRVc2VyV0VCU0VSVmljZSIsImlhdCI6MTcwMDgzODU2OCwiaXNzIjoiU2ltcGxpY2l0ZSIsImV4cCI6MTcwNjIxNjEwMH0.nT_gkiTPgIqitYu-j6fQaMsODyw5SDa7faFiqORkW70", null, null, 0);
-	} */
 
 		
 }

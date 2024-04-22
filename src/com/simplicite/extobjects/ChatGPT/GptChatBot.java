@@ -22,13 +22,11 @@ public class GptChatBot extends com.simplicite.util.ExternalObject {
 			String objId =params.getParameter("row_id");
 			ObjectDB obj = getGrant().getTmpObject("ObjectInternal");
 			ObjectDB contextObj = getGrant().getTmpObject(objName);
-			String context="";
 			if(!Tool.isEmpty(objId)){
 				synchronized(obj.getLock()){
 					synchronized(contextObj.getLock()){
-						StringBuilder contextBuilder = new StringBuilder(context);
+						StringBuilder contextBuilder = new StringBuilder("");
 						contextObj.select(objId);
-
 						obj.resetFilters();
 						obj.setFieldFilter("obo_name", objName);
 						List<String[]> res = obj.search();
@@ -46,11 +44,11 @@ public class GptChatBot extends com.simplicite.util.ExternalObject {
 								}
 							}
 						}
-						context = contextBuilder.toString();
+						return javascript(getName() + ".render(ctn,\""+HTMLTool.toSafeTextHTML(contextBuilder.toString())+"\");");
 					}
 				}
 			}
-			return javascript(getName() + ".render(ctn,\""+HTMLTool.toSafeTextHTML(context)+"\");");
+			return javascript(getName() + ".render(ctn,\"\");");
 		}
 		catch (Exception e) {
 			AppLog.error(null, e, getGrant());

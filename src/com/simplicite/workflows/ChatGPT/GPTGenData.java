@@ -1,15 +1,8 @@
 package com.simplicite.workflows.ChatGPT;
 
-import java.util.*;
-
-
-
-
 import com.simplicite.bpm.*;
 import com.simplicite.commons.ChatGPT.GPTData;
 import com.simplicite.util.*;
-import com.simplicite.util.exceptions.*;
-import com.simplicite.util.tools.*;
 import com.simplicite.webapp.ObjectContextWeb;
 /**
  * Process GPTGenData

@@ -7,19 +7,19 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.simplicite.modules</groupId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.3-SNAPSHOT</version>
   <artifactId>ChatGPT</artifactId>
   <name>ChatGPT</name>
   <description>Simplicite module: ChatGPT</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <simplicite.url>https://candicetest.demo.simplicite.io</simplicite.url>
-    <simplicite.version>6.0-SNAPSHOT</simplicite.version>
+    <simplicite.version>6.3-SNAPSHOT</simplicite.version>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <sonar.projectKey>simplicite-modules-ChatGPT</sonar.projectKey>
     <sonar.projectName>ChatGPT</sonar.projectName>
-    <sonar.projectVersion>0.2</sonar.projectVersion>
+    <sonar.projectVersion>0.3</sonar.projectVersion>
     <sonar.sources>src,resources</sonar.sources>
     <sonar.exclusions>**.min.js,**.min.css</sonar.exclusions>
     <sonar.coverage.exclusions>resources/**.js,src/**.java</sonar.coverage.exclusions>

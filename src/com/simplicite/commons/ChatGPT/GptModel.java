@@ -25,11 +25,16 @@ public class GptModel implements java.io.Serializable {
 	private static final String OBJECT_FIELD_SYSTEM_NAME = "ObjectFieldSystem";
 	private static final String OBJECT_NAME_FIELD = "obo_name";
 	private static final String OBJECT_DB_FIELD = "obo_dbtable";
+	private static final String OBJECT_ICON_FIELD = "obo_icon";
 	private static final String OBJECT_PREFIX_FIELD  = "obo_prefix";
 	private static final String MODULE_ID_FIELD = "row_module_id";
+	private static final String OBJECTFIELD = "Field";
 	private static final String OBJECTFIELD_OBJECT_FIELD = "obf_object_id";
 	private static final String OBJECTFIELD_ORDER_FIELD = "obf_order";
 	private static final String OBJECTFIELD_FIELD_FIELD = "obf_field_id";
+
+	private static final String ACTIVITY_METHOD = "Method";
+	private static final String ACTIVITY = "Activity";
 
 
 	private static final String JSON_ENUM_KEY = "Enumeration";
@@ -317,8 +322,6 @@ public class GptModel implements java.io.Serializable {
 
 		DataMapObject dataMaps = new DataMapObject();
 		
-		ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
-		
 		if(!json.has(JSON_LINK_KEY)){
 			json.put(JSON_LINK_KEY, new JSONArray());
 		}
@@ -326,27 +329,18 @@ public class GptModel implements java.io.Serializable {
 			int fieldOrder = 100;
 			List<String> fKs = new ArrayList<>();
 			JSONObject jsonObj = (JSONObject) object;
-
-			String objPrefix="";
-			if (jsonObj.has(JSON_TRIGRAM_KEY) && jsonObj.get(JSON_TRIGRAM_KEY) instanceof String){
-				objPrefix = jsonObj.getString(JSON_TRIGRAM_KEY).toLowerCase().replaceAll(NOT_WORD_CHAR_REGEX,"");	 
-			}
 			String objName = formatObjectNames(jsonObj.getString("name"));
-			if (Tool.isEmpty(objPrefix)){// if not trigram in json or trigram in json is empty
-				objPrefix = objName.substring(0, 3).toLowerCase();
-			}
-			
-			 
+			String objPrefix=getOboPrefix(jsonObj, objName);
 			//createObject
 			String oboId = createObject(jsonObj, objName, objPrefix, domainOrder,mInfo, dataMaps, g);
+			objPrefix = SyntaxTool.getObjectPrefix(oboId);
 			domainOrder+=100;
-			
-			
+			//createFields
 			if(jsonObj.has("attributes")){	
 				for(Object field:jsonObj.getJSONArray("attributes")){
 					
 					JSONObject jsonFld = (JSONObject) field;
-					String fldType =jsonFld.getString("type");
+					String fldType =jsonFld.optString("type","Short text");
 					if(linkType.contains(fldType)){
 						String class2 = jsonFld.getString("name");
 						if(jsonFld.has("class")){
@@ -365,63 +359,116 @@ public class GptModel implements java.io.Serializable {
 				}
 			}
 			dataMaps.objFK.put(oboId, fKs);
-			//check if gpt mis placed relation ship
+			//check if gpt mis placed link
 			if(jsonObj.has(JSON_LINK_KEY)){
-				JSONArray relationships = jsonObj.getJSONArray(JSON_LINK_KEY);
-				json.getJSONArray(JSON_LINK_KEY).putAll(relationships);
+				JSONArray links = jsonObj.getJSONArray(JSON_LINK_KEY);
+				for (Object link : links){
+					if(link instanceof JSONObject){
+						JSONObject rel = (JSONObject) link;
+						if(!rel.has(JSON_LINK_CLASS_FROM_KEY)){
+							rel.put(JSON_LINK_CLASS_FROM_KEY, objName);
+							if(rel.has("name")){
+								
+								String class2 = rel.getString("name");
+								rel.remove("name");
+								rel.put(JSON_LINK_CLASS_TO_KEY, class2);
+							}
+						}
+					}
+				}
+				json.getJSONArray(JSON_LINK_KEY).putAll(links);
 			}
 		}
 		
 		createLinks(json.getJSONArray(JSON_LINK_KEY),mInfo, dataMaps, g);
-		List<String> ids = new ArrayList<>(dataMaps.objCreate.values());
+		return new ArrayList<>(dataMaps.objCreate.values());
+	}
+	private static String getOboPrefix(JSONObject jsonObj, String objName){
+		String objPrefix = "";
+		if (jsonObj.has(JSON_TRIGRAM_KEY) && jsonObj.get(JSON_TRIGRAM_KEY) instanceof String){
+			objPrefix = jsonObj.getString(JSON_TRIGRAM_KEY).toLowerCase().replaceAll(NOT_WORD_CHAR_REGEX,"");	 
+		}
 		
-		return ids;
+		if (Tool.isEmpty(objPrefix)){// if not trigram in json or trigram in json is empty
+			objPrefix = objName.substring(0, 3).toLowerCase();
+		}
+		return objPrefix;
 	}
 	private static String createObject(JSONObject jsonObj, String objName,  String objPrefix, int domainOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
-		
-		ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
-		BusinessObjectTool objT = obj.getTool();
-		synchronized(obj.getLock()){
-			objT.selectForCreate();
-			obj.setFieldValue(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,objName}));
-			obj.setFieldValue(OBJECT_DB_FIELD, SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,objName}));
-			String comment ="";
-			if (jsonObj.has(JSON_COMMENT_KEY) && !jsonObj.isNull(JSON_COMMENT_KEY)){
-				Object commentObj = jsonObj.get(JSON_COMMENT_KEY);
-				if(commentObj instanceof String){
-					comment = (String)commentObj;
-				}else if(commentObj instanceof JSONObject){
-					JSONObject commentJson = (JSONObject) commentObj;
-					if(commentJson.has("en") && !commentJson.isNull("en")){
-						comment = commentJson.getString("en");
-					}
+		JSONObject fields = new JSONObject();
+		String nameWP = getNameWithoutPrefix(objName, mInfo.mPrefix, "");
+		fields.put(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,nameWP}));
+		fields.put(OBJECT_DB_FIELD, SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,nameWP}));
+		fields.put(MODULE_ID_FIELD, mInfo.moduleId);
+		fields.put(OBJECT_PREFIX_FIELD, objPrefix);
+		fields.put(OBJECT_ICON_FIELD, getIcon(jsonObj.optString("bootstrapIcon")));
+		String comment ="";
+		if (jsonObj.has(JSON_COMMENT_KEY) && !jsonObj.isNull(JSON_COMMENT_KEY)){
+			Object commentObj = jsonObj.get(JSON_COMMENT_KEY);
+			if(commentObj instanceof String){
+				comment = (String)commentObj;
+			}else if(commentObj instanceof JSONObject){
+				JSONObject commentJson = (JSONObject) commentObj;
+				if(commentJson.has("en") && !commentJson.isNull("en")){
+					comment = commentJson.getString("en");
 				}
 			}
-			
-			obj.setFieldValue("obo_comment", comment);
-			obj.setFieldValue(MODULE_ID_FIELD, mInfo.moduleId);
-			obj.setFieldValue(OBJECT_PREFIX_FIELD, objPrefix);
-			obj.setFieldValue("obo_icon", getIcon(jsonObj.optString("bootstrapIcon")));
-			obj.populate(true);
-			objT.validateAndCreate();
-			dataMaps.objCreate.put(objName.toLowerCase(),obj.getRowId());
-			String oboId = obj.getRowId();
-			String en= (jsonObj.has("en") && (jsonObj.get("en") instanceof String))?  jsonObj.getString("en"):"";
-			String fr= (jsonObj.has("fr") && (jsonObj.get("fr") instanceof String))?  jsonObj.getString("fr"):"";
-			//extract trad
-			
-			updateTradField(Grant.getTranslateObjectId(oboId, Globals.LANG_ENGLISH), en, g);
-			updateTradField(Grant.getTranslateObjectId(oboId, Globals.LANG_FRENCH), fr, g);
-
-			dataMaps.objEn.put(oboId, en);
-			dataMaps.objFr.put(oboId, fr);
-			addToDomain(mInfo.domainID,oboId,mInfo.moduleId,domainOrder,g);
-			for (String gId: mInfo.groupIds){
-				grantGroup(gId,oboId,mInfo.moduleId,g);
-			}
-			return oboId;
 		}
-			
+		fields.put("obo_comment", comment);
+		String oboId = createOrUpdateWithJson(OBJECT_INTERNAL_NAME,fields, g);
+		dataMaps.objCreate.put(objName.toLowerCase(),oboId);
+
+		String en= (jsonObj.has("en") && (jsonObj.get("en") instanceof String))?  jsonObj.getString("en"):"";
+		String fr= (jsonObj.has("fr") && (jsonObj.get("fr") instanceof String))?  jsonObj.getString("fr"):"";
+		//extract trad		
+		updateTradField(Grant.getTranslateObjectId(oboId, Globals.LANG_ENGLISH), en, g);
+		updateTradField(Grant.getTranslateObjectId(oboId, Globals.LANG_FRENCH), fr, g);
+		dataMaps.objEn.put(oboId, en);
+		dataMaps.objFr.put(oboId, fr);
+		addToDomain(mInfo.domainID,oboId,mInfo.moduleId,domainOrder,g);
+		for (String gId: mInfo.groupIds){
+			grantGroup(gId,oboId,mInfo.moduleId,g);
+		}
+		return oboId;
+	}
+	private static String createOrUpdateWithJson(String objName,JSONObject fields, Grant g){
+		AppLog.info(objName+fields.toString(1), g);
+		JSONObject filters = getFKFilters(objName,fields, g);
+		ObjectDB obj = g.getTmpObject(objName);
+		try{
+			synchronized(obj.getLock()){
+				BusinessObjectTool objTool = obj.getTool();
+				if(objTool.selectForCreateOrUpdate(filters)){
+					return obj.getRowId();
+				}else{
+					obj.setValuesFromJSONObject(fields, false, false);
+					obj.populate(true);
+					objTool.validateAndCreate();
+					return obj.getRowId();
+				}
+			}
+		}catch(GetException | ValidateException | SaveException e){
+			AppLog.error(null, e, g);
+		}
+		
+		return "0";
+	}
+	private static JSONObject getFKFilters(String objName,JSONObject fields, Grant g){
+		JSONObject filters = new JSONObject();
+		ObjectDB obj = g.getTmpObject(objName);
+		synchronized(obj.getLock()){
+			for(ObjectField fk : obj.getFunctId()){
+				String name = fk.getName();
+				if("map_order".equals(name)){//to avoid duplicate object in domain
+					continue;
+				}
+				if(fields.has(name) && !fields.isNull(name)){
+					filters.put(name, fields.get(name));
+				}
+			}
+		}
+		AppLog.info("Filters: "+filters.toString(1), g);
+		return filters;
 	}
 	private static String getIcon(String icon){
 		if(!Tool.isEmpty(icon)){
@@ -433,90 +480,69 @@ public class GptModel implements java.io.Serializable {
 		}
 		return "bi/"+getRandomIcon(); 
 	}
-	
-
 	private static String getRandomIcon() {
 		return shortListIcon.get(rand.nextInt(shortListIcon.size()));
 	}
 	private static String addField(JSONObject jsonFld,String oboId, String objPrefix,  int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException , ValidateException, SaveException{
-		ObjectDB fld = g.getTmpObject("Field");
-		BusinessObjectTool fldT = fld.getTool();
-
-		String fldId;
-		
 		String fieldName = jsonFld.getString("name").replaceAll(NOT_WORD_CHAR_REGEX,"").replaceAll("\\s","");
-		String fldType =jsonFld.getString("type");
+		String fldType =jsonFld.optString("type","Short text");
 		int type = ObjectField.TYPE_STRING;
 		if(typeTrad.containsKey(fldType)){
-			type = typeTrad.get(jsonFld.getString("type"));
+			type = typeTrad.get(fldType);
 		}
-		synchronized(fld.getLock()){
-			
-			fldT.selectForCreate();
-			fld.setFieldValue("fld_name", SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,objPrefix,fieldName}));
-			fld.setFieldValue("fld_dbname", SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,objPrefix,fieldName}));
-			fld.setFieldValue("fld_type",type);
-			boolean isKey = jsonFld.has("key") && jsonFld.getBoolean("key");
-			boolean isRequired = jsonFld.has("required") && jsonFld.getBoolean("required");
-			fld.setFieldValue("fld_fonctid", isKey);
-			fld.setFieldValue("fld_required", isRequired);
-			fld.setFieldValue(MODULE_ID_FIELD,	mInfo.moduleId);
-			if(type == ObjectField.TYPE_FLOAT || type == ObjectField.TYPE_BIGDECIMAL ){
-				fld.setFieldValue("fld_precision", 2);
-				fld.setFieldValue("fld_size", 5);
-			}else if(type == ObjectField.TYPE_INT){
-				fld.setFieldValue("fld_size", 5);
-			}else{
-				fld.setFieldValue("fld_size", 100);
-			}
-			if(type == ObjectField.TYPE_ENUM || type == ObjectField.TYPE_ENUM_MULTI){
-				String enumId = createListOfValue(objPrefix, fieldName, mInfo, g);
-				fld.setFieldValue("fld_list_id",enumId);
-				if(jsonFld.has(JSON_VALUES_LOWER_KEY) && jsonFld.get(JSON_VALUES_LOWER_KEY) instanceof JSONArray|| jsonFld.has(JSON_VALUES_UPPER_KEY) && jsonFld.get(JSON_VALUES_UPPER_KEY) instanceof JSONArray){
-					completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY), g);
-				}else if(jsonFld.has(JSON_ENUM_KEY) && (jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) || jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_UPPER_KEY) ) ){
-					completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY), g);
-				}else if(jsonFld.has(JSON_ENUM_KEY.toLowerCase()) && (jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) || jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_UPPER_KEY) ) ){
-					completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY), g);
-				}
-			}
-			fldT.validateAndCreate();
-			
-			fld.populate(true);
-			fldId = fld.getRowId();
-			dataMaps.fieldCreate.put(fieldName, fldId);
-			String en ="";
-			String fr="";
-			if(jsonFld.has("en") && jsonFld.get("en") instanceof JSONObject){
-				JSONObject enJson = jsonFld.getJSONObject("en");
-				if(enJson.length()==1){
-					
-					en = enJson.optString(enJson.keys().next(),"");
-					
-				}
-			}else{
-				en = jsonFld.optString("en", "");
-			}
-			if(jsonFld.has("fr") && jsonFld.get("fr") instanceof JSONObject){
-				JSONObject frJson = jsonFld.getJSONObject("fr");
-				if(frJson.length()==1){
-					fr = frJson.optString(frJson.keys().next(),"");
-				}
-			}else{
-				fr = jsonFld.optString("fr", "");
-			}
-			updateTradField(Grant.getTranslateFieldId(fldId, Globals.LANG_ENGLISH),en, g);
-			updateTradField(Grant.getTranslateFieldId(fldId, Globals.LANG_FRENCH), fr, g);
-
-			dataMaps.fldEn.put(fldId, en);
-			dataMaps.fldFr.put(fldId, fr);
-			
-			
+		JSONObject field = new JSONObject();
+		String fldNameWP = getNameWithoutPrefix(fieldName, mInfo.mPrefix, objPrefix);
+		field.put("fld_name", SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,objPrefix,fldNameWP}));
+		field.put("fld_dbname", SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,objPrefix,fldNameWP}));
+		field.put("fld_type", type);
+		field.put("fld_fonctid", jsonFld.optBoolean("key"));
+		field.put("fld_required", jsonFld.optBoolean("required"));
+		field.put(MODULE_ID_FIELD,	mInfo.moduleId);
+		if(type == ObjectField.TYPE_FLOAT || type == ObjectField.TYPE_BIGDECIMAL ){
+			field.put("fld_precision", 2);
+			field.put("fld_size", 5);
+		}else{
+			field.put("fld_size", (type == ObjectField.TYPE_INT)?5:100);
 		}
-						
+		if(type == ObjectField.TYPE_ENUM || type == ObjectField.TYPE_ENUM_MULTI){
+			String enumId = createListOfValue(objPrefix, fieldName, mInfo, g);
+			field.put("fld_list_id",enumId);
+			if(jsonFld.has(JSON_VALUES_LOWER_KEY) && jsonFld.get(JSON_VALUES_LOWER_KEY) instanceof JSONArray|| jsonFld.has(JSON_VALUES_UPPER_KEY) && jsonFld.get(JSON_VALUES_UPPER_KEY) instanceof JSONArray){
+				completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY), g);
+			}else if(jsonFld.has(JSON_ENUM_KEY) && (jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) || jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_UPPER_KEY) ) ){
+				completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY), g);
+			}else if(jsonFld.has(JSON_ENUM_KEY.toLowerCase()) && (jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) || jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_UPPER_KEY) ) ){
+				completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY), g);
+			}
+		}
 		
+		String fldId = createOrUpdateWithJson(OBJECTFIELD,field, g);
+		dataMaps.fieldCreate.put(fieldName, fldId);
+		String en ="";
+		String fr="";
+		if(jsonFld.has("en") && jsonFld.get("en") instanceof JSONObject){
+			JSONObject enJson = jsonFld.getJSONObject("en");
+			if(enJson.length()==1){	
+				en = enJson.optString(enJson.keys().next(),"");
+			}
+		}else{
+			en = jsonFld.optString("en", "");
+		}
+		if(jsonFld.has("fr") && jsonFld.get("fr") instanceof JSONObject){
+			JSONObject frJson = jsonFld.getJSONObject("fr");
+			if(frJson.length()==1){
+				fr = frJson.optString(frJson.keys().next(),"");
+			}
+		}else{
+			fr = jsonFld.optString("fr", "");
+		}
+		updateTradField(Grant.getTranslateFieldId(fldId, Globals.LANG_ENGLISH),en, g);
+		updateTradField(Grant.getTranslateFieldId(fldId, Globals.LANG_FRENCH), fr, g);
+		dataMaps.fldEn.put(fldId, en);
+		dataMaps.fldFr.put(fldId, fr);	
+	
 		String oboFldId = createObjectField(oboId, fieldName, fieldOrder, mInfo, dataMaps, g);
-		if(type == ObjectField.TYPE_ENUM && (fieldName.equalsIgnoreCase("status") || jsonFld.has("isStatus") && jsonFld.getBoolean("isStatus"))){
+		if(type == ObjectField.TYPE_ENUM && ("status".equalsIgnoreCase(fieldName) || jsonFld.has("isStatus") && jsonFld.getBoolean("isStatus"))){
 			addStateModel(oboId,  oboFldId,mInfo, g);
 		}
 		return fldId;
@@ -524,136 +550,121 @@ public class GptModel implements java.io.Serializable {
 	private static void addStateModel(String oboId, String oboFldId,ModuleInfo mInfo, Grant g){
 		String pcs = "CreateStateModel";
 		Processus p = g.getProcessus(pcs, null);
-		ObjectDB action = g.getTmpObject("Action");
 		p.instantiate();
 		Message m = p.activate();
 		if(m.isOk()){
 			//select module
-			ActivityFile act = (ActivityFile)m.get("Activity");
-			m = p.lock(act.getActivity(), act.getAID());
-			act.addDataFile("Field", "row_id", mInfo.moduleId);
-			ObjectDB o = g.getProcessObject("Module");
-			m = p.validate(act, o);
+			m = activitySelect(mInfo.moduleId,"Module",p,(ActivityFile)m.get(ACTIVITY),g);
 			//select Object
-			act = (ActivityFile)m.get("Activity");
-			m = p.lock(act.getActivity(), act.getAID());
-			act.addDataFile("Field", "row_id", oboId);
-			o = g.getProcessObject("ObjectInternal");
-			m = p.validate(act, o);
+			m = activitySelect(oboId,"ObjectIntGPTModuleCreateernal",p,(ActivityFile)m.get(ACTIVITY),g);
 			//select field
-			act = (ActivityFile)m.get("Activity");
-			m = p.lock(act.getActivity(), act.getAID());
-			act.addDataFile("Field", "row_id", oboFldId);
-			o = g.getProcessObject("ObjectFieldSystem");
-			m = p.validate(act, o);
-			//Transition
-			act = (ActivityFile)m.get("Activity");
-			m = p.lock(act.getActivity(), act.getAID());
-			try {
-				p.invokePageMethod(act, null, act.getDataValue("Page", "Method"));
-			} catch (MethodException e) {
-				AppLog.error(e, g);
-			}
-			for(DataFile data : act.getDataFiles("Data")){
-				String name = data.getName();
-				if(name.startsWith("chk")){
-					data.setValue(0,"true");
-				}
-			}
-			m = p.validate(act, null);
-			//Grant
-			act = (ActivityFile)m.get("Activity");
-			m = p.lock(act.getActivity(), act.getAID());
-			try {
-				p.invokePageMethod(act, null, act.getDataValue("Page", "Method"));
-			} catch (MethodException e) {
-				AppLog.error(e, g);
-			}
-			for(DataFile data : act.getDataFiles("Data")){
-				String name = data.getName();
-				if(name.startsWith("chk")){
-					for(String grpId : mInfo.groupIds){
-						if(name.startsWith("chk"+grpId)){
-							data.setValue(0,"true");
-						}
-					}
-					
-				}else if(name.startsWith("btn")){
-					data.setValue(0,"true");
-				}
-			}
-			m = p.validate(act, null);
-			
+			m = activitySelect(oboFldId, OBJECT_FIELD_SYSTEM_NAME, p, (ActivityFile)m.get(ACTIVITY), g);
+			//Transition			
+			m = activityTransition(p,(ActivityFile)m.get(ACTIVITY),g);
+			//Grant		
+			m = activityGrant(mInfo.groupIds,p,(ActivityFile)m.get(ACTIVITY),g);
 			//Translation
-			act = (ActivityFile)m.get("Activity");
-			if(act.getActivity().getStep().equals("CSTM-TSL")){
-				m = p.lock(act.getActivity(), act.getAID());
-				try {
-					 p.invokePageMethod(act, null, act.getDataValue("Page", "Method"));
-					
-				} catch (MethodException e) {
-					AppLog.error(e, g);
-				}
-				for(DataFile data : act.getDataFiles("Data")){
-					String name = data.getName();
-					if(name.startsWith("tsl")){
-						String idAct = name.substring(6);
-						String val ="";
-						synchronized(action.getLock()){
-							action.select(idAct);
-							val = action.getFieldValue("act_name");
-						}
-						if (val.contains("-")) {
-							String[] part = val.split("-");
-							val = part[part.length-1];
-							
-						}
-						data.setValue(0,val);
-					}
-				} 
-				m = p.validate(act, null);
-				act = (ActivityFile)m.get("Activity");
+			ActivityFile act = (ActivityFile)m.get(ACTIVITY);
+			if("CSTM-TSL".equals(act.getActivity().getStep())){
+				m = activityTranslation(p,act,g);
+				act = (ActivityFile)m.get(ACTIVITY);
 			}
-			
-
 			//end
-	
-			m = p.lock(act.getActivity(), act.getAID());
-			m = p.validate(act, null);
+			p.lock(act.getActivity(), act.getAID());
+			p.validate(act, null);
 		}
-		
-		
+	}
+	private static Message activitySelect(String rowId,String object,Processus p,ActivityFile act,Grant g){
+		p.lock(act.getActivity(), act.getAID());
+		act.addDataFile(OBJECTFIELD, "row_id", rowId);
+		ObjectDB o = g.getProcessObject(object);
+		return p.validate(act, o);
+	}
+	private static Message activityTransition(Processus p,ActivityFile act,Grant g){
+		p.lock(act.getActivity(), act.getAID());
+		try {
+			p.invokePageMethod(act, null, act.getDataValue("Page", ACTIVITY_METHOD));
+		} catch (MethodException e) {
+			AppLog.error(e, g);
+		}
+		for(DataFile data : act.getDataFiles("Data")){
+			String name = data.getName();
+			if(name.startsWith("chk")){
+				data.setValue(0,"true");
+			}
+		}
+		return p.validate(act, null);
+	}
+	private static Message activityGrant(String[] groupIds,Processus p,ActivityFile act,Grant g){
+		p.lock(act.getActivity(), act.getAID());
+		try {
+			p.invokePageMethod(act, null, act.getDataValue("Page", ACTIVITY_METHOD));
+		} catch (MethodException e) {
+			AppLog.error(e, g);
+		}
+		for (DataFile data : act.getDataFiles("Data")) {
+			String name = data.getName();
+			if (name.startsWith("chk")) {
+				for (String grpId : groupIds) {
+					if (name.startsWith("chk" + grpId)) {
+						data.setValue(0, "true");
+					}
+				}
+
+			} else if (name.startsWith("btn")) {
+				data.setValue(0, "true");
+			}
+		}
+		return p.validate(act, null);
+	}
+	private static Message activityTranslation(Processus p,ActivityFile act,Grant g){
+		ObjectDB action = g.getTmpObject("Action");
+		p.lock(act.getActivity(), act.getAID());
+		try {
+			p.invokePageMethod(act, null, act.getDataValue("Page", ACTIVITY_METHOD));
+
+		} catch (MethodException e) {
+			AppLog.error(e, g);
+		}
+		for (DataFile data : act.getDataFiles("Data")) {
+			String name = data.getName();
+			if (name.startsWith("tsl")) {
+				String idAct = name.substring(6);
+				String val = "";
+				synchronized (action.getLock()) {
+					action.select(idAct);
+					val = action.getFieldValue("act_name");
+				}
+				if (val.contains("-")) {
+					String[] part = val.split("-");
+					val = part[part.length - 1];
+
+				}
+				data.setValue(0, val);
+			}
+		}
+		return p.validate(act, null);
 	}
 	private static String createObjectField(String oboId,String fieldName,int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
-		ObjectDB oboFld = g.getTmpObject(OBJECT_FIELD_SYSTEM_NAME);
-		BusinessObjectTool oboFldT = oboFld.getTool();
-		synchronized(oboFld.getLock()){
-			oboFldT.selectForCreate();
-			oboFld.setFieldValue(OBJECTFIELD_OBJECT_FIELD, oboId);
-			oboFld.setFieldValue(OBJECTFIELD_FIELD_FIELD, dataMaps.fieldCreate.get(fieldName));
-			oboFld.setFieldValue(OBJECTFIELD_ORDER_FIELD, fieldOrder);
-			oboFld.setFieldValue(MODULE_ID_FIELD,mInfo.moduleId);
-			oboFld.populate(true);
-			oboFldT.validateAndSave();
-			return oboFld.getRowId();
-		}
+		JSONObject oboField = new JSONObject();
+		oboField.put(OBJECTFIELD_OBJECT_FIELD, oboId);
+		oboField.put(OBJECTFIELD_FIELD_FIELD, dataMaps.fieldCreate.get(fieldName));
+		oboField.put(OBJECTFIELD_ORDER_FIELD, fieldOrder);
+		oboField.put(MODULE_ID_FIELD,mInfo.moduleId);
+		return createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboField, g);
 	}
 	private static String createListOfValue(String objPrefix,String fieldName,ModuleInfo mInfo,Grant g) throws GetException, ValidateException, SaveException{
-		ObjectDB oEnum = g.getTmpObject("FieldList");
-		BusinessObjectTool oEnumT = oEnum.getTool();
-		synchronized(oEnum.getLock()){
-			oEnumT.selectForCreate();
-			oEnum.setFieldValue("lov_name",SyntaxTool.join(SyntaxTool.UPPER, new String[]{mInfo.mPrefix,objPrefix,fieldName}));
-			oEnum.setFieldValue(MODULE_ID_FIELD,mInfo.moduleId);
-			oEnumT.validateAndCreate();
-			return oEnum.getRowId();
-		}
+		JSONObject enumObject = new JSONObject();
+		enumObject.put("lov_name",SyntaxTool.join(SyntaxTool.UPPER, new String[]{mInfo.mPrefix,objPrefix,fieldName}));
+		enumObject.put(MODULE_ID_FIELD,mInfo.moduleId);
+		return createOrUpdateWithJson("FieldList",enumObject, g);
 	}
-	private static void createLinks(JSONArray relationship, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, CreateException, ValidateException, UpdateException {
+	private static void createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, CreateException, ValidateException, UpdateException {
 		int linkorder = 10;
-		for (Object link : relationship) {
+		for (Object link : links) {
+			AppLog.info(link.toString(), g);
 			JSONObject jsonLink = (JSONObject) link;
-			String relationshipsType = jsonLink.getString("type");
+			String linksType = jsonLink.getString("type");
 			String class1Name = getClassFromJsonLink(jsonLink, JSON_LINK_CLASS_FROM_KEY);
 			String class2Name = getClassFromJsonLink(jsonLink, JSON_LINK_CLASS_TO_KEY);
 
@@ -665,7 +676,7 @@ public class GptModel implements java.io.Serializable {
 					createLinkObject(class2Name, mInfo, dataMaps, g);
 				}
 
-				switch (relationshipsType.toLowerCase()) {
+				switch (linksType.toLowerCase()) {
 					case "m2m":
 					case "manytomany":
 					case "many-to-many":
@@ -704,9 +715,7 @@ public class GptModel implements java.io.Serializable {
 		String oboId2 = dataMaps.objCreate.get(class2Name.toLowerCase());
 		String linkType = isManyToOne ? "m2o" : "o2m";
 		String linkKey = class1Name + class2Name + linkType;
-		
 		if (!dataMaps.linkDone.contains(linkKey)) {
-			
 			if (isManyToOne) {
 				LinkObject linkObject = new LinkObject(oboId2, dataMaps.objEn.get(oboId2), dataMaps.objFr.get(oboId2), linkorder);
 				manyToOneLink(oboId1, linkObject, mInfo, dataMaps, ObjectCore.DEL_RESTRICT, false, false, g);
@@ -734,20 +743,16 @@ public class GptModel implements java.io.Serializable {
 		return formatObjectNames(className);
 	}
 	private static void createLinkObject(String name,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, CreateException, ValidateException{
-		ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
-		BusinessObjectTool objT = obj.getTool();
-		synchronized(obj.getLock()){
-			objT.selectForCreate();
-			obj.setFieldValue(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,name}));
-			obj.setFieldValue(OBJECT_DB_FIELD, SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,name}));
-			obj.setFieldValue(OBJECT_PREFIX_FIELD, name.substring(0, 3).toLowerCase());
-			obj.setFieldValue("obo_icon", getIcon(""));
-			obj.setFieldValue(MODULE_ID_FIELD, mInfo.moduleId);
-			
-			obj.populate(true);
-			objT.validateAndCreate();
-			dataMaps.objCreate.put(name.toLowerCase(),obj.getRowId());			
-		}
+		JSONObject linkFields = new JSONObject();
+		String namewp = getNameWithoutPrefix(name,mInfo.mPrefix,"");
+		linkFields.put(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,namewp}));
+		linkFields.put(OBJECT_DB_FIELD, SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,namewp}));
+		linkFields.put(MODULE_ID_FIELD, mInfo.moduleId);
+		linkFields.put(OBJECT_PREFIX_FIELD, namewp.substring(0, 3).toLowerCase());
+		linkFields.put(OBJECT_ICON_FIELD, getIcon(""));
+		String oboId = createOrUpdateWithJson(OBJECT_INTERNAL_NAME,linkFields, g);
+		dataMaps.objCreate.put(name.toLowerCase(),oboId);			
+		
 	}
 	private static void updateTradField(String tradId,String val,Grant g) throws GetException, UpdateException, ValidateException{
 		ObjectDB oTra = g.getTmpObject("Translate");
@@ -784,7 +789,6 @@ public class GptModel implements java.io.Serializable {
 	}
 	private static void manyToManyLink(LinkObject objectData1,LinkObject objectData2, ModuleInfo mInfo,DataMapObject dataMaps,Grant g) throws GetException, CreateException, ValidateException, UpdateException{
 		ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
-		BusinessObjectTool objT = obj.getTool();
 		String childId="";
 		String prefix1="";
 		String prefix2="";
@@ -795,34 +799,25 @@ public class GptModel implements java.io.Serializable {
 			prefix2 = obj.getFieldValue(OBJECT_PREFIX_FIELD);
 		}
 		//create objectChild then manytoone to obj1 and obj2
-		synchronized(obj.getLock()){
-				objT.selectForCreate();
-				obj.setFieldValue(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,prefix1,prefix2}));
-				obj.setFieldValue(OBJECT_DB_FIELD, SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,prefix1,prefix2}));
-				obj.setFieldValue(MODULE_ID_FIELD, mInfo.moduleId);
-				obj.setFieldValue(OBJECT_PREFIX_FIELD, prefix1+prefix2);
-				obj.setFieldValue("obo_icon", getIcon(""));
-				objT.validateAndCreate();
-				obj.populate(true);
-				childId=obj.getRowId();
-				dataMaps.objCreate.put(obj.getName().toLowerCase(),obj.getRowId());
-		}
+		JSONObject objFields = new JSONObject();
+		objFields.put(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,prefix1,prefix2}));
+		objFields.put(OBJECT_DB_FIELD, SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,prefix1,prefix2}));
+		objFields.put(MODULE_ID_FIELD, mInfo.moduleId);
+		objFields.put(OBJECT_PREFIX_FIELD, prefix1+prefix2);
+		objFields.put(OBJECT_ICON_FIELD, getIcon(""));
+		childId = createOrUpdateWithJson(OBJECT_INTERNAL_NAME,objFields, g);
+		dataMaps.objCreate.put(obj.getName().toLowerCase(),childId);
 		for (String gId: mInfo.groupIds){
-				grantGroup(gId,childId,mInfo.moduleId,g);
+			grantGroup(gId,childId,mInfo.moduleId,g);
 		}
-	
+		
 		manyToOneLink(childId, objectData1, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId), g);
 		manyToOneLink(childId, objectData2, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId), g);
 	}
 	private static HashMap<String, String> linkIds = new HashMap<>();
 	private static void manyToOneLink(String childId,LinkObject objectData, ModuleInfo mInfo, DataMapObject dataMaps,char del,Boolean key,boolean recursive,Grant g) throws GetException, CreateException, ValidateException, UpdateException{
+			AppLog.info("TEST_______DEL: "+ObjectCore.DEL_CASCAD, g);
 			ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
-
-			ObjectDB fld = g.getTmpObject("Field");
-			BusinessObjectTool fldT = fld.getTool();
-			ObjectDB oboFld = g.getTmpObject(OBJECT_FIELD_SYSTEM_NAME);
-			BusinessObjectTool oboFldT = oboFld.getTool();
-			
 			synchronized(obj.getLock()){
 				obj.select(objectData.objId);
 				String triObj = obj.getFieldValue(OBJECT_PREFIX_FIELD);
@@ -841,80 +836,60 @@ public class GptModel implements java.io.Serializable {
 					}
 
 				}
-				synchronized(fld.getLock()){
-					int type = ObjectField.TYPE_ID;
-					fldT.selectForCreate();
-					fld.setFieldValue("fld_name", fkFieldName);
-					fld.setFieldValue("fld_dbname", SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,triChild,triObj,"id"}));
-					fld.setFieldValue("fld_type",type);
-					fld.setFieldValue(MODULE_ID_FIELD,mInfo.moduleId);
-					if(Boolean.TRUE.equals(key)){
-						fld.setFieldValue("fld_fonctid",true);
-						fld.setFieldValue("fld_required",true);
-					
-					}
-					fldT.validateAndCreate();
+				JSONObject fields = new JSONObject();
+				fields.put("fld_name", fkFieldName);
+				fields.put("fld_dbname", SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,triChild,triObj,"id"}));
+				fields.put("fld_type",ObjectField.TYPE_ID);
+				fields.put(MODULE_ID_FIELD,mInfo.moduleId);
+				if(Boolean.TRUE.equals(key)){
+					fields.put("fld_fonctid",true);
+					fields.put("fld_required",true);
 				}
-				refId = fld.getRowId();
-			
-				synchronized(oboFld.getLock()){
-					oboFldT.selectForCreate();
-					oboFld.setFieldValue(OBJECTFIELD_OBJECT_FIELD, childId);
-					oboFld.setFieldValue(OBJECTFIELD_FIELD_FIELD, refId);
-					oboFld.setFieldValue(OBJECTFIELD_ORDER_FIELD, objectData.linkorder);
-					oboFld.setFieldValue(MODULE_ID_FIELD,mInfo.moduleId);
-					oboFld.setFieldValue("obf_ref_object_id",objectData.objId);
-					oboFld.setFieldValue("obf_cascad",del);
-					oboFldT.validateAndCreate();
-					oboFld.populate(true);
-
-				}
-				
+				refId = createOrUpdateWithJson(OBJECTFIELD,fields, g);
+				JSONObject oboFields = new JSONObject();
+				oboFields.put(OBJECTFIELD_OBJECT_FIELD, childId);
+				oboFields.put(OBJECTFIELD_FIELD_FIELD, refId);
+				oboFields.put(OBJECTFIELD_ORDER_FIELD, objectData.linkorder);
+				oboFields.put(MODULE_ID_FIELD,mInfo.moduleId);
+				oboFields.put("obf_ref_object_id",objectData.objId);
+				oboFields.put("obf_cascad", Character.toString(del));
+				createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboFields, g);
 				//Joined field Add key of child in main object.
-				
 				objectData.linkorder += 1;
 				addJoinedField(childId, refId, objectData, mInfo, dataMaps, objectData.linkorder, g);
 				obj.populate(true);
 				obj.select(objectData.objId);
 				obj.populate(true);
 				linkIds.put(fkFieldName, refId);
-				
-				
 			}
 	}
 	private static void addJoinedField(String childId,String refId,LinkObject objectData,ModuleInfo mInfo, DataMapObject dataMaps,int fkOrder, Grant g) throws GetException, CreateException, ValidateException, UpdateException{
 		List<String> fks = dataMaps.objFK.get(objectData.objId);
-		ObjectDB oboFld = g.getTmpObject(OBJECT_FIELD_SYSTEM_NAME);
-		BusinessObjectTool oboFldT = oboFld.getTool();
 		if(!Tool.isEmpty(fks)){
 			for(String fkField: fks){
-				synchronized(oboFld.getLock()){
-					oboFldT.selectForCreate();
-					oboFld.setFieldValue(OBJECTFIELD_OBJECT_FIELD, childId);
-					oboFld.setFieldValue(OBJECTFIELD_FIELD_FIELD, fkField);
-					oboFld.setFieldValue(OBJECTFIELD_ORDER_FIELD, fkOrder);
-					oboFld.setFieldValue(MODULE_ID_FIELD,mInfo.moduleId);
-					oboFld.setFieldValue("obf_ref_object_id",objectData.objId);
-					oboFld.setFieldValue("obf_ref_field_id",refId);
-					oboFldT.validateAndCreate();
-					oboFld.populate(true);
-					if(dataMaps.fldEn.containsKey(fkField) && !Tool.isEmpty(objectData.en)){
-						createOrUpdateTranslation(OBJECT_FIELD_SYSTEM_NAME, oboFld.getRowId(), Globals.LANG_ENGLISH, objectData.en +" "+dataMaps.fldEn.get(fkField), mInfo.moduleId, g);
-						
-					}
-					if(dataMaps.fldFr.containsKey(fkField) && !Tool.isEmpty(objectData.fr)){
-						createOrUpdateTranslation(OBJECT_FIELD_SYSTEM_NAME, oboFld.getRowId(),  Globals.LANG_FRENCH, dataMaps.fldFr.get(fkField) +" "+objectData.fr, mInfo.moduleId, g);
-						
-					}
-					fkOrder+=1;
+				JSONObject fields = new JSONObject();
+				fields.put(OBJECTFIELD_OBJECT_FIELD, childId);
+				fields.put(OBJECTFIELD_FIELD_FIELD, fkField);
+				fields.put(OBJECTFIELD_ORDER_FIELD, fkOrder);
+				fields.put(MODULE_ID_FIELD,mInfo.moduleId);
+				fields.put("obf_ref_object_id",objectData.objId);
+				fields.put("obf_ref_field_id",refId);
+				String oboFldId = createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,fields, g);
+				if(dataMaps.fldEn.containsKey(fkField) && !Tool.isEmpty(objectData.en)){
+					createOrUpdateTranslation(OBJECT_FIELD_SYSTEM_NAME, oboFldId, Globals.LANG_ENGLISH, objectData.en +" "+dataMaps.fldEn.get(fkField), mInfo.moduleId, g);
 				}
+				if(dataMaps.fldFr.containsKey(fkField) && !Tool.isEmpty(objectData.fr)){
+					createOrUpdateTranslation(OBJECT_FIELD_SYSTEM_NAME, oboFldId,  Globals.LANG_FRENCH, dataMaps.fldFr.get(fkField) +" "+objectData.fr, mInfo.moduleId, g);
+					
+				}
+				fkOrder+=1;
 			}
+				
+			
 		}
 	}
-	private static void completeList(String moduleId,String listId,JSONArray values,Grant g) throws GetException, CreateException, ValidateException, UpdateException{
+	private static void completeList(String moduleId,String listId,JSONArray values,Grant g) throws GetException, ValidateException, UpdateException{
 		int order = 1;
-		ObjectDB enumCode = g.getTmpObject("FieldListCode");
-		BusinessObjectTool enumCodeT = enumCode.getTool();
 		ObjectDB oTra = g.getTmpObject("FieldListValue");
 		BusinessObjectTool oTraT = oTra.getTool();
 		for( Object value : values){
@@ -922,27 +897,17 @@ public class GptModel implements java.io.Serializable {
 			if(Tool.isEmpty(jsonValue)){
 				return;
 			}
-			String enumId;
-			synchronized(enumCode.getLock()){
-				enumCodeT.getForCreate();
-				enumCode.setFieldValue("lov_list_id", listId);
-				enumCode.setFieldValue("lov_code", SyntaxTool.forceCase(jsonValue.getString("code"), 1).toUpperCase());
-				enumCode.setFieldValue("lov_order_by", order);
-				enumCode.setFieldValue(MODULE_ID_FIELD,moduleId);
-				enumCodeT.validateAndCreate();				enumId=enumCode.getRowId();
-				enumCode.populate(true);
-				
-			}
-			
+			JSONObject enumCodeFields = new JSONObject();
+			enumCodeFields.put("lov_list_id", listId);
+			enumCodeFields.put("lov_code", SyntaxTool.forceCase(jsonValue.getString("code"), 1).toUpperCase());
+			enumCodeFields.put("lov_order_by", order);
+			enumCodeFields.put(MODULE_ID_FIELD,moduleId);
+			String enumId = createOrUpdateWithJson("FieldListCode",enumCodeFields, g);
 			if(jsonValue.has("en") && (jsonValue.get("en") instanceof String) && (oTraT.selectForCreateOrUpdate(new JSONObject().put("lov_code_id",enumId).put("lov_lang",Globals.LANG_ENGLISH)))){
-
 					oTra.setFieldValue("lov_value", jsonValue.getString("en"));
 					oTraT.validateAndUpdate();
-				
-				
 			}
 			if(jsonValue.has("fr") && (jsonValue.get("fr") instanceof String)&& (oTraT.selectForCreateOrUpdate(new JSONObject().put("lov_code_id",enumId).put("lov_lang",Globals.LANG_FRENCH))) ){
-
 				oTra.setFieldValue("lov_value", jsonValue.getString("fr"));
 				oTraT.validateAndUpdate();
 			} 
@@ -953,7 +918,7 @@ public class GptModel implements java.io.Serializable {
 		if(value instanceof String){
 			return new JSONObject()
 						.put("code",value)
-						.put(g.getLang().equals("FRA")?"fr":"en", value);
+						.put("FRA".equals(g.getLang())?"fr":"en", value);
 			
 		}else if(value instanceof JSONObject){
 			return (JSONObject) value;
@@ -962,22 +927,14 @@ public class GptModel implements java.io.Serializable {
 		}
 	}
 	private static void addToDomain(String domainID,String objectId,String moduleId,int domainOrder,Grant g) throws GetException, CreateException, ValidateException{
-		ObjectDB mapObj = g.getTmpObject("Map");
-		BusinessObjectTool mapObjT = mapObj.getTool();
-		synchronized(mapObj.getLock()){
-			mapObjT.selectForCreate();
-			mapObj.setFieldValue("map_domain_id", domainID);
-			mapObj.setFieldValue("map_object_id", objectId);
-			mapObj.setFieldValue("map_order", domainOrder);
-			mapObj.setFieldValue(MODULE_ID_FIELD,moduleId);
-			mapObjT.validateAndCreate();
-		}
-
-	}
-	
-	private static void grantGroup(String groupId,String objectId,String moduleId,Grant g) throws GetException, CreateException, ValidateException{
-		ObjectDB grantObj = g.getTmpObject("Grant");
-		BusinessObjectTool grantObjT = grantObj.getTool();
+		JSONObject domain = new JSONObject();
+		domain.put("map_domain_id", domainID);
+		domain.put("map_object", "ObjectInternal:"+objectId);
+		domain.put("map_order", domainOrder);
+		domain.put(MODULE_ID_FIELD,moduleId);
+		createOrUpdateWithJson("Map",domain, g);
+	}	
+	private static void grantGroup(String groupId,String objectId,String moduleId,Grant g){
 		ObjectDB funcObj = g.getTmpObject("Function");
 		String funcId="";
 		synchronized(funcObj.getLock()){
@@ -987,19 +944,16 @@ public class GptModel implements java.io.Serializable {
 			funcObj.setFieldFilter("fct_object_id",objectId);
 			funcId = funcObj.search().get(0)[funcObj.getRowIdFieldIndex()];
 		}
-		synchronized(grantObj.getLock()){
-			grantObjT.selectForCreate();
-			grantObj.setFieldValue("grt_group_id", groupId);
-			grantObj.setFieldValue(MODULE_ID_FIELD,moduleId);
-			grantObj.setFieldValue("grt_function_id",funcId);
-			grantObjT.validateAndCreate();
-		}
+		JSONObject grant = new JSONObject();
+		grant.put("grt_group_id", groupId);
+		grant.put(MODULE_ID_FIELD,moduleId);
+		grant.put("grt_function_id",funcId);
+		createOrUpdateWithJson("Grant",grant, g);
 	}
 	private static String formatObjectNames(String name){
 		String regex="\\s(\\w)";
 		Pattern p = Pattern.compile(regex);	
 		Matcher m =p.matcher(name);
-		
 		StringBuffer sb = new StringBuffer();
 		while (m.find()) {
 			m.appendReplacement(sb, m.group(1).toUpperCase());
@@ -1008,5 +962,16 @@ public class GptModel implements java.io.Serializable {
 		name = sb.toString();
 		return name.replaceAll(NOT_WORD_CHAR_REGEX,"");
 	}
-	
+	private static String getNameWithoutPrefix(String name, String mdlPrefix, String objprefix){
+		String regex = "^(?i)"+(Tool.isEmpty(mdlPrefix)?"":"(?:"+mdlPrefix+")?")+(Tool.isEmpty(objprefix)?"":"(?:"+objprefix+")?")+"(.*)$";
+
+		Pattern p = Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(name);
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			m.appendReplacement(sb, "$1");
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
 }
