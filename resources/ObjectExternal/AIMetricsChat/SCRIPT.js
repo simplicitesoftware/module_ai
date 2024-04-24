@@ -34,15 +34,15 @@ function sendMessage(){
 	console.log(params);
 	$('#messages').append(userTemplate.replace('{{msg}}',input));
 	$('#messages').append(botTemplate);
-	var url = Simplicite.ROOT+"/ext/GptRestAPI";
+	var url = Simplicite.ROOT+"/ext/AIRestAPI";
 	var useAsync = true;
 	app._call(useAsync, url, params, function callback(botResponse){
+		$('#user-text').prop('disabled', false);
+		$('#send-button').prop('disabled', false);
 		if(botResponse.error !=null || ((botResponse.js == null && (botResponse.html == null || !botResponse.html.contains("script"))))){
 			$('#messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 			return;
 		}
-		$('#user-text').prop('disabled', false);
-		$('#send-button').prop('disabled', false);
 		console.log("sendMessage",botResponse);
 		if(botResponse.text == null){
 			botResponse.text = "";

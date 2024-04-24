@@ -1,0 +1,11 @@
+<template id="botTemplate"><div class="bot-messages"><strong>Chatbot: </strong><span class="msg">...</span></div></template>
+<template id="userTemplate" ><div class="user-messages"><strong>{{user}}: </strong><span class="msg">{{ask}}</span></div></template>
+<div id="AIchatbot">
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <div id="user-input">
+            <input type="text" id="user-message" placeholder="Type your message...">
+            <button id="send-button" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>

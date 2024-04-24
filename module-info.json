@@ -1,8 +1,8 @@
 {
-    "date": "2024-04-24 14:49:06",
-    "name": "ChatGPT",
+    "date": "2024-04-24 16:33:10",
+    "name": "AIBySimplicite",
     "format": "json",
-    "files": ["ChatGPT.json"],
+    "files": ["AIBySimplicite.json"],
     "repository": {"origin": {"uri": "https://github.com/simplicitesoftware/module_ai.git"}},
     "version": "0.3",
     "platform": "6.0.9"

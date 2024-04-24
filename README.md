@@ -8,13 +8,13 @@
 ![](https://platform.simplicite.io/logos/standard/logo250.png)
 * * *
 
-`ChatGPT` module definition
-===========================
+`AIBySimplicite` module definition
+==================================
 
 Exploratory module on the use of AI
 
-`GptExemple` business object definition
----------------------------------------
+`AIExemple` business object definition
+--------------------------------------
 
 Test object
 
@@ -22,21 +22,21 @@ Test object
 
 | Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
 |--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
-| `gptExPrompt`                                                | text(750)                                |          | yes       |          | -                                                                                |
-| `gptExResponse`                                              | text(20000)                              |          |           |          | -                                                                                |
-| `gptExType`                                                  | enum(100) using `GPT_EX_TYPE` list       | yes      | yes       |          | -                                                                                |
-| `gptExSpecification`                                         | char(100)                                |          | yes       |          | -                                                                                |
-| `gptExOldPrompt`                                             | char(750)                                |          |           |          | -                                                                                |
-| `gptExName`                                                  | char(100)                                | yes*     | yes       |          | -                                                                                |
+| `aiExPrompt`                                                 | text(750)                                |          | yes       |          | -                                                                                |
+| `aiExResponse`                                               | text(20000)                              |          |           |          | -                                                                                |
+| `aiExType`                                                   | enum(100) using `AI_EX_TYPE` list        | yes      | yes       |          | -                                                                                |
+| `aiExSpecification`                                          | char(100)                                |          | yes       |          | -                                                                                |
+| `aiExOldPrompt`                                              | char(750)                                |          |           |          | -                                                                                |
+| `aiExName`                                                   | char(100)                                | yes*     | yes       |          | -                                                                                |
 
 ### Lists
 
-* `GPT_EX_TYPE`
+* `AI_EX_TYPE`
     - `CODE` Code
     - `OTHER` Other
 
-`GptTest` business object definition
-------------------------------------
+`AITest` business object definition
+-----------------------------------
 
 Test object
 
@@ -44,16 +44,16 @@ Test object
 
 | Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
 |--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
-| `gptTestId`                                                  | int(11)                                  | yes*     | yes       |          | -                                                                                |
-| `gptNotepad`                                                 | notepad(1000)                            |          | yes       |          | -                                                                                |
-| `gptTestLongString`                                          | text(1000)                               |          | yes       |          | -                                                                                |
+| `aiTestId`                                                   | int(11)                                  | yes*     | yes       |          | -                                                                                |
+| `aiNotepad`                                                  | notepad(1000)                            |          | yes       |          | -                                                                                |
+| `aiTestLongString`                                           | text(1000)                               |          | yes       |          | -                                                                                |
 
 ### Custom actions
 
-* `GPT_CLEAR_HIST`: 
+* `AI_CLEAR_HIST`: Clear history in notePad for test object
 
-`GPTGenData` business process definition
-----------------------------------------
+`AIGenData` business process definition
+---------------------------------------
 
 
 
@@ -61,11 +61,11 @@ Test object
 
 * `Begin`: 
 * `End`: 
-* `SelectModule`: 
-* `GenData`: 
+* `SelectModule`: Selection module
+* `GenData`: AI call for data gen
 
-`GPTModuleCreate` business process definition
----------------------------------------------
+`AIModuleCreate` business process definition
+--------------------------------------------
 
 Auomatic model generation process
 
@@ -78,9 +78,21 @@ Auomatic model generation process
 * `SelectDomain`: Selection Domain
 * `interaction`: Chat with the AI
 * `Prompt`: Direct chat with the AI
-* `GPT`: AI for modeling
+* `AI`: AI for modeling
 * `Generation`: Module generation based on ia feedback
 * `RemoveModule`: Remove module
+
+`AIChatBot` external object definition
+--------------------------------------
+
+Chat interface
+
+
+`AIExpTool` external object definition
+--------------------------------------
+
+Front tool
+
 
 `AIMetricsChat` external object definition
 ------------------------------------------
@@ -89,38 +101,26 @@ AI contextual chat for personalised metrics.
 Use parameter "module" to specify context.
 
 
-`GptChatBot` external object definition
----------------------------------------
-
-Chat interface
-
-
-`GptExpTool` external object definition
----------------------------------------
-
-Front tool
-
-
-`GptProcessResource` external object definition
------------------------------------------------
+`AIProcessResource` external object definition
+----------------------------------------------
 
 Process resource
 
 
-`GptPromptTool` external object definition
-------------------------------------------
+`AIPromptTool` external object definition
+-----------------------------------------
 
 Tool
 
 
-`GptRestAPI` external object definition
----------------------------------------
+`AIRestAPI` external object definition
+--------------------------------------
 
 Local API
 
 
-`GptShortcut` external object definition
-----------------------------------------
+`AIShortcut` external object definition
+---------------------------------------
 
 Chat in shortcut
 
