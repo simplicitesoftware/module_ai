@@ -37,8 +37,9 @@ public class GptRestAPI extends com.simplicite.webapp.services.RESTServiceExtern
 			switch (type) {
 				case "metrics":
 					JSONObject swagger = new JSONObject(params.getParameter("swagger"));
+					String lang = params.getParameter("lang");
 					AppLog.info("metrics: "+objectName, getGrant());
-					return AiMetrics.getJavaScriptMetrics(prompt, swagger).toString(1);	
+					return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);	
 				default:
 					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
 						AppLog.info("updateFieldByRequest", getGrant());

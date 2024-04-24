@@ -6,9 +6,8 @@ var AIMetricsChat = (function() {
 	function render(params,s) {
 		userTemplate.replace('{{user}}', app.getGrant().login);
 		swagger=s;
-		console.log("AIMetricsChat",botTemplate);
+		console.log("swagger",swagger);
 		userTemplate=userTemplate.replace('{{user}}', app.getGrant().login);
-		console.log("AIMetricsChat",swagger);
 		$('#user-text').keypress(function(e) {
 			if (e.which === 13) {
 				sendMessage(swagger);
@@ -22,23 +21,23 @@ var AIMetricsChat = (function() {
 function sendMessage(){
 	var input = '';
 	$('#messages').html('');
-	$('#ia_html').html('');
-	$('canvas').each(function(canva) {
-		if (typeof $(canva).remove === 'function') {
-			$(canva).remove();
-		}
+	canvas = $('canvas');
+	canvas.each(function(canva) {
+		eval(canvas[canva].id+".remove();");
 	});
+	$('#ia_html').html('');
 	input = $('#user-text').val();
 	$('#user-text').val('');
 	$('#send-button').prop('disabled', true);
 	$('#user-text').prop('disabled', true);
-	var params = {prompt:input, reqType:"metrics",swagger:swagger};
+	var params = {prompt:input, reqType:"metrics",swagger:swagger,lang:app.grant.lang};
+	console.log(params);
 	$('#messages').append(userTemplate.replace('{{msg}}',input));
 	$('#messages').append(botTemplate);
 	var url = Simplicite.ROOT+"/ext/GptRestAPI";
 	var useAsync = true;
 	app._call(useAsync, url, params, function callback(botResponse){
-		if(botResponse.js == null && (botResponse.html == null || !botResponse.html.contains("script"))){
+		if(botResponse.error !=null || ((botResponse.js == null && (botResponse.html == null || !botResponse.html.contains("script"))))){
 			$('#messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 			return;
 		}
@@ -51,10 +50,8 @@ function sendMessage(){
 		$('#messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
 		$('#ia_html').html(botResponse.html);
 		try {
-			var test = eval(botResponse.js + "\n" + botResponse.function); 
-			console.log("Eval:",test);
+			eval(botResponse.js + "\n" + botResponse.function); 
 		}catch(e){
-			console.log("Error in eval:",e);
 			$('#messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 		}
 		

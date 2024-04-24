@@ -371,7 +371,7 @@ public class GptTools implements java.io.Serializable {
     public static List<String> getJSONBlock(String txt, Grant g){
 		List<String> list = new ArrayList<>(); 
 		String regex= "([^\0{]*)(?:```)?(?:json)?(\\{[^`]+\\})(?:```)?([^\0}]*)";
-        if(!txt.matches("[\\w\\W]*\\{[\\w\\W]*\\}[\\w\\W]*")){
+        if(!txt.matches("[\\s\\S]*\\{[\\s\\S]*\\}[\\s\\S]*")){
             return list;
         }
         Pattern pattern = Pattern.compile(regex);
@@ -475,7 +475,39 @@ public class GptTools implements java.io.Serializable {
 		return ids;
 		
 	}
+    public static JSONObject getSimplifyedSwagger(String moduleName,Grant g) throws PlatformException {
+        String[] ids = getObjectIdsModule(moduleName, g);
+		String mdlId = ModuleDB.getModuleId(moduleName);
+		ObjectDB obj = g.getTmpObject("Module");
+		obj.select(mdlId);
+		ModuleDB module = new ModuleDB(obj);
+		JSONObject swagger = new JSONObject(module.openAPI(JSONTool.OPENAPI_OAS3,true));
+		JSONObject newSchemas = new JSONObject();
+		JSONObject schemas = swagger.getJSONObject("components").getJSONObject("schemas");
+		for(String id : ids){
+			String name = ObjectCore.getObjectName(id);
+			newSchemas.put(name, checkFields(schemas.getJSONObject(name), name,g));
+		}
+        return new JSONObject().put("components",new JSONObject().put("schemas",newSchemas)); 
+    }
 
+    public static JSONObject checkFields(JSONObject obj, String name, Grant g) {
+        ObjectDB objDB = g.getTmpObject(name);
+        JSONObject properties = obj.getJSONObject("properties");
+        for (String key : properties.keySet()) {
+            JSONObject val = properties.getJSONObject(key);
+            ObjectField fld;
+            fld = objDB.getField(key.replaceAll("__", "."));
+            if (val.has("enum")) {
+                JSONArray enumCodes = new JSONArray();
+                for (EnumItem eItem : fld.getList().getAllItems()) {
+                    enumCodes.put(new JSONObject().put("code",eItem.getCode()).put("label", eItem.getValue()));
+                }
+                val.put("enum", enumCodes);
+            }
+        }
+        return obj;
+    }
     public static JSONObject getSwagger(String moduleName,Grant g) throws PlatformException {
 		String[] ids = getObjectIdsModule(moduleName, g);
 		String mdlId = ModuleDB.getModuleId(moduleName);
@@ -502,7 +534,6 @@ public class GptTools implements java.io.Serializable {
 			}
 		}
 		swagger.put("paths", newPaths);
-		AppLog.info(swagger.toString(), g);
 		return swagger;
 	}	
 

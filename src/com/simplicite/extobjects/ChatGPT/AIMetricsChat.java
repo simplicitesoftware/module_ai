@@ -1,5 +1,6 @@
 package com.simplicite.extobjects.ChatGPT;
 
+import com.simplicite.commons.ChatGPT.AiMetrics;
 import com.simplicite.commons.ChatGPT.GptTools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
@@ -21,15 +22,15 @@ public class AIMetricsChat extends com.simplicite.util.ExternalObject {
 	 */
 	@Override
 	public Object display(Parameters params) {
+		AppLog.info(AiMetrics.cleanJs("test.a.b.c;\ntest.a)\ntest.ABC.fdf.EE)"),getGrant());
 		try {
 			appendCSSInclude(HTMLTool.getResourceCSSURL(getGrant().getExternalObject("GptProcessResource"), "CHAT_BOT_CSS"));
 			String moduleName = params.getParameter("module");
-			AppLog.info("params: "+moduleName, getGrant());
 			if(Tool.isEmpty(moduleName) || Tool.isEmpty(ModuleDB.getModuleId(moduleName))){
 				return javascript("$ui.alert("+Message.formatError("AI_MODULE_ERROR", null,null)+")");
 			}
-			JSONObject swagger = GptTools.getSwagger(moduleName, getGrant());
-			return javascript(getName() + ".render(ctn,"+swagger.toString()+");");
+			JSONObject swagger = GptTools.getSimplifyedSwagger(moduleName, getGrant());
+			return javascript(getName() + ".render(ctn,"+new JSONObject().put("components",new JSONObject().put("schemas",swagger.optJSONObject("components").optJSONObject("schemas"))).toString()+");");
 		} catch (PlatformException e) {
 			AppLog.error(e, getGrant());
 		}

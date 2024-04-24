@@ -3,6 +3,7 @@ package com.simplicite.commons.ChatGPT;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.checkerframework.checker.units.qual.s;
 import org.json.JSONObject;
 
 import com.simplicite.util.*;
@@ -12,90 +13,29 @@ import com.simplicite.util.*;
  * Shared code AiMetrics
  */
 public class AiMetrics implements java.io.Serializable {
-	static final String EXEMPLE="```javascript\n"+
+	static final String EXEMPLE=" ```javascript\n"+
 	"function(){//code exemple to do search on the object myObject witch has a field myField\n"+
 	"	const app = $ui.getApp();\n"+
 	"	const obj = app.getBusinessObject(\"MyObject\");\n"+
 	"	obj.search(function(items){\n"+
-	"		for(var i=0;i<items.length;i++){\n"+
+	"		for(let i=0;i<items.length;i++){\n"+
 	"			//do something with items[i] \n"+
-	"			//you can access to myfield in link object by items[i].objectId__myField \n"+
+	"			//you can access to myfield by items[i].myField \n"+
 	"		}\n"+
-	"	}, {myField:\"myValue\"});\n"+
+	"	});\n"+
 	"}\n"+
-	"```";
+	"```\n";
 	private static final long serialVersionUID = 1L;
-	public static JSONObject getJavaScriptMetrics(String prompt, JSONObject swagger ){
-		JSONObject res = GptTools.gptCaller(null, "\n ```OppenAPI "+swagger+"``` ",EXEMPLE+" give me Script js to display: "+prompt+" using chart.js, add to your answer a description of the charts in ```text ```for Business user. Do not create data use search",false,true);
+	public static JSONObject getJavaScriptMetrics(String prompt, JSONObject swagger , String lang){
+		
+		JSONObject res = GptTools.gptCaller(null, "\n ```OppenAPI "+swagger+"``` ",EXEMPLE+" give me Script js to display: "+prompt+("FRA".equals(lang)?" in french":"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?" in french":"")+". Do not create data use search",false,true);
 		String result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-		/*String result = "To create a JavaScript function that displays a pie chart (in French, \"camembert\") of orders by status using the API example structure provided, you would need to adjust and integrate with a chart library to visualize the data, such as Chart.js or Google Charts. Below, I'll demonstrate how to structure the script to fetch data and then populate a pie chart using Chart.js. \n"+
-		"First, make sure to include the Chart.js library in your HTML file:\n"+
-		"Now, here's the JavaScript function:\n"+
-		"```javascript\n"+
-		"function displayCommandeByStatusChart() {\n"+
-		"	const app = $ui.getApp();\n"+
-		"	const obj = app.getBusinessObject(\"DemoOrder\");\n"+
-		"\n"+
-		"	obj.search(function(items) {\n"+
-		"		// Count commandes by status\n"+
-		"		const statusCount = {};\n"+
-		"		items.forEach(function(item) {\n"+
-		"			const status = item.demoOrdStatus;\n"+
-		"			if (status in statusCount) {\n"+
-		"				statusCount[status]++;\n"+
-		"			} else {\n"+
-		"				statusCount[status] = 1;\n"+
-		"			}\n"+
-		"		});\n"+
-		"\n"+
-		"		// Get chart canvas\n"+
-		"		const canvas = document.createElement('canvas');\n"+
-		"		document.body.appendChild(canvas);\n"+
-		"\n"+
-		"		// Create chart\n"+
-		"		const ctx = canvas.getContext('2d');\n"+
-		"		new Chart(ctx, {\n"+
-		"			type: 'bar',\n"+
-		"			data: {\n"+
-		"				labels: Object.keys(statusCount),\n"+
-		"				datasets: [{\n"+
-		"					label: 'Commandes by Status',\n"+
-		"					data: Object.values(statusCount),\n"+
-		"					backgroundColor: [\n"+
-		"						'rgba(255, 99, 132, 0.2)',\n"+
-		"						'rgba(54, 162, 235, 0.2)',\n"+
-		"						'rgba(255, 206, 86, 0.2)',\n"+
-		"						'rgba(75, 192, 192, 0.2)',\n"+
-		"					],\n"+
-		"					borderColor: [\n"+
-		"						'rgba(255, 99, 132, 1)',\n"+
-		"						'rgba(54, 162, 235, 1)',\n"+
-		"						'rgba(255, 206, 86, 1)',\n"+
-		"						'rgba(75, 192, 192, 1)',\n"+
-		"					],\n"+
-		"					borderWidth: 1\n"+
-		"				}]\n"+
-		"			},\n"+
-		"			options: {\n"+
-		"				scales: {\n"+
-		"					y: {\n"+
-		"						beginAtZero: true\n"+
-		"					}\n"+
-		"				}\n"+
-		"			}\n"+
-		"		});\n"+
-		"	}, {});\n"+
-		"}\n"+
-		""+
-		"```\n"+
-		"Make sure that the app and obj are correctly initialized as per your environment setup. This script assumes that you're fetching objects named \"TrnOrder\" and contains a state field possibly named `trnOrdState`.\n"+
-		"This script counts the statuses of orders, groups them, and uses Chart.js to render a pie chart. It uses basic color coding—adjust colors to fit the visual guidelines of your application.";
-		*/return splitRes(result);
+		return splitRes(result,swagger.optJSONObject("components").getJSONObject("schemas"));
 	}
-	private static JSONObject splitRes(String text){
-		String regexJS = "\\`\\`\\`javascript(?:\\n)?([\\s\\S]*?)\\`\\`\\`";
-		String regexHTML = "\\`\\`\\`html(?:\\n)([\\s\\S]*?)\\`\\`\\`";
-		String regexDesc ="\\`\\`\\`text(?:\\n)([\\s\\S]*?)\\`\\`\\`";
+	private static JSONObject splitRes(String text, JSONObject schemas){
+		String regexJS = "\\`\\`\\`javascript\\n([\\s\\S]*?)\\`\\`\\`";
+		String regexHTML = "\\`\\`\\`html\\n([\\s\\S]*?)\\`\\`\\`";
+		String regexDesc ="\\`\\`\\`text\\n([\\s\\S]*?)\\`\\`\\`";
 		String regexJSResult = "";
 		String regexHTMLResult = "";
 		String textResult = "";
@@ -108,8 +48,8 @@ public class AiMetrics implements java.io.Serializable {
 
 		textResult = text.replace(regexJSResult, ""); 
 		textResult = textResult.replaceAll("\\`\\`\\`javascript(?:\\n)?\\`\\`\\`",""); // Escape the dollar sign character
-		regexJSResult = regexJSResult.replaceAll("^ui","\\$ui"); // Escape the dollar sign character
-		regexJSResult = regexJSResult.replaceAll("([^$])ui","$1\\$ui"); // Escape the dollar sign character
+		regexJSResult = regexJSResult.replaceAll("^ui([;\\.])","\\$ui$1"); // Escape the dollar sign character
+		regexJSResult = regexJSResult.replaceAll("([^$])ui([;\\.])","$1\\$ui$2"); // Escape the dollar sign character
 		// Extract HTML code
 		Pattern patternHTML = Pattern.compile(regexHTML);
 		Matcher matcherHTML = patternHTML.matcher(text);
@@ -134,7 +74,11 @@ public class AiMetrics implements java.io.Serializable {
 		}
 		
 		JSONObject result = new JSONObject();
-		result.put("js", cleanJs(regexJSResult));
+		regexJSResult = cleanJs(regexJSResult);
+		if (hasErrorOrDefaultCodeOrData(regexJSResult, regexHTMLResult, schemas)) {
+			result.put("error", "No code or bad data call found in the response.");
+		}
+		result.put("js", regexJSResult);
 		result.put("html", regexHTMLResult);
 		result.put("text", textResult);
 		result.put("function", getFunctionCall(regexJSResult));
@@ -154,12 +98,12 @@ public class AiMetrics implements java.io.Serializable {
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(js);
 		if (matcher.find()) {
-			return /*"<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>*/"<canvas id=\""+matcher.group(1)+"\" width=\"400\" height=\"400\"></canvas>";
+			return "<canvas id=\""+matcher.group(1)+"\" width=\"400\" height=\"400\"></canvas>";
 		}
-		return /*"<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>*/"<canvas id=\"myChart\" width=\"400\" height=\"400\"></canvas>";
+		return "<canvas id=\"myChart\" width=\"400\" height=\"400\"></canvas>";
 	}
 	private static String updateSize(String regexHTMLResult) {
-		String regex = "(<canvas .* width=\")[0-9]*(\"\\s+height=\")[0-9]*(\")";
+		String regex = "(<canvas .* width=\")\\d*(\"\\s+height=\")\\d*(\")";
 		
 		return regexHTMLResult.replaceAll(regex,"$1400$2400$3");
 	}
@@ -170,20 +114,59 @@ public class AiMetrics implements java.io.Serializable {
 		if (matcher.find()) {
 			return matcher.group(1);
 		}
-
 		regexHTMLResult = regexHTMLResult.replace("<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>","");
 		return regexHTMLResult;
 	}
-	private static String cleanJs(String js){
-		String regex = "(\\w*) ?=.*\\.createElement\\('canvas'\\)";
+	public static String cleanJs(String js){
+		String regex = "(\\.[\\w\\_-]*)((?:\\.[\\w\\_-]*)+)([;)])";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(js);
+		while (matcher.find()) {
+			String replacement = matcher.group(1)+matcher.group(2).replace(".","__")+matcher.group(3);
+			js = js.replace(matcher.group(0),replacement);
+		}
+		
+		regex = "(\\w*) ?=.*\\.createElement\\('canvas'\\)";
+		pattern = Pattern.compile(regex);
+		matcher = pattern.matcher(js);
 		
 		if (matcher.find()) {
 			String varName = matcher.group(1);
 			String regexAppend = "\\S*\\.appendChild\\("+varName+"\\);";
 			js = js.replaceAll(regexAppend,"");
 		}
+		
 		return js.replace(".createElement('canvas')",".getElementById('myChart')");
+	}
+	private static boolean hasErrorOrDefaultCodeOrData(String js, String html, JSONObject schemas){
+		if(Tool.isEmpty(js)){
+			String regex = "<script>([\\s\\S]*?)<\\/script>";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(html);
+			if (matcher.find()) {
+				js= matcher.group(1);
+			}else{
+				//No script in response
+				AppLog.info("AI null response: No script in response", null);
+				return true;
+			}
+		}
+		String regex = ".getBusinessObject\\(['\"]([\\w\\_-]*)['\"]\\)";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(js);
+		if (matcher.find()) {
+			String objectName = matcher.group(1);
+			if(schemas.has(objectName)){
+				return false;
+			}else{
+				//Invalide object name
+				AppLog.info("AI null response: Invalide object name", null);
+				return true;
+			}
+
+		}
+		//Data are invented
+		AppLog.info("AI null response: Data are invented", null);
+		return true;
 	}
 }
