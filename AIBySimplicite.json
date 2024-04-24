@@ -8,7 +8,7 @@
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\"\n}",
-  "mdl_comment": "Exploratory module on the use of AI"
+  "mdl_comment": "Exploratory module on the use of AI  \nUse AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint"
  },
  "links": [
   {
@@ -47,6 +47,17 @@
       "sys_value": "https://api.openai.com/v1/chat/completions",
       "sys_type": "PRV",
       "sys_desc": "AI API URL",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "SystemParam",
+     "userkey": "AI_CHAT_BOT_NAME",
+     "item": {
+      "sys_code": "AI_CHAT_BOT_NAME",
+      "sys_value": "Georges",
+      "sys_type": "LFL",
+      "sys_desc": "Name of AI",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
@@ -6155,42 +6166,23 @@
    "label": "Shortcut translation",
    "icon": "img/system/translation",
    "field": "row_module_id",
-   "list": [
-    {
-     "object": "TranslateShortcut",
-     "userkey": "ShortCut(AIBot)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"shc_name": "AIBot"},
-       "icon": "img/system/shortcut",
-       "label": "Shortcut",
-       "userkeylabel": "AIBot",
-       "object": "ShortCut"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "AI Chat bot",
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateShortcut",
-     "userkey": "ShortCut(AIBot)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"shc_name": "AIBot"},
-       "icon": "img/system/shortcut",
-       "label": "Shortcut",
-       "userkeylabel": "AIBot",
-       "object": "ShortCut"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Chat bot IA",
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
+   "list": [{
+    "object": "TranslateShortcut",
+    "userkey": "ShortCut(AIBot)~ANY",
+    "item": {
+     "tsl_object": {
+      "item": {"shc_name": "AIBot"},
+      "icon": "img/system/shortcut",
+      "label": "Shortcut",
+      "userkeylabel": "AIBot",
+      "object": "ShortCut"
+     },
+     "tsl_lang": "ANY",
+     "tsl_value": "Chat bot",
+     "tsl_tooltip": null,
+     "row_module_id__mdl_name": "AIBySimplicite"
     }
-   ]
+   }]
   },
   {
    "object": "TranslateView",

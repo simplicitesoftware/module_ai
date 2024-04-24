@@ -1,13 +1,15 @@
 var app = $ui.getApp();
-var botTemplate = "<div class=\"bot-messages\"><strong>Chatbot: </strong><span class=\"msg\">...</span></div>";
+var botTemplate = "<div class=\"bot-messages\"><strong>{{botName}}: </strong><span class=\"msg\">...</span></div>";
 var userTemplate ="<div class=\"user-messages\"><strong>{{user}}: </strong><span class=\"msg\">{{msg}}</span></div>";
 var swagger;
 var AIMetricsChat = (function() {
 	function render(params,s) {
-		userTemplate.replace('{{user}}', app.getGrant().login);
 		swagger=s;
 		console.log("swagger",swagger);
 		userTemplate=userTemplate.replace('{{user}}', app.getGrant().login);
+		app.getSysParam(function(param){
+			botTemplate = botTemplate.replace("{{botName}}",param);
+		},"AI_CHAT_BOT_NAME");
 		$('#user-text').keypress(function(e) {
 			if (e.which === 13) {
 				sendMessage(swagger);

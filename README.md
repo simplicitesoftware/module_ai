@@ -11,7 +11,8 @@
 `AIBySimplicite` module definition
 ==================================
 
-Exploratory module on the use of AI
+Exploratory module on the use of AI  
+Use AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint
 
 `AIExemple` business object definition
 --------------------------------------

@@ -1,3 +1,7 @@
+var botTemplate;
+var userTemplate;
+var app;
+console.log("var");
 function clickPress(event) {
     if (event.keyCode == 13) {
         sendMessage();
@@ -17,12 +21,22 @@ function resizeUp(){
 	areaheight = areaheight - (textheight +30);
 	$("#chat-messages").css("height", areaheight);
 }
+$(document).ready(function() {
+	console.log("ready");
+	botTemplate = $("#botTemplate").html();
+	userTemplate = $("#userTemplate").html();
+	app = $ui.getApp();
+	app.getSysParam(function(param){
+		
+		botTemplate = botTemplate.replace("{{botName}}",param);
+		$("#AIchatbotProcess").html($("#AIchatbotProcess").html().replaceAll("{{botName}}",param));
+	},"AI_CHAT_BOT_NAME");
+
+});
 new ResizeObserver(resizeUp).observe(document.querySelector("#user-message"));
 function sendMessage() {
 	var userMessage = document.getElementById('user-message').value;
 	var chatMessages = document.getElementById('chat-messages');
-	var botTemplate = $("#botTemplate").html();
-	var userTemplate = $("#userTemplate").html();
 	var historic = [];
 	console.log("here");
 	if ($("#context").length >0) {
@@ -46,9 +60,6 @@ function sendMessage() {
 	//console.log(historic);
 
 	// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
-	
-	var app = $ui.getApp();
-	
 	userTemplate=userTemplate.replace('{{user}}', app.getGrant().login);
 	userTemplate=userTemplate.replace('{{msg}}', userMessage.replaceAll("\n","<br>"));
 	chatMessages.innerHTML +=userTemplate;

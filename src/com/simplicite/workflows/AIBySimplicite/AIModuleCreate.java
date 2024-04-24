@@ -133,7 +133,7 @@ public class AIModuleCreate extends Processus {
 		html = html.replace("{{script}}", script);
 		html = html.replace("{{css}}", css);
 		html = html.replace("{{init}}", Globals.LANG_FRENCH.equals(g.getLang())?"Bonjour! Comment puis-je vous aider avec la conception d'applications? Voulez-vous que je vous aide a definir vos besoin ou avez-vous des questions spécifiques sur la conception?":"Hello! How can I help you with application design? Do you want me to help you define your needs or do you have specific questions about design?");
-		html = html.replace("{{botMesage}}", Tool.isEmpty(response)?"":"<div class=\"bot-messages\" id=\"context\"><strong>Chatbot: </strong><span class=\"msg\">"+response+"</span></div>");
+		html = html.replace("{{botMesage}}", Tool.isEmpty(response)?"":"<div class=\"bot-messages\" id=\"context\"><strong>{{botName}}: </strong><span class=\"msg\">"+response+"</span></div>");
 		return html;
 	}
 	/**

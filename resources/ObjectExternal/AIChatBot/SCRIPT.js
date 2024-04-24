@@ -1,9 +1,18 @@
 var objContext="";
+var app = $ui.getApp();
+var botTemplate;
+var userTemplate;
 var AIChatBot = (function() {
-	var botTemplate = $("#botTemplate").html();
-	var userTemplate = $("#userTemplate").html();
+	
 	function render(params,context) {
 		//$('#AIchatbot').append(context);
+		botTemplate = $("#botTemplate").html();
+		app.getSysParam(function(param){
+			console.log(botTemplate);
+			
+			botTemplate = Mustache.render(botTemplate, {botName:param});
+		},"AI_CHAT_BOT_NAME");
+		userTemplate = $("#userTemplate").html();
 		objContext = context;
 	}
 
@@ -12,8 +21,6 @@ var AIChatBot = (function() {
 function sendMessage() {
 	var userMessage = document.getElementById('user-message').value;
 	var chatMessages = document.getElementById('chat-messages');
-	var botTemplate = $("#botTemplate").html();
-	var userTemplate = $("#userTemplate").html();
 	// Ajoutez ici la logique de votre chatbot pour générer une réponse en fonction de userMessage
 	var historic =[];
 	$(".user-messages").each(function() {
@@ -31,7 +38,7 @@ function sendMessage() {
 
 	// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
 	
-	var app = $ui.getApp();
+	
 	chatMessages.innerHTML += Mustache.render(userTemplate, {user:app.getGrant().login,ask:userMessage});
 	chatMessages.innerHTML += botTemplate;
 	// Params
