@@ -2,6 +2,7 @@ var objContext="";
 var app = $ui.getApp();
 var botTemplate;
 var userTemplate;
+var userName ="user";
 var AIChatBot = (function() {
 	
 	function render(params,context) {
@@ -12,6 +13,12 @@ var AIChatBot = (function() {
 			
 			botTemplate = Mustache.render(botTemplate, {botName:param});
 		},"AI_CHAT_BOT_NAME");
+		if(app.getGrant().firstname ){
+			userName =app.getGrant().firstname;
+		}else{
+			userName =app.getGrant().login;
+		}
+	
 		userTemplate = $("#userTemplate").html();
 		objContext = context;
 	}
@@ -39,7 +46,7 @@ function sendMessage() {
 	// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
 	
 	
-	chatMessages.innerHTML += Mustache.render(userTemplate, {user:app.getGrant().login,ask:userMessage});
+	chatMessages.innerHTML += Mustache.render(userTemplate, {user:userName,ask:userMessage});
 	chatMessages.innerHTML += botTemplate;
 	// Params
 	var useAsync = true; // use async callback pattern

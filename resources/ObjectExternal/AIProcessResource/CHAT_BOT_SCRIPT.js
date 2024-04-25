@@ -1,6 +1,7 @@
 var botTemplate;
 var userTemplate;
 var app;
+var userName ="user";
 console.log("var");
 function clickPress(event) {
     if (event.keyCode == 13) {
@@ -31,6 +32,12 @@ $(document).ready(function() {
 		botTemplate = botTemplate.replace("{{botName}}",param);
 		$("#AIchatbotProcess").html($("#AIchatbotProcess").html().replaceAll("{{botName}}",param));
 	},"AI_CHAT_BOT_NAME");
+	if(app.getGrant().firstname ){
+		userName =app.getGrant().firstname;
+	}else{
+		userName =app.getGrant().login;
+	}
+
 
 });
 new ResizeObserver(resizeUp).observe(document.querySelector("#user-message"));
@@ -60,10 +67,9 @@ function sendMessage() {
 	//console.log(historic);
 
 	// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
-	userTemplate=userTemplate.replace('{{user}}', app.getGrant().login);
+	userTemplate=userTemplate.replace('{{user}}', userName);
 	userTemplate=userTemplate.replace('{{msg}}', userMessage.replaceAll("\n","<br>"));
 	chatMessages.innerHTML +=userTemplate;
-	//Mustache.render(userTemplate, {user:app.getGrant().login,ask:userMessage});
 	chatMessages.innerHTML += botTemplate;
 	$("#send-button").attr("disabled", "disabled");
 	// Params

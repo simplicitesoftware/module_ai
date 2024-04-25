@@ -22,6 +22,7 @@ public class AiMetrics implements java.io.Serializable {
 	"			//you can access to myfield by items[i].myField \n"+
 	"		}\n"+
 	"	});\n"+
+	"	//be careful with var names with spaces in json use 'var'.\n"+
 	"}\n"+
 	"```\n";
 	private static final long serialVersionUID = 1L;
@@ -143,7 +144,7 @@ public class AiMetrics implements java.io.Serializable {
 			Pattern pattern = Pattern.compile(regex);
 			Matcher matcher = pattern.matcher(html);
 			if (matcher.find()) {
-				js= matcher.group(1);
+				js = matcher.group(1);
 			}else{
 				//No script in response
 				AppLog.info("AI null response: No script in response", null);

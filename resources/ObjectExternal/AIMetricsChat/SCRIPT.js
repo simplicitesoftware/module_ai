@@ -2,11 +2,17 @@ var app = $ui.getApp();
 var botTemplate = "<div class=\"bot-messages\"><strong>{{botName}}: </strong><span class=\"msg\">...</span></div>";
 var userTemplate ="<div class=\"user-messages\"><strong>{{user}}: </strong><span class=\"msg\">{{msg}}</span></div>";
 var swagger;
+var userName = "user";
 var AIMetricsChat = (function() {
 	function render(params,s) {
 		swagger=s;
 		console.log("swagger",swagger);
-		userTemplate=userTemplate.replace('{{user}}', app.getGrant().login);
+		if(app.getGrant().firstname ){
+			userName =app.getGrant().firstname;
+		}else{
+			userName =app.getGrant().login;
+		}
+		userTemplate=userTemplate.replace('{{user}}', userName);
 		app.getSysParam(function(param){
 			botTemplate = botTemplate.replace("{{botName}}",param);
 		},"AI_CHAT_BOT_NAME");
@@ -41,7 +47,8 @@ function sendMessage(){
 	app._call(useAsync, url, params, function callback(botResponse){
 		$('#user-text').prop('disabled', false);
 		$('#send-button').prop('disabled', false);
-		if(botResponse.error !=null || ((botResponse.js == null && (botResponse.html == null || !botResponse.html.contains("script"))))){
+		if(botResponse.error !=null || ((botResponse.js == null && (botResponse.html == null || !botResponse.html.includes("script"))))){
+			console.log("error in answer botResponse.error !=null || ((botResponse.js == null && (botResponse.html == null || !botResponse.html.includes(\"script\"))))"+botResponse.error !=null+" || (("+botResponse.js == null+" && ("+botResponse.html == null+" || "+!botResponse.html.includes("script")+")))");
 			$('#messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 			return;
 		}
@@ -54,6 +61,7 @@ function sendMessage(){
 		try {
 			eval(botResponse.js + "\n" + botResponse.function); 
 		}catch(e){
+			console.log("error in eval botResponse.js",e);
 			$('#messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 		}
 		

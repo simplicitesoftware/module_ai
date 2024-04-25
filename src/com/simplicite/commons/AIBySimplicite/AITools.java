@@ -476,7 +476,7 @@ public class AITools implements java.io.Serializable {
 		
 	}
     public static JSONObject getSimplifyedSwagger(String moduleName,Grant g) throws PlatformException {
-        String[] ids = getObjectIdsModule(moduleName, g);
+        String[] ids = getObjectIdsModule(moduleName, Grant.getSystemAdmin());
 		String mdlId = ModuleDB.getModuleId(moduleName);
 		ObjectDB obj = g.getTmpObject("Module");
 		obj.select(mdlId);
@@ -501,7 +501,7 @@ public class AITools implements java.io.Serializable {
             if (val.has("enum")) {
                 JSONArray enumCodes = new JSONArray();
                 for (EnumItem eItem : fld.getList().getAllItems()) {
-                    enumCodes.put(new JSONObject().put("code",eItem.getCode()).put("label", eItem.getValue()));
+                    enumCodes.put(new JSONObject().put("code",eItem.getCode()).put("label", eItem.getValue().replace(" ", "_")));
                 }
                 val.put("enum", enumCodes);
             }
@@ -509,7 +509,7 @@ public class AITools implements java.io.Serializable {
         return obj;
     }
     public static JSONObject getSwagger(String moduleName,Grant g) throws PlatformException {
-		String[] ids = getObjectIdsModule(moduleName, g);
+		String[] ids = getObjectIdsModule(moduleName, Grant.getSystemAdmin());
 		String mdlId = ModuleDB.getModuleId(moduleName);
 		ObjectDB obj = g.getTmpObject("Module");
 		obj.select(mdlId);

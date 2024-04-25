@@ -98,7 +98,7 @@
       "mod_doc": {
        "path": "files/Model/Model-AIGenData.svg",
        "mime": "image/svg+xml",
-       "name": "model.svg"
+       "name": "Model-AIGenData.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-AIGenData.png",
@@ -119,7 +119,7 @@
       "mod_doc": {
        "path": "files/Model/Model-AIModuleCreate.svg",
        "mime": "image/svg+xml",
-       "name": "model.svg"
+       "name": "Model-AIModuleCreate.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-AIModuleCreate.png",
@@ -201,9 +201,9 @@
    "list": [
     {
      "object": "Group",
-     "userkey": "AI_GROUP",
+     "userkey": "AI_DESIGNER",
      "item": {
-      "grp_name": "AI_GROUP",
+      "grp_name": "AI_DESIGNER",
       "grp_comment": null,
       "grp_type": [
        "G",
@@ -216,9 +216,9 @@
     },
     {
      "object": "Group",
-     "userkey": "AI_METIER_GROUP",
+     "userkey": "AI_METIER",
      "item": {
-      "grp_name": "AI_METIER_GROUP",
+      "grp_name": "AI_METIER",
       "grp_comment": null,
       "grp_type": [
        "G",
@@ -239,19 +239,19 @@
    "list": [
     {
      "object": "Profile",
-     "userkey": "AI_GROUP~AI_METIER_GROUP",
+     "userkey": "AI_DESIGNER~AI_METIER",
      "item": {
-      "prf_profile_id__grp_name": "AI_GROUP",
-      "prf_group_id__grp_name": "AI_METIER_GROUP",
+      "prf_profile_id__grp_name": "AI_DESIGNER",
+      "prf_group_id__grp_name": "AI_METIER",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "Profile",
-     "userkey": "DESIGNER~AI_GROUP",
+     "userkey": "DESIGNER~AI_DESIGNER",
      "item": {
       "prf_profile_id__grp_name": "DESIGNER",
-      "prf_group_id__grp_name": "AI_GROUP",
+      "prf_group_id__grp_name": "AI_DESIGNER",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
@@ -2556,9 +2556,9 @@
     },
     {
      "object": "Grant",
-     "userkey": "AI_GROUP~AI_EX_AI_SENT_A~AIExemple~AI_SENT",
+     "userkey": "AI_DESIGNER~AI_EX_AI_SENT_A~AIExemple~AI_SENT",
      "item": {
-      "grt_group_id__grp_name": "AI_GROUP",
+      "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_EX_AI_SENT_A",
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "AIExemple",
@@ -2570,9 +2570,9 @@
     },
     {
      "object": "Grant",
-     "userkey": "AI_GROUP~AI_EX_CRUD~AIExemple~",
+     "userkey": "AI_DESIGNER~AI_EX_CRUD~AIExemple~",
      "item": {
-      "grt_group_id__grp_name": "AI_GROUP",
+      "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_EX_CRUD",
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "AIExemple",
@@ -2584,9 +2584,9 @@
     },
     {
      "object": "Grant",
-     "userkey": "AI_GROUP~AI_EX_R~AIExemple~",
+     "userkey": "AI_DESIGNER~AI_EX_R~AIExemple~",
      "item": {
-      "grt_group_id__grp_name": "AI_GROUP",
+      "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_EX_R",
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "AIExemple",
@@ -2598,9 +2598,9 @@
     },
     {
      "object": "Grant",
-     "userkey": "AI_GROUP~AI_TEST_AI_CALCULATE_FIELD_JS_A~AITest~AICalculateFieldJs",
+     "userkey": "AI_DESIGNER~AI_TEST_AI_CALCULATE_FIELD_JS_A~AITest~AICalculateFieldJs",
      "item": {
-      "grt_group_id__grp_name": "AI_GROUP",
+      "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_TEST_AI_CALCULATE_FIELD_JS_A",
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "AITest",
@@ -2612,9 +2612,9 @@
     },
     {
      "object": "Grant",
-     "userkey": "AI_GROUP~AI_TEST_AI_CLEAR_HIST_A~AITest~AI_CLEAR_HIST",
+     "userkey": "AI_DESIGNER~AI_TEST_AI_CLEAR_HIST_A~AITest~AI_CLEAR_HIST",
      "item": {
-      "grt_group_id__grp_name": "AI_GROUP",
+      "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_TEST_AI_CLEAR_HIST_A",
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "AITest",
@@ -2626,9 +2626,9 @@
     },
     {
      "object": "Grant",
-     "userkey": "AI_GROUP~AI_TEST_CRUD~AITest~",
+     "userkey": "AI_DESIGNER~AI_TEST_CRUD~AITest~",
      "item": {
-      "grt_group_id__grp_name": "AI_GROUP",
+      "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_TEST_CRUD",
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "AITest",
@@ -2640,9 +2640,9 @@
     },
     {
      "object": "Grant",
-     "userkey": "AI_GROUP~AI_MODULE_AI_ADD_DATA_A~Module~AIAddData",
+     "userkey": "AI_DESIGNER~AI_MODULE_AI_ADD_DATA_A~Module~AIAddData",
      "item": {
-      "grt_group_id__grp_name": "AI_GROUP",
+      "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_MODULE_AI_ADD_DATA_A",
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "Module",
@@ -2654,9 +2654,9 @@
     },
     {
      "object": "Grant",
-     "userkey": "AI_GROUP~AI_MODULE_AI_AUTO_GEN_MODULE_A~Module~AIAutoGenModule",
+     "userkey": "AI_DESIGNER~AI_MODULE_AI_AUTO_GEN_MODULE_A~Module~AIAutoGenModule",
      "item": {
-      "grt_group_id__grp_name": "AI_GROUP",
+      "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_MODULE_AI_AUTO_GEN_MODULE_A",
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "Module",
@@ -2668,9 +2668,9 @@
     },
     {
      "object": "Grant",
-     "userkey": "AI_GROUP~MDL-CMS~Module~",
+     "userkey": "AI_DESIGNER~MDL-CMS~Module~",
      "item": {
-      "grt_group_id__grp_name": "AI_GROUP",
+      "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "MDL-CMS",
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "Module",
@@ -3819,9 +3819,9 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_GROUP~AIGenData~GGD_0100",
+     "userkey": "AI_DESIGNER~AIGenData~GGD_0100",
      "item": {
-      "gta_group_id__grp_name": "AI_GROUP",
+      "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0100",
       "gta_activity_id__acy_name": "SelectModule",
@@ -3835,9 +3835,9 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_GROUP~AIGenData~GGD_0200",
+     "userkey": "AI_DESIGNER~AIGenData~GGD_0200",
      "item": {
-      "gta_group_id__grp_name": "AI_GROUP",
+      "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0200",
       "gta_activity_id__acy_name": "GenData",
@@ -3851,9 +3851,9 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_GROUP~AIModuleCreate~AIC_0350",
+     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0350",
      "item": {
-      "gta_group_id__grp_name": "AI_GROUP",
+      "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0350",
       "gta_activity_id__acy_name": "interaction",
@@ -3867,9 +3867,9 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_GROUP~AIModuleCreate~AIC_0500",
+     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0500",
      "item": {
-      "gta_group_id__grp_name": "AI_GROUP",
+      "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0500",
       "gta_activity_id__acy_name": "AI",
@@ -3879,9 +3879,9 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_GROUP~AIModuleCreate~AIC_0600",
+     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0600",
      "item": {
-      "gta_group_id__grp_name": "AI_GROUP",
+      "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0600",
       "gta_activity_id__acy_name": "Generation",
@@ -3895,9 +3895,9 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_GROUP~AIModuleCreate~AIC_0700",
+     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0700",
      "item": {
-      "gta_group_id__grp_name": "AI_GROUP",
+      "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0700",
       "gta_activity_id__acy_name": "RemoveModule",
@@ -3932,9 +3932,9 @@
     },
     {
      "object": "BPMGrantProcess",
-     "userkey": "AI_GROUP~AIGenData",
+     "userkey": "AI_DESIGNER~AIGenData",
      "item": {
-      "gtp_group_id__grp_name": "AI_GROUP",
+      "gtp_group_id__grp_name": "AI_DESIGNER",
       "gtp_process_id__pcs_name": "AIGenData",
       "gtp_grant": ["N"],
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -3942,9 +3942,9 @@
     },
     {
      "object": "BPMGrantProcess",
-     "userkey": "AI_GROUP~AIModuleCreate",
+     "userkey": "AI_DESIGNER~AIModuleCreate",
      "item": {
-      "gtp_group_id__grp_name": "AI_GROUP",
+      "gtp_group_id__grp_name": "AI_DESIGNER",
       "gtp_process_id__pcs_name": "AIModuleCreate",
       "gtp_grant": ["N"],
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -4158,7 +4158,7 @@
       "res_image": {
        "path": "resources/Disposition/default/AI.svg",
        "mime": "image/svg+xml",
-       "name": "gpt.svg"
+       "name": "AI.svg"
       },
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -6828,9 +6828,9 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_GROUP~ObjectExternal(AIProcessResource)~",
+     "userkey": "AI_DESIGNER~ObjectExternal(AIProcessResource)~",
      "item": {
-      "prm_group_id__grp_name": "AI_GROUP",
+      "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
        "item": {"obe_name": "AIProcessResource"},
        "icon": "img/system/external_object",
@@ -6848,9 +6848,9 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_GROUP~ObjectExternal(AIChatBot)~",
+     "userkey": "AI_DESIGNER~ObjectExternal(AIChatBot)~",
      "item": {
-      "prm_group_id__grp_name": "AI_GROUP",
+      "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
        "item": {"obe_name": "AIChatBot"},
        "icon": "img/system/external_object",
@@ -6868,9 +6868,9 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_GROUP~ObjectExternal(AIExpTool)~",
+     "userkey": "AI_DESIGNER~ObjectExternal(AIExpTool)~",
      "item": {
-      "prm_group_id__grp_name": "AI_GROUP",
+      "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
        "item": {"obe_name": "AIExpTool"},
        "icon": "img/system/external_object",
@@ -6888,9 +6888,9 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_GROUP~ObjectExternal(AIRestAPI)~",
+     "userkey": "AI_DESIGNER~ObjectExternal(AIRestAPI)~",
      "item": {
-      "prm_group_id__grp_name": "AI_GROUP",
+      "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
        "item": {"obe_name": "AIRestAPI"},
        "icon": "img/system/external_object",
@@ -6908,9 +6908,9 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_GROUP~ObjectExternal(AIPromptTool)~",
+     "userkey": "AI_DESIGNER~ObjectExternal(AIPromptTool)~",
      "item": {
-      "prm_group_id__grp_name": "AI_GROUP",
+      "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
        "item": {"obe_name": "AIPromptTool"},
        "icon": "img/system/external_object",
@@ -6928,9 +6928,9 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_GROUP~ObjectExternal(AIShortcut)~",
+     "userkey": "AI_DESIGNER~ObjectExternal(AIShortcut)~",
      "item": {
-      "prm_group_id__grp_name": "AI_GROUP",
+      "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
        "item": {"obe_name": "AIShortcut"},
        "icon": "img/system/external_object",
@@ -6948,9 +6948,9 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_GROUP~ShortCut(AIBot)~",
+     "userkey": "AI_DESIGNER~ShortCut(AIBot)~",
      "item": {
-      "prm_group_id__grp_name": "AI_GROUP",
+      "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
        "item": {"shc_name": "AIBot"},
        "icon": "img/system/shortcut",
@@ -6968,9 +6968,9 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_METIER_GROUP~ObjectExternal(AIMetricsChat)~",
+     "userkey": "AI_METIER~ObjectExternal(AIMetricsChat)~",
      "item": {
-      "prm_group_id__grp_name": "AI_METIER_GROUP",
+      "prm_group_id__grp_name": "AI_METIER",
       "prm_object": {
        "item": {"obe_name": "AIMetricsChat"},
        "icon": "img/system/external_object",
