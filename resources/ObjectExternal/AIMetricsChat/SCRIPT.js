@@ -65,7 +65,7 @@ function sendMetricsMessage(){
 		try {
 			eval(botResponse.js + "\n" + botResponse.function); 
 		}catch(e){
-			console.log("error in eval botResponse.js",e);
+			console.log("error in eval botResponse.js: "+e);
 			$('#messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 		}
 		
