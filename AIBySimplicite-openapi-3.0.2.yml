@@ -2,7 +2,7 @@
 # / __(_)_ __  _ __| (_)__(_) |_ /_/
 # \__ \ | '  \| '_ \ | / _| |  _/ -_)
 # |___/_|_|_|_| .__/_|_\__|_|\__\___|
-#             |_| Module: AIBySimplicite 0.3
+#             |_| Module: AIBySimplicite 0.4
 components:
   schemas:
     Error404:
@@ -802,7 +802,7 @@ info:
     email: contact@simplicitesoftware.com
   description: API for module AIBySimplicite
   title: AIBySimplicite
-  version: '0.3'
+  version: '0.4'
 tags:
 - name: AIExemple
   description: Exemple

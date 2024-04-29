@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import com.simplicite.util.*;
 
+import ch.simschla.minify.cli.App;
+
 
 /**
  * Shared code AiMetrics
@@ -30,7 +32,14 @@ public class AiMetrics implements java.io.Serializable {
 		
 		JSONObject res = AITools.AICaller(null, "\n ```OppenAPI "+swagger+"``` ",EXEMPLE+" give me Script js to display: "+prompt+("FRA".equals(lang)?" in french":"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?" in french":"")+". Do not create data use search",false,true);
 		String result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-		return splitRes(result,swagger.optJSONObject("components").getJSONObject("schemas"));
+		JSONObject resultJS = splitRes(result,swagger.optJSONObject("components").getJSONObject("schemas"));
+		if (resultJS.has("error")) {
+			AppLog.info("Bot do not return chart generating", null);
+			res = AITools.AICaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
+			result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+			return new JSONObject().put("text",result);
+		}
+		return resultJS;
 	}
 	private static JSONObject splitRes(String text, JSONObject schemas){
 		String regexJS = "\\`\\`\\`javascript\\n([\\s\\S]*?)\\`\\`\\`";

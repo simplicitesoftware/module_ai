@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.AppinfoDocument.Appinfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -83,7 +84,6 @@ public class AIModel implements java.io.Serializable {
 		private HashMap<String, String> fldFr;
 		private HashMap<String, String> fldEn;
 		private HashMap<String, String> fieldCreate;
-		private HashMap<String, List<String>> objFK;//<object id, [field ids]>
 		private List<String> linkDone ;
 
 		public DataMapObject() {
@@ -93,7 +93,6 @@ public class AIModel implements java.io.Serializable {
 			this.fldFr = new HashMap<>();
 			this.fldEn = new HashMap<>();
 			this.fieldCreate = new HashMap<>();
-			this.objFK = new HashMap<>();
 			this.linkDone = new ArrayList<>();
 			
 		}
@@ -358,7 +357,7 @@ public class AIModel implements java.io.Serializable {
 					}
 				}
 			}
-			dataMaps.objFK.put(oboId, fKs);
+			
 			//check if AI mis placed link
 			if(jsonObj.has(JSON_LINK_KEY)){
 				JSONArray links = jsonObj.getJSONArray(JSON_LINK_KEY);
@@ -816,7 +815,6 @@ public class AIModel implements java.io.Serializable {
 	}
 	private static HashMap<String, String> linkIds = new HashMap<>();
 	private static void manyToOneLink(String childId,LinkObject objectData, ModuleInfo mInfo, DataMapObject dataMaps,char del,Boolean key,boolean recursive,Grant g) throws GetException, CreateException, ValidateException, UpdateException{
-			AppLog.info("TEST_______DEL: "+ObjectCore.DEL_CASCAD, g);
 			ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
 			synchronized(obj.getLock()){
 				obj.select(objectData.objId);
@@ -863,8 +861,8 @@ public class AIModel implements java.io.Serializable {
 				linkIds.put(fkFieldName, refId);
 			}
 	}
-	private static void addJoinedField(String childId,String refId,LinkObject objectData,ModuleInfo mInfo, DataMapObject dataMaps,int fkOrder, Grant g) throws GetException, CreateException, ValidateException, UpdateException{
-		List<String> fks = dataMaps.objFK.get(objectData.objId);
+	private static void addJoinedField(String childId,String refId,LinkObject objectData,ModuleInfo mInfo, DataMapObject dataMaps,int fkOrder, Grant g) throws GetException, ValidateException, UpdateException{
+		List<String> fks = getFonctionalKeys(objectData.objId,g);
 		if(!Tool.isEmpty(fks)){
 			for(String fkField: fks){
 				JSONObject fields = new JSONObject();
@@ -887,6 +885,16 @@ public class AIModel implements java.io.Serializable {
 				
 			
 		}
+	}
+	private static List<String> getFonctionalKeys(String objId,Grant g) {
+		List<String> fks = new ArrayList<>();
+		String objName =  ObjectCore.getObjectName(objId);
+		ObjectDB obj = g.getTmpObject(objName);
+		for(ObjectField fk : obj.getFunctId()){
+			AppLog.info(objName+": "+fk.getName()+": "+fk.getId(), g);
+			fks.add(fk.getId());
+		}
+		return fks;
 	}
 	private static void completeList(String moduleId,String listId,JSONArray values,Grant g) throws GetException, ValidateException, UpdateException{
 		int order = 1;

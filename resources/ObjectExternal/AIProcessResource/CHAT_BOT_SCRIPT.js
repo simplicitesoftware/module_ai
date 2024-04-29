@@ -32,6 +32,7 @@ $(document).ready(function() {
 		botTemplate = botTemplate.replace("{{botName}}",param);
 		$("#AIchatbotProcess").html($("#AIchatbotProcess").html().replaceAll("{{botName}}",param));
 	},"AI_CHAT_BOT_NAME");
+	userTemplate=userTemplate.replace('{{user}}', userName);
 	if(app.getGrant().firstname ){
 		userName =app.getGrant().firstname;
 	}else{
@@ -42,6 +43,7 @@ $(document).ready(function() {
 });
 new ResizeObserver(resizeUp).observe(document.querySelector("#user-message"));
 function sendMessage() {
+	console.log("sendMessage");
 	var userMessage = document.getElementById('user-message').value;
 	var chatMessages = document.getElementById('chat-messages');
 	var historic = [];
@@ -67,9 +69,7 @@ function sendMessage() {
 	//console.log(historic);
 
 	// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
-	userTemplate=userTemplate.replace('{{user}}', userName);
-	userTemplate=userTemplate.replace('{{msg}}', userMessage.replaceAll("\n","<br>"));
-	chatMessages.innerHTML +=userTemplate;
+	chatMessages.innerHTML += userTemplate.replace('{{msg}}', userMessage.replaceAll("\n","<br>"));
 	chatMessages.innerHTML += botTemplate;
 	$("#send-button").attr("disabled", "disabled");
 	// Params

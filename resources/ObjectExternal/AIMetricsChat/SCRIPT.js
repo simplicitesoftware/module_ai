@@ -18,7 +18,7 @@ var AIMetricsChat = (function() {
 		},"AI_CHAT_BOT_NAME");
 		$('#user-text').keypress(function(e) {
 			if (e.which === 13) {
-				sendMessage(swagger);
+				sendMetricsMessage(swagger);
 			}
 		});
 		
@@ -26,7 +26,7 @@ var AIMetricsChat = (function() {
 
 	return { render: render };
 })();
-function sendMessage(){
+function sendMetricsMessage(){
 	var input = '';
 	$('#messages').html('');
 	canvas = $('canvas');
@@ -47,12 +47,16 @@ function sendMessage(){
 	app._call(useAsync, url, params, function callback(botResponse){
 		$('#user-text').prop('disabled', false);
 		$('#send-button').prop('disabled', false);
+		if(botResponse.html == null && botResponse.js == null && botResponse.text != null){
+			$('#messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
+			return;
+		}
 		if(botResponse.error !=null || ((botResponse.js == null && (botResponse.html == null || !botResponse.html.includes("script"))))){
-			console.log("error in answer botResponse.error !=null || ((botResponse.js == null && (botResponse.html == null || !botResponse.html.includes(\"script\"))))"+botResponse.error !=null+" || (("+botResponse.js == null+" && ("+botResponse.html == null+" || "+!botResponse.html.includes("script")+")))");
+			console.log("botResponse",botResponse);
 			$('#messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 			return;
 		}
-		console.log("sendMessage",botResponse);
+		console.log("sendMetricsMessage",botResponse);
 		if(botResponse.text == null){
 			botResponse.text = "";
 		}

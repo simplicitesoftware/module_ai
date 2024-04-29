@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.3",
+  "mdl_version": "0.4",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\"\n}",
@@ -5183,7 +5183,7 @@
        "object": "Action"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Module generation by AI",
+      "tsl_value": "Model generation by AI",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -5200,7 +5200,7 @@
        "object": "Action"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Génération de modules par l'IA",
+      "tsl_value": "Génération du modèle par l'IA",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
