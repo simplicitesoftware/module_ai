@@ -27,7 +27,13 @@ var AIMetricsChat = (function() {
 	return { render: render };
 })();
 function sendMetricsMessage(){
-	var input = '';
+	let isCancelled = false;
+	$('#cancel-button').show();
+	$('#cancel-button').click(function() {
+		isCancelled = true;
+		resetChat();
+	});
+	let input = '';
 	$('#messages').html('');
 	canvas = $('canvas');
 	canvas.each(function(canva) {
@@ -36,7 +42,8 @@ function sendMetricsMessage(){
 	$('#ia_html').html('');
 	input = $('#user-text').val();
 	$('#user-text').val('');
-	$('#send-button').prop('disabled', true);
+	$('#metrics_send_button').prop('disabled', true);
+	$('#metrics_send_button').hide();
 	$('#user-text').prop('disabled', true);
 	var params = {prompt:input, reqType:"metrics",swagger:swagger,lang:app.grant.lang};
 	console.log(params);
@@ -45,8 +52,11 @@ function sendMetricsMessage(){
 	var url = Simplicite.ROOT+"/ext/AIRestAPI";
 	var useAsync = true;
 	app._call(useAsync, url, params, function callback(botResponse){
-		$('#user-text').prop('disabled', false);
-		$('#send-button').prop('disabled', false);
+		if(isCancelled){
+			
+			return;
+		}
+		reOpenChat();
 		if(botResponse.html == null && botResponse.js == null && botResponse.text != null){
 			$('#messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
 			return;
@@ -72,4 +82,16 @@ function sendMetricsMessage(){
 
 	});
 	
+}
+function reOpenChat(){
+	$('#user-text').prop('disabled', false);
+	$('#metrics_send_button').show();
+	$('#metrics_send_button').prop('disabled', false);
+	$('#cancel-button').hide();
+	$('#cancel-button').onclick = null;
+}
+resetChat = function(){
+	$('#messages').html('');
+	reOpenChat();
+
 }

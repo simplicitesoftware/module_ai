@@ -4,10 +4,10 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.4",
+  "mdl_version": "0.5",
   "mdl_type": "T",
   "mdl_icon": null,
-  "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\"\n}",
+  "mdl_url": "{\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"\n\t},\n\t\"type\": \"git\"\n}",
   "mdl_comment": "Exploratory module on the use of AI  \nUse AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint"
  },
  "links": [
@@ -622,7 +622,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -668,7 +669,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -714,7 +716,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -760,7 +763,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -806,7 +810,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -852,7 +857,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -898,7 +904,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -944,7 +951,8 @@
       "fld_comment": "List of fields to take into account for the chatbot",
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -990,7 +998,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -1036,7 +1045,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     },
     {
@@ -1082,7 +1092,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": "<0000>"
+      "fld_incrementsyntax": "<0000>",
+      "aiFldSpe": null
      }
     },
     {
@@ -1128,7 +1139,8 @@
       "fld_comment": null,
       "fld_classification": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
      }
     }
    ]
@@ -1498,7 +1510,8 @@
       "obo_minifiable": "M",
       "obo_minified": false,
       "obo_permalink": null,
-      "obo_btn_searchform": true
+      "obo_btn_searchform": true,
+      "aiFieldsParam": null
      }
     },
     {
@@ -1583,7 +1596,8 @@
       "obo_minifiable": "M",
       "obo_minified": false,
       "obo_permalink": null,
-      "obo_btn_searchform": true
+      "obo_btn_searchform": true,
+      "aiFieldsParam": null
      }
     }
    ]
