@@ -6,7 +6,6 @@ var userName = "user";
 var AIMetricsChat = (function() {
 	function render(params,s) {
 		swagger=s;
-		console.log("swagger",swagger);
 		if(app.getGrant().firstname ){
 			userName =app.getGrant().firstname;
 		}else{
@@ -46,7 +45,6 @@ function sendMetricsMessage(){
 	$('#metrics_send_button').hide();
 	$('#user-text').prop('disabled', true);
 	var params = {prompt:input, reqType:"metrics",swagger:swagger,lang:app.grant.lang};
-	console.log(params);
 	$('#messages').append(userTemplate.replace('{{msg}}',input));
 	$('#messages').append(botTemplate);
 	var url = Simplicite.ROOT+"/ext/AIRestAPI";
@@ -62,11 +60,9 @@ function sendMetricsMessage(){
 			return;
 		}
 		if(botResponse.error !=null || ((botResponse.js == null && (botResponse.html == null || !botResponse.html.includes("script"))))){
-			console.log("botResponse",botResponse);
 			$('#messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 			return;
 		}
-		console.log("sendMetricsMessage",botResponse);
 		if(botResponse.text == null){
 			botResponse.text = "";
 		}
@@ -75,7 +71,6 @@ function sendMetricsMessage(){
 		try {
 			eval(botResponse.js + "\n" + botResponse.function); 
 		}catch(e){
-			console.log("error in eval botResponse.js: "+e);
 			$('#messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 		}
 		
@@ -90,7 +85,7 @@ function reOpenChat(){
 	$('#cancel-button').hide();
 	$('#cancel-button').onclick = null;
 }
-resetChat = function(){
+function resetChat(){
 	$('#messages').html('');
 	reOpenChat();
 

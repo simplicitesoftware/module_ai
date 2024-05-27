@@ -201,6 +201,9 @@ public class AIData implements java.io.Serializable {
 			if (field != null && !field.isForeignKey() && !field.isInternalForeignKey() ) {
 				int type = field.getType();
 				switch (type) {
+					case ObjectField.TYPE_EMAIL:
+						json.put(key, "regex: ^\\w+(['\\.\\+-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,})+$");
+						break;
 					case ObjectField.TYPE_REGEXP:
 						json.put(key, "regex: "+field.getRegExp());
 						break;
@@ -248,7 +251,7 @@ public class AIData implements java.io.Serializable {
 	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
 		JSONObject json = new JSONObject();
-		String response = AITools.AICaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"```",false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		String response = AITools.AICaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least 5 entries per class",false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		json = AITools.getValidJson(response);
 		if(Tool.isEmpty(json)){	
 			

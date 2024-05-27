@@ -65,7 +65,6 @@ public class AIModuleCreate extends Processus {
 		return ids;
 	}
 	private JSONObject objectToJSON(List<String[]> objs,String modulePrefix){
-		AppLog.info("modulePrefix: "+modulePrefix, getGrant());
 		JSONArray objects = new JSONArray();
 		JSONArray relationship = new JSONArray();
 		ObjectDB obj = getGrant().getTmpObject("ObjectInternal");
@@ -265,7 +264,6 @@ public class AIModuleCreate extends Processus {
 		if (!getActivity(ACTIVITY_AI).isUserDialog()){
 			List<String> result = getJsonAi(getPreviousContext(getPreviousContext(context)).getActivity().getStep(), g);
 			if(!Tool.isEmpty(result) && result.size()==3) json = result.get(1); //isEmpty check null
-			AppLog.info("retour ia: "+json, g);
 		}else{
 			json = getContext(getActivity(ACTIVITY_AI)).getDataValue("Data", "json_return");
 		}

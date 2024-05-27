@@ -24,8 +24,6 @@ public class AIPromptTool extends ExternalObject { // or com.simplicite.webapp.w
 	@Override
 	public Object display(Parameters params) {
 		try {
-			
-			
 			addMustache();
 			String id =params.getParameter("row_id");
 			String obj = params.getParameter("object");

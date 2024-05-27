@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.AppinfoDocument.Appinfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,6 +14,7 @@ import com.simplicite.bpm.Processus;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
+
 
 /**
  * Shared code AIModel
@@ -26,6 +26,7 @@ public class AIModel implements java.io.Serializable {
 	private static final String OBJECT_FIELD_SYSTEM_NAME = "ObjectFieldSystem";
 	private static final String OBJECT_NAME_FIELD = "obo_name";
 	private static final String OBJECT_DB_FIELD = "obo_dbtable";
+	private static final String OBJECT_DESCRIPTION = "obo_comment";
 	private static final String OBJECT_ICON_FIELD = "obo_icon";
 	private static final String OBJECT_PREFIX_FIELD  = "obo_prefix";
 	private static final String MODULE_ID_FIELD = "row_module_id";
@@ -413,7 +414,7 @@ public class AIModel implements java.io.Serializable {
 				}
 			}
 		}
-		fields.put("obo_comment", comment);
+		fields.put(OBJECT_DESCRIPTION, comment);
 		String oboId = createOrUpdateWithJson(OBJECT_INTERNAL_NAME,fields, g);
 		dataMaps.objCreate.put(objName.toLowerCase(),oboId);
 
@@ -431,21 +432,18 @@ public class AIModel implements java.io.Serializable {
 		return oboId;
 	}
 	private static String createOrUpdateWithJson(String objName,JSONObject fields, Grant g){
-		AppLog.info(objName+fields.toString(1), g);
 		JSONObject filters = getFKFilters(objName,fields, g);
 		ObjectDB obj = g.getTmpObject(objName);
 		try{
 			synchronized(obj.getLock()){
 				BusinessObjectTool objTool = obj.getTool();
-				if(objTool.selectForCreateOrUpdate(filters)){
-					return obj.getRowId();
-				}else{
+				if(!objTool.selectForCreateOrUpdate(filters)){
 					obj.setValuesFromJSONObject(fields, false, false);
 					obj.populate(true);
 					objTool.validateAndCreate();
-					return obj.getRowId();
 				}
 			}
+			return obj.getRowId();
 		}catch(GetException | ValidateException | SaveException e){
 			AppLog.error(null, e, g);
 		}
@@ -466,7 +464,7 @@ public class AIModel implements java.io.Serializable {
 				}
 			}
 		}
-		AppLog.info("Filters: "+filters.toString(1), g);
+		
 		return filters;
 	}
 	private static String getIcon(String icon){
@@ -661,7 +659,6 @@ public class AIModel implements java.io.Serializable {
 	private static void createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, CreateException, ValidateException, UpdateException {
 		int linkorder = 10;
 		for (Object link : links) {
-			AppLog.info(link.toString(), g);
 			JSONObject jsonLink = (JSONObject) link;
 			String linksType = jsonLink.getString("type");
 			String class1Name = getClassFromJsonLink(jsonLink, JSON_LINK_CLASS_FROM_KEY);
@@ -787,25 +784,21 @@ public class AIModel implements java.io.Serializable {
 		
 	}
 	private static void manyToManyLink(LinkObject objectData1,LinkObject objectData2, ModuleInfo mInfo,DataMapObject dataMaps,Grant g) throws GetException, CreateException, ValidateException, UpdateException{
-		ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
 		String childId="";
-		String prefix1="";
-		String prefix2="";
-		synchronized(obj.getLock()){
-			obj.select(objectData1.objId);
-			prefix1 = obj.getFieldValue(OBJECT_PREFIX_FIELD);
-			obj.select(objectData2.objId);
-			prefix2 = obj.getFieldValue(OBJECT_PREFIX_FIELD);
-		}
+		String prefix1=SyntaxTool.getObjectPrefix(objectData1.objId);
+		String prefix2=SyntaxTool.getObjectPrefix(objectData2.objId);
+		
 		//create objectChild then manytoone to obj1 and obj2
 		JSONObject objFields = new JSONObject();
-		objFields.put(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,prefix1,prefix2}));
+		String name = SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,prefix1,prefix2});
+		objFields.put(OBJECT_NAME_FIELD,name );
 		objFields.put(OBJECT_DB_FIELD, SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,prefix1,prefix2}));
 		objFields.put(MODULE_ID_FIELD, mInfo.moduleId);
 		objFields.put(OBJECT_PREFIX_FIELD, prefix1+prefix2);
 		objFields.put(OBJECT_ICON_FIELD, getIcon(""));
+		objFields.put(OBJECT_DESCRIPTION, "NN between "+objectData1.en+" and "+objectData2.en);
 		childId = createOrUpdateWithJson(OBJECT_INTERNAL_NAME,objFields, g);
-		dataMaps.objCreate.put(obj.getName().toLowerCase(),childId);
+		dataMaps.objCreate.put(name.toLowerCase(),childId);
 		for (String gId: mInfo.groupIds){
 			grantGroup(gId,childId,mInfo.moduleId,g);
 		}
@@ -815,51 +808,40 @@ public class AIModel implements java.io.Serializable {
 	}
 	private static HashMap<String, String> linkIds = new HashMap<>();
 	private static void manyToOneLink(String childId,LinkObject objectData, ModuleInfo mInfo, DataMapObject dataMaps,char del,Boolean key,boolean recursive,Grant g) throws GetException, CreateException, ValidateException, UpdateException{
-			ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
-			synchronized(obj.getLock()){
-				obj.select(objectData.objId);
-				String triObj = obj.getFieldValue(OBJECT_PREFIX_FIELD);
-
-				obj.select(childId);
-				String triChild = obj.getFieldValue(OBJECT_PREFIX_FIELD);
-
-				String fkFieldName=SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,triChild,triObj,"id"});
-				String refId = "";
-				if( linkIds.containsKey(fkFieldName)){
-					if(recursive){
-						triObj+="Bis";
-						fkFieldName=SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,triChild,triObj,"id"});
-					}else{
-						return;
-					}
-
+			String triObj = SyntaxTool.getObjectPrefix(objectData.objId);
+			String triChild = SyntaxTool.getObjectPrefix(childId);
+			String fkFieldName=SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,triChild,triObj,"id"});
+			String refId = "";
+			if( linkIds.containsKey(fkFieldName)){
+				if(recursive){
+					triObj+="Bis";
+					fkFieldName=SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,triChild,triObj,"id"});
+				}else{
+					return;
 				}
-				JSONObject fields = new JSONObject();
-				fields.put("fld_name", fkFieldName);
-				fields.put("fld_dbname", SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,triChild,triObj,"id"}));
-				fields.put("fld_type",ObjectField.TYPE_ID);
-				fields.put(MODULE_ID_FIELD,mInfo.moduleId);
-				if(Boolean.TRUE.equals(key)){
-					fields.put("fld_fonctid",true);
-					fields.put("fld_required",true);
-				}
-				refId = createOrUpdateWithJson(OBJECTFIELD,fields, g);
-				JSONObject oboFields = new JSONObject();
-				oboFields.put(OBJECTFIELD_OBJECT_FIELD, childId);
-				oboFields.put(OBJECTFIELD_FIELD_FIELD, refId);
-				oboFields.put(OBJECTFIELD_ORDER_FIELD, objectData.linkorder);
-				oboFields.put(MODULE_ID_FIELD,mInfo.moduleId);
-				oboFields.put("obf_ref_object_id",objectData.objId);
-				oboFields.put("obf_cascad", Character.toString(del));
-				createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboFields, g);
-				//Joined field Add key of child in main object.
-				objectData.linkorder += 1;
-				addJoinedField(childId, refId, objectData, mInfo, dataMaps, objectData.linkorder, g);
-				obj.populate(true);
-				obj.select(objectData.objId);
-				obj.populate(true);
-				linkIds.put(fkFieldName, refId);
 			}
+			JSONObject fields = new JSONObject();
+			fields.put("fld_name", fkFieldName);
+			fields.put("fld_dbname", SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,triChild,triObj,"id"}));
+			fields.put("fld_type",ObjectField.TYPE_ID);
+			fields.put(MODULE_ID_FIELD,mInfo.moduleId);
+			if(Boolean.TRUE.equals(key)){
+				fields.put("fld_fonctid",true);
+				fields.put("fld_required",true);
+			}
+			refId = createOrUpdateWithJson(OBJECTFIELD,fields, g);
+			JSONObject oboFields = new JSONObject();
+			oboFields.put(OBJECTFIELD_OBJECT_FIELD, childId);
+			oboFields.put(OBJECTFIELD_FIELD_FIELD, refId);
+			oboFields.put(OBJECTFIELD_ORDER_FIELD, objectData.linkorder);
+			oboFields.put(MODULE_ID_FIELD,mInfo.moduleId);
+			oboFields.put("obf_ref_object_id",objectData.objId);
+			oboFields.put("obf_cascad", Character.toString(del));
+			createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboFields, g);
+			//Joined field Add key of child in main object.
+			objectData.linkorder += 1;
+			addJoinedField(childId, refId, objectData, mInfo, dataMaps, objectData.linkorder, g);
+			linkIds.put(fkFieldName, refId);
 	}
 	private static void addJoinedField(String childId,String refId,LinkObject objectData,ModuleInfo mInfo, DataMapObject dataMaps,int fkOrder, Grant g) throws GetException, ValidateException, UpdateException{
 		List<String> fks = getFonctionalKeys(objectData.objId,g);
@@ -891,7 +873,6 @@ public class AIModel implements java.io.Serializable {
 		String objName =  ObjectCore.getObjectName(objId);
 		ObjectDB obj = g.getTmpObject(objName);
 		for(ObjectField fk : obj.getFunctId()){
-			AppLog.info(objName+": "+fk.getName()+": "+fk.getId(), g);
 			fks.add(fk.getId());
 		}
 		return fks;

@@ -4,10 +4,10 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.5",
+  "mdl_version": "0.7",
   "mdl_type": "T",
   "mdl_icon": null,
-  "mdl_url": "{\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"\n\t},\n\t\"type\": \"git\"\n}",
+  "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\"\n}",
   "mdl_comment": "Exploratory module on the use of AI  \nUse AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint"
  },
  "links": [
@@ -119,7 +119,7 @@
       "mod_doc": {
        "path": "files/Model/Model-AIModuleCreate.svg",
        "mime": "image/svg+xml",
-       "name": "Model-AIModuleCreate.svg"
+       "name": "model.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-AIModuleCreate.png",
@@ -267,11 +267,11 @@
     "userkey": "AIBot",
     "item": {
      "shc_name": "AIBot",
-     "shc_url": "[EXPR:HTMLTool.getExternalObjectURL(\"AIChatBot\")]",
-     "shc_target": "frame_work",
+     "shc_url": "javascript:let obj=$ui.getNav().getCurrentItem().object;$ui.loadURL($(\".modal-body\"),$ui.getApp().getExternalObjectURL(\"AIChatBot\",\"object=\"+(obj?obj.getName():\"\")+\"&row_id=\"+(obj?obj.getRowId():\"\"),true),null,null)",
+     "shc_target": "_popup",
      "shc_order": 15,
      "shc_visible": ["P"],
-     "shc_icon": "AI",
+     "shc_icon": "fas/robot",
      "shc_keys": null,
      "row_module_id__mdl_name": "AIBySimplicite"
     }
@@ -3105,7 +3105,7 @@
       "acy_max_duration": null,
       "acy_duration_unit": null,
       "acy_alert_id__alt_name": null,
-      "acy_user_dlg": false,
+      "acy_user_dlg": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },

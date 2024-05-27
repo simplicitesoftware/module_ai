@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import com.simplicite.util.*;
 
-import ch.simschla.minify.cli.App;
+
 
 
 /**
@@ -34,7 +34,6 @@ public class AiMetrics implements java.io.Serializable {
 		String result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		JSONObject resultJS = splitRes(result,swagger.optJSONObject("components").getJSONObject("schemas"));
 		if (resultJS.has("error")) {
-			AppLog.info("Bot do not return chart generating", null);
 			res = AITools.AICaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
 			result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 			return new JSONObject().put("text",result);

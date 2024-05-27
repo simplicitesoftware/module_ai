@@ -1,16 +1,13 @@
-var objContext="";
+var specialisation="";
 var app = $ui.getApp();
 var botTemplate;
 var userTemplate;
 var userName ="user";
 var AIChatBot = (function() {
 	
-	function render(params,context) {
-		//$('#AIchatbot').append(context);
+	function render(params,spe) {
 		botTemplate = $("#botTemplate").html();
 		app.getSysParam(function(param){
-			console.log(botTemplate);
-			
 			botTemplate = Mustache.render(botTemplate, {botName:param});
 		},"AI_CHAT_BOT_NAME");
 		if(app.getGrant().firstname ){
@@ -20,13 +17,20 @@ var AIChatBot = (function() {
 		}
 	
 		userTemplate = $("#userTemplate").html();
-		objContext = context;
-	}
+		specialisation = spe;
+		document.getElementById('user-input-message').addEventListener('keyup', function(event) {
+			if (event.key === 'Enter' && event.target.matches('#user-input-message')) {
+				sendMessage();
+			}
+		});
 
+		
+	}
+	
 	return { render: render };
 })();
 function sendMessage() {
-	var userMessage = document.getElementById('user-message').value;
+	var userMessage = document.getElementById('user-input-message').value;
 	var chatMessages = document.getElementById('chat-messages');
 	// Ajoutez ici la logique de votre chatbot pour générer une réponse en fonction de userMessage
 	var historic =[];
@@ -41,8 +45,6 @@ function sendMessage() {
 		historic.push(JSON.stringify(text));
 		
 	});
-	//console.log(historic);
-
 	// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
 	
 	
@@ -51,26 +53,40 @@ function sendMessage() {
 	// Params
 	var useAsync = true; // use async callback pattern
 	var url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
-	var postParams = {prompt:userMessage, specialisation: objContext, historic: JSON.stringify(historic)}; // post params
+	var postParams = {prompt:userMessage, specialisation: specialisation, historic: JSON.stringify(historic)}; // post params
 	
 	// Efface le champ de saisie utilisateur
-	document.getElementById('user-message').value = '';
+	document.getElementById('user-input-message').value = '';
 
 	// Faites défiler vers le bas pour afficher les messages les plus récents
 	chatMessages.scrollTop = chatMessages.scrollHeight;
 	// Call Webservice (POST requests only)
-	//console.log(JSON.stringify(postParams));
+
 	app._call(useAsync, url, postParams, function callback(botResponse){
 		if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
 			var result = botResponse.response.choices[0].message.content;
+			result = escapeHtml(result);
+			result = $view.markdownToHTML(result).html();
 			result = result.replaceAll("\n","<br>");
+			
 			$(".bot-messages:last-child span").html(result);	
+			
 		}else{
-			//console.log(botResponse);
 			$(".bot-messages:last-child span").text("Sorry, an error occurred");
 		}
 			
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 	 });
-	
+
+	 	
+}
+function escapeHtml(text) {
+	var map = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#039;'
+	};
+	return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }

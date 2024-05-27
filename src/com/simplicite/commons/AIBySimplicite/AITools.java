@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
+
+
 /**
  * Shared code AITools
  */
@@ -27,6 +29,8 @@ public class AITools implements java.io.Serializable {
     private static JSONObject AIApiParam = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM");
     private static final String CONTENT_KEY = "content";
     private static final String MAX_TOKEN_PARAM_KEY = "default_max_token";
+    public static final String TYPE_TEXT = "text";
+    public static final String TYPE_IMAGE_URL = "image_url";
 	/**
      * Function to format the call to chatAI API.
      * Need the AI_API_KEY parameter set up with your key.
@@ -38,9 +42,22 @@ public class AITools implements java.io.Serializable {
 	 * @param maxToken number of tokens allow in response
 	 * @return If API return code is 200: API answer else: error return.
 	 */
-    
-	private static String AICaller(Grant g, String specialisation, String prompt ,JSONArray historic, boolean secure, int maxToken){
-        AppLog.info("AI API CALL", g);
+    private static String AICaller(Grant g, String specialisation, String prompt ,JSONArray historic, boolean secure, int maxToken){
+        prompt = normalize(prompt,secure);
+        return AICaller(g, specialisation, new JSONArray().put(getformatedContentByType(prompt,TYPE_TEXT)),historic,secure,maxToken);
+    }
+	private static String AICaller(Grant g, String specialisation, JSONArray prompt ,JSONArray historic, boolean secure, int maxToken){
+        specialisation = JSONObject.quote(normalize(specialisation,true));
+        for(Object p : prompt){
+            if(p instanceof JSONObject){
+                JSONObject contentJson = (JSONObject)p;
+                if(contentJson.has(TYPE_TEXT)){
+                    contentJson.put(TYPE_TEXT,JSONObject.quote(normalize(contentJson.getString(TYPE_TEXT))));
+                }
+            }else{
+                p = JSONObject.quote(normalize((String)p));
+            }
+        }
         int histDepth = AIApiParam.getInt("hist_depth");
 		String apiKey = Grant.getSystemAdmin().getParameter("AI_API_KEY");
         String apiUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
@@ -52,9 +69,9 @@ public class AITools implements java.io.Serializable {
             return "";
         }
         if("/".equals(apiKey))apiKey = "";
-        prompt=normalize(prompt,secure);
-        if(!Tool.isEmpty(specialisation))
-            specialisation=normalize(specialisation);
+        
+       /*  if(!Tool.isEmpty(specialisation))
+            specialisation=normalize(specialisation); */
        
         try {
             URI url = new URI(apiUrl);
@@ -92,7 +109,6 @@ public class AITools implements java.io.Serializable {
             }
             
             messages.put(new JSONObject().put("role","user").put(CONTENT_KEY,prompt));
-           
             postData.put("messages", messages);
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
                 outputStream.writeBytes(postData.toString());
@@ -134,6 +150,7 @@ public class AITools implements java.io.Serializable {
             }
             JSONObject error = new JSONObject(response.toString());
             connection.disconnect();
+            AppLog.info("AI API error :["+responseCode+"]"+error.getJSONObject("error").getString("message"),g);
             return "{\"code\":\""+responseCode+"\",\"error\":\""+error.getJSONObject("error").getString("message")+"\" }";
 
         } catch (IOException e) {
@@ -159,7 +176,9 @@ public class AITools implements java.io.Serializable {
                 response.append(line);
             }
             connection.disconnect();
-            return response.toString();
+            String res = response.toString();
+            AppLog.info("AI used token :"+new JSONObject(res).optJSONObject("usage").toString(1), g);
+            return res;
         } catch (IOException e) {
             AppLog.error(e,g);
         }
@@ -173,6 +192,11 @@ public class AITools implements java.io.Serializable {
      * @param prompt
      * @return
      */
+    public static JSONObject AICaller(Grant g, String specialisation, JSONArray prompt){
+    	
+        JSONObject res = new JSONObject(AICaller(g, specialisation,prompt,null,true,AIApiParam.getInt(MAX_TOKEN_PARAM_KEY)));
+        return res;
+    }
     public static JSONObject AICaller(Grant g, String specialisation, String prompt){
         return AICaller(g, specialisation,prompt,null,true,false);
     }
@@ -190,10 +214,13 @@ public class AITools implements java.io.Serializable {
         if(!Tool.isEmpty(AIApiParam)) {
             tokens = maxToken?AIApiParam.getInt(MAX_TOKEN_PARAM_KEY):0;
         }
-        String res = AICaller(g, specialisation,prompt,historic,secure,tokens);
-        return new JSONObject(res);
+        JSONObject res = new JSONObject(AICaller(g, specialisation,prompt,historic,secure,tokens));
+        return res;
     }
-     public static JSONObject AICaller(Grant g, String specialisation, JSONArray historic, String prompt){
+    public static JSONObject AICaller(Grant g, String specialisation, JSONArray historic, JSONArray prompt){
+        return new JSONObject(AICaller(g, specialisation,prompt,historic,true,AIApiParam.getInt(MAX_TOKEN_PARAM_KEY)));
+    }
+    public static JSONObject AICaller(Grant g, String specialisation, JSONArray historic, String prompt){
        return AICaller(g, specialisation,prompt,historic,true,false);
     }
     private static String AICaller(Grant g, String specialisation, String prompt ,JSONArray historic, int maxToken){
@@ -229,7 +256,22 @@ public class AITools implements java.io.Serializable {
             json.remove("trusted");
             return json;
         } 
-        json.put(CONTENT_KEY,normalize( json.getString(CONTENT_KEY)));
+
+        JSONArray contentArray = json.optJSONArray(CONTENT_KEY);
+        if(!Tool.isEmpty(contentArray)){
+            JSONArray newContentArray = new JSONArray();
+            for(Object o: contentArray){
+                JSONObject contentJson = (JSONObject)o;
+                if(contentJson.has(TYPE_TEXT)){
+                    contentJson.put(TYPE_TEXT,normalize(contentJson.getString(TYPE_TEXT)));
+                }
+                newContentArray.put(contentJson);
+            }
+            json.put(CONTENT_KEY,newContentArray);
+        }else{
+            json.put(CONTENT_KEY,normalize( json.getString(CONTENT_KEY)));
+        }
+        
         return json;
     }
 
@@ -302,10 +344,25 @@ public class AITools implements java.io.Serializable {
 		return invertJsonArray(notePad);
 	}
     private static String normalize(String text){
-        return  Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^a-zA-Z0-9]", " ");
+        text = removeAcent(text);
+        return  Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^a-zA-Z0-9@.-]", " ");
     }
     private static String normalize(String text, boolean secure){
-        return secure?Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^\\w:\\(\\),`{}.\\[\\]\"]", " "):normalize(text);
+        text = removeAcent(text);
+        return secure?Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^\\w:\\(\\),`{}.\\[\\]\"@\\/:-]", " "):normalize(text);
+    }
+    private static String removeAcent(String text){
+        return text.replaceAll("(?i)[éèêë]", "e")
+                .replaceAll("(?i)[àâä]","a" )
+                .replaceAll("(?i)[îï]", "i")
+                .replaceAll("(?i)[ôö]", "o")
+                .replaceAll("(?i)[ùûü]", "u")
+                .replaceAll("(?i)ÿ", "y")
+                .replaceAll("(?i)ç", "c")
+                .replaceAll("(?i)æ","ae")
+                .replaceAll("(?i)œ","oe");
+                    
+                    
     }
     /**
      * reverse the historic array to have the exchange in the correct order
@@ -536,6 +593,27 @@ public class AITools implements java.io.Serializable {
 		swagger.put("paths", newPaths);
 		return swagger;
 	}	
-
-
+    public static JSONObject getformatedContentByType(String content,String type){
+        return getformatedContentByType(content,type,null);
+    }
+    public static JSONObject getformatedContentByType(String content,String type,String detail){
+        JSONObject res = new JSONObject();
+        switch (type) {
+            case TYPE_TEXT:
+                res.put("type",TYPE_TEXT);
+                res.put(type,content);
+                break;
+            case TYPE_IMAGE_URL:
+                res.put("type",TYPE_IMAGE_URL);
+                JSONObject image = new JSONObject().put("url",content);
+                if(!Tool.isEmpty(detail)){
+                    image.put("detail",detail);
+                }
+                res.put(type,image);
+                break;
+            default:
+               return null;
+        }
+        return res;
+    }
 }

@@ -22,16 +22,17 @@ public class AIMetricsChat extends com.simplicite.util.ExternalObject {
 	 */
 	@Override
 	public Object display(Parameters params) {
+		Grant g = getGrant();
 		try {
-			appendCSSInclude(HTMLTool.getResourceCSSURL(getGrant().getExternalObject("AIProcessResource"), "CHAT_BOT_CSS"));
+			appendCSSInclude(HTMLTool.getResourceCSSURL(g.getExternalObject("AIProcessResource"), "CHAT_BOT_CSS"));
 			String moduleName = params.getParameter("module");
 			if(Tool.isEmpty(moduleName) || Tool.isEmpty(ModuleDB.getModuleId(moduleName))){
 				return javascript("$ui.alert("+Message.formatError("AI_MODULE_ERROR", null,null)+")");
 			}
-			JSONObject swagger = AITools.getSimplifyedSwagger(moduleName, getGrant());
+			JSONObject swagger = AITools.getSimplifyedSwagger(moduleName, g);
 			return javascript(getName() + ".render(ctn,"+new JSONObject().put("components",new JSONObject().put("schemas",swagger.optJSONObject("components").optJSONObject("schemas"))).toString()+");");
 		} catch (PlatformException e) {
-			AppLog.error(e, getGrant());
+			AppLog.error(e, g);
 		}
 		return javascript(getName() + ".render(ctn);");
 		

@@ -7,6 +7,8 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 
+import static org.mockito.ArgumentMatchers.booleanThat;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,7 +29,6 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	@Override
 	public Object post(Parameters params) throws HTTPException {
 		try {
-			//AppLog.info("post params=" + params, getGrant());
 			String prompt =params.getParameter(PARAMS_PROMPT_KEY);
 			String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 			String type = params.getParameter(JSON_REQ_TYPE);
@@ -38,17 +39,13 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 				case "metrics":
 					JSONObject swagger = new JSONObject(params.getParameter("swagger"));
 					String lang = params.getParameter("lang");
-					AppLog.info("metrics: "+objectName, getGrant());
 					return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);	
 				default:
 					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
-						AppLog.info("updateFieldByRequest", getGrant());
 						return updateFieldByRequest(req);
 					}else if (!Tool.isEmpty(prompt) ) {
-						AppLog.info("updateFieldByParam(prompt,params)", getGrant());
 						return updateFieldByParam(prompt,params);
 					}else if(Tool.isEmpty(prompt) && !Tool.isEmpty(objectName) && !Tool.isEmpty(objectID)){
-						AppLog.info("frontAICaller", getGrant());
 						return frontAICaller(objectName, objectID);
 					} else {
 						return error(400, "Call me with a prompt or a object param please!");
@@ -103,17 +100,27 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		return prompt;
 	}
 	private Object updateFieldByParam(String prompt, Parameters params){
+		Grant g = getGrant();
+		boolean isJsonPrompt = true;
+		JSONArray jsonPrompt;
+		try {
+			jsonPrompt = new JSONArray(prompt);
+		}catch(Exception e){
+			isJsonPrompt = false;
+			jsonPrompt = new JSONArray();
+		}
+		
 		int histDepth = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM").getInt("hist_depth");
 		JSONObject res;
 		String specialisation = params.getParameter("specialisation");
 		String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 		String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 		String historicString = params.getParameter("historic");
-		if(!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID)){
+		if(!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID) && !isJsonPrompt){
 			ObjectDB obj = Grant.getSystemAdmin().getTmpObject(objectName);
 			synchronized(obj.getLock()){
 				obj.select(objectID);
-				res = AITools.expresionAICaller(getGrant(), specialisation, prompt, obj);
+				res = AITools.expresionAICaller(g, specialisation, prompt, obj);
 			}
 			
 		}else if (!Tool.isEmpty(historicString)){
@@ -126,9 +133,17 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 					historic.put(AITools.formatMessageHistoric(new JSONObject((String) hist)));
 				i++;
 			}
-			res = AITools.AICaller(getGrant(), specialisation, historic, prompt);
+			if(isJsonPrompt){
+				res = AITools.AICaller(g, specialisation, historic, jsonPrompt);
+			}else{
+				res = AITools.AICaller(g, specialisation, historic, prompt);
+			}
 		}else{
-			res = AITools.AICaller(getGrant(), specialisation, prompt);
+			if(isJsonPrompt){
+				res = AITools.AICaller(g, specialisation, jsonPrompt);
+			}else{
+				res = AITools.AICaller(g, specialisation, prompt);
+			}
 		}
 
 		return new JSONObject()

@@ -7,7 +7,6 @@ function AINewModel() {
 	if (idsData != null){
 		ids = data.allIds.values;	
 	}
-	console.log("ids",ids);
 	if(!ids || !ids.length || ids.length==0) {
 		ids = data.createdIds.values;
 		newModel(ids);
@@ -42,7 +41,6 @@ function AINewModel() {
 
 }
 function newModel(ids){
-	console.log("newModel",ids);
 	let moduleName = data.moduleName.values[0];
 	var list = [];
 	// Needs objects to insert
@@ -52,7 +50,6 @@ function newModel(ids){
 	}
 
 	$(ids).each(function(i,id) {
-		console.log("id",id);
 		list.push({
 			object: "ObjectInternal", // node object
 			id: id, // node row_id
@@ -106,7 +103,6 @@ function newModel(ids){
 		}
 		catch(e) {
 			alert("error see log");
-			console.log(e);
 		}
 	});
 }
@@ -119,7 +115,6 @@ function choiceModel(list){
 	var row=1;
 	var col=1;
 	for(var i=0; i<list.length; i++){
-		console.log("list",list[i]);
 		var row_id = list[i].row_id;
 		$("#choice").append("<div class='item'><div class='mdl' id='"+row_id+"'><div class='title'>"+list[i].mod_name+"</div></div></div>");
 		$("#"+row_id).css("grid-column",col);
@@ -143,7 +138,6 @@ function updateModel(modelId){
  	let ids = data.createdIds.values;
  	let moduleName = data.moduleName.values[0];
 	$ui.loadDiagramEngine(false, function() {
-		console.log($ui.diagram);
 		$ui.diagram.open(modelId, {
 			svg: true,
 			docked: false,
@@ -151,7 +145,6 @@ function updateModel(modelId){
 		}, function(diagram) {
 			var list = [];
 			$(ids).each(function(i,id) {
-				console.log("id",id);
 				list.push({
 					object: "ObjectInternal", // node object
 					id: id, // node row_id

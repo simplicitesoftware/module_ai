@@ -17,15 +17,17 @@ public class AIShortcut extends ExternalObject {
 	 */
 	@Override
 	public Object display(Parameters params) {
+		Grant g = getGrant();
 		try {
+			
 			String id;
-			getGrant().getLogin();
-			ObjectDB obj = getGrant().getTmpObject("AIExemple");
+			g.getLogin();
+			ObjectDB obj = g.getTmpObject("AIExemple");
 			synchronized(obj){
 				obj.getLock();
 				BusinessObjectTool ot = obj.getTool();
-				if(!ot.selectForCreateOrUpdate(new JSONObject().put("aiExName","shortcut_"+getGrant().getLogin()))){
-					obj.setFieldValue("aiExName","shortcut_"+getGrant().getLogin());
+				if(!ot.selectForCreateOrUpdate(new JSONObject().put("aiExName","shortcut_"+g.getLogin()))){
+					obj.setFieldValue("aiExName","shortcut_"+g.getLogin());
 					ot.validateAndCreate();
 				}
 				id=obj.getRowId();
@@ -33,7 +35,7 @@ public class AIShortcut extends ExternalObject {
 			}
 			return javascript(HTMLTool.redirectJS(HTMLTool.getFormURL("AIExemple",id,null)));
 		} catch (Exception e) {
-			AppLog.error(null, e, getGrant());
+			AppLog.error(null, e, g);
 			return e.getMessage();
 		}
 	}
