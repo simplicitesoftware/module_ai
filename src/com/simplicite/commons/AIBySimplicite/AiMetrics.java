@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import com.simplicite.util.*;
 
+import org.json.JSONArray;
+
 
 
 
@@ -14,6 +16,7 @@ import com.simplicite.util.*;
  * Shared code AiMetrics
  */
 public class AiMetrics implements java.io.Serializable {
+
 	static final String EXEMPLE=" ```javascript\n"+
 	"function(){//code exemple to do search on the object myObject witch has a field myField\n"+
 	"	const app = $ui.getApp();\n"+
@@ -29,8 +32,14 @@ public class AiMetrics implements java.io.Serializable {
 	"```\n";
 	private static final long serialVersionUID = 1L;
 	public static JSONObject getJavaScriptMetrics(String prompt, JSONObject swagger , String lang){
-		
-		JSONObject res = AITools.AICaller(null, "\n ```OppenAPI "+swagger+"``` ",EXEMPLE+" give me Script js to display: "+prompt+("FRA".equals(lang)?" in french":"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?" in french":"")+". Do not create data use search",false,true);
+		JSONArray arrayPrompts = new JSONArray();
+		prompt = AITools.normalize(AITools.removeAcent(prompt),false);
+		prompt =  "give me Script js to display: "+prompt+("FRA".equals(lang)?" in french":"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?" in french":"")+". Do not create data use search";
+
+		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
+		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
+
+		JSONObject res = AITools.AICaller(null, "\n ```OppenAPI "+swagger+"```",arrayPrompts,false,true,true);
 		String result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		JSONObject resultJS = splitRes(result,swagger.optJSONObject("components").getJSONObject("schemas"));
 		if (resultJS.has("error")) {

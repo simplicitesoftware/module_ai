@@ -42,17 +42,36 @@ public class AITools implements java.io.Serializable {
 	 * @param maxToken number of tokens allow in response
 	 * @return If API return code is 200: API answer else: error return.
 	 */
-    private static String AICaller(Grant g, String specialisation, String prompt ,JSONArray historic, boolean secure, int maxToken){
-        prompt = normalize(prompt,secure);
-        return AICaller(g, specialisation, new JSONArray().put(getformatedContentByType(prompt,TYPE_TEXT)),historic,secure,maxToken);
+    private static String AICaller(Grant g, String specialisation, Object prompt ,JSONArray historic, boolean secure, int maxToken){
+        return AICaller(g, specialisation, prompt,historic,secure,false,maxToken);
     }
-	private static String AICaller(Grant g, String specialisation, JSONArray prompt ,JSONArray historic, boolean secure, int maxToken){
-        specialisation = JSONObject.quote(normalize(specialisation,true));
+    
+    private static String AICaller(Grant g, String specialisation, Object prompt ,JSONArray historic, boolean secure,boolean isSafeSpe, int maxToken){
+        JSONArray arrayPrompt = new JSONArray();
+       if(prompt instanceof String){
+            String strPrompt = normalize((String)prompt,secure);
+            arrayPrompt.put(getformatedContentByType(strPrompt,TYPE_TEXT,false));
+            
+        }else if(prompt instanceof JSONArray){
+            arrayPrompt= (JSONArray)prompt;
+        }else{
+            AppLog.info("Prompt must be a String or a JSONArray",g);
+            return "";
+        }
+        return AICaller(g, specialisation,arrayPrompt,historic,secure,isSafeSpe,maxToken);
+    }
+	private static String AICaller(Grant g, String specialisation, JSONArray prompt ,JSONArray historic, boolean secure,boolean isSafeSpe, int maxToken){
+        specialisation = removeAcent(specialisation);
+        if(!isSafeSpe) specialisation = JSONObject.quote(normalize(specialisation,true));
+
         for(Object p : prompt){
             if(p instanceof JSONObject){
                 JSONObject contentJson = (JSONObject)p;
-                if(contentJson.has(TYPE_TEXT)){
+                if(!contentJson.optBoolean("trusted",false) && contentJson.has(TYPE_TEXT)){
                     contentJson.put(TYPE_TEXT,JSONObject.quote(normalize(contentJson.getString(TYPE_TEXT))));
+                }
+                if(contentJson.has("trusted")){
+                    contentJson.remove("trusted");
                 }
             }else{
                 p = JSONObject.quote(normalize((String)p));
@@ -192,38 +211,36 @@ public class AITools implements java.io.Serializable {
      * @param prompt
      * @return
      */
-    public static JSONObject AICaller(Grant g, String specialisation, JSONArray prompt){
-    	
-        JSONObject res = new JSONObject(AICaller(g, specialisation,prompt,null,true,AIApiParam.getInt(MAX_TOKEN_PARAM_KEY)));
-        return res;
-    }
-    public static JSONObject AICaller(Grant g, String specialisation, String prompt){
+    public static JSONObject AICaller(Grant g, String specialisation, Object prompt){
         return AICaller(g, specialisation,prompt,null,true,false);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, String prompt, boolean maxToken){
+    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, boolean maxToken){
         return AICaller(g, specialisation,prompt,null,maxToken,false);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, String prompt, boolean maxToken,boolean secure){
-        return AICaller(g, specialisation,prompt,null,maxToken,secure);
+    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, boolean maxToken,boolean secure){
+        return AICaller(g, specialisation,prompt,maxToken,secure,false);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, String prompt, JSONArray historic,boolean maxToken){
+    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, boolean maxToken,boolean secure,boolean isSafeSpe){
+        return AICaller(g, specialisation,prompt,null,maxToken,secure,isSafeSpe);
+    }
+    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken){
         return AICaller(g, specialisation,prompt,historic,maxToken,false);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, String prompt, JSONArray historic,boolean maxToken,boolean secure){
+    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken,boolean secure){
+        return AICaller(g, specialisation,prompt,historic,maxToken,secure,false);
+    }
+    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken,boolean secure,boolean isSafeSpe){
         int tokens = 1500;
         if(!Tool.isEmpty(AIApiParam)) {
             tokens = maxToken?AIApiParam.getInt(MAX_TOKEN_PARAM_KEY):0;
         }
-        JSONObject res = new JSONObject(AICaller(g, specialisation,prompt,historic,secure,tokens));
-        return res;
+        return new JSONObject(AICaller(g, specialisation,prompt,historic,secure,isSafeSpe,tokens));
+
     }
-    public static JSONObject AICaller(Grant g, String specialisation, JSONArray historic, JSONArray prompt){
-        return new JSONObject(AICaller(g, specialisation,prompt,historic,true,AIApiParam.getInt(MAX_TOKEN_PARAM_KEY)));
-    }
-    public static JSONObject AICaller(Grant g, String specialisation, JSONArray historic, String prompt){
+    public static JSONObject AICaller(Grant g, String specialisation, JSONArray historic, Object prompt){
        return AICaller(g, specialisation,prompt,historic,true,false);
     }
-    private static String AICaller(Grant g, String specialisation, String prompt ,JSONArray historic, int maxToken){
+    private static String AICaller(Grant g, String specialisation, Object prompt ,JSONArray historic, int maxToken){
         return AICaller(g, specialisation,prompt,historic,false,maxToken);
     
     }
@@ -347,11 +364,11 @@ public class AITools implements java.io.Serializable {
         text = removeAcent(text);
         return  Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^a-zA-Z0-9@.-]", " ");
     }
-    private static String normalize(String text, boolean secure){
+    public static String normalize(String text, boolean secure){
         text = removeAcent(text);
         return secure?Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^\\w:\\(\\),`{}.\\[\\]\"@\\/:-]", " "):normalize(text);
     }
-    private static String removeAcent(String text){
+    public static String removeAcent(String text){
         return text.replaceAll("(?i)[éèêë]", "e")
                 .replaceAll("(?i)[àâä]","a" )
                 .replaceAll("(?i)[îï]", "i")
@@ -593,15 +610,16 @@ public class AITools implements java.io.Serializable {
 		swagger.put("paths", newPaths);
 		return swagger;
 	}	
-    public static JSONObject getformatedContentByType(String content,String type){
-        return getformatedContentByType(content,type,null);
+    public static JSONObject getformatedContentByType(String content,String type,boolean trusted){
+        return getformatedContentByType(content,type,trusted,null);
     }
-    public static JSONObject getformatedContentByType(String content,String type,String detail){
+    public static JSONObject getformatedContentByType(String content,String type,boolean trusted,String detail){
         JSONObject res = new JSONObject();
         switch (type) {
             case TYPE_TEXT:
                 res.put("type",TYPE_TEXT);
                 res.put(type,content);
+                if(trusted) res.put("trusted",trusted);
                 break;
             case TYPE_IMAGE_URL:
                 res.put("type",TYPE_IMAGE_URL);

@@ -2,7 +2,7 @@
 # / __(_)_ __  _ __| (_)__(_) |_ /_/
 # \__ \ | '  \| '_ \ | / _| |  _/ -_)
 # |___/_|_|_|_| .__/_|_\__|_|\__\___|
-#             |_| Module: AIBySimplicite 0.7
+#             |_| Module: AIBySimplicite 0.8
 components:
   schemas:
     Error404:
@@ -16,6 +16,18 @@ components:
           type: integer
           enum:
           - 404
+    ActionResult:
+      type: object
+      properties:
+        result:
+          description: Action result
+          type: string
+    TreeviewData:
+      type: object
+      properties:
+        item:
+          description: Object item with lists of linked objects' items
+          type: object
     PublicationResult:
       type: object
       properties:
@@ -24,33 +36,6 @@ components:
           type: string
         content:
           description: Content (plain text or base64 encoded)
-          type: string
-    AIExemple:
-      type: object
-      properties:
-        aiExResponse:
-          description: Response
-          type: string
-        aiExType:
-          description: You need help with
-          type: string
-          enum:
-          - CODE
-          - OTHER
-        aiExName:
-          description: Name
-          type: string
-        row_id:
-          description: Unique technical row ID
-          type: string
-        aiExSpecification:
-          description: Specification
-          type: string
-        aiExOldPrompt:
-          description: Old answer
-          type: string
-        aiExPrompt:
-          description: Prompt
           type: string
     PlaceData:
       type: object
@@ -73,48 +58,6 @@ components:
         label3:
           description: 'Label #3'
           type: string
-    AITest:
-      type: object
-      properties:
-        aiNotepad:
-          description: test notepad
-          type: string
-        aiTestLongString:
-          description: Description
-          type: string
-        aiTestId:
-          description: id
-          type: integer
-        row_id:
-          description: Unique technical row ID
-          type: string
-    PlaceMapData:
-      type: object
-      properties:
-        places:
-          description: Places
-          type: array
-          items:
-            $ref: '#/components/schemas/PlaceData'
-        name:
-          description: Name
-          type: string
-    ActionResult:
-      type: object
-      properties:
-        result:
-          description: Action result
-          type: string
-    TreeviewData:
-      type: object
-      properties:
-        item:
-          description: Object item with lists of linked objects' items
-          type: object
-    ArrayOfAIExemple:
-      type: array
-      items:
-        $ref: '#/components/schemas/AIExemple'
     Error400:
       type: object
       properties:
@@ -148,10 +91,17 @@ components:
           type: integer
           enum:
           - 500
-    ArrayOfAITest:
-      type: array
-      items:
-        $ref: '#/components/schemas/AITest'
+    PlaceMapData:
+      type: object
+      properties:
+        places:
+          description: Places
+          type: array
+          items:
+            $ref: '#/components/schemas/PlaceData'
+        name:
+          description: Name
+          type: string
     Error403:
       type: object
       properties:
@@ -206,201 +156,6 @@ paths:
         required: false
       tags:
       - session
-  /rest/AITest/{row_id}:
-    post:
-      summary: Create a new AITest business object record
-      security:
-      - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AITest'
-      operationId: obj-aitest-create
-      responses:
-        '200':
-          description: Success in creating a new business object record
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AITest'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AITest
-    get:
-      summary: Get a AITest business object record
-      security:
-      - bearerAuth: []
-      operationId: obj-aitest-get
-      responses:
-        '200':
-          description: Success in getting a single business object record
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AITest'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      - schema:
-          type: boolean
-        in: query
-        name: _inline_documents
-        description: Inline documents?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _inline_thumbnails
-        description: Inline documents' thumbnails?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _inline_objects
-        description: Inline objects?
-        required: false
-      tags:
-      - AITest
-    delete:
-      summary: Delete a AITest business object record
-      security:
-      - bearerAuth: []
-      operationId: obj-aitest-delete
-      responses:
-        '200':
-          description: Success in deleting a business object record
-          content:
-            application/json: {}
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AITest
-    put:
-      summary: Update a AITest business object record
-      security:
-      - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AITest'
-      operationId: obj-aitest-update
-      responses:
-        '200':
-          description: Success in updating a business object record
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AITest'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AITest
   /logout:
     get:
       summary: Logout (revoke bearer token)
@@ -420,352 +175,6 @@ paths:
                 $ref: '#/components/schemas/Error401'
       tags:
       - session
-  /rest/AITest:
-    get:
-      summary: Search AITest business object records or get contextualized metadata
-      security:
-      - bearerAuth: []
-      operationId: obj-aitest-search
-      responses:
-        '200':
-          description: Success in searching business object records (or in getting
-            contextualized business object metadata, documentation, ...)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArrayOfAITest'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-      parameters:
-      - schema:
-          type: boolean
-        in: query
-        name: _metadata
-        description: Metadata?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _count
-        description: Count?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _doc
-        description: Documentation?
-        required: false
-      - schema:
-          type: integer
-        in: query
-        name: aiTestId
-        description: Search filter for id
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiNotepad
-        description: Search filter for test notepad
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiTestLongString
-        description: Search filter for Description
-        required: false
-      tags:
-      - AITest
-  /rest/AIExemple:
-    get:
-      summary: Search AIExemple business object records or get contextualized metadata
-      security:
-      - bearerAuth: []
-      operationId: obj-aiexemple-search
-      responses:
-        '200':
-          description: Success in searching business object records (or in getting
-            contextualized business object metadata, documentation, ...)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArrayOfAIExemple'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-      parameters:
-      - schema:
-          type: boolean
-        in: query
-        name: _metadata
-        description: Metadata?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _count
-        description: Count?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _doc
-        description: Documentation?
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiExPrompt
-        description: Search filter for Prompt
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiExResponse
-        description: Search filter for Response
-        required: false
-      - schema:
-          type: string
-          enum:
-          - CODE
-          - OTHER
-        in: query
-        name: aiExType
-        description: Search filter for You need help with
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiExSpecification
-        description: Search filter for Specification
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiExOldPrompt
-        description: Search filter for Old answer
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiExName
-        description: Search filter for Name
-        required: false
-      tags:
-      - AIExemple
-  /rest/AIExemple/{row_id}:
-    post:
-      summary: Create a new AIExemple business object record
-      security:
-      - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AIExemple'
-      operationId: obj-aiexemple-create
-      responses:
-        '200':
-          description: Success in creating a new business object record
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AIExemple'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AIExemple
-    get:
-      summary: Get a AIExemple business object record
-      security:
-      - bearerAuth: []
-      operationId: obj-aiexemple-get
-      responses:
-        '200':
-          description: Success in getting a single business object record
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AIExemple'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      - schema:
-          type: boolean
-        in: query
-        name: _inline_documents
-        description: Inline documents?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _inline_thumbnails
-        description: Inline documents' thumbnails?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _inline_objects
-        description: Inline objects?
-        required: false
-      tags:
-      - AIExemple
-    delete:
-      summary: Delete a AIExemple business object record
-      security:
-      - bearerAuth: []
-      operationId: obj-aiexemple-delete
-      responses:
-        '200':
-          description: Success in deleting a business object record
-          content:
-            application/json: {}
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AIExemple
-    put:
-      summary: Update a AIExemple business object record
-      security:
-      - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AIExemple'
-      operationId: obj-aiexemple-update
-      responses:
-        '200':
-          description: Success in updating a business object record
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AIExemple'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AIExemple
   /:
     get:
       summary: Get user session information
@@ -802,9 +211,4 @@ info:
     email: contact@simplicitesoftware.com
   description: API for module AIBySimplicite
   title: AIBySimplicite
-  version: '0.7'
-tags:
-- name: AIExemple
-  description: Exemple
-- name: AITest
-  description: AITest
+  version: '0.8'

@@ -14,45 +14,6 @@
 Exploratory module on the use of AI  
 Use AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint
 
-`AIExemple` business object definition
---------------------------------------
-
-Test object
-
-### Fields
-
-| Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
-|--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
-| `aiExPrompt`                                                 | text(750)                                |          | yes       |          | -                                                                                |
-| `aiExResponse`                                               | text(20000)                              |          |           |          | -                                                                                |
-| `aiExType`                                                   | enum(100) using `AI_EX_TYPE` list        | yes      | yes       |          | -                                                                                |
-| `aiExSpecification`                                          | char(100)                                |          | yes       |          | -                                                                                |
-| `aiExOldPrompt`                                              | char(750)                                |          |           |          | -                                                                                |
-| `aiExName`                                                   | char(100)                                | yes*     | yes       |          | -                                                                                |
-
-### Lists
-
-* `AI_EX_TYPE`
-    - `CODE` Code
-    - `OTHER` Other
-
-`AITest` business object definition
------------------------------------
-
-Test object
-
-### Fields
-
-| Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
-|--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
-| `aiTestId`                                                   | int(11)                                  | yes*     | yes       |          | -                                                                                |
-| `aiNotepad`                                                  | notepad(1000)                            |          | yes       |          | -                                                                                |
-| `aiTestLongString`                                           | text(1000)                               |          | yes       |          | -                                                                                |
-
-### Custom actions
-
-* `AI_CLEAR_HIST`: Clear history in notePad for test object
-
 `AIGenData` business process definition
 ---------------------------------------
 
@@ -60,6 +21,7 @@ Test object
 
 ### Activities
 
+* `SelectProcess`: 
 * `Begin`: 
 * `End`: 
 * `SelectModule`: Selection module
@@ -74,6 +36,10 @@ Auomatic model generation process
 
 * `Begin`: 
 * `End`: 
+* `Choice`: 
+* `CreateModule`: 
+* `TranslateDomain`: 
+* `GrantUser`: 
 * `SelectModule`: Selection module
 * `SelectGroup`: Selection group
 * `SelectDomain`: Selection Domain

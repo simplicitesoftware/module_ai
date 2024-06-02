@@ -1,12 +1,7 @@
 package com.simplicite.workflows.AIBySimplicite;
-
 import java.util.*;
-
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-
 import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AIModel;
 import com.simplicite.commons.AIBySimplicite.AITools;
@@ -14,6 +9,7 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 import com.simplicite.webapp.ObjectContextWeb;
+
 
 
 /**
@@ -25,6 +21,8 @@ public class AIModuleCreate extends Processus {
 	private static final String FIELD ="Field";
 	private static final String ROW_ID ="row_id";
 	private static final String EMPTY_TEXTAREA ="<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" id=\"json_return\" name=\"json_return\"></textarea>";
+	private static final String ACTIVITY_CREATE_MODULE ="AIC_0010";
+	private static final String ACTIVITY_GRANT_USER ="AIC_0020";
 	private static final String ACTIVITY_SELECT_MODULE ="AIC_0100";
 	private static final String ACTIVITY_SELECT_GROUP ="AIC_0200";
 	private static final String ACTIVITY_SELECT_DOMAIN ="AIC_0300";
@@ -32,8 +30,21 @@ public class AIModuleCreate extends Processus {
 	private static final String ACTIVITY_PROMPT ="AIC_0400";
 	private static final String ACTIVITY_AI ="AIC_0500";
 	private static final String ACTIVITY_GEN ="AIC_0600";
+	private static final String ACTIVITY_TRL_DOMAIN ="AIC_0015";
 	
-
+	@Override
+	public void postLock(ActivityFile context) {
+		AppLog.info("postLock: "+context.getActivity().getStep(), getGrant());
+		// TODO Auto-generated method stub
+		super.postLock(context);
+	}
+	@Override
+	public void postInstantiate(Grant g) {
+		AppLog.info("postInstantiate ", g);
+		
+		//getContext(getBegin()).setNextStep(ACTIVITY_SELECT_MODULE);
+		super.postInstantiate(g);
+	}
 	/**
 	 * This method is used to generate the HTML content for the chat bot.
 	 * 
@@ -326,5 +337,186 @@ public class AIModuleCreate extends Processus {
 	}
 	private String formatAnswerAI(String answer){
 		return answer.replaceAll("(\r\n|\n)", "<br>");
+	}
+	@Override
+	public void postValidate(ActivityFile context) {
+		String step = context.getActivity().getStep();
+		if(ACTIVITY_CREATE_MODULE.equals(step)){
+			AppLog.info("postValidate: "+ context.getDataValue(FIELD, ROW_ID), getGrant());
+			getContext(getActivity(ACTIVITY_SELECT_MODULE)).setDataFile(FIELD,ROW_ID, context.getDataValue(FIELD, ROW_ID));
+			String groupId = createGroup(context);
+			if(!Tool.isEmpty(groupId)){
+				getContext(getActivity(ACTIVITY_SELECT_GROUP)).setDataFile(FIELD, ROW_ID, groupId);
+			}
+			String domainId = createDomain(context);
+			if(!Tool.isEmpty(domainId)){
+				getContext(getActivity(ACTIVITY_SELECT_DOMAIN)).setDataFile(FIELD, ROW_ID, domainId);
+			}
+			grantGroupToDomain(domainId,groupId,context.getDataValue(FIELD, ROW_ID));
+
+		}else if(ACTIVITY_GRANT_USER.equals(step)){
+			AppLog.info("postValidate: "+ACTIVITY_GRANT_USER+" data: "+ context.getDataValue("Data", "AREA:1"), getGrant());
+			boolean isGrantUser ="1".equals(context.getDataValue("Data", "AREA:1")); 
+			if(isGrantUser){
+				String groupName = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataValue(FIELD, "grp_name");
+				if(Tool.isEmpty(groupName)){
+					groupName = SyntaxTool.join(SyntaxTool.UPPER, new String[]{getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD,"mdl_prefix"),"GROUP"});
+				}
+				String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, "mdl_name");
+				Grant.addResponsibility(Grant.getUserId(getGrant().getLogin()),groupName,null,null,true, moduleName);
+			}
+			
+		}else if(ACTIVITY_TRL_DOMAIN.equals(step)){
+			saveTranslate(context);
+		}
+		super.postValidate(context);
+	}
+	private void grantGroupToDomain(String domainId, String groupId, String moduleId){
+		ObjectDB obj = getGrant().getTmpObject("Permission");
+		synchronized(obj.getLock()){
+			try{
+				BusinessObjectTool objTool = obj.getTool();
+				JSONObject permFlds = new JSONObject().put("prm_group_id", groupId).put("prm_object", "Domain:"+domainId);
+				if(!objTool.selectForCreateOrUpdate(permFlds)){
+					permFlds.put("row_module_id", moduleId);
+					obj.setValuesFromJSONObject(permFlds, false, false);
+					obj.populate(true);
+					objTool.validateAndCreate();
+				}
+			}catch(Exception e){
+				AppLog.error(e, getGrant());
+			}
+		}
+	}
+	private String createGroup(ActivityFile context){
+		String moduleId =context.getDataValue(FIELD, ROW_ID);
+		String groupName = SyntaxTool.join(SyntaxTool.UPPER, new String[]{context.getDataValue(FIELD,"mdl_prefix"),"GROUP"});
+		JSONObject groupFlds = new JSONObject().put("grp_name", groupName);
+		ObjectDB obj = getGrant().getTmpObject("Group");
+		synchronized(obj.getLock()){
+			try{
+				BusinessObjectTool objTool = obj.getTool();
+				if(!objTool.selectForCreateOrUpdate(groupFlds)){
+					groupFlds.put("row_module_id", moduleId);
+					obj.setValuesFromJSONObject(groupFlds, false, false);
+					obj.populate(true);
+					objTool.validateAndCreate();
+				}
+				return obj.getRowId();
+			}catch(Exception e){
+				AppLog.error(e, getGrant());
+				return null;
+			}
+		}
+
+	}
+	private String createDomain(ActivityFile context){
+		String moduleId =context.getDataValue(FIELD, ROW_ID);
+		String domainName = SyntaxTool.join(SyntaxTool.PASCAL, new String[]{context.getDataValue(FIELD,"mdl_prefix"),"Domain"});
+		JSONObject domainFlds = new JSONObject().put("obd_name", domainName);
+		ObjectDB obj = getGrant().getTmpObject("Domain");
+		synchronized(obj.getLock()){
+			try{
+				BusinessObjectTool objTool = obj.getTool();
+				if(!objTool.selectForCreateOrUpdate(domainFlds)){
+					domainFlds.put("row_module_id", moduleId);
+					obj.setValuesFromJSONObject(domainFlds, false, false);
+					obj.populate(true);
+					objTool.validateAndCreate();
+				}
+				return obj.getRowId();
+			}catch(Exception e){
+				AppLog.error(e, getGrant());
+				return null;
+			}
+		}
+
+	}
+	public String translateDomain(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
+		Activity a = p.getActivity(ACTIVITY_TRL_DOMAIN);
+		ActivityFile af = getContext(a);
+		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
+
+		StringBuilder html = new StringBuilder();
+		html.append("<table class=\"table table-striped workform\">");
+
+		String[] langCodes = g.getLangsCodes();
+		String[] langValues = g.getLangsValues();
+
+		// Languages
+		html.append("<tr>").append("<td>&nbsp;</td>");
+		for (int i=0; i<langValues.length; i++)
+			html.append(getTdField(langValues[i]));
+		html.append("</tr>");
+
+		// Domains translations
+		ObjectDB dom = g.getTmpObject("Domain");
+		dom.resetFilters();
+		dom.setFieldFilter("row_module_id", moduleId);
+		List<String[]> v = dom.search();
+		for (int j=0; j<v.size(); j++)
+		{
+			dom.setValues(v.get(j), false);
+			html.append("<tr>");
+			html.append(getTdField(dom.getFieldValue("obd_name")));
+			for (int i=0; i<langCodes.length; i++)
+			{
+				String lang = langCodes[i];
+				String val = g.simpleQuery(
+					"select tsl_value from m_translate " +
+					"where tsl_object='Domain:"+dom.getRowId()+"' and tsl_lang='"+lang+"'");
+
+				String name = "tsl"+lang+dom.getRowId();
+				addDynamicData(af, name, val);
+				html.append(getTdInput(name, val, 50, 100,1));
+			}
+			html.append("</tr>");
+		}
+
+		html.append("</table>");
+		return html.toString();
+	}
+	private String getTdField(String value)
+	{
+		int colspan = 1;
+		int rowspan = 1;
+		return "<td"+(colspan>1 ? " colspan=\""+colspan+"\"" : "")+(rowspan>1 ? " rowspan=\""+rowspan+"\"" : "")+">" + Tool.toHTML(value) + "</td>";
+	
+	}
+	public String getTdCell(String content, int colspan)
+	{
+		return "<td style=\"text-align: center;\""+(colspan>1 ? " colspan=\""+colspan+"\"" : "")+">" + content + "</td>";
+	}
+	public String getTdInput(String name, String value, int size, int maxSize, int colspan)
+	{
+		return getTdCell("<input class=\"form-control\" type=\"text\" size=\""+size+"\" maxsize=\""+maxSize+"\" name=\""+name+"\" value=\""+value+"\"/>", colspan);
+	}
+	public void saveTranslate(ActivityFile context){
+		List<DataFile> vdf = context.getDataFiles("Data");
+		ObjectDB tsl = getGrant().getTmpObject("TranslateDomain");
+		for (int i=0; vdf!=null && i<vdf.size(); i++)
+		{
+			DataFile df = vdf.get(i);
+			if (df==null) continue;
+			String val = df.getValue(0);
+			if (val==null || val.length()==0) continue;
+
+			String name = df.getName();
+			if (name.startsWith("tsl"))
+			{
+				String lang = name.substring(3,6);
+				String id = name.substring(6);
+				tsl.resetFilters();
+				tsl.setFieldFilter("tsl_object", "Domain:"+id);
+				tsl.setFieldFilter("tsl_lang", lang);
+				List<String[]> v = tsl.search();
+				if (!v.isEmpty())
+				{
+					tsl.setValues(v.get(0), true);
+					tsl.setFieldValue("tsl_value", val);
+					tsl.update();
+				}
+			}
+		}
 	}
 }
