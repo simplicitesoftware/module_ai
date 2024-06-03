@@ -19,16 +19,18 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 	 */
 	@Override
 	public Object display(Parameters params) {
+		Grant g = getGrant();
 		try {
 			addMustache();
 			addMarkdown();
+			appendCSSInclude(HTMLTool.getResourceCSSURL(g, "AI_STYLE"));
 			setTitle(false);
 			String object  = params.getParameter("object");
 			String rowId = params.getParameter("row_id"); //undefine or null with object context = list
 
 			String specialisation;
 			if(!Tool.isEmpty(object) &&!Tool.isEmpty(rowId) && !"undefined".equals(rowId)){
-				specialisation = getContextFromObject(object,rowId).replaceAll("\\\\\"","\\\\\\\\\"").replaceAll("\"","\\\\\"");
+				specialisation = getContextFromObject(object,rowId,g).replaceAll("\\\\\"","\\\\\\\\\"").replaceAll("\"","\\\\\"");
 			}else{
 				specialisation = params.getParameter("specialisation");
 			}
@@ -37,23 +39,22 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			return javascript(getName() + ".render(ctn,\"\");");
 		}
 		catch (Exception e) {
-			AppLog.error(null, e, getGrant());
+			AppLog.error(null, e, g);
 			return e.getMessage();
 		}
 	}
 	
-	private String getContextFromObject(String object,String rowId){
+	private String getContextFromObject(String object,String rowId,Grant g){
 		if(Tool.isEmpty(object) || Tool.isEmpty(rowId) || "0".equals(rowId)) return "";
 		ArrayList<String> done = new ArrayList<>();
 		done.add(object+":"+rowId);
-	    JSONObject res = getObjectValueJSON(object,rowId,done);
+	    JSONObject res = getObjectValueJSON(object,rowId,done,g);
 	        
 		return "```json "+res.toString()+"```";
 	}
 	
-	private JSONObject getObjectValueJSON(String name,String rowId,ArrayList<String> done){
+	private JSONObject getObjectValueJSON(String name,String rowId,ArrayList<String> done,Grant g){
 		JSONObject objectJSON = new JSONObject();
-		Grant g = getGrant();
 		ObjectDB obj = g.getTmpObject(name);
 		synchronized(obj.getLock()){
 			if(ModuleDB.isSystemModule(obj.getModuleName()) && !"User".equals(name)){//avoid technical object exept User whitch is frequently used
@@ -72,7 +73,7 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 						String refRowId = field.getValue();
 						if(!done.contains(refName+":"+refRowId)){
 							done.add(refName+":"+refRowId);
-							JSONObject ref = getObjectValueJSON(refName,refRowId,done);
+							JSONObject ref = getObjectValueJSON(refName,refRowId,done,g);
 							if(!Tool.isEmpty(ref)) links.put(ref);
 						}
 					}else if(field.isDocument()){

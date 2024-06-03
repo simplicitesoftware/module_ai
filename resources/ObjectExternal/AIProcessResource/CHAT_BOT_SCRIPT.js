@@ -6,11 +6,6 @@ var userName ="user";
 $(window).resize(function() {
 	resizeUp();
 });
-function clickPress(event) {
-    if (event.keyCode == 13) {
-        sendMessage();
-    }
-}
 var image_base64 ="";
 $(".btn-validate").remove();
 function resizeUp(){
@@ -18,21 +13,20 @@ function resizeUp(){
 	const maxHeight = `${45 * vh - 250}px`;
 	const minHeight = `40px`;
 	
-	$("#user-message").css("height", minHeight);
-	var textheight = $("#user-message").prop('scrollHeight')-5 ;
+	$("#module_user_message").css("height", minHeight);
+	var textheight = $("#module_user_message").prop('scrollHeight')-5 ;
 	var areaheight = $("#chat-container").height();
 	var imgheight = $("#input-img").is(':hidden')?0: $("#input-img").height();
-	console.log("imgheight",imgheight);
 	if(textheight >maxHeight-imgheight){
 		textheight = maxHeight-imgheight;
 		
 	}else if(textheight < minHeight){
 		textheight = minHeight;
 	}
-	$("#user-message").css("height", textheight);
+	$("#module_user_message").css("height", textheight);
 //$("#user-input").css("height", textheight);
 	areaheight = areaheight - (textheight +30)-imgheight;
-	$("#chat-messages").css("height", areaheight);
+	$("#module_chat_messages").css("height", areaheight);
 }
 $(document).ready(function() {
 	// add url to img bootstrap $ui.getApp().getIconURL("icon/color/camera");
@@ -56,10 +50,10 @@ $(document).ready(function() {
 });
 
 
-function sendMessage() {
-	var userMessage = document.getElementById('user-message').value;
+function sendModuleMessage() {
+	var userMessage = document.getElementById('module_user_message').value;
 	var userImage = $("#input-img img").attr("src");
-	var chatMessages = document.getElementById('chat-messages');
+	var chatMessages = document.getElementById('module_chat_messages');
 	var historic = [];
 	if ($("#context").length >0) {
 		text = {};
@@ -110,7 +104,7 @@ function sendMessage() {
 	var postParams = {prompt:JSON.stringify(prompt), specialisation: "You help design uml for object-oriented applications. Without function and whith relation description. Respond with a text", historic: JSON.stringify(historic)}; // post params
 	
 	// Efface le champ de saisie utilisateur
-	document.getElementById('user-message').value = '';
+	document.getElementById('module_user_message').value = '';
 	$("#input-img img").removeAttr("src");
 	$("#input-img").hide();
 	resizeUp();

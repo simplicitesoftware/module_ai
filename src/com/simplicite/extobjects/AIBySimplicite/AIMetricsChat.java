@@ -24,7 +24,7 @@ public class AIMetricsChat extends com.simplicite.util.ExternalObject {
 	public Object display(Parameters params) {
 		Grant g = getGrant();
 		try {
-			appendCSSInclude(HTMLTool.getResourceCSSURL(g.getExternalObject("AIProcessResource"), "CHAT_BOT_CSS"));
+			appendCSSInclude(HTMLTool.getResourceCSSURL(g, "AI_STYLE"));
 			String moduleName = params.getParameter("module");
 			if(Tool.isEmpty(moduleName) || Tool.isEmpty(ModuleDB.getModuleId(moduleName))){
 				return javascript("$ui.alert("+Message.formatError("AI_MODULE_ERROR", null,null)+")");

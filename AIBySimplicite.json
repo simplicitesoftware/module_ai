@@ -4,10 +4,10 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.8",
+  "mdl_version": "0.9",
   "mdl_type": "T",
   "mdl_icon": null,
-  "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\"\n}",
+  "mdl_url": "{\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"\n\t},\n\t\"type\": \"git\"\n}",
   "mdl_comment": "Exploratory module on the use of AI  \nUse AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint"
  },
  "links": [
@@ -285,6 +285,32 @@
    "list": [
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_BUTTON_CANCEL~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_BUTTON_CANCEL",
+      "lov_lang": "ENU",
+      "lov_value": "Cancel",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_BUTTON_SEND~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_BUTTON_SEND",
+      "lov_lang": "ENU",
+      "lov_value": "Send",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_COMPLETED~ENU",
      "item": {
       "lov_name": "TEXT",
@@ -343,6 +369,32 @@
       "lov_code": "AI_SUCCESS",
       "lov_lang": "ENU",
       "lov_value": "Your module has been generated successfully.",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_BUTTON_CANCEL~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_BUTTON_CANCEL",
+      "lov_lang": "FRA",
+      "lov_value": "Annuler",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_BUTTON_SEND~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_BUTTON_SEND",
+      "lov_lang": "FRA",
+      "lov_value": "Envoyer",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -3525,30 +3577,6 @@
    "list": [
     {
      "object": "Resource",
-     "userkey": "Disposition(responsive5)~ANY~CHATBOT_STYLE",
-     "item": {
-      "res_object": {
-       "item": {"dis_code": "responsive5"},
-       "icon": "img/system/disposition",
-       "label": "Disposition",
-       "userkeylabel": "responsive5",
-       "object": "Disposition"
-      },
-      "res_type": "CSS",
-      "res_lang": "ANY",
-      "res_code": "CHATBOT_STYLE",
-      "res_cached": false,
-      "res_file": {
-       "path": "resources/Disposition/responsive5/CHATBOT_STYLE.less",
-       "mime": "text/less",
-       "name": "CHATBOT_STYLE.less"
-      },
-      "res_image": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "Resource",
      "userkey": "Disposition(responsive5)~ANY~CHATBOT",
      "item": {
       "res_object": {
@@ -3590,6 +3618,30 @@
        "path": "resources/Disposition/responsive5/CHATBOT_SCRIPT.js",
        "mime": "text/javascript",
        "name": "CHATBOT_SCRIPT.js"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Resource",
+     "userkey": "Disposition(default)~ANY~AI_STYLE",
+     "item": {
+      "res_object": {
+       "item": {"dis_code": "default"},
+       "icon": "img/system/disposition",
+       "label": "Disposition",
+       "userkeylabel": "default",
+       "object": "Disposition"
+      },
+      "res_type": "CSS",
+      "res_lang": "ANY",
+      "res_code": "AI_STYLE",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/Disposition/default/AI_STYLE.less",
+       "mime": "text/less",
+       "name": "CHATBOT_STYLE.less"
       },
       "res_image": null,
       "row_module_id__mdl_name": "AIBySimplicite"

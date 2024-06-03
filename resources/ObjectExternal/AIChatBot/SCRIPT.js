@@ -18,9 +18,9 @@ var AIChatBot = (function() {
 	
 		userTemplate = $("#userTemplate").html();
 		specialisation = spe;
-		document.getElementById('user-input-message').addEventListener('keyup', function(event) {
-			if (event.key === 'Enter' && event.target.matches('#user-input-message')) {
-				sendMessage();
+		document.getElementById('chatbot_input_message').addEventListener('keyup', function(event) {
+			if (event.key === 'Enter' && event.target.matches('#chatbot_input_message')) {
+				chatbotSendMessage();
 			}
 		});
 
@@ -29,9 +29,9 @@ var AIChatBot = (function() {
 	
 	return { render: render };
 })();
-function sendMessage() {
-	var userMessage = document.getElementById('user-input-message').value;
-	var chatMessages = document.getElementById('chat-messages');
+function chatbotSendMessage() {
+	var userMessage = document.getElementById('chatbot_input_message').value;
+	var chatMessages = document.getElementById('chatbot_messages');
 	// Ajoutez ici la logique de votre chatbot pour générer une réponse en fonction de userMessage
 	var historic =[];
 	$(".user-messages").each(function() {
@@ -56,7 +56,7 @@ function sendMessage() {
 	var postParams = {prompt:userMessage, specialisation: specialisation, historic: JSON.stringify(historic)}; // post params
 	
 	// Efface le champ de saisie utilisateur
-	document.getElementById('user-input-message').value = '';
+	document.getElementById('chatbot_input_message').value = '';
 
 	// Faites défiler vers le bas pour afficher les messages les plus récents
 	chatMessages.scrollTop = chatMessages.scrollHeight;

@@ -2,10 +2,10 @@
 <template id="userTemplate" ><div class="user-messages"><strong>{{user}}: </strong><span class="msg">{{ask}}</span></div></template>
 <div id="AIchatbot">
     <div id="chat-container">
-        <div id="chat-messages"></div>
+        <div id ="chatbot_messages" class="chat-messages"></div>
         <div id="user-input">
-            <input type="text" id="user-input-message" placeholder="Type your message...">
-            <button id="send-button" onclick="sendMessage()">Send</button>
+            <input type="text" id="chatbot_input_message" class ="user-message" placeholder="Type your message...">
+            <button id="chatbot_send_button" class="chat-button" onclick="chatbotSendMessage()">Send</button>
         </div>
     </div>
 </div>

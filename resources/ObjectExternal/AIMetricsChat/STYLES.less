@@ -1,15 +1,17 @@
+
 #aimetricschat {
 	/* Custom styles */
 	width: 100%;
 	display: flex;
 	flex-direction: row; /* Add this line to change the flex direction to column */
 	height:50vh;
+	//specific to metrics
 	.chat-space {
 		width: calc(33.33% - 10px); /* Adjust the width as needed */
 		margin-right: 10px; /* Adjust the margin as needed */
 		height: 100%;
 	}
-	
+	//specific to metrics
 	.result-space {
 		width: calc(66.66% - 10px); /* Adjust the width as needed */
 		height: 100%;
@@ -23,28 +25,12 @@
 		overflow-y: scroll;
 		height: calc(100% - 40px);
 	}
-	.user-message{
-		width: 75%;
-		height: 40px;
-		
-	}
 	.chat-button {
-		padding: 5px 10px;
-		background-color: #dcf8c6;
-		color: black;
-		border: none;
-		border-radius: 3px;
-		cursor: pointer;
 		width: 15%;
-		min-width: 6em;
+		min-width: 4em;
+		background-color: #dcf8c6;
 	}
-	.chat-button:disabled  {
-		background-color: #8b9f7f;
-		color: white;
-		
-	}
-
-	#cancel-button{
+	#metrics_cancel_button{
 		display: none;
 	}
 
