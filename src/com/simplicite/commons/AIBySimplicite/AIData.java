@@ -2,6 +2,7 @@ package com.simplicite.commons.AIBySimplicite;
 
 import java.util.*;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -108,18 +109,28 @@ public class AIData implements java.io.Serializable {
 	 * @param g the Grant object
 	 * @return the formatted result as a String
 	 */
-	public static String genDataForModule(String moduleName,Grant g){
+	public static JSONObject genDataForModule(String moduleName,Grant g){
 		try {
 			String[] ids = AITools.getObjectIdsModule(moduleName, g);
 			if(Tool.isEmpty(ids))throw new PlatformException("Not found or not granted object to generate for module: \n"+moduleName);
 			JSONObject response = AIData.callIADataOnModule(ids, g);
 			response = AIData.jsonPreprocessing(response, g);
-			JSONObject formatResponse = AIData.createObjects(ids,response, g);
+			return response;
+		}catch (PlatformException e) {
+			AppLog.error(e, g);
+			return new JSONObject().put("error",e.getMessage());
+		}
+	}
+	public static String createDataFromJSON(String moduleName, JSONObject response,Grant g){
+		try {
+		String[] ids = AITools.getObjectIdsModule(moduleName, g);
+		JSONObject formatResponse = AIData.createObjects(ids,response, g);
 			return formatResult(formatResponse);
 		}catch (PlatformException e) {
 			AppLog.error(e, g);
 			return e.getMessage();
 		}
+
 	}
 
 	/**
@@ -251,7 +262,7 @@ public class AIData implements java.io.Serializable {
 	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
 		JSONObject json = new JSONObject();
-		String response = AITools.AICaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least 5 entries per class",false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		String response = AITools.AICaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least 2 entries per class",false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		json = AITools.getValidJson(response);
 		if(Tool.isEmpty(json)){	
 			

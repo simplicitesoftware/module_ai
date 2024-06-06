@@ -2,7 +2,7 @@
 # / __(_)_ __  _ __| (_)__(_) |_ /_/
 # \__ \ | '  \| '_ \ | / _| |  _/ -_)
 # |___/_|_|_|_| .__/_|_\__|_|\__\___|
-#             |_| Module: AIBySimplicite 0.9
+#             |_| Module: AIBySimplicite 0.11
 components:
   schemas:
     Error404:
@@ -16,6 +16,10 @@ components:
           type: integer
           enum:
           - 404
+    ArrayOfAiSettings:
+      type: array
+      items:
+        $ref: '#/components/schemas/AiSettings'
     ActionResult:
       type: object
       properties:
@@ -113,6 +117,27 @@ components:
           type: integer
           enum:
           - 403
+    AiSettings:
+      type: object
+      properties:
+        aiSetUrl:
+          description: Set api url
+          type: string
+        aiSetActive:
+          description: Active
+          type: boolean
+        aiSetModele:
+          description: Conf modele
+          type: string
+          enum:
+          - MISTRAL
+          - OPENAI
+        aiSetConfig:
+          description: Setting
+          type: string
+        row_id:
+          description: Unique technical row ID
+          type: string
   securitySchemes:
     basicAuth:
       scheme: basic
@@ -175,6 +200,275 @@ paths:
                 $ref: '#/components/schemas/Error401'
       tags:
       - session
+  /rest/AiSettings/{row_id}:
+    post:
+      summary: Create a new AiSettings business object record
+      security:
+      - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiSettings'
+      operationId: obj-aisettings-create
+      responses:
+        '200':
+          description: Success in creating a new business object record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiSettings'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      tags:
+      - AiSettings
+    get:
+      summary: Get a AiSettings business object record
+      security:
+      - bearerAuth: []
+      operationId: obj-aisettings-get
+      responses:
+        '200':
+          description: Success in getting a single business object record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiSettings'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      - schema:
+          type: boolean
+        in: query
+        name: _inline_documents
+        description: Inline documents?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _inline_thumbnails
+        description: Inline documents' thumbnails?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _inline_objects
+        description: Inline objects?
+        required: false
+      tags:
+      - AiSettings
+    delete:
+      summary: Delete a AiSettings business object record
+      security:
+      - bearerAuth: []
+      operationId: obj-aisettings-delete
+      responses:
+        '200':
+          description: Success in deleting a business object record
+          content:
+            application/json: {}
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      tags:
+      - AiSettings
+    put:
+      summary: Update a AiSettings business object record
+      security:
+      - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiSettings'
+      operationId: obj-aisettings-update
+      responses:
+        '200':
+          description: Success in updating a business object record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiSettings'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      tags:
+      - AiSettings
+  /rest/AiSettings:
+    get:
+      summary: Search AiSettings business object records or get contextualized metadata
+      security:
+      - bearerAuth: []
+      operationId: obj-aisettings-search
+      responses:
+        '200':
+          description: Success in searching business object records (or in getting
+            contextualized business object metadata, documentation, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfAiSettings'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      parameters:
+      - schema:
+          type: boolean
+        in: query
+        name: _metadata
+        description: Metadata?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _count
+        description: Count?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _doc
+        description: Documentation?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: aiSetActive
+        description: Search filter for Active
+        required: false
+      - schema:
+          type: string
+          enum:
+          - MISTRAL
+          - OPENAI
+        in: query
+        name: aiSetModele
+        description: Search filter for Conf modele
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiSetConfig
+        description: Search filter for Setting
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiSetUrl
+        description: Search filter for Set api url
+        required: false
+      tags:
+      - AiSettings
   /:
     get:
       summary: Get user session information
@@ -211,4 +505,7 @@ info:
     email: contact@simplicitesoftware.com
   description: API for module AIBySimplicite
   title: AIBySimplicite
-  version: '0.9'
+  version: '0.11'
+tags:
+- name: AiSettings
+  description: Configuring the wizard

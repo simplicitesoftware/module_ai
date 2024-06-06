@@ -20,6 +20,9 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 	@Override
 	public Object display(Parameters params) {
 		Grant g = getGrant();
+		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
+		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
+		if("/".equals(pSetting) || "/".equals(pUrl)) return javascript("$ui.alert({ content: \""+ g.T("AI_SETTING_NEED")+"\", type: \"warning\" });");
 		try {
 			addMustache();
 			addMarkdown();

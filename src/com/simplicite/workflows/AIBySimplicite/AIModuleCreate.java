@@ -31,6 +31,7 @@ public class AIModuleCreate extends Processus {
 	private static final String ACTIVITY_AI ="AIC_0500";
 	private static final String ACTIVITY_GEN ="AIC_0600";
 	private static final String ACTIVITY_TRL_DOMAIN ="AIC_0015";
+	private static final String ACTIVITY_NEW_SCOPE="AIC_0017";
 	
 	@Override
 	public void postLock(ActivityFile context) {
@@ -57,6 +58,9 @@ public class AIModuleCreate extends Processus {
 	public String chatBot(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
+		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
+		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
+		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
 		List<String[]> objs = getModuleObjects(getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID),g);
 		if (Tool.isEmpty(objs)) return getModuleChat("",g);
 		JSONObject json = objectToJSON(objs,getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, "mdl_prefix"));
@@ -173,6 +177,9 @@ public class AIModuleCreate extends Processus {
 	public String ai(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
+		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
+		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
+		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
 		List<String> listResult = getJsonAi( getPreviousContext(context).getActivity().getStep(), g);
 		if(Tool.isEmpty(listResult)) return EMPTY_TEXTAREA;
 		if(listResult.size()!=3)return Message.formatError("AI_ERROR_RETURN", listResult.get(0),null );
@@ -272,6 +279,9 @@ public class AIModuleCreate extends Processus {
 	public String gen(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE){
 			return null;}
+		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
+		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
+		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
 		String json = "";
 		
 		if (!getActivity(ACTIVITY_AI).isUserDialog()){
@@ -370,6 +380,8 @@ public class AIModuleCreate extends Processus {
 			
 		}else if(ACTIVITY_TRL_DOMAIN.equals(step)){
 			saveTranslate(context);
+		}else if(ACTIVITY_NEW_SCOPE.equals(step)){
+			scopeGrant(context);
 		}
 		super.postValidate(context);
 	}
@@ -421,7 +433,7 @@ public class AIModuleCreate extends Processus {
 			try{
 				BusinessObjectTool objTool = obj.getTool();
 				if(!objTool.selectForCreateOrUpdate(domainFlds)){
-					domainFlds.put("row_module_id", moduleId);
+					domainFlds.put("row_module_id", moduleId).put("obd_nohome",1);
 					obj.setValuesFromJSONObject(domainFlds, false, false);
 					obj.populate(true);
 					objTool.validateAndCreate();
@@ -520,5 +532,35 @@ public class AIModuleCreate extends Processus {
 				}
 			}
 		}
+	}
+	private void scopeGrant(ActivityFile context){
+		String scopeId = context.getDataValue(FIELD, ROW_ID);
+		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
+		String groupeId = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataValue(FIELD, ROW_ID);
+		ObjectDB obj = getGrant().getTmpObject("Group");
+		synchronized(obj.getLock()){
+			try{
+				obj.select(groupeId);
+				obj.setFieldValue("grp_home_id", scopeId);
+				obj.save();
+			}catch(Exception e){
+				AppLog.error(e, getGrant());
+			}
+		}
+		obj = getGrant().getTmpObject("ViewGroup");
+		
+		synchronized(obj.getLock()){
+			try{
+				BusinessObjectTool objTool = obj.getTool();
+				objTool.selectForCreate();
+				obj.setFieldValue("row_module_id", moduleId);
+				obj.setFieldValue("vig_view_id", scopeId);
+				obj.setFieldValue("vig_group_id", groupeId);
+				objTool.validateAndCreate();
+			}catch(Exception e){
+				AppLog.error(e, getGrant());
+			}
+		}
+		
 	}
 }

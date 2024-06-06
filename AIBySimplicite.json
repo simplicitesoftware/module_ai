@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.9",
+  "mdl_version": "0.11",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"\n\t},\n\t\"type\": \"git\"\n}",
@@ -33,7 +33,7 @@
      "userkey": "AI_API_PARAM",
      "item": {
       "sys_code": "AI_API_PARAM",
-      "sys_value": "{\n    'model':'<gpt_model_to_use>',\n    'OpenAI-Project': \"<my_openai_project_id>\",\n    'OpenAI-Organization': \"<my_openai_organization_id>\",\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}",
+      "sys_value": "/",
       "sys_type": "PRV",
       "sys_desc": "configuring api calls to an llm.\n===============================\n----\n**If necessary, specify the api key in the AI_API_KEY system parameter.**\n# Parrameters\n## hist_depth\nDefines the number of messages in the history used for the context.\nThe greater this number, the more tokens the request uses, but the more relevant is the response. \n## max_token\n*optional*  \nLimits the number of tokens in the ia response\n### default_max_token\nMaximum number of tokens in a usual context.\n### code_max_token\nMaximum number of tokens for thecnical calls.\n## trigger\nTo define a trigger for ia calls in fields (under development)\n\n# LLM spesific configuration exemple\n## OpenAI:\n```json \n{\n\t'model':'<gpt_model_to_use>',\n\t'OpenAI-Project': \"<my_openai_project_id>\",\n\t'OpenAI-Organization': \"<my_openai_organization_id>\",\n\t'hist_depth' : 3,\n\t'code_max_token' : 2000,\n\t'default_max_token':1500,\n\t'trigger':''\n}\n\n```\n## Mistral\n```json \n{\n\t'hist_depth' : 3,\n\t'code_max_token' : 2000,\n\t'default_max_token':1500,\n\t'trigger':''\n}\n\n```",
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -44,7 +44,7 @@
      "userkey": "AI_API_URL",
      "item": {
       "sys_code": "AI_API_URL",
-      "sys_value": "https://api.openai.com/v1/chat/completions",
+      "sys_value": "/",
       "sys_type": "PRV",
       "sys_desc": "AI API URL",
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -98,7 +98,7 @@
       "mod_doc": {
        "path": "files/Model/Model-AIGenData.svg",
        "mime": "image/svg+xml",
-       "name": "Model-AIGenData.svg"
+       "name": "model.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-AIGenData.png",
@@ -285,6 +285,32 @@
    "list": [
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_CONFIG_MISTRAL~ANY",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_CONFIG_MISTRAL",
+      "lov_lang": "ANY",
+      "lov_value": "{\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_CONFIG_OPENAI~ANY",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_CONFIG_OPENAI",
+      "lov_lang": "ANY",
+      "lov_value": "{\n    'model':'<gpt_model_to_use>',\n    'OpenAI-Project': \"<my_openai_project_id>\",\n    'OpenAI-Organization': \"<my_openai_organization_id>\",\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_BUTTON_CANCEL~ENU",
      "item": {
       "lov_name": "TEXT",
@@ -356,6 +382,19 @@
       "lov_code": "AI_JSON_ERROR",
       "lov_lang": "ENU",
       "lov_value": "The AI was unable to generate your module. Please try again.",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_SETTING_NEED~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_SETTING_NEED",
+      "lov_lang": "ENU",
+      "lov_value": "Votre assistant IA n'a pas encore été configuré.",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -454,6 +493,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_SETTING_NEED~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_SETTING_NEED",
+      "lov_lang": "FRA",
+      "lov_value": "Your AI assistant has not yet been configured.",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_SUCCESS~FRA",
      "item": {
       "lov_name": "TEXT",
@@ -472,16 +524,28 @@
    "label": "List of values",
    "icon": "img/system/list_of_values",
    "field": "row_module_id",
-   "list": [{
-    "object": "FieldList",
-    "userkey": "AI_EX_TYPE",
-    "item": {
-     "lov_name": "AI_EX_TYPE",
-     "row_module_id__mdl_name": "AIBySimplicite",
-     "lov_model_id__mod_name": null,
-     "lov_model_id__mod_image": null
+   "list": [
+    {
+     "object": "FieldList",
+     "userkey": "AI_CONF_MODELE",
+     "item": {
+      "lov_name": "AI_CONF_MODELE",
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "lov_model_id__mod_name": null,
+      "lov_model_id__mod_image": null
+     }
+    },
+    {
+     "object": "FieldList",
+     "userkey": "AI_EX_TYPE",
+     "item": {
+      "lov_name": "AI_EX_TYPE",
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "lov_model_id__mod_name": null,
+      "lov_model_id__mod_image": null
+     }
     }
-   }]
+   ]
   },
   {
    "object": "FieldListCode",
@@ -489,6 +553,36 @@
    "icon": "img/system/list_of_values",
    "field": "row_module_id",
    "list": [
+    {
+     "object": "FieldListCode",
+     "userkey": "AI_CONF_MODELE~MISTRAL",
+     "item": {
+      "lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code": "MISTRAL",
+      "lov_order_by": 10,
+      "lov_label": "Mistral",
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "lov_color": null,
+      "lov_color_bg": null,
+      "lov_icon": null,
+      "lov_display": ["L"]
+     }
+    },
+    {
+     "object": "FieldListCode",
+     "userkey": "AI_CONF_MODELE~OPENAI",
+     "item": {
+      "lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code": "OPENAI",
+      "lov_order_by": 20,
+      "lov_label": "OpenAI",
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "lov_color": null,
+      "lov_color_bg": null,
+      "lov_icon": null,
+      "lov_display": ["L"]
+     }
+    },
     {
      "object": "FieldListCode",
      "userkey": "AI_EX_TYPE~CODE",
@@ -557,6 +651,50 @@
    "icon": "img/system/translation",
    "field": "row_module_id",
    "list": [
+    {
+     "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~OPENAI~ENU",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "OPENAI",
+      "lov_lang": "ENU",
+      "lov_value": "Openai",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~MISTRAL~ENU",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "MISTRAL",
+      "lov_lang": "ENU",
+      "lov_value": "Mistral",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~MISTRAL~FRA",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "MISTRAL",
+      "lov_lang": "FRA",
+      "lov_value": "Mistral",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~OPENAI~FRA",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "OPENAI",
+      "lov_lang": "FRA",
+      "lov_value": "OpenAI",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
     {
      "object": "FieldListValue",
      "userkey": "AI_EX_TYPE~OTHER~ENU",
@@ -670,6 +808,50 @@
       "fld_objlist": null,
       "fld_comment": null,
       "fld_classification": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
+     }
+    },
+    {
+     "object": "Field",
+     "userkey": "aiApiKey",
+     "item": {
+      "fld_name": "aiApiKey",
+      "fld_dbname": null,
+      "fld_visible": "3",
+      "fld_updatable": "1",
+      "fld_required": false,
+      "fld_fonctid": false,
+      "fld_research": null,
+      "fld_researchreq": null,
+      "fld_sort": "C",
+      "fld_more": false,
+      "fld_listmore": false,
+      "fld_listsum": null,
+      "fld_exportable": true,
+      "fld_tray": null,
+      "fld_type": "9",
+      "fld_type_id__flt_code": null,
+      "fld_list_id__lov_name": null,
+      "fld_copy": true,
+      "fld_size": 500,
+      "fld_minsize": null,
+      "fld_precision": null,
+      "fld_fromdate_id__fld_name": null,
+      "fld_dfault": null,
+      "fld_indexable": false,
+      "fld_autocomp": "0",
+      "fld_groupby": false,
+      "fld_updall": true,
+      "fld_case": null,
+      "fld_righttoleft": false,
+      "fld_rendering": null,
+      "fld_speech": null,
+      "fld_calc": null,
+      "fld_objlist": null,
+      "fld_comment": null,
+      "fld_classification": ["CONFIDENTIAL"],
       "row_module_id__mdl_name": "AIBySimplicite",
       "fld_incrementsyntax": null,
       "aiFldSpe": null
@@ -850,6 +1032,182 @@
       "fld_incrementsyntax": null,
       "aiFldSpe": null
      }
+    },
+    {
+     "object": "Field",
+     "userkey": "aiSetActive",
+     "item": {
+      "fld_name": "aiSetActive",
+      "fld_dbname": null,
+      "fld_visible": "3",
+      "fld_updatable": "1",
+      "fld_required": true,
+      "fld_fonctid": false,
+      "fld_research": "1",
+      "fld_researchreq": "0",
+      "fld_sort": "C",
+      "fld_more": false,
+      "fld_listmore": false,
+      "fld_listsum": null,
+      "fld_exportable": true,
+      "fld_tray": null,
+      "fld_type": "8",
+      "fld_type_id__flt_code": null,
+      "fld_list_id__lov_name": null,
+      "fld_copy": true,
+      "fld_size": 1,
+      "fld_minsize": null,
+      "fld_precision": null,
+      "fld_fromdate_id__fld_name": null,
+      "fld_dfault": "0",
+      "fld_indexable": false,
+      "fld_autocomp": "0",
+      "fld_groupby": false,
+      "fld_updall": true,
+      "fld_case": null,
+      "fld_righttoleft": false,
+      "fld_rendering": null,
+      "fld_speech": null,
+      "fld_calc": "(function() {\n    var res = \"\";\n    var setting = obj.getFieldValue(\"aiSetConfig\");\n\tvar url = obj.getFieldValue(\"aiSetUrl\");\n\tvar pSetting = Grant.getSystemAdmin().getParameter(\"AI_API_PARAM\");\n\tvar pUrl = Grant.getSystemAdmin().getParameter(\"AI_API_URL\");\n\tconsole.log(pSetting.equals(setting));\n\tconsole.log(pUrl.equals(url));\n    return pSetting.equals(setting) && pUrl.equals(url);\n})();",
+      "fld_objlist": null,
+      "fld_comment": null,
+      "fld_classification": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
+     }
+    },
+    {
+     "object": "Field",
+     "userkey": "aiSetConfig",
+     "item": {
+      "fld_name": "aiSetConfig",
+      "fld_dbname": "ai_set_config",
+      "fld_visible": "2",
+      "fld_updatable": "0",
+      "fld_required": false,
+      "fld_fonctid": false,
+      "fld_research": "1",
+      "fld_researchreq": "0",
+      "fld_sort": "C",
+      "fld_more": false,
+      "fld_listmore": false,
+      "fld_listsum": null,
+      "fld_exportable": true,
+      "fld_tray": null,
+      "fld_type": "13",
+      "fld_type_id__flt_code": null,
+      "fld_list_id__lov_name": null,
+      "fld_copy": true,
+      "fld_size": 1000,
+      "fld_minsize": null,
+      "fld_precision": null,
+      "fld_fromdate_id__fld_name": null,
+      "fld_dfault": null,
+      "fld_indexable": false,
+      "fld_autocomp": "0",
+      "fld_groupby": false,
+      "fld_updall": true,
+      "fld_case": null,
+      "fld_righttoleft": false,
+      "fld_rendering": "JSON",
+      "fld_speech": null,
+      "fld_calc": null,
+      "fld_objlist": null,
+      "fld_comment": null,
+      "fld_classification": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
+     }
+    },
+    {
+     "object": "Field",
+     "userkey": "aiSetModele",
+     "item": {
+      "fld_name": "aiSetModele",
+      "fld_dbname": "ai_set_modele",
+      "fld_visible": "3",
+      "fld_updatable": "1",
+      "fld_required": true,
+      "fld_fonctid": true,
+      "fld_research": "1",
+      "fld_researchreq": "0",
+      "fld_sort": "C",
+      "fld_more": false,
+      "fld_listmore": false,
+      "fld_listsum": null,
+      "fld_exportable": true,
+      "fld_tray": null,
+      "fld_type": "7",
+      "fld_type_id__flt_code": null,
+      "fld_list_id__lov_name": "AI_CONF_MODELE",
+      "fld_copy": true,
+      "fld_size": 100,
+      "fld_minsize": null,
+      "fld_precision": null,
+      "fld_fromdate_id__fld_name": null,
+      "fld_dfault": null,
+      "fld_indexable": false,
+      "fld_autocomp": "0",
+      "fld_groupby": false,
+      "fld_updall": true,
+      "fld_case": null,
+      "fld_righttoleft": false,
+      "fld_rendering": null,
+      "fld_speech": null,
+      "fld_calc": null,
+      "fld_objlist": null,
+      "fld_comment": null,
+      "fld_classification": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
+     }
+    },
+    {
+     "object": "Field",
+     "userkey": "aiSetUrl",
+     "item": {
+      "fld_name": "aiSetUrl",
+      "fld_dbname": "ai_set_url",
+      "fld_visible": "3",
+      "fld_updatable": "1",
+      "fld_required": false,
+      "fld_fonctid": false,
+      "fld_research": "1",
+      "fld_researchreq": "0",
+      "fld_sort": "C",
+      "fld_more": false,
+      "fld_listmore": false,
+      "fld_listsum": null,
+      "fld_exportable": true,
+      "fld_tray": null,
+      "fld_type": "10",
+      "fld_type_id__flt_code": null,
+      "fld_list_id__lov_name": null,
+      "fld_copy": true,
+      "fld_size": 100,
+      "fld_minsize": null,
+      "fld_precision": null,
+      "fld_fromdate_id__fld_name": null,
+      "fld_dfault": null,
+      "fld_indexable": false,
+      "fld_autocomp": "0",
+      "fld_groupby": false,
+      "fld_updall": true,
+      "fld_case": null,
+      "fld_righttoleft": false,
+      "fld_rendering": null,
+      "fld_speech": null,
+      "fld_calc": null,
+      "fld_objlist": null,
+      "fld_comment": null,
+      "fld_classification": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "fld_incrementsyntax": null,
+      "aiFldSpe": null
+     }
     }
    ]
   },
@@ -859,6 +1217,18 @@
    "icon": "img/system/template",
    "field": "row_module_id",
    "list": [
+    {
+     "object": "Template",
+     "userkey": "AiConfiguration",
+     "item": {
+      "tpl_name": "AiConfiguration",
+      "tpl_ui": "<div class=\"area\" data-area=\"1\"><\/div>",
+      "tpl_min": null,
+      "tpl_image": null,
+      "tpl_grid": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
     {
      "object": "Template",
      "userkey": "AIExemple",
@@ -923,6 +1293,30 @@
       "ofa_position": 1,
       "ofa_title": false,
       "ofa_ui": "<div>\\n<\/div>",
+      "ofa_icon": "star",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ObjectFieldArea",
+     "userkey": "AiSettings-1",
+     "item": {
+      "ofa_name": "AiSettings-1",
+      "ofa_position": 1,
+      "ofa_title": true,
+      "ofa_ui": "<div>\n  <div class=\"field\" data-field=\"aiSetActive\"><\/div>\n  <div class=\"field\" data-field=\"aiSetModele\"><\/div>\n  <div class=\"area\" data-area=\"2\"><\/div>\n<\/div>",
+      "ofa_icon": "star",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ObjectFieldArea",
+     "userkey": "AiSettings-2",
+     "item": {
+      "ofa_name": "AiSettings-2",
+      "ofa_position": 2,
+      "ofa_title": false,
+      "ofa_ui": "<div>\n  <div class=\"field\" data-field=\"aiSetUrl\"><\/div>\n  <div class=\"field\" data-field=\"aiSetConfig\"><\/div>\n<\/div>",
       "ofa_icon": "star",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -1132,11 +1526,264 @@
    ]
   },
   {
+   "object": "ObjectInternal",
+   "label": "Business objects",
+   "icon": "img/system/business_object",
+   "field": "row_module_id",
+   "list": [{
+    "object": "ObjectInternal",
+    "userkey": "AiSettings",
+    "item": {
+     "obo_name": "AiSettings",
+     "obo_dbtable": "ai_settings",
+     "obo_role": "OBJ",
+     "obo_class": null,
+     "obo_script_id": {
+      "path": "src/com/simplicite/objects/AIBySimplicite/AiSettings.java",
+      "mime": "text/plain",
+      "name": "AiSettings.java"
+     },
+     "obo_usets": "1",
+     "obo_nosearch": "1",
+     "obo_comment": null,
+     "obo_type": "O",
+     "obo_searchspec": null,
+     "obo_exportorder": null,
+     "obo_distinct": false,
+     "obo_indexable": false,
+     "obo_groupby": false,
+     "obo_dfltref": null,
+     "obo_template_id__tpl_name": "AiConfiguration",
+     "obo_copy": true,
+     "obo_export": ["1"],
+     "obo_pagine": true,
+     "obo_srh_predef": ["1"],
+     "obo_selrow": true,
+     "obo_updall": true,
+     "obo_delall": true,
+     "obo_listsearch": true,
+     "obo_list_edit": [
+      "N",
+      "L",
+      "E"
+     ],
+     "obo_useform": true,
+     "obo_title": null,
+     "obo_icon": "icon/color/define",
+     "obo_refcount": false,
+     "obo_tree": false,
+     "obo_viewmode": "T",
+     "obo_historic": null,
+     "obo_printable": true,
+     "obo_followlink": true,
+     "obo_mergeable": false,
+     "obo_social": ["1"],
+     "obo_rowid_id__fld_name": null,
+     "obo_extend_id__obj_name": null,
+     "row_module_id__mdl_name": "AIBySimplicite",
+     "obo_btn_reload": "P",
+     "obo_btn_prefs": "P",
+     "obo_btn_bookmark": "1",
+     "obo_btn_del": "P",
+     "obo_btn_copy": "P",
+     "obo_btn_export": "P",
+     "obo_btn_listadd": "1",
+     "obo_btn_listedit": "1",
+     "obo_btn_listupsert": "1",
+     "obo_btn_updall": "P",
+     "obo_btn_delall": "P",
+     "obo_btn_merge": "P",
+     "obo_btn_save": true,
+     "obo_btn_saveclose": true,
+     "obo_btn_savenew": true,
+     "obo_btn_savecopy": true,
+     "obo_btn_close": true,
+     "obo_tray": true,
+     "obo_dashboard": true,
+     "obo_prefix": "set",
+     "obo_search_ts": null,
+     "obo_minrows": null,
+     "obo_maxrows": null,
+     "obo_sortable": true,
+     "obo_list_areas": null,
+     "obo_minifiable": "M",
+     "obo_minified": false,
+     "obo_permalink": null,
+     "obo_btn_searchform": true,
+     "aiFieldsParam": null
+    }
+   }]
+  },
+  {
    "object": "ObjectFieldSystem",
    "label": "Object fields",
    "icon": "img/system/object_field",
    "field": "row_module_id",
    "list": [
+    {
+     "object": "ObjectFieldSystem",
+     "userkey": "AiSettings~aiSetActive~10",
+     "item": {
+      "obf_object_id__obo_name": "AiSettings",
+      "obf_object_id__obo_dbtable": "ai_settings",
+      "obf_field_id__fld_name": "aiSetActive",
+      "obf_field_id__fld_dbname": null,
+      "obf_field_id__fld_type": "8",
+      "obf_order": 10,
+      "obf_group_by": null,
+      "obf_dfault_order": null,
+      "obf_input": null,
+      "obf_ref_field_id__fld_name": null,
+      "obf_ref_object_id__obo_name": null,
+      "obf_cascad": null,
+      "obf_card": null,
+      "obf_visible": null,
+      "obf_ref_export": true,
+      "obf_copy": null,
+      "obf_ref_order": null,
+      "obf_fld_visible": null,
+      "obf_fld_required": null,
+      "obf_fld_updatable": "0",
+      "obf_fld_research": null,
+      "obf_fld_more": null,
+      "obf_fld_listmore": null,
+      "obf_fld_researchreq": null,
+      "obf_fld_dfault": null,
+      "obf_field_id__fld_dfault": "0",
+      "obf_fld_exportable": null,
+      "obf_field_id__fld_exportable": true,
+      "obf_fld_uk": null,
+      "obf_area_id__ofa_name": "AiSettings-1",
+      "obf_area_id__ofa_position": 1,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "obf_joined_id__obf_object_id__obo_name": null,
+      "obf_joined_id__obf_field_id__fld_name": null,
+      "obf_joined_id__obf_order": null
+     }
+    },
+    {
+     "object": "ObjectFieldSystem",
+     "userkey": "AiSettings~aiSetModele~20",
+     "item": {
+      "obf_object_id__obo_name": "AiSettings",
+      "obf_object_id__obo_dbtable": "ai_settings",
+      "obf_field_id__fld_name": "aiSetModele",
+      "obf_field_id__fld_dbname": "ai_set_modele",
+      "obf_field_id__fld_type": "7",
+      "obf_order": 20,
+      "obf_group_by": null,
+      "obf_dfault_order": 1,
+      "obf_input": null,
+      "obf_ref_field_id__fld_name": null,
+      "obf_ref_object_id__obo_name": null,
+      "obf_cascad": null,
+      "obf_card": null,
+      "obf_visible": null,
+      "obf_ref_export": true,
+      "obf_copy": null,
+      "obf_ref_order": null,
+      "obf_fld_visible": null,
+      "obf_fld_required": null,
+      "obf_fld_updatable": null,
+      "obf_fld_research": null,
+      "obf_fld_more": null,
+      "obf_fld_listmore": null,
+      "obf_fld_researchreq": null,
+      "obf_fld_dfault": null,
+      "obf_field_id__fld_dfault": null,
+      "obf_fld_exportable": null,
+      "obf_field_id__fld_exportable": true,
+      "obf_fld_uk": null,
+      "obf_area_id__ofa_name": "AiSettings-1",
+      "obf_area_id__ofa_position": 1,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "obf_joined_id__obf_object_id__obo_name": null,
+      "obf_joined_id__obf_field_id__fld_name": null,
+      "obf_joined_id__obf_order": null
+     }
+    },
+    {
+     "object": "ObjectFieldSystem",
+     "userkey": "AiSettings~aiSetConfig~30",
+     "item": {
+      "obf_object_id__obo_name": "AiSettings",
+      "obf_object_id__obo_dbtable": "ai_settings",
+      "obf_field_id__fld_name": "aiSetConfig",
+      "obf_field_id__fld_dbname": "ai_set_config",
+      "obf_field_id__fld_type": "13",
+      "obf_order": 30,
+      "obf_group_by": null,
+      "obf_dfault_order": null,
+      "obf_input": null,
+      "obf_ref_field_id__fld_name": null,
+      "obf_ref_object_id__obo_name": null,
+      "obf_cascad": null,
+      "obf_card": null,
+      "obf_visible": null,
+      "obf_ref_export": true,
+      "obf_copy": null,
+      "obf_ref_order": null,
+      "obf_fld_visible": null,
+      "obf_fld_required": null,
+      "obf_fld_updatable": null,
+      "obf_fld_research": null,
+      "obf_fld_more": null,
+      "obf_fld_listmore": null,
+      "obf_fld_researchreq": null,
+      "obf_fld_dfault": null,
+      "obf_field_id__fld_dfault": null,
+      "obf_fld_exportable": null,
+      "obf_field_id__fld_exportable": true,
+      "obf_fld_uk": null,
+      "obf_area_id__ofa_name": "AiSettings-2",
+      "obf_area_id__ofa_position": 2,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "obf_joined_id__obf_object_id__obo_name": null,
+      "obf_joined_id__obf_field_id__fld_name": null,
+      "obf_joined_id__obf_order": null
+     }
+    },
+    {
+     "object": "ObjectFieldSystem",
+     "userkey": "AiSettings~aiSetUrl~40",
+     "item": {
+      "obf_object_id__obo_name": "AiSettings",
+      "obf_object_id__obo_dbtable": "ai_settings",
+      "obf_field_id__fld_name": "aiSetUrl",
+      "obf_field_id__fld_dbname": "ai_set_url",
+      "obf_field_id__fld_type": "10",
+      "obf_order": 40,
+      "obf_group_by": null,
+      "obf_dfault_order": null,
+      "obf_input": null,
+      "obf_ref_field_id__fld_name": null,
+      "obf_ref_object_id__obo_name": null,
+      "obf_cascad": null,
+      "obf_card": null,
+      "obf_visible": null,
+      "obf_ref_export": true,
+      "obf_copy": null,
+      "obf_ref_order": null,
+      "obf_fld_visible": null,
+      "obf_fld_required": null,
+      "obf_fld_updatable": null,
+      "obf_fld_research": null,
+      "obf_fld_more": null,
+      "obf_fld_listmore": null,
+      "obf_fld_researchreq": null,
+      "obf_fld_dfault": null,
+      "obf_field_id__fld_dfault": null,
+      "obf_fld_exportable": null,
+      "obf_field_id__fld_exportable": true,
+      "obf_fld_uk": null,
+      "obf_area_id__ofa_name": "AiSettings-2",
+      "obf_area_id__ofa_position": 2,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "obf_joined_id__obf_object_id__obo_name": null,
+      "obf_joined_id__obf_field_id__fld_name": null,
+      "obf_joined_id__obf_order": null
+     }
+    },
     {
      "object": "ObjectFieldSystem",
      "userkey": "Field~aiFldSpe~330",
@@ -1227,6 +1874,34 @@
    "icon": "img/system/action_btn",
    "field": "row_module_id",
    "list": [
+    {
+     "object": "Action",
+     "userkey": "AI_ACTIVE_SETTINGS",
+     "item": {
+      "act_name": "AI_ACTIVE_SETTINGS",
+      "act_type": "O",
+      "act_async": "0",
+      "act_job_depth": null,
+      "act_method": "active",
+      "act_script": null,
+      "act_url": null,
+      "act_confirm": true,
+      "act_confirm_expr": null,
+      "act_confirm_ui": "<p>cette action va écraser les paramètres actuels<\/p>",
+      "act_plus": false,
+      "act_comment": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "act_exec": "BCK",
+      "act_count": null,
+      "act_order": null,
+      "act_color": null,
+      "act_color_bg": null,
+      "act_image": null,
+      "act_group_id__acg_name": null,
+      "act_queue_id__acq_name": null,
+      "act_queue_id__acq_type": null
+     }
+    },
     {
      "object": "Action",
      "userkey": "AI_CLEAR_HIST",
@@ -1573,6 +2248,18 @@
    "list": [
     {
      "object": "ActionField",
+     "userkey": "AI_ACTIVE_SETTINGS~aiApiKey~1",
+     "item": {
+      "afd_action_id__act_name": "AI_ACTIVE_SETTINGS",
+      "afd_field_id__fld_name": "aiApiKey",
+      "afd_order": 1,
+      "afd_ref_field_id__fld_name": null,
+      "afd_ref_object_id__obo_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ActionField",
      "userkey": "AIButton~aiActPrompt~100",
      "item": {
       "afd_action_id__act_name": "AIButton",
@@ -1605,6 +2292,32 @@
    "list": [
     {
      "object": "Function",
+     "userkey": "AI_CONF_CRUD",
+     "item": {
+      "fct_name": "AI_CONF_CRUD",
+      "fct_object_id__obo_type": "O",
+      "fct_object_id__obo_name": "AiSettings",
+      "fct_function": "CMS",
+      "fct_action_id__act_name": null,
+      "fct_view_id__viw_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Function",
+     "userkey": "AI_CONF_R",
+     "item": {
+      "fct_name": "AI_CONF_R",
+      "fct_object_id__obo_type": "O",
+      "fct_object_id__obo_name": "AiSettings",
+      "fct_function": "L",
+      "fct_action_id__act_name": null,
+      "fct_view_id__viw_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Function",
      "userkey": "AI_MODULE_AI_ADD_DATA_A",
      "item": {
       "fct_name": "AI_MODULE_AI_ADD_DATA_A",
@@ -1628,6 +2341,19 @@
       "fct_view_id__viw_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "Function",
+     "userkey": "AI_SET_AI_ACTIVE_SETTINGS_A",
+     "item": {
+      "fct_name": "AI_SET_AI_ACTIVE_SETTINGS_A",
+      "fct_object_id__obo_type": "O",
+      "fct_object_id__obo_name": "AiSettings",
+      "fct_function": "A",
+      "fct_action_id__act_name": "AI_ACTIVE_SETTINGS",
+      "fct_view_id__viw_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -1646,6 +2372,34 @@
       "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "Module",
       "grt_function_id__fct_action_id__act_name": "AIAddData",
+      "grt_function_id__fct_function": "A",
+      "grt_activ": true,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Grant",
+     "userkey": "AI_DESIGNER~AI_CONF_CRUD~AiSettings~",
+     "item": {
+      "grt_group_id__grp_name": "AI_DESIGNER",
+      "grt_function_id__fct_name": "AI_CONF_CRUD",
+      "grt_function_id__fct_object_id__obo_type": "O",
+      "grt_function_id__fct_object_id__obo_name": "AiSettings",
+      "grt_function_id__fct_action_id__act_name": null,
+      "grt_function_id__fct_function": "CMS",
+      "grt_activ": true,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Grant",
+     "userkey": "AI_DESIGNER~AI_SET_AI_ACTIVE_SETTINGS_A~AiSettings~AI_ACTIVE_SETTINGS",
+     "item": {
+      "grt_group_id__grp_name": "AI_DESIGNER",
+      "grt_function_id__fct_name": "AI_SET_AI_ACTIVE_SETTINGS_A",
+      "grt_function_id__fct_object_id__obo_type": "O",
+      "grt_function_id__fct_object_id__obo_name": "AiSettings",
+      "grt_function_id__fct_action_id__act_name": "AI_ACTIVE_SETTINGS",
       "grt_function_id__fct_function": "A",
       "grt_activ": true,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -1700,47 +2454,133 @@
    "label": "Constraints",
    "icon": "img/system/constraint",
    "field": "row_module_id",
-   "list": [{
-    "object": "ConstraintObject",
-    "userkey": "Constraint-AISpeField",
-    "item": {
-     "cst_name": "Constraint-AISpeField",
-     "cst_object_id__obo_name": "Field",
-     "cst_order": 1,
-     "cst_desc": "Show / Hides information depending on the rendering of field",
-     "cst_type": "E",
-     "cst_effects": ["F"],
-     "cst_field_id__fld_name": null,
-     "cst_expr": "true",
-     "cst_method": null,
-     "row_module_id__mdl_name": "AIBySimplicite"
+   "list": [
+    {
+     "object": "ConstraintObject",
+     "userkey": "AISettingUpdatable",
+     "item": {
+      "cst_name": "AISettingUpdatable",
+      "cst_object_id__obo_name": "AiSettings",
+      "cst_order": 1,
+      "cst_desc": null,
+      "cst_type": "E",
+      "cst_effects": [
+       "F",
+       "B"
+      ],
+      "cst_field_id__fld_name": null,
+      "cst_expr": "true",
+      "cst_method": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ConstraintObject",
+     "userkey": "Constraint-AISpeField",
+     "item": {
+      "cst_name": "Constraint-AISpeField",
+      "cst_object_id__obo_name": "Field",
+      "cst_order": 1,
+      "cst_desc": "Show / Hides information depending on the rendering of field",
+      "cst_type": "E",
+      "cst_effects": ["F"],
+      "cst_field_id__fld_name": null,
+      "cst_expr": "true",
+      "cst_method": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
-   }]
+   ]
   },
   {
    "object": "ConstraintImpact",
    "label": "Impacts",
    "icon": "img/system/impact",
    "field": "row_module_id",
-   "list": [{
-    "object": "ConstraintImpact",
-    "userkey": "Constraint-AISpeField~Field~10",
-    "item": {
-     "csi_const_id__cst_name": "Constraint-AISpeField",
-     "csi_const_id__cst_object_id__obo_name": "Field",
-     "csi_const_id__cst_order": 1,
-     "csi_order": 10,
-     "csi_object_prop": null,
-     "csi_field_prop": "V",
-     "csi_apply": "F",
-     "csi_expr": "[VALUE:fld_rendering] == \"AI\"",
-     "csi_target": null,
-     "csi_objfield_id__obf_object_id__obo_name": "Field",
-     "csi_objfield_id__obf_field_id__fld_name": "aiFldSpe",
-     "csi_objfield_id__obf_order": 330,
-     "row_module_id__mdl_name": "AIBySimplicite"
+   "list": [
+    {
+     "object": "ConstraintImpact",
+     "userkey": "AISettingUpdatable~AiSettings~1",
+     "item": {
+      "csi_const_id__cst_name": "AISettingUpdatable",
+      "csi_const_id__cst_object_id__obo_name": "AiSettings",
+      "csi_const_id__cst_order": 1,
+      "csi_order": 1,
+      "csi_object_prop": null,
+      "csi_field_prop": "U",
+      "csi_apply": "F",
+      "csi_expr": "![ISNEW]",
+      "csi_target": null,
+      "csi_objfield_id__obf_object_id__obo_name": "AiSettings",
+      "csi_objfield_id__obf_field_id__fld_name": "aiSetConfig",
+      "csi_objfield_id__obf_order": 30,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ConstraintImpact",
+     "userkey": "AISettingUpdatable~AiSettings~2",
+     "item": {
+      "csi_const_id__cst_name": "AISettingUpdatable",
+      "csi_const_id__cst_object_id__obo_name": "AiSettings",
+      "csi_const_id__cst_order": 1,
+      "csi_order": 2,
+      "csi_object_prop": null,
+      "csi_field_prop": "U",
+      "csi_apply": "F",
+      "csi_expr": "[ISNEW]",
+      "csi_target": null,
+      "csi_objfield_id__obf_object_id__obo_name": "AiSettings",
+      "csi_objfield_id__obf_field_id__fld_name": "aiSetModele",
+      "csi_objfield_id__obf_order": 20,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ConstraintImpact",
+     "userkey": "AISettingUpdatable~AiSettings~3",
+     "item": {
+      "csi_const_id__cst_name": "AISettingUpdatable",
+      "csi_const_id__cst_object_id__obo_name": "AiSettings",
+      "csi_const_id__cst_order": 1,
+      "csi_order": 3,
+      "csi_object_prop": null,
+      "csi_field_prop": null,
+      "csi_apply": "T",
+      "csi_expr": "![ISNEW]",
+      "csi_target": {
+       "item": {"ofa_name": "AiSettings-2"},
+       "icon": "img/system/field_area",
+       "label": "Fields area",
+       "userkeylabel": "AiSettings-2",
+       "object": "ObjectFieldArea"
+      },
+      "csi_objfield_id__obf_object_id__obo_name": null,
+      "csi_objfield_id__obf_field_id__fld_name": null,
+      "csi_objfield_id__obf_order": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ConstraintImpact",
+     "userkey": "Constraint-AISpeField~Field~10",
+     "item": {
+      "csi_const_id__cst_name": "Constraint-AISpeField",
+      "csi_const_id__cst_object_id__obo_name": "Field",
+      "csi_const_id__cst_order": 1,
+      "csi_order": 10,
+      "csi_object_prop": null,
+      "csi_field_prop": "V",
+      "csi_apply": "F",
+      "csi_expr": "[VALUE:fld_rendering] == \"AI\"",
+      "csi_target": null,
+      "csi_objfield_id__obf_object_id__obo_name": "Field",
+      "csi_objfield_id__obf_field_id__fld_name": "aiFldSpe",
+      "csi_objfield_id__obf_order": 330,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
-   }]
+   ]
   },
   {
    "object": "BPMProcess",
@@ -1824,25 +2664,6 @@
    "list": [
     {
      "object": "BPMActivity",
-     "userkey": "AIGenData~AIC_0005",
-     "item": {
-      "acy_process_id__pcs_name": "AIGenData",
-      "acy_step": "AIC_0005",
-      "acy_name": "SelectProcess",
-      "acy_comment": null,
-      "acy_type": "I",
-      "acy_posx": null,
-      "acy_posy": null,
-      "acy_reversible": "O",
-      "acy_max_duration": null,
-      "acy_duration_unit": null,
-      "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMActivity",
      "userkey": "AIGenData~GGD-BEG",
      "item": {
       "acy_process_id__pcs_name": "AIGenData",
@@ -1888,6 +2709,25 @@
       "acy_name": "SelectModule",
       "acy_comment": "Selection module",
       "acy_type": "C",
+      "acy_posx": null,
+      "acy_posy": null,
+      "acy_reversible": "N",
+      "acy_max_duration": null,
+      "acy_duration_unit": null,
+      "acy_alert_id__alt_name": null,
+      "acy_user_dlg": true,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMActivity",
+     "userkey": "AIGenData~GGD_0150",
+     "item": {
+      "acy_process_id__pcs_name": "AIGenData",
+      "acy_step": "GGD_0150",
+      "acy_name": "Confirm",
+      "acy_comment": null,
+      "acy_type": "X",
       "acy_posx": null,
       "acy_posy": null,
       "acy_reversible": "N",
@@ -2002,6 +2842,25 @@
       "acy_name": "TranslateDomain",
       "acy_comment": null,
       "acy_type": "X",
+      "acy_posx": null,
+      "acy_posy": null,
+      "acy_reversible": "N",
+      "acy_max_duration": null,
+      "acy_duration_unit": null,
+      "acy_alert_id__alt_name": null,
+      "acy_user_dlg": true,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMActivity",
+     "userkey": "AIModuleCreate~AIC_0017",
+     "item": {
+      "acy_process_id__pcs_name": "AIModuleCreate",
+      "acy_step": "AIC_0017",
+      "acy_name": "NewScope",
+      "acy_comment": null,
+      "acy_type": "N",
       "acy_posx": null,
       "acy_posy": null,
       "acy_reversible": "N",
@@ -2193,44 +3052,6 @@
    "list": [
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~AIC_0005~AIGenData~GGD_0100",
-     "item": {
-      "trs_process_id__pcs_name": "AIGenData",
-      "trs_from_id__acy_process_id__pcs_name": "AIGenData",
-      "trs_from_id__acy_step": "AIC_0005",
-      "trs_from_id__acy_name": "SelectProcess",
-      "trs_to_id__acy_process_id__pcs_name": "AIGenData",
-      "trs_to_id__acy_step": "GGD_0100",
-      "trs_to_id__acy_name": "SelectModule",
-      "trs_name": null,
-      "trs_action_id__act_name": null,
-      "trs_condition": null,
-      "trs_callback": null,
-      "trs_alert_id__alt_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD-BEG~AIGenData~AIC_0005",
-     "item": {
-      "trs_process_id__pcs_name": "AIGenData",
-      "trs_from_id__acy_process_id__pcs_name": "AIGenData",
-      "trs_from_id__acy_step": "GGD-BEG",
-      "trs_from_id__acy_name": "Begin",
-      "trs_to_id__acy_process_id__pcs_name": "AIGenData",
-      "trs_to_id__acy_step": "AIC_0005",
-      "trs_to_id__acy_name": "SelectProcess",
-      "trs_name": null,
-      "trs_action_id__act_name": null,
-      "trs_condition": null,
-      "trs_callback": null,
-      "trs_alert_id__alt_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMTransition",
      "userkey": "AIGenData~AIGenData~GGD-BEG~AIGenData~GGD_0100",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
@@ -2250,12 +3071,31 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD_0100~AIGenData~GGD_0200",
+     "userkey": "AIGenData~AIGenData~GGD_0100~AIGenData~GGD_0150",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_step": "GGD_0100",
       "trs_from_id__acy_name": "SelectModule",
+      "trs_to_id__acy_process_id__pcs_name": "AIGenData",
+      "trs_to_id__acy_step": "GGD_0150",
+      "trs_to_id__acy_name": "Confirm",
+      "trs_name": null,
+      "trs_action_id__act_name": null,
+      "trs_condition": null,
+      "trs_callback": null,
+      "trs_alert_id__alt_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMTransition",
+     "userkey": "AIGenData~AIGenData~GGD_0150~AIGenData~GGD_0200",
+     "item": {
+      "trs_process_id__pcs_name": "AIGenData",
+      "trs_from_id__acy_process_id__pcs_name": "AIGenData",
+      "trs_from_id__acy_step": "GGD_0150",
+      "trs_from_id__acy_name": "Confirm",
       "trs_to_id__acy_process_id__pcs_name": "AIGenData",
       "trs_to_id__acy_step": "GGD_0200",
       "trs_to_id__acy_name": "GenData",
@@ -2383,12 +3223,31 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0015~AIModuleCreate~AIC_0020",
+     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0015~AIModuleCreate~AIC_0017",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0015",
       "trs_from_id__acy_name": "TranslateDomain",
+      "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "trs_to_id__acy_step": "AIC_0017",
+      "trs_to_id__acy_name": "NewScope",
+      "trs_name": null,
+      "trs_action_id__act_name": null,
+      "trs_condition": null,
+      "trs_callback": null,
+      "trs_alert_id__alt_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMTransition",
+     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0017~AIModuleCreate~AIC_0020",
+     "item": {
+      "trs_process_id__pcs_name": "AIModuleCreate",
+      "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "trs_from_id__acy_step": "AIC_0017",
+      "trs_from_id__acy_name": "NewScope",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0020",
       "trs_to_id__acy_name": "GrantUser",
@@ -2581,36 +3440,6 @@
    "list": [
     {
      "object": "BPMData",
-     "userkey": "AIGenData~AIC_0005~Data~Template",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
-      "dta_activity_id__acy_step": "AIC_0005",
-      "dta_activity_id__acy_name": "SelectProcess",
-      "dta_group": "Data",
-      "dta_name": "Template",
-      "dta_order": 1,
-      "dta_value": "_required_",
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
-     "userkey": "AIGenData~AIC_0005~Data~AREA=_n_",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
-      "dta_activity_id__acy_step": "AIC_0005",
-      "dta_activity_id__acy_name": "SelectProcess",
-      "dta_group": "Data",
-      "dta_name": "AREA:_n_",
-      "dta_order": 1,
-      "dta_value": "_required_field_",
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
      "userkey": "AIGenData~GGD-END~Forward~PARAM=1",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
@@ -2665,6 +3494,36 @@
       "dta_name": "Name",
       "dta_order": 1,
       "dta_value": "Module",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIGenData~GGD_0150~Data~json_return",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
+      "dta_activity_id__acy_step": "GGD_0150",
+      "dta_activity_id__acy_name": "Confirm",
+      "dta_group": "Data",
+      "dta_name": "json_return",
+      "dta_order": 1,
+      "dta_value": null,
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIGenData~GGD_0150~Page~Method",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
+      "dta_activity_id__acy_step": "GGD_0150",
+      "dta_activity_id__acy_name": "Confirm",
+      "dta_group": "Page",
+      "dta_name": "Method",
+      "dta_order": 1,
+      "dta_value": "callIA",
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -2785,6 +3644,81 @@
       "dta_name": "Method",
       "dta_order": 1,
       "dta_value": "translateDomain",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_0017~Field~row_module_id.mdl_name",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_0017",
+      "dta_activity_id__acy_name": "NewScope",
+      "dta_group": "Field",
+      "dta_name": "row_module_id.mdl_name",
+      "dta_order": 1,
+      "dta_value": "[AIC_0010.Field.mdl_name]",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_0017~Field~row_module_id",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_0017",
+      "dta_activity_id__acy_name": "NewScope",
+      "dta_group": "Field",
+      "dta_name": "row_module_id",
+      "dta_order": 1,
+      "dta_value": "[AIC_0010.Field.row_id]",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_0017~Field~viw_icon",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_0017",
+      "dta_activity_id__acy_name": "NewScope",
+      "dta_group": "Field",
+      "dta_name": "viw_icon",
+      "dta_order": 1,
+      "dta_value": null,
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_0017~Field~viw_type",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_0017",
+      "dta_activity_id__acy_name": "NewScope",
+      "dta_group": "Field",
+      "dta_name": "viw_type",
+      "dta_order": 1,
+      "dta_value": "H",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_0017~Object~Name",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_0017",
+      "dta_activity_id__acy_name": "NewScope",
+      "dta_group": "Object",
+      "dta_name": "Name",
+      "dta_order": 1,
+      "dta_value": "View",
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -3103,12 +4037,12 @@
    "list": [
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIGenData~AIC_0005",
+     "userkey": "ADMIN~AIGenData~GGD_0150",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
-      "gta_activity_id__acy_step": "AIC_0005",
-      "gta_activity_id__acy_name": "SelectProcess",
+      "gta_activity_id__acy_step": "GGD_0150",
+      "gta_activity_id__acy_name": "Confirm",
       "gta_grant": [
        "R",
        "W",
@@ -3157,6 +4091,22 @@
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0015",
       "gta_activity_id__acy_name": "TranslateDomain",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "ADMIN~AIModuleCreate~AIC_0017",
+     "item": {
+      "gta_group_id__grp_name": "ADMIN",
+      "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "gta_activity_id__acy_step": "AIC_0017",
+      "gta_activity_id__acy_name": "NewScope",
       "gta_grant": [
        "R",
        "W",
@@ -3247,12 +4197,12 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIGenData~AIC_0005",
+     "userkey": "AI_DESIGNER~AIGenData~GGD_0100",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
-      "gta_activity_id__acy_step": "AIC_0005",
-      "gta_activity_id__acy_name": "SelectProcess",
+      "gta_activity_id__acy_step": "GGD_0100",
+      "gta_activity_id__acy_name": "SelectModule",
       "gta_grant": [
        "R",
        "W",
@@ -3263,12 +4213,12 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIGenData~GGD_0100",
+     "userkey": "AI_DESIGNER~AIGenData~GGD_0150",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
-      "gta_activity_id__acy_step": "GGD_0100",
-      "gta_activity_id__acy_name": "SelectModule",
+      "gta_activity_id__acy_step": "GGD_0150",
+      "gta_activity_id__acy_name": "Confirm",
       "gta_grant": [
        "R",
        "W",
@@ -3333,6 +4283,22 @@
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0015",
       "gta_activity_id__acy_name": "TranslateDomain",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0017",
+     "item": {
+      "gta_group_id__grp_name": "AI_DESIGNER",
+      "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "gta_activity_id__acy_step": "AIC_0017",
+      "gta_activity_id__acy_name": "NewScope",
       "gta_grant": [
        "R",
        "W",
@@ -3482,6 +4448,25 @@
    "list": [
     {
      "object": "Map",
+     "userkey": "AIDomain~ObjectInternal(AiSettings)~140",
+     "item": {
+      "map_domain_id__obd_name": "AIDomain",
+      "map_object_id__obj_name": null,
+      "map_process_id__pcs_name": null,
+      "map_object": {
+       "item": {"obo_name": "AiSettings"},
+       "icon": "img/system/business_object",
+       "label": "Business object",
+       "userkeylabel": "AiSettings",
+       "object": "ObjectInternal"
+      },
+      "map_order": 140,
+      "map_ext": false,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Map",
      "userkey": "AIDomain~BPMProcess(AIModuleCreate)~150",
      "item": {
       "map_domain_id__obd_name": "AIDomain",
@@ -3501,7 +4486,7 @@
     },
     {
      "object": "Map",
-     "userkey": "AIDomain~BPMProcess(AIGenData)~150",
+     "userkey": "AIDomain~BPMProcess(AIGenData)~200",
      "item": {
       "map_domain_id__obd_name": "AIDomain",
       "map_object_id__obj_name": null,
@@ -3513,7 +4498,7 @@
        "userkeylabel": "AIGenData",
        "object": "BPMProcess"
       },
-      "map_order": 150,
+      "map_order": 200,
       "map_ext": false,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -4654,6 +5639,40 @@
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "TranslateAction",
+     "userkey": "Action(AI_ACTIVE_SETTINGS)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"act_name": "AI_ACTIVE_SETTINGS"},
+       "icon": "img/system/action_btn",
+       "label": "Action",
+       "userkeylabel": "AI_ACTIVE_SETTINGS",
+       "object": "Action"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Activate",
+      "tsl_simplehelp": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateAction",
+     "userkey": "Action(AI_ACTIVE_SETTINGS)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"act_name": "AI_ACTIVE_SETTINGS"},
+       "icon": "img/system/action_btn",
+       "label": "Action",
+       "userkeylabel": "AI_ACTIVE_SETTINGS",
+       "object": "Action"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Activer",
+      "tsl_simplehelp": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -4882,6 +5901,226 @@
       "tsl_tooltip": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiApiKey)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiApiKey"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiApiKey",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "API KEY",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiApiKey)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiApiKey"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiApiKey",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "API KEY",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiSetModele)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiSetModele"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiSetModele",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Conf modele",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiSetModele)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiSetModele"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiSetModele",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Modèle",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiSetConfig)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiSetConfig"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiSetConfig",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Setting",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiSetConfig)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiSetConfig"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiSetConfig",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "configuration",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiSetUrl)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiSetUrl"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiSetUrl",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Set api url",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiSetUrl)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiSetUrl"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiSetUrl",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Api url",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiSetActive)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiSetActive"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiSetActive",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Active",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "Field(aiSetActive)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiSetActive"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiSetActive",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Actif",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -4954,6 +6193,70 @@
       "tsl_value": "AIExemple-1",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "TranslateFieldArea",
+     "userkey": "ObjectFieldArea(AiSettings-1)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"ofa_name": "AiSettings-1"},
+       "icon": "img/system/field_area",
+       "label": "Fields area",
+       "userkeylabel": "AiSettings-1",
+       "object": "ObjectFieldArea"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Configuration -1",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateFieldArea",
+     "userkey": "ObjectFieldArea(AiSettings-1)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"ofa_name": "AiSettings-1"},
+       "icon": "img/system/field_area",
+       "label": "Fields area",
+       "userkeylabel": "AiSettings-1",
+       "object": "ObjectFieldArea"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "AiConfiguration-1",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateFieldArea",
+     "userkey": "ObjectFieldArea(AiSettings-2)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"ofa_name": "AiSettings-2"},
+       "icon": "img/system/field_area",
+       "label": "Fields area",
+       "userkeylabel": "AiSettings-2",
+       "object": "ObjectFieldArea"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Settings -2",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateFieldArea",
+     "userkey": "ObjectFieldArea(AiSettings-2)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"ofa_name": "AiSettings-2"},
+       "icon": "img/system/field_area",
+       "label": "Fields area",
+       "userkeylabel": "AiSettings-2",
+       "object": "ObjectFieldArea"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "AiSettings-2",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -4993,6 +6296,50 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Assistant IA",
+      "tsl_help": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    }
+   ]
+  },
+  {
+   "object": "TranslateObject",
+   "label": "Object translation",
+   "icon": "img/system/translation",
+   "field": "row_module_id",
+   "list": [
+    {
+     "object": "TranslateObject",
+     "userkey": "ObjectInternal(AiSettings)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"obo_name": "AiSettings"},
+       "icon": "img/system/business_object",
+       "label": "Business object",
+       "userkeylabel": "AiSettings",
+       "object": "ObjectInternal"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Configuring the wizard",
+      "tsl_plural_value": null,
+      "tsl_help": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateObject",
+     "userkey": "ObjectInternal(AiSettings)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"obo_name": "AiSettings"},
+       "icon": "img/system/business_object",
+       "label": "Business object",
+       "userkeylabel": "AiSettings",
+       "object": "ObjectInternal"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Configuration de l'assistant",
+      "tsl_plural_value": null,
       "tsl_help": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -5674,44 +7021,6 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData AIC_0005)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIGenData",
-        "acy_step": "AIC_0005"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIGenData AIC_0005",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Select process",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData AIC_0005)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIGenData",
-        "acy_step": "AIC_0005"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIGenData AIC_0005",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Créer ou compléter un module",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
      "userkey": "BPMActivity(AIModuleCreate AIC_0005)~ENU",
      "item": {
       "tsl_object": {
@@ -5859,6 +7168,82 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Traduire le domaine",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIModuleCreate AIC_0017)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIModuleCreate",
+        "acy_step": "AIC_0017"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIModuleCreate AIC_0017",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Create scope",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIModuleCreate AIC_0017)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIModuleCreate",
+        "acy_step": "AIC_0017"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIModuleCreate AIC_0017",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Créer un scope",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIGenData GGD_0150)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIGenData",
+        "acy_step": "GGD_0150"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIGenData GGD_0150",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Confirm",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIGenData GGD_0150)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIGenData",
+        "acy_step": "GGD_0150"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIGenData GGD_0150",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Confirmation",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },

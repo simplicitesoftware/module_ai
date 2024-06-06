@@ -1,6 +1,6 @@
 var app = $ui.getApp();
-var botTemplate = "<div class=\"bot-messages\"><strong>{{botName}}: </strong><span class=\"msg\">...</span></div>";
-var userTemplate ="<div class=\"user-messages\"><strong>{{user}}: </strong><span class=\"msg\">{{msg}}</span></div>";
+var botTemplateMetrics = "<div class=\"bot-messages\"><strong>{{botName}}: </strong><span class=\"msg\">...</span></div>";
+var userTemplateMetrics ="<div class=\"user-messages\"><strong>{{user}}: </strong><span class=\"msg\">{{msg}}</span></div>";
 var swagger;
 var userName = "user";
 var AIMetricsChat = (function() {
@@ -21,9 +21,9 @@ var AIMetricsChat = (function() {
 		}else{
 			userName =app.getGrant().login;
 		}
-		userTemplate=userTemplate.replace('{{user}}', userName);
+		userTemplateMetrics=userTemplateMetrics.replace('{{user}}', userName);
 		app.getSysParam(function(param){
-			botTemplate = botTemplate.replace("{{botName}}",param);
+			botTemplateMetrics = botTemplateMetrics.replace("{{botName}}",param);
 		},"AI_CHAT_BOT_NAME");
 		$('#metrics_user_text').keypress(function(e) {
 			if (e.which === 13) {
@@ -55,8 +55,8 @@ function sendMetricsMessage(){
 	$('#metrics_send_button').hide();
 	$('#metrics_user_text').prop('disabled', true);
 	var params = {prompt:input, reqType:"metrics",swagger:swagger,lang:app.grant.lang};
-	$('#metrics_messages').append(userTemplate.replace('{{msg}}',input));
-	$('#metrics_messages').append(botTemplate);
+	$('#metrics_messages').append(userTemplateMetrics.replace('{{msg}}',input));
+	$('#metrics_messages').append(botTemplateMetrics);
 	var url = Simplicite.ROOT+"/ext/AIRestAPI";
 	var useAsync = true;
 	app._call(useAsync, url, params, function callback(botResponse){

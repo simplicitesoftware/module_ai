@@ -14,6 +14,30 @@
 Exploratory module on the use of AI  
 Use AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint
 
+`AiSettings` business object definition
+---------------------------------------
+
+
+
+### Fields
+
+| Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
+|--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
+| `aiSetActive`                                                | boolean                                  | yes      | yes       |          | -                                                                                |
+| `aiSetModele`                                                | enum(100) using `AI_CONF_MODELE` list    | yes*     | yes       |          | -                                                                                |
+| `aiSetConfig`                                                | text(1000)                               |          |           |          | -                                                                                |
+| `aiSetUrl`                                                   | url(100)                                 |          | yes       |          | -                                                                                |
+
+### Lists
+
+* `AI_CONF_MODELE`
+    - `MISTRAL` Mistral
+    - `OPENAI` OpenAI
+
+### Custom actions
+
+* `AI_ACTIVE_SETTINGS`: 
+
 `AIGenData` business process definition
 ---------------------------------------
 
@@ -21,10 +45,10 @@ Use AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint
 
 ### Activities
 
-* `SelectProcess`: 
 * `Begin`: 
 * `End`: 
 * `SelectModule`: Selection module
+* `Confirm`: 
 * `GenData`: AI call for data gen
 
 `AIModuleCreate` business process definition
@@ -39,6 +63,7 @@ Auomatic model generation process
 * `Choice`: 
 * `CreateModule`: 
 * `TranslateDomain`: 
+* `NewScope`: 
 * `GrantUser`: 
 * `SelectModule`: Selection module
 * `SelectGroup`: Selection group
