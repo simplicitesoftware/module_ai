@@ -4658,6 +4658,30 @@
     },
     {
      "object": "Resource",
+     "userkey": "Disposition(default)~ANY~ai_module",
+     "item": {
+      "res_object": {
+       "item": {"dis_code": "default"},
+       "icon": "img/system/disposition",
+       "label": "Disposition",
+       "userkeylabel": "default",
+       "object": "Disposition"
+      },
+      "res_type": "IMG",
+      "res_lang": "ANY",
+      "res_code": "ai_module",
+      "res_cached": false,
+      "res_file": null,
+      "res_image": {
+       "path": "resources/Disposition/default/ai_module.svg",
+       "mime": "image/svg+xml",
+       "name": "Module_IA.svg"
+      },
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Resource",
      "userkey": "ObjectExternal(AIProcessResource)~ANY~CHAT_BOT_CSS",
      "item": {
       "res_object": {
