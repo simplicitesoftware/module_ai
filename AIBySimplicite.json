@@ -7,7 +7,7 @@
   "mdl_version": "0.11",
   "mdl_type": "T",
   "mdl_icon": null,
-  "mdl_url": "{\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"\n\t},\n\t\"type\": \"git\"\n}",
+  "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\"\n}",
   "mdl_comment": "Exploratory module on the use of AI  \nUse AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint"
  },
  "links": [
@@ -4448,25 +4448,6 @@
    "list": [
     {
      "object": "Map",
-     "userkey": "AIDomain~ObjectInternal(AiSettings)~140",
-     "item": {
-      "map_domain_id__obd_name": "AIDomain",
-      "map_object_id__obj_name": null,
-      "map_process_id__pcs_name": null,
-      "map_object": {
-       "item": {"obo_name": "AiSettings"},
-       "icon": "img/system/business_object",
-       "label": "Business object",
-       "userkeylabel": "AiSettings",
-       "object": "ObjectInternal"
-      },
-      "map_order": 140,
-      "map_ext": false,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "Map",
      "userkey": "AIDomain~BPMProcess(AIModuleCreate)~150",
      "item": {
       "map_domain_id__obd_name": "AIDomain",
@@ -4519,6 +4500,25 @@
       },
       "map_order": 300,
       "map_ext": false,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Map",
+     "userkey": "AIDomain~ObjectInternal(AiSettings)~400",
+     "item": {
+      "map_domain_id__obd_name": "AIDomain",
+      "map_object_id__obj_name": null,
+      "map_process_id__pcs_name": null,
+      "map_object": {
+       "item": {"obo_name": "AiSettings"},
+       "icon": "img/system/business_object",
+       "label": "Business object",
+       "userkeylabel": "AiSettings",
+       "object": "ObjectInternal"
+      },
+      "map_order": 400,
+      "map_ext": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
