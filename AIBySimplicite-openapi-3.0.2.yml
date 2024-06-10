@@ -127,7 +127,7 @@ components:
           description: Active
           type: boolean
         aiSetModele:
-          description: Conf modele
+          description: Model
           type: string
           enum:
           - MISTRAL
@@ -453,7 +453,7 @@ paths:
           - OPENAI
         in: query
         name: aiSetModele
-        description: Search filter for Conf modele
+        description: Search filter for Model
         required: false
       - schema:
           type: string

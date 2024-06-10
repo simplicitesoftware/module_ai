@@ -8,7 +8,7 @@
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\"\n}",
-  "mdl_comment": "Exploratory module on the use of AI  \nUse AI_API_PARAM, AI_API_KEY and AI_API_URL to configure the IA endpoint"
+  "mdl_comment": "### Introduction\nExploratory module on the use of AI in Simplicite\n\n### Import\nTo import this module:\n\nCreate a module named `AIBySimplicite`\nSet the settings as:\n```json\n{\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"\n\t},\n\t\"type\": \"git\"\n}\n```\nClick on the Import module button\n### Configure\nTo configure the ia connection, use the `Configuring the wizard`  object in `AI assistant` domain.\n\nSelect the model (LLM) you wish to use, configure the parameters and the url of your API.  \n\n<details>\n  <summary>LLM spesific configuration exemple<\/summary>\n\n#### OpenAI:\n```json\n{\n    'model':'<gpt_model_to_use>',\n    'OpenAI-Project': \"<my_openai_project_id>\", // Optional\n    'OpenAI-Organization': \"<my_openai_organization_id>\", //Optional\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}\n```\n#### Mistral  \n```json\n{\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}\n```\n<\/details>\n\n\n<details>\n  <summary>Parrameters details<\/summary>\n\n##### hist_depth\nDefines the number of messages in the history used for the context.\nThe greater this number, the more tokens the request uses, but the more relevant is the response. \n##### max_token\n*optional*  \nLimits the number of tokens in the ia response\n###### default_max_token\nMaximum number of tokens in a usual context.\n###### code_max_token\nMaximum number of tokens for thecnical calls.\n##### trigger\nTo define a trigger for ia calls in fields (under development)\n\n<\/details>  \n  \n  \nUse the `Activate` action to save your settings and enter your API key if required.\n\n### wizzard\n#### Module generation\nUse AI to co-create or update a module based on your business needs\n`Module generation` in `AI assistant` domain.\n\n#### Data generation\nUse AI to generate test data for a module.\n`Data generation` in `AI assistant` domain.\n\n#### Business chatbot\nA shortcut to a chatbot contextualized according to the form on which it is opened.\nThe user must have `AI_BUSINESS` rights.\nThe `Personal data`, `Confidential data` and `Intimate` fields are not sent to the AI.\n\n\n#### Metrics\nGenerating AI graphs on a module's data\nIn a `view` add an `external page` of source `External object`: `AIMetricsChat?module=<you_module_name>`"
  },
  "links": [
   {
@@ -201,9 +201,9 @@
    "list": [
     {
      "object": "Group",
-     "userkey": "AI_DESIGNER",
+     "userkey": "AI_BUSINESS",
      "item": {
-      "grp_name": "AI_DESIGNER",
+      "grp_name": "AI_BUSINESS",
       "grp_comment": null,
       "grp_type": [
        "G",
@@ -216,9 +216,9 @@
     },
     {
      "object": "Group",
-     "userkey": "AI_METIER",
+     "userkey": "AI_DESIGNER",
      "item": {
-      "grp_name": "AI_METIER",
+      "grp_name": "AI_DESIGNER",
       "grp_comment": null,
       "grp_type": [
        "G",
@@ -239,10 +239,10 @@
    "list": [
     {
      "object": "Profile",
-     "userkey": "AI_DESIGNER~AI_METIER",
+     "userkey": "AI_DESIGNER~AI_BUSINESS",
      "item": {
       "prf_profile_id__grp_name": "AI_DESIGNER",
-      "prf_group_id__grp_name": "AI_METIER",
+      "prf_group_id__grp_name": "AI_BUSINESS",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -658,7 +658,7 @@
       "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
       "lov_code_id__lov_code": "OPENAI",
       "lov_lang": "ENU",
-      "lov_value": "Openai",
+      "lov_value": "OpenAi",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -757,7 +757,7 @@
       "lov_code_id__lov_list_id__lov_name": "FIELD_RENDERING_NOTEPAD",
       "lov_code_id__lov_code": "AI",
       "lov_lang": "FRA",
-      "lov_value": "AI",
+      "lov_value": "IA",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
@@ -5958,7 +5958,7 @@
        "object": "Field"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Conf modele",
+      "tsl_value": "Model",
       "tsl_simplehelp": null,
       "tsl_plural_value": null,
       "tsl_short_value": null,
@@ -6436,7 +6436,7 @@
        "object": "ObjectExternal"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Exp tool",
+      "tsl_value": "Example tools",
       "tsl_plural_value": null,
       "tsl_help": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -6454,7 +6454,7 @@
        "object": "ObjectExternal"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Outil d'expansion",
+      "tsl_value": "Exemples d'outils",
       "tsl_plural_value": null,
       "tsl_help": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -7451,7 +7451,7 @@
        "object": "BPMProcess"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Module create",
+      "tsl_value": "Module generation",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -7490,6 +7490,66 @@
        "label": "External object",
        "userkeylabel": "AIProcessResource",
        "object": "ObjectExternal"
+      },
+      "prm_perm": true,
+      "prm_upd": false,
+      "prm_req": false,
+      "prm_prop": null,
+      "prm_value": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Permission",
+     "userkey": "AI_BUSINESS~ObjectExternal(AIMetricsChat)~",
+     "item": {
+      "prm_group_id__grp_name": "AI_BUSINESS",
+      "prm_object": {
+       "item": {"obe_name": "AIMetricsChat"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "AIMetricsChat",
+       "object": "ObjectExternal"
+      },
+      "prm_perm": true,
+      "prm_upd": false,
+      "prm_req": false,
+      "prm_prop": null,
+      "prm_value": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Permission",
+     "userkey": "AI_BUSINESS~ObjectExternal(AIChatBot)~",
+     "item": {
+      "prm_group_id__grp_name": "AI_BUSINESS",
+      "prm_object": {
+       "item": {"obe_name": "AIChatBot"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "AIChatBot",
+       "object": "ObjectExternal"
+      },
+      "prm_perm": true,
+      "prm_upd": false,
+      "prm_req": false,
+      "prm_prop": null,
+      "prm_value": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Permission",
+     "userkey": "AI_BUSINESS~ShortCut(AIBot)~",
+     "item": {
+      "prm_group_id__grp_name": "AI_BUSINESS",
+      "prm_object": {
+       "item": {"shc_name": "AIBot"},
+       "icon": "img/system/shortcut",
+       "label": "Shortcut",
+       "userkeylabel": "AIBot",
+       "object": "ShortCut"
       },
       "prm_perm": true,
       "prm_upd": false,
@@ -7644,66 +7704,6 @@
      "userkey": "AI_DESIGNER~ShortCut(AIBot)~",
      "item": {
       "prm_group_id__grp_name": "AI_DESIGNER",
-      "prm_object": {
-       "item": {"shc_name": "AIBot"},
-       "icon": "img/system/shortcut",
-       "label": "Shortcut",
-       "userkeylabel": "AIBot",
-       "object": "ShortCut"
-      },
-      "prm_perm": true,
-      "prm_upd": false,
-      "prm_req": false,
-      "prm_prop": null,
-      "prm_value": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "Permission",
-     "userkey": "AI_METIER~ObjectExternal(AIMetricsChat)~",
-     "item": {
-      "prm_group_id__grp_name": "AI_METIER",
-      "prm_object": {
-       "item": {"obe_name": "AIMetricsChat"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "AIMetricsChat",
-       "object": "ObjectExternal"
-      },
-      "prm_perm": true,
-      "prm_upd": false,
-      "prm_req": false,
-      "prm_prop": null,
-      "prm_value": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "Permission",
-     "userkey": "AI_METIER~ObjectExternal(AIChatBot)~",
-     "item": {
-      "prm_group_id__grp_name": "AI_METIER",
-      "prm_object": {
-       "item": {"obe_name": "AIChatBot"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "AIChatBot",
-       "object": "ObjectExternal"
-      },
-      "prm_perm": true,
-      "prm_upd": false,
-      "prm_req": false,
-      "prm_prop": null,
-      "prm_value": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "Permission",
-     "userkey": "AI_METIER~ShortCut(AIBot)~",
-     "item": {
-      "prm_group_id__grp_name": "AI_METIER",
       "prm_object": {
        "item": {"shc_name": "AIBot"},
        "icon": "img/system/shortcut",

@@ -257,7 +257,7 @@ paths:
         required: false
       - in: query
         name: aiSetModele
-        description: Search filter for Conf modele
+        description: Search filter for Model
         type: string
         required: false
         enum:
@@ -428,7 +428,7 @@ definitions:
         description: Active
         type: boolean
       aiSetModele:
-        description: Conf modele
+        description: Model
         type: string
         enum:
         - MISTRAL
