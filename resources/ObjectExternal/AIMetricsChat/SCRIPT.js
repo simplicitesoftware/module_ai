@@ -46,7 +46,11 @@ function sendMetricsMessage(){
 	$('#metrics_messages').html('');
 	canvas = $('canvas');
 	canvas.each(function(canva) {
-		eval(canvas[canva].id+".remove();");
+		let id = canvas[canva].id;
+		let graph = Chart.getChart(id);
+		if(graph) graph.destroy();
+		
+		
 	});
 	$('#ia_html').html('');
 	input = $('#metrics_user_text').val();
@@ -71,6 +75,7 @@ function sendMetricsMessage(){
 		}
 		if(botResponse.error !=null || ((botResponse.js == null && (botResponse.html == null || !botResponse.html.includes("script"))))){
 			$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
+			
 			return;
 		}
 		if(botResponse.text == null){
@@ -78,11 +83,22 @@ function sendMetricsMessage(){
 		}
 		$('#metrics_messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
 		$('#ia_html').html(botResponse.html);
-		try {
-			eval(botResponse.js + "\n" + botResponse.function); 
-		}catch(e){
-			$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
+		
+		if(botResponse.js != ""){
+			try {
+				eval(botResponse.js);
+				//check if function is auto call
+				if(botResponse.js.indexOf(botResponse.function) == -1) {
+					eval(botResponse.function);
+				}
+				
+			}catch(e){
+				$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
+			}
 		}
+		// Définir les options globales pour Chart.js
+		Chart.defaults.responsive = true;
+		Chart.defaults.maintainAspectRatio = false;
 		
 
 	});

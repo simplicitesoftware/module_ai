@@ -142,6 +142,9 @@ public class AiMetrics implements java.io.Serializable {
 			String replacement = matcher.group(1)+matcher.group(2).replace(".","__")+matcher.group(3);
 			js = js.replace(matcher.group(0),replacement);
 		}
+		// check if listener on Dom loaded
+		regex = "document\\.addEventListener\\('DOMContentLoaded',\\s*function\\(\\)\\s*\\{((?:\\s*\\S*\\s*)*)\\}\\);";
+		js = js.replaceAll(regex, "$1");
 		
 		regex = "(\\w*) ?=.*\\.createElement\\('canvas'\\)";
 		pattern = Pattern.compile(regex);
