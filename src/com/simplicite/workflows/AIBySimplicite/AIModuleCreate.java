@@ -1,5 +1,9 @@
 package com.simplicite.workflows.AIBySimplicite;
+import static org.mockito.ArgumentMatchers.contains;
+
 import java.util.*;
+
+import org.checkerframework.checker.units.qual.t;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.simplicite.bpm.*;
@@ -9,6 +13,8 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 import com.simplicite.webapp.ObjectContextWeb;
+
+import ch.simschla.minify.cli.App;
 
 
 
@@ -32,19 +38,20 @@ public class AIModuleCreate extends Processus {
 	private static final String ACTIVITY_GEN ="AIC_0600";
 	private static final String ACTIVITY_TRL_DOMAIN ="AIC_0015";
 	private static final String ACTIVITY_NEW_SCOPE="AIC_0017";
-	
-	@Override
-	public void postLock(ActivityFile context) {
-		AppLog.info("postLock: "+context.getActivity().getStep(), getGrant());
-		// TODO Auto-generated method stub
-		super.postLock(context);
-	}
-	@Override
-	public void postInstantiate(Grant g) {
-		AppLog.info("postInstantiate ", g);
-		
-		//getContext(getBegin()).setNextStep(ACTIVITY_SELECT_MODULE);
-		super.postInstantiate(g);
+	private static final String ACTIVITY_NEED_CONFIG_END="AIC-NC-END";
+	private static final String ACTIVITY_CHECK_CONF="AIC_CHECK_CONF";
+
+	public String checkConf(com.simplicite.bpm.ActivityFile context,com.simplicite.util.Grant g,java.util.List list){
+		AppLog.info("checkConf: "+context.getActivity().getStep()+" "+String.join(", ", list), getGrant());
+		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
+		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
+		AppLog.info(HTMLTool.getListURL("AiSettings",""), getGrant());
+		if("/".equals(pSetting) || "/".equals(pUrl)) {
+			AppLog.info(("AI_SETTING_NEED"),getGrant());
+			return "AIC-NC-END";
+
+		}
+		return "AIC_0005";
 	}
 	/**
 	 * This method is used to generate the HTML content for the chat bot.
@@ -177,13 +184,39 @@ public class AIModuleCreate extends Processus {
 	public String ai(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
+		String divId = "ace_json_return";
+		String aceEditor ="$ui.loadAceEditor(function(){\n" + //
+						"\t\t\tvar aceEditor = window.ace.edit('"+divId+"');\n" + //
+						"\t\t\taceEditor.setOptions({\n" + //
+						"\t\t\t   enableBasicAutocompletion: true, // the editor completes the statement when you hit Ctrl + Space\n" + //
+						"\t\t\t   enableLiveAutocompletion: true, // the editor completes the statement while you are typing\n" + //
+						"\t\t\t   showPrintMargin: false, // hides the vertical limiting strip\n" + //
+						"\t\t\t   maxLines: 25,\n" + //
+						"\t\t\t   fontSize: \"100%\" // ensures that the editor fits in the environment\n" + //
+						"\t\t\t});\n" + //
+						"\t\t\t\n" + //
+						"\t\t\t// defines the style of the editor\n" + //
+						"\t\t\taceEditor.setTheme(\"ace/theme/eclipse\");\n" + //
+						"\t\t\t// hides line numbers (widens the area occupied by error and warning messages)\n" + //
+						"\t\t\taceEditor.renderer.setOption(\"showLineNumbers\", true); \n" + //
+						"\t\t\t// ensures proper autocomplete, validation and highlighting of JavaScript code\n" + //
+						"\t\t\taceEditor.getSession().setMode(\"ace/mode/json\");\n" + //
+						"\t\t\taceEditor.getSession().setValue($(\"#json_return\").val(), 0);\r\n" + //
+						"\t\t\taceEditor.getSession().on('change', function() {\r\n" + //
+						"\t\t\t\tlet val=aceEditor.getSession().getValue();\r\n" + //
+						"\t\t\t\tconsole.log(val);\r\n" + //
+						"\t\t\t\t$(\"#json_return\").val(val);\r\n" + //
+						"\t\t\t});\n" + //
+						"\t\t\t\n" + //
+						"\t\t});";
 		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
 		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
 		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
 		List<String> listResult = getJsonAi( getPreviousContext(context).getActivity().getStep(), g);
-		if(Tool.isEmpty(listResult)) return EMPTY_TEXTAREA;
+		if(Tool.isEmpty(listResult)) return EMPTY_TEXTAREA+"<script>"+aceEditor+"</script>";
 		if(listResult.size()!=3)return Message.formatError("AI_ERROR_RETURN", listResult.get(0),null );
-		return "<p>"+listResult.get(0)+"</p>"+"<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" id=\"json_return\" name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>";
+		
+		return "<p>"+listResult.get(0)+"</p>"+"<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\"  name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>"+"<script>"+aceEditor+"</script>";
 		
 		
 	}

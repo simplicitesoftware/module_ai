@@ -146,6 +146,7 @@ Auomatic model generation process
 
 * `Begin`: 
 * `End`: 
+* `needConfig`: 
 * `Choice`: 
 * `CreateModule`: 
 * `TranslateDomain`: 
@@ -159,6 +160,7 @@ Auomatic model generation process
 * `AI`: AI for modeling
 * `Generation`: Module generation based on ia feedback
 * `RemoveModule`: Remove module
+* `CheckAIConfig`: 
 
 `AIChatBot` external object definition
 --------------------------------------

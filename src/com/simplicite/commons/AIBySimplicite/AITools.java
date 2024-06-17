@@ -444,7 +444,7 @@ public class AITools implements java.io.Serializable {
 
     public static List<String> getJSONBlock(String txt, Grant g){
 		List<String> list = new ArrayList<>(); 
-		String regex= "([^\0{]*)(?:```)?(?:json)?(\\{[^`]+\\})(?:```)?([^\0}]*)";
+		String regex= "([^\0{]*?)(?:```)?(?:json)?\s*(\\{[^`]+\\})(?:```)?([^\0}]*)";
         if(!txt.matches("[\\s\\S]*\\{[\\s\\S]*\\}[\\s\\S]*")){
             return list;
         }
@@ -455,9 +455,9 @@ public class AITools implements java.io.Serializable {
         try {
             if (matcher.find()) {
                 
-                list.add(matcher.group(1));
+                list.add(matcher.group(1).replaceAll("(?:```)?(?:json)?",""));
                 list.add(matcher.group(2));
-                list.add(matcher.group(3));
+                list.add(matcher.group(3).replaceAll("(?:```)?(?:json)?",""));
             }
         } catch (Exception e) {
             AppLog.error(e, g);

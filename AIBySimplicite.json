@@ -7,7 +7,7 @@
   "mdl_version": "0.11",
   "mdl_type": "T",
   "mdl_icon": null,
-  "mdl_url": "{\n    \"origin\": {\n        \"uri\": \"https://github.com/simplicitesoftware/module_ai.git\",\n        \"branch\": \"6\"\n    },\n    \"type\": \"git\"\n}",
+  "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\",\n    \"branch\": \"6\"\n}",
   "mdl_comment": "### Introduction\nExploratory module on the use of AI in Simplicite\n\n### Import\nTo import this module:\n\nCreate a module named `AIBySimplicite`\nSet the settings as:\n```json\n{\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"\n\t},\n\t\"type\": \"git\"\n}\n```\nClick on the Import module button\n### Configure\nTo configure the ia connection, use the `Configuring the wizard`  object in `AI assistant` domain.\n\nSelect the model (LLM) you wish to use, configure the parameters and the url of your API.  \n\n<details>\n  <summary>LLM spesific configuration exemple<\/summary>\n\n#### OpenAI:\n```json\n{\n    'model':'<gpt_model_to_use>',\n    'OpenAI-Project': \"<my_openai_project_id>\", // Optional\n    'OpenAI-Organization': \"<my_openai_organization_id>\", //Optional\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}\n```\n#### Mistral  \n```json\n{\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}\n```\n<\/details>\n\n\n<details>\n  <summary>Parrameters details<\/summary>\n\n##### hist_depth\nDefines the number of messages in the history used for the context.\nThe greater this number, the more tokens the request uses, but the more relevant is the response. \n##### max_token\n*optional*  \nLimits the number of tokens in the ia response\n###### default_max_token\nMaximum number of tokens in a usual context.\n###### code_max_token\nMaximum number of tokens for thecnical calls.\n##### trigger\nTo define a trigger for ia calls in fields (under development)\n\n<\/details>  \n  \n  \nUse the `Activate` action to save your settings and enter your API key if required.\n\n### wizzard\n#### Module generation\nUse AI to co-create or update a module based on your business needs\n`Module generation` in `AI assistant` domain.\n\n#### Data generation\nUse AI to generate test data for a module.\n`Data generation` in `AI assistant` domain.\n\n#### Business chatbot\nA shortcut to a chatbot contextualized according to the form on which it is opened.\nThe user must have `AI_BUSINESS` rights.\nThe `Personal data`, `Confidential data` and `Intimate` fields are not sent to the AI.\n\n\n#### Metrics\nGenerating AI graphs on a module's data\nIn a `view` add an `external page` of source `External object`: `AIMetricsChat?module=<you_module_name>`"
  },
  "links": [
@@ -2637,7 +2637,7 @@
       },
       "pcs_max_duration": null,
       "pcs_duration_unit": "D",
-      "pcs_persitant": false,
+      "pcs_persitant": null,
       "pcs_persist_depth": null,
       "pcs_alert_id__alt_name": null,
       "pcs_compensate_id__pcs_name": null,
@@ -2792,6 +2792,25 @@
       "acy_duration_unit": "D",
       "acy_alert_id__alt_name": null,
       "acy_user_dlg": false,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMActivity",
+     "userkey": "AIModuleCreate~AIC-NC-END",
+     "item": {
+      "acy_process_id__pcs_name": "AIModuleCreate",
+      "acy_step": "AIC-NC-END",
+      "acy_name": "needConfig",
+      "acy_comment": null,
+      "acy_type": "E",
+      "acy_posx": null,
+      "acy_posy": null,
+      "acy_reversible": "N",
+      "acy_max_duration": null,
+      "acy_duration_unit": null,
+      "acy_alert_id__alt_name": null,
+      "acy_user_dlg": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -3041,6 +3060,25 @@
       "acy_user_dlg": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "BPMActivity",
+     "userkey": "AIModuleCreate~AIC_CHECK_CONF",
+     "item": {
+      "acy_process_id__pcs_name": "AIModuleCreate",
+      "acy_step": "AIC_CHECK_CONF",
+      "acy_name": "CheckAIConfig",
+      "acy_comment": null,
+      "acy_type": "I",
+      "acy_posx": null,
+      "acy_posy": null,
+      "acy_reversible": "N",
+      "acy_max_duration": null,
+      "acy_duration_unit": null,
+      "acy_alert_id__alt_name": null,
+      "acy_user_dlg": false,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -3147,15 +3185,15 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC-BEG~AIModuleCreate~AIC_0005",
+     "userkey": "AIModuleCreate~AIModuleCreate~AIC-BEG~AIModuleCreate~AIC_CHECK_CONF",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC-BEG",
       "trs_from_id__acy_name": "Begin",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
-      "trs_to_id__acy_step": "AIC_0005",
-      "trs_to_id__acy_name": "Choice",
+      "trs_to_id__acy_step": "AIC_CHECK_CONF",
+      "trs_to_id__acy_name": "CheckAIConfig",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3429,6 +3467,44 @@
       "trs_alert_id__alt_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "BPMTransition",
+     "userkey": "AIModuleCreate~AIModuleCreate~AIC_CHECK_CONF~AIModuleCreate~AIC-NC-END",
+     "item": {
+      "trs_process_id__pcs_name": "AIModuleCreate",
+      "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "trs_from_id__acy_step": "AIC_CHECK_CONF",
+      "trs_from_id__acy_name": "CheckAIConfig",
+      "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "trs_to_id__acy_step": "AIC-NC-END",
+      "trs_to_id__acy_name": "needConfig",
+      "trs_name": null,
+      "trs_action_id__act_name": null,
+      "trs_condition": "1",
+      "trs_callback": null,
+      "trs_alert_id__alt_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMTransition",
+     "userkey": "AIModuleCreate~AIModuleCreate~AIC_CHECK_CONF~AIModuleCreate~AIC_0005",
+     "item": {
+      "trs_process_id__pcs_name": "AIModuleCreate",
+      "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "trs_from_id__acy_step": "AIC_CHECK_CONF",
+      "trs_from_id__acy_name": "CheckAIConfig",
+      "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "trs_to_id__acy_step": "AIC_0005",
+      "trs_to_id__acy_name": "Choice",
+      "trs_name": null,
+      "trs_action_id__act_name": null,
+      "trs_condition": "0",
+      "trs_callback": null,
+      "trs_alert_id__alt_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -3569,6 +3645,21 @@
       "dta_name": "Page",
       "dta_order": 1,
       "dta_value": "[EXPR:HTMLTool.getExternalObjectURL(\"SystemCache\")]",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC-NC-END~Forward~Page",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC-NC-END",
+      "dta_activity_id__acy_name": "needConfig",
+      "dta_group": "Forward",
+      "dta_name": "Page",
+      "dta_order": 1,
+      "dta_value": "[EXPR:HTMLTool.getListURL(\"AiSettings\",\"\")]",
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -3992,6 +4083,21 @@
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_CHECK_CONF~Service~Name",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_CHECK_CONF",
+      "dta_activity_id__acy_name": "CheckAIConfig",
+      "dta_group": "Service",
+      "dta_name": "Name",
+      "dta_order": 1,
+      "dta_value": "checkConf",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -4043,6 +4149,22 @@
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0150",
       "gta_activity_id__acy_name": "Confirm",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "ADMIN~AIModuleCreate~AIC-NC-END",
+     "item": {
+      "gta_group_id__grp_name": "ADMIN",
+      "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "gta_activity_id__acy_step": "AIC-NC-END",
+      "gta_activity_id__acy_name": "needConfig",
       "gta_grant": [
        "R",
        "W",
@@ -4197,6 +4319,22 @@
     },
     {
      "object": "BPMGrantActivity",
+     "userkey": "ADMIN~AIModuleCreate~AIC_CHECK_CONF",
+     "item": {
+      "gta_group_id__grp_name": "ADMIN",
+      "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "gta_activity_id__acy_step": "AIC_CHECK_CONF",
+      "gta_activity_id__acy_name": "CheckAIConfig",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
      "userkey": "AI_DESIGNER~AIGenData~GGD_0100",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
@@ -4235,6 +4373,22 @@
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0200",
       "gta_activity_id__acy_name": "GenData",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "AI_DESIGNER~AIModuleCreate~AIC-NC-END",
+     "item": {
+      "gta_group_id__grp_name": "AI_DESIGNER",
+      "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "gta_activity_id__acy_step": "AIC-NC-END",
+      "gta_activity_id__acy_name": "needConfig",
       "gta_grant": [
        "R",
        "W",
@@ -4378,6 +4532,22 @@
       "gta_grant": [
        "R",
        "W"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_CHECK_CONF",
+     "item": {
+      "gta_group_id__grp_name": "AI_DESIGNER",
+      "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "gta_activity_id__acy_step": "AIC_CHECK_CONF",
+      "gta_activity_id__acy_name": "CheckAIConfig",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
       ],
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -7268,6 +7438,82 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Confirmation",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIModuleCreate AIC-NC-END)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIModuleCreate",
+        "acy_step": "AIC-NC-END"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIModuleCreate AIC-NC-END",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Please configure your AI Assistant",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIModuleCreate AIC-NC-END)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIModuleCreate",
+        "acy_step": "AIC-NC-END"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIModuleCreate AIC-NC-END",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Veuillez configurer votre assistant AI",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIModuleCreate AIC_CHECK_CONF)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIModuleCreate",
+        "acy_step": "AIC_CHECK_CONF"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIModuleCreate AIC_CHECK_CONF",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Check AI configuration",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIModuleCreate AIC_CHECK_CONF)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIModuleCreate",
+        "acy_step": "AIC_CHECK_CONF"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIModuleCreate AIC_CHECK_CONF",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Vérifier la configuration de l'IA",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
