@@ -131,6 +131,8 @@ components:
           type: string
           enum:
           - MISTRAL
+          - HUGGINGFACE
+          - AIML
           - OPENAI
         aiSetConfig:
           description: Setting
@@ -450,6 +452,8 @@ paths:
           type: string
           enum:
           - MISTRAL
+          - HUGGINGFACE
+          - AIML
           - OPENAI
         in: query
         name: aiSetModele

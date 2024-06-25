@@ -17,17 +17,17 @@ import org.json.JSONArray;
  */
 public class AiMetrics implements java.io.Serializable {
 
-	static final String EXEMPLE=" ```javascript\n"+
+	static final String EXEMPLE=" ```javascript\n"+ 
 	"function(){//code exemple to do search on the object myObject witch has a field myField\n"+
-	"	const app = $ui.getApp();\n"+
-	"	const obj = app.getBusinessObject(\"MyObject\");\n"+
-	"	obj.search(function(items){\n"+
-	"		for(let i=0;i<items.length;i++){\n"+
-	"			//do something with items[i] \n"+
-	"			//you can access to myfield by items[i].myField \n"+
-	"		}\n"+
-	"	});\n"+
-	"	//be careful with var names with spaces in json use 'var'.\n"+
+		"const app = $ui.getApp();\n"+
+		"const obj = app.getBusinessObject(\"MyObject\");\n"+
+		"obj.search(function(items){\n"+
+			"for(let i=0;i<items.length;i++){\n"+
+				"//do something with items[i] \n"+
+				"//you can access to myfield by items[i].myField \n"+
+			"}\n"+
+		"});\n"+
+		"//be careful with var names with spaces in json use 'var'.\n"+
 	"}\n"+
 	"```\n";
 	private static final long serialVersionUID = 1L;
@@ -39,11 +39,11 @@ public class AiMetrics implements java.io.Serializable {
 		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
 		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
 
-		JSONObject res = AITools.AICaller(null, "\n ```OppenAPI "+swagger+"```",arrayPrompts,false,true,true);
+		JSONObject res = AITools.aiCaller(null, "\n ```OppenAPI "+swagger+"```",arrayPrompts,false,true,true);
 		String result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		JSONObject resultJS = splitRes(result,swagger.optJSONObject("components").getJSONObject("schemas"));
 		if (resultJS.has("error")) {
-			res = AITools.AICaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
+			res = AITools.aiCaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
 			result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 			return new JSONObject().put("text",result);
 		}
@@ -99,6 +99,7 @@ public class AiMetrics implements java.io.Serializable {
 		result.put("html", regexHTMLResult);
 		result.put("text", textResult);
 		result.put("function", getFunctionCall(regexJSResult));
+		AppLog.info("AI response: "+result.toString(1), null);
 		return result;
 	}
 	private static String getFunctionCall(String regexJSResult) {
@@ -171,7 +172,7 @@ public class AiMetrics implements java.io.Serializable {
 				return true;
 			}
 		}
-		String regex = ".getBusinessObject\\(['\"]([\\w\\_-]*)['\"]\\)";
+		String regex = ".getBusinessObject\\(['\"]([\\w-]*)['\"]\\)";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(js);
 		if (matcher.find()) {

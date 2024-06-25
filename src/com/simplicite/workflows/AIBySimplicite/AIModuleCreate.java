@@ -1,9 +1,8 @@
 package com.simplicite.workflows.AIBySimplicite;
-import static org.mockito.ArgumentMatchers.contains;
 
 import java.util.*;
 
-import org.checkerframework.checker.units.qual.t;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.simplicite.bpm.*;
@@ -14,8 +13,6 @@ import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 import com.simplicite.webapp.ObjectContextWeb;
 
-import ch.simschla.minify.cli.App;
-
 
 
 /**
@@ -24,7 +21,10 @@ import ch.simschla.minify.cli.App;
 public class AIModuleCreate extends Processus {
 	private static final long serialVersionUID = 1L;
 	private static final String PROCESS_RESOURCE_EXTERNAL_OBJECT ="AIProcessResource";
+	private static final String INTERNAL_OBJ ="ObjectInternal";
 	private static final String FIELD ="Field";
+	private static final String MDL_PREFIX_FIELD ="mdl_prefix";
+	private static final String ROW_MODULE_ID_FIELD ="row_module_id";
 	private static final String ROW_ID ="row_id";
 	private static final String EMPTY_TEXTAREA ="<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" id=\"json_return\" name=\"json_return\"></textarea>";
 	private static final String ACTIVITY_CREATE_MODULE ="AIC_0010";
@@ -39,16 +39,23 @@ public class AIModuleCreate extends Processus {
 	private static final String ACTIVITY_TRL_DOMAIN ="AIC_0015";
 	private static final String ACTIVITY_NEW_SCOPE="AIC_0017";
 	private static final String ACTIVITY_NEED_CONFIG_END="AIC-NC-END";
-	private static final String ACTIVITY_CHECK_CONF="AIC_CHECK_CONF";
+	private static final String AI_API_PARAM="AI_API_PARAM";
+	private static final String AI_API_URL="AI_API_URL";
+	private static final String AI_SETTING_NEED="AI_SETTING_NEED";
+	private static final String EXISTING_OBJECT="exisitingObject";
+	private static final String BEGIN_SCRIPT="<script>";
+	private static final String END_SCRIPT="</script>";
+	private static final String DOMAIN="Domain";
+	private static final String BOT_NAME=Grant.getSystemAdmin().getParameter("AI_CHAT_BOT_NAME");
 
-	public String checkConf(com.simplicite.bpm.ActivityFile context,com.simplicite.util.Grant g,java.util.List list){
-		AppLog.info("checkConf: "+context.getActivity().getStep()+" "+String.join(", ", list), getGrant());
-		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
-		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
-		AppLog.info(HTMLTool.getListURL("AiSettings",""), getGrant());
+	public String checkConf(com.simplicite.bpm.ActivityFile context,com.simplicite.util.Grant g,java.util.List<String> list){
+		AppLog.info("checkConf: "+context.getActivity().getStep()+" "+String.join(", ", list), g);
+		String pSetting = Grant.getSystemAdmin().getParameter(AI_API_PARAM);
+		String pUrl = Grant.getSystemAdmin().getParameter(AI_API_URL);
+		AppLog.info(HTMLTool.getListURL("AiSettings",""),g);
 		if("/".equals(pSetting) || "/".equals(pUrl)) {
-			AppLog.info(("AI_SETTING_NEED"),getGrant());
-			return "AIC-NC-END";
+			AppLog.info((AI_SETTING_NEED),g);
+			return ACTIVITY_NEED_CONFIG_END;
 
 		}
 		return "AIC_0005";
@@ -65,22 +72,22 @@ public class AIModuleCreate extends Processus {
 	public String chatBot(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
-		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
-		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
-		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
+		String pSetting = Grant.getSystemAdmin().getParameter(AI_API_PARAM);
+		String pUrl = Grant.getSystemAdmin().getParameter(AI_API_URL);
+		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T(AI_SETTING_NEED);
 		List<String[]> objs = getModuleObjects(getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID),g);
 		if (Tool.isEmpty(objs)) return getModuleChat("",g);
-		JSONObject json = objectToJSON(objs,getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, "mdl_prefix"));
+		JSONObject json = objectToJSON(objs,getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD));
 
-		getContext(getActivity(ACTIVITY_GEN)).setDataFile("Data","exisitingObject",getObjsIds(objs,g));
-		String contextApp =AITools.AICaller(g, "you help to describe UML for non technical person","Describes the application defined by this JSON in a graphical way for non-technical users: "+json.toString() , null,false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		getContext(getActivity(ACTIVITY_GEN)).setDataFile("Data",EXISTING_OBJECT,getObjsIds(objs,g));
+		String contextApp =AITools.aiCaller(g, "you help to describe UML for non technical person","Describes the application defined by this JSON in a graphical way for non-technical users: "+json.toString() , null,false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		contextApp = formatAnswerAI(contextApp);
 		return getModuleChat(contextApp,g);
 
 	}
 	private String[] getObjsIds(List<String[]> objs,Grant g){
 		String[] ids = new String[objs.size()];
-		int idIndex = g.getTmpObject("ObjectInternal").getRowIdFieldIndex();
+		int idIndex = g.getTmpObject(INTERNAL_OBJ).getRowIdFieldIndex();
 		for(int i=0;i<objs.size();i++){
 			ids[i] = objs.get(i)[idIndex];
 		}
@@ -89,7 +96,7 @@ public class AIModuleCreate extends Processus {
 	private JSONObject objectToJSON(List<String[]> objs,String modulePrefix){
 		JSONArray objects = new JSONArray();
 		JSONArray relationship = new JSONArray();
-		ObjectDB obj = getGrant().getTmpObject("ObjectInternal");
+		ObjectDB obj = getGrant().getTmpObject(INTERNAL_OBJ);
 		for(String[] el : objs){
 			JSONObject object = new JSONObject();
 			String objName = el[obj.getFieldIndex("obo_name")];
@@ -141,22 +148,22 @@ public class AIModuleCreate extends Processus {
 		return array;
 	}
 	private List<String[]> getModuleObjects(String moduleId,Grant g){
-		ObjectDB obj = getGrant().getTmpObject("ObjectInternal");
+		ObjectDB obj = g.getTmpObject(INTERNAL_OBJ);
 		obj.resetFilters();
-		obj.setFieldFilter("row_module_id", moduleId);
+		obj.setFieldFilter(ROW_MODULE_ID_FIELD, moduleId);
 
 		return obj.search();
 	}
 	private String getModuleChat(String response,Grant g){
-		String script = g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("CHAT_BOT_SCRIPT");
+
+		String script =HTMLTool.jsBlock(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("CHAT_BOT_SCRIPT"));
+		AppLog.info("script: "+script, g);
 		String css = HTMLTool.lessToCss(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceCSSContent("CHAT_BOT_CSS"));
-		
 		String html = g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceHTMLContent("CHAT_BOT_MODEL");
-		
-		html = html.replace("{{script}}", script);
+		html = html.replace("{{{script}}}", script);
 		html = html.replace("{{css}}", css);
 		html = html.replace("{{init}}", Globals.LANG_FRENCH.equals(g.getLang())?"Bonjour! Comment puis-je vous aider avec la conception d'applications? Voulez-vous que je vous aide a definir vos besoin ou avez-vous des questions spécifiques sur la conception?":"Hello! How can I help you with application design? Do you want me to help you define your needs or do you have specific questions about design?");
-		html = html.replace("{{botMesage}}", Tool.isEmpty(response)?"":"<div class=\"bot-messages\" id=\"context\"><strong>{{botName}}: </strong><span class=\"msg\">"+response+"</span></div>");
+		html = html.replace("{{botMesage}}", Tool.isEmpty(response)?"":"<div class=\"bot-messages\" id=\"context\"><strong>"+BOT_NAME+": </strong><span class=\"msg\">"+response+"</span></div>");
 		return html;
 	}
 	/**
@@ -209,28 +216,28 @@ public class AIModuleCreate extends Processus {
 						"\t\t\t});\n" + //
 						"\t\t\t\n" + //
 						"\t\t});";
-		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
-		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
-		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
+		String pSetting = Grant.getSystemAdmin().getParameter(AI_API_PARAM);
+		String pUrl = Grant.getSystemAdmin().getParameter(AI_API_URL);
+		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T(AI_SETTING_NEED);
 		List<String> listResult = getJsonAi( getPreviousContext(context).getActivity().getStep(), g);
-		if(Tool.isEmpty(listResult)) return EMPTY_TEXTAREA+"<script>"+aceEditor+"</script>";
+		if(Tool.isEmpty(listResult)) return EMPTY_TEXTAREA+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
 		if(listResult.size()!=3)return Message.formatError("AI_ERROR_RETURN", listResult.get(0),null );
 		
-		return "<p>"+listResult.get(0)+"</p>"+"<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\"  name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>"+"<script>"+aceEditor+"</script>";
+		return "<p>"+listResult.get(0)+"</p>"+"<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\"  name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>"+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
 		
 		
 	}
 	private List<String> getJsonAi(String previousStep, Grant g){
 		JSONArray historic = new JSONArray();
 		String prompt = getPromptFromContext(previousStep, historic,g);
-		JSONObject jsonres = new JSONObject();
+		
 		if(Tool.isEmpty(prompt)){//for test
 			return new ArrayList<>();
 		}
-		String result = AITools.AICaller(g, "you help to create UML in json for application, your answers are automatically processed in java", prompt, historic,false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		String result = AITools.aiCaller(g, "you help to create UML in json for application, your answers are automatically processed in java", prompt, historic,false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		
 		List<String> listResult = new ArrayList<>();
-		jsonres = AITools.getValidJson(result);
+		JSONObject jsonres = AITools.getValidJson(result);
 		if(Tool.isEmpty(jsonres)){	
 			listResult = AITools.getJSONBlock(result,getGrant());
 			
@@ -282,7 +289,7 @@ public class AIModuleCreate extends Processus {
 	}
 	
 	private String getPromptFromInteractionActivity(Grant g, JSONArray historic){
-		int histDepth = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM").getInt("hist_depth");
+		int histDepth = Grant.getSystemAdmin().getJSONObjectParameter(AI_API_PARAM).getInt("hist_depth");
 		String historicString = getContext(getActivity(ACTIVITY_INTERACTION)).getDataValue("Data", "AI_data");
 			if(Tool.isEmpty(historicString)){//for test
 				return "";
@@ -312,18 +319,10 @@ public class AIModuleCreate extends Processus {
 	public String gen(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE){
 			return null;}
-		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
-		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
-		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
-		String json = "";
-		
-		if (!getActivity(ACTIVITY_AI).isUserDialog()){
-			List<String> result = getJsonAi(getPreviousContext(getPreviousContext(context)).getActivity().getStep(), g);
-			if(!Tool.isEmpty(result) && result.size()==3) json = result.get(1); //isEmpty check null
-		}else{
-			json = getContext(getActivity(ACTIVITY_AI)).getDataValue("Data", "json_return");
-		}
-		
+		String pSetting = Grant.getSystemAdmin().getParameter(AI_API_PARAM);
+		String pUrl = Grant.getSystemAdmin().getParameter(AI_API_URL);
+		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T(AI_SETTING_NEED);
+		String json = getAIAnswer(context,g);
 		if (Tool.isEmpty(json)){
 			return g.getText("AI_ERROR");
 		}
@@ -332,9 +331,9 @@ public class AIModuleCreate extends Processus {
 		if(ACTIVITY_SELECT_DOMAIN.equals(test)){
 			objs = getObjsIds(getModuleObjects(getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID),g),g);
 		}else{
-			DataFile data = context.getDataFile("Data", "exisitingObject",true);
+			DataFile data = context.getDataFile("Data", EXISTING_OBJECT,true);
 			if(!Tool.isEmpty(data)){
-				objs = context.getDataFile("Data", "exisitingObject",true).getValues();
+				objs = context.getDataFile("Data", EXISTING_OBJECT,true).getValues();
 			}	
 		}
 		
@@ -351,12 +350,12 @@ public class AIModuleCreate extends Processus {
 			context.setDataFile("Data", "moduleId", moduleId);
 			context.setDataFile("Data", "moduleName", ModuleDB.getModuleName(moduleId));
 			if(Tool.isEmpty(objs)){
-				return "<p>"+g.getText("AI_SUCCESS")+"</p><script>" + g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("AI_GEN_MODEL")+"\n"+ "AINewModel();"+"</script>";
+				return "<p>"+g.getText("AI_SUCCESS")+"</p><script>" + g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("AI_GEN_MODEL")+"\n"+ "aiGenModel.AINewModel();"+END_SCRIPT;
 			}else{
 				ids.addAll(Arrays.asList(objs));
 				ids = new ArrayList<>(new HashSet<>(ids));
 				context.setDataFile("Data", "allIds", ids);
-				return "<p>"+g.getText("AI_COMPLETED")+"</p><script>" + g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("AI_GEN_MODEL")+"\n"+ "AINewModel();"+"</script>";
+				return "<p>"+g.getText("AI_COMPLETED")+"</p><script>" + g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("AI_GEN_MODEL")+"\n"+ "aiGenModel.AINewModel();"+END_SCRIPT;
 			}
 			
 			} catch (GetException | ValidateException | SaveException e) {
@@ -366,7 +365,15 @@ public class AIModuleCreate extends Processus {
 		
 		
 	}
-
+	private String getAIAnswer(ActivityFile context,Grant g){
+		if (!getActivity(ACTIVITY_AI).isUserDialog()){
+			List<String> result = getJsonAi(getPreviousContext(getPreviousContext(context)).getActivity().getStep(), g);
+			if(!Tool.isEmpty(result) && result.size()==3) return result.get(1); //isEmpty check null
+		}else{
+			return getContext(getActivity(ACTIVITY_AI)).getDataValue("Data", "json_return");
+		}
+		return "";
+	}
 	/**
 	 * Deletes a module and returns the HTML code for displaying the module delete confirmation.
 	 * 
@@ -405,7 +412,7 @@ public class AIModuleCreate extends Processus {
 			if(isGrantUser){
 				String groupName = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataValue(FIELD, "grp_name");
 				if(Tool.isEmpty(groupName)){
-					groupName = SyntaxTool.join(SyntaxTool.UPPER, new String[]{getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD,"mdl_prefix"),"GROUP"});
+					groupName = SyntaxTool.join(SyntaxTool.UPPER, new String[]{getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD,MDL_PREFIX_FIELD),"GROUP"});
 				}
 				String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, "mdl_name");
 				Grant.addResponsibility(Grant.getUserId(getGrant().getLogin()),groupName,null,null,true, moduleName);
@@ -425,7 +432,7 @@ public class AIModuleCreate extends Processus {
 				BusinessObjectTool objTool = obj.getTool();
 				JSONObject permFlds = new JSONObject().put("prm_group_id", groupId).put("prm_object", "Domain:"+domainId);
 				if(!objTool.selectForCreateOrUpdate(permFlds)){
-					permFlds.put("row_module_id", moduleId);
+					permFlds.put(ROW_MODULE_ID_FIELD, moduleId);
 					obj.setValuesFromJSONObject(permFlds, false, false);
 					obj.populate(true);
 					objTool.validateAndCreate();
@@ -437,14 +444,14 @@ public class AIModuleCreate extends Processus {
 	}
 	private String createGroup(ActivityFile context){
 		String moduleId =context.getDataValue(FIELD, ROW_ID);
-		String groupName = SyntaxTool.join(SyntaxTool.UPPER, new String[]{context.getDataValue(FIELD,"mdl_prefix"),"GROUP"});
+		String groupName = SyntaxTool.join(SyntaxTool.UPPER, new String[]{context.getDataValue(FIELD,MDL_PREFIX_FIELD),"GROUP"});
 		JSONObject groupFlds = new JSONObject().put("grp_name", groupName);
 		ObjectDB obj = getGrant().getTmpObject("Group");
 		synchronized(obj.getLock()){
 			try{
 				BusinessObjectTool objTool = obj.getTool();
 				if(!objTool.selectForCreateOrUpdate(groupFlds)){
-					groupFlds.put("row_module_id", moduleId);
+					groupFlds.put(ROW_MODULE_ID_FIELD, moduleId);
 					obj.setValuesFromJSONObject(groupFlds, false, false);
 					obj.populate(true);
 					objTool.validateAndCreate();
@@ -459,14 +466,14 @@ public class AIModuleCreate extends Processus {
 	}
 	private String createDomain(ActivityFile context){
 		String moduleId =context.getDataValue(FIELD, ROW_ID);
-		String domainName = SyntaxTool.join(SyntaxTool.PASCAL, new String[]{context.getDataValue(FIELD,"mdl_prefix"),"Domain"});
+		String domainName = SyntaxTool.join(SyntaxTool.PASCAL, new String[]{context.getDataValue(FIELD,MDL_PREFIX_FIELD),DOMAIN});
 		JSONObject domainFlds = new JSONObject().put("obd_name", domainName);
-		ObjectDB obj = getGrant().getTmpObject("Domain");
+		ObjectDB obj = getGrant().getTmpObject(DOMAIN);
 		synchronized(obj.getLock()){
 			try{
 				BusinessObjectTool objTool = obj.getTool();
 				if(!objTool.selectForCreateOrUpdate(domainFlds)){
-					domainFlds.put("row_module_id", moduleId).put("obd_nohome",1);
+					domainFlds.put(ROW_MODULE_ID_FIELD, moduleId).put("obd_nohome",1);
 					obj.setValuesFromJSONObject(domainFlds, false, false);
 					obj.populate(true);
 					objTool.validateAndCreate();
@@ -497,9 +504,9 @@ public class AIModuleCreate extends Processus {
 		html.append("</tr>");
 
 		// Domains translations
-		ObjectDB dom = g.getTmpObject("Domain");
+		ObjectDB dom = g.getTmpObject(DOMAIN);
 		dom.resetFilters();
-		dom.setFieldFilter("row_module_id", moduleId);
+		dom.setFieldFilter(ROW_MODULE_ID_FIELD, moduleId);
 		List<String[]> v = dom.search();
 		for (int j=0; j<v.size(); j++)
 		{
@@ -544,9 +551,9 @@ public class AIModuleCreate extends Processus {
 		for (int i=0; vdf!=null && i<vdf.size(); i++)
 		{
 			DataFile df = vdf.get(i);
-			if (df==null) continue;
-			String val = df.getValue(0);
-			if (val==null || val.length()==0) continue;
+			String val="";
+			if (df!=null) val = df.getValue(0);
+			if (df == null || Tool.isEmpty(val)) continue;
 
 			String name = df.getName();
 			if (name.startsWith("tsl"))
@@ -586,7 +593,7 @@ public class AIModuleCreate extends Processus {
 			try{
 				BusinessObjectTool objTool = obj.getTool();
 				objTool.selectForCreate();
-				obj.setFieldValue("row_module_id", moduleId);
+				obj.setFieldValue(ROW_MODULE_ID_FIELD, moduleId);
 				obj.setFieldValue("vig_view_id", scopeId);
 				obj.setFieldValue("vig_group_id", groupeId);
 				objTool.validateAndCreate();

@@ -2,7 +2,6 @@ package com.simplicite.commons.AIBySimplicite;
 
 import java.util.*;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -261,9 +260,8 @@ public class AIData implements java.io.Serializable {
 	*/
 	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
-		JSONObject json = new JSONObject();
-		String response = AITools.AICaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least 2 entries per class",false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-		json = AITools.getValidJson(response);
+		String response = AITools.aiCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least 2 entries per class",false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		JSONObject json = AITools.getValidJson(response);
 		if(Tool.isEmpty(json)){	
 			
 			List<String> listResult = AITools.getJSONBlock(response,g);

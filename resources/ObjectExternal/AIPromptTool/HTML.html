@@ -1,6 +1,6 @@
 <template id ="selector">
     <label for="field-select">Field:</label>
-    <select name="field" id="field-select" onchange="selected(this);" data-placeholder="">
+    <select name="field" id="field-select" onchange="AIPromptTool.selected(this);" data-placeholder="">
         <option value="">Select a field</option>
         {{#.}}
         <option value="{{value}}">{{label}}</option>
@@ -8,6 +8,6 @@
     </select>
 </template>
 <div id="AIprompttool"></div><div id="result"></div><br>
-<div><textarea id="prompt" rows="" cols="" style="width: 90%;"></textarea><button onclick="sendPrompt()">send</button></div>
+<div><textarea id="prompt" rows="" cols="" style="width: 90%;"></textarea><button onclick="AIPromptTool.sendPrompt()">send</button></div>
 <div id="AIProcess" style="display: none;">...</div>
 <div id="AIAnswer"></div>

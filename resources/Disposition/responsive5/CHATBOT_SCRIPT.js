@@ -14,7 +14,7 @@
 
   // Send message
   $('#sendMessage').click(function() {
-    var userInput = $('#userInput').val();
+    let userInput = $('#userInput').val();
     if (userInput !== '') {
       $('#messages').append('<div>You: ' + userInput + '</div>');
       // Here, you can process the user's input and generate a bot response

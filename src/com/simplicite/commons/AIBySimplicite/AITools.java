@@ -6,6 +6,7 @@ import java.util.*;
 
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -21,16 +22,25 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
 
 
+
 /**
  * Shared code AITools
  */
 public class AITools implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-    private static JSONObject AIApiParam = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM");
+    private static final JSONObject AI_API_PARAM = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM");
     private static final String CONTENT_KEY = "content";
     private static final String MAX_TOKEN_PARAM_KEY = "default_max_token";
+    private static final String ASSISTANT_ROLE="assistant";
+    private static final String MAX_TOKEN = "max_tokens";
     public static final String TYPE_TEXT = "text";
     public static final String TYPE_IMAGE_URL = "image_url";
+    private static final boolean SHOW_DATA_DISCLAIMER = AI_API_PARAM.optBoolean("showDataDisclaimer",true);
+    private static final String AI_PROVIDER = AI_API_PARAM.optString("provider");
+    private static final String TRUSTED = "trusted";
+    private static final String SWAGGER_COMPONENTS="components";
+    private static final String SWAGGER_SHEMAS="schemas";
+    
 	/**
      * Function to format the call to chatAI API.
      * Need the AI_API_KEY parameter set up with your key.
@@ -42,11 +52,11 @@ public class AITools implements java.io.Serializable {
 	 * @param maxToken number of tokens allow in response
 	 * @return If API return code is 200: API answer else: error return.
 	 */
-    private static String AICaller(Grant g, String specialisation, Object prompt ,JSONArray historic, boolean secure, int maxToken){
-        return AICaller(g, specialisation, prompt,historic,secure,false,maxToken);
+    private static String aiCaller(Grant g, String specialisation, Object prompt ,JSONArray historic, boolean secure, int maxToken){
+        return aiCaller(g, specialisation, prompt,historic,secure,false,maxToken);
     }
     
-    private static String AICaller(Grant g, String specialisation, Object prompt ,JSONArray historic, boolean secure,boolean isSafeSpe, int maxToken){
+    private static String aiCaller(Grant g, String specialisation, Object prompt ,JSONArray historic, boolean secure,boolean isSafeSpe, int maxToken){
         JSONArray arrayPrompt = new JSONArray();
        if(prompt instanceof String){
             String strPrompt = normalize((String)prompt,secure);
@@ -58,39 +68,24 @@ public class AITools implements java.io.Serializable {
             AppLog.info("Prompt must be a String or a JSONArray",g);
             return "";
         }
-        return AICaller(g, specialisation,arrayPrompt,historic,secure,isSafeSpe,maxToken);
+        return aiCaller(g, specialisation,arrayPrompt,historic,secure,isSafeSpe,maxToken);
     }
-	private static String AICaller(Grant g, String specialisation, JSONArray prompt ,JSONArray historic, boolean secure,boolean isSafeSpe, int maxToken){
+	private static String aiCaller(Grant g, String specialisation, JSONArray prompt ,JSONArray historic, boolean secure,boolean isSafeSpe, int maxToken){
         specialisation = removeAcent(specialisation);
         if(!isSafeSpe) specialisation = JSONObject.quote(normalize(specialisation,true));
 
-        for(Object p : prompt){
-            if(p instanceof JSONObject){
-                JSONObject contentJson = (JSONObject)p;
-                if(!contentJson.optBoolean("trusted",false) && contentJson.has(TYPE_TEXT)){
-                    contentJson.put(TYPE_TEXT,JSONObject.quote(normalize(contentJson.getString(TYPE_TEXT))));
-                }
-                if(contentJson.has("trusted")){
-                    contentJson.remove("trusted");
-                }
-            }else{
-                p = JSONObject.quote(normalize((String)p));
-            }
-        }
-        int histDepth = AIApiParam.getInt("hist_depth");
+        prompt = parsedPrompts(prompt,secure);
+        int histDepth = AI_API_PARAM.getInt("hist_depth");
 		String apiKey = Grant.getSystemAdmin().getParameter("AI_API_KEY");
         String apiUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
-        String model =AIApiParam.optString("model","");
-        String projet = AIApiParam.optString("OpenAI-Project","");
-        String org = AIApiParam.optString("OpenAI-Organization","");
+        String model =AI_API_PARAM.optString("model","");
+        String projet = AI_API_PARAM.optString("OpenAI-Project","");
+        String org = AI_API_PARAM.optString("OpenAI-Organization","");
         if("/".equals(apiUrl)){
             AppLog.info("AI_API_URL not set", g);
             return "";
         }
         if("/".equals(apiKey))apiKey = "";
-        
-       /*  if(!Tool.isEmpty(specialisation))
-            specialisation=normalize(specialisation); */
        
         try {
             URI url = new URI(apiUrl);
@@ -107,7 +102,7 @@ public class AITools implements java.io.Serializable {
             // format data
             JSONObject postData = new JSONObject();
             if(maxToken>0)
-                postData.put("max_tokens", maxToken);
+                postData.put(MAX_TOKEN, maxToken);
             if(!Tool.isEmpty(model))
                 postData.put("model", model);
             JSONArray messages = new JSONArray();
@@ -116,25 +111,24 @@ public class AITools implements java.io.Serializable {
                 messages.put(new JSONObject().put("role","system").put(CONTENT_KEY,specialisation));
             // add historic (restrict to Param histDepth the number of messages )
             if(!Tool.isEmpty(historic)){
-                int len = historic.length();
-                if( len< histDepth*2){
-                    messages.putAll(historic);
-                }else{
-                    for(int i = len - 2*histDepth; i < len;i++ )
-                        messages.put(historic.getJSONObject(i));
-                }
-
-
+                messages.putAll(getCleanHistoric(historic,histDepth));
             }
             
             messages.put(new JSONObject().put("role","user").put(CONTENT_KEY,prompt));
             postData.put("messages", messages);
+            AppLog.info("AI API call :"+postData.toString(1),g);
+            if(AI_API_PARAM.optBoolean("huggingAPI", false)){
+                postData = getHuggingFormatData(postData);
+            }
+            AppLog.info("AI API call :"+postData.toString(),g);
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
                 outputStream.writeBytes(postData.toString());
                 outputStream.flush();
             }
             
             int responseCode = connection.getResponseCode();
+            AppLog.info("AI API response code :"+responseCode,g);
+
             if(responseCode!=200){
                 
                 return readError(connection,responseCode,g);
@@ -150,7 +144,83 @@ public class AITools implements java.io.Serializable {
         return "";
 
     }
+    private static JSONObject getHuggingFormatData(JSONObject postData){
+        JSONObject newPostData = new JSONObject();
+        StringBuilder dialogBuilder = new StringBuilder("");
+        JSONObject params = new JSONObject();
+        if(postData.has(MAX_TOKEN))
+            params.put("max_length",postData.getInt(MAX_TOKEN));
+        JSONArray messages = postData.getJSONArray("messages");
+        for(int i = 0; i < messages.length(); i++){
+            JSONObject message = messages.getJSONObject(i);
+            String role = message.optString("role","user");
+            String content = getContent(message.get(CONTENT_KEY));
+            switch (role) {
+                case ASSISTANT_ROLE:
+                    AppLog.info("AI API assistant :"+content,Grant.getSystemAdmin());
+                    dialogBuilder.append("bot: "+content+"\n");
+                    break;
+                case "system":
+                    AppLog.info("AI API system :"+content,Grant.getSystemAdmin());
+                    if(Tool.isEmpty(content) || "\"\"".equals(content)) break;
+                    dialogBuilder.append("context: "+ content+"\n");
+                    break;
+                default:
+                    AppLog.info("AI API user :"+content,Grant.getSystemAdmin());
+                    dialogBuilder.append(content+"\n");
+                    break;
+            }
 
+        }
+        newPostData.put("inputs",dialogBuilder.toString());
+        newPostData.put("parameters",params);
+        return newPostData;
+    }
+    private static String getContent(Object contentObj){
+        StringBuilder contentBuilder = new StringBuilder("");
+        if(contentObj instanceof JSONArray){
+            JSONArray arrayContent = (JSONArray)contentObj;
+            for(int j = 0; j < arrayContent.length(); j++){
+                JSONObject contentJson = arrayContent.getJSONObject(j);
+                if(contentJson.has(TYPE_TEXT)){
+                    contentBuilder.append(contentJson.getString(TYPE_TEXT)+"\n");
+                }
+            }
+            return contentBuilder.toString();
+        }else if(contentObj instanceof String){
+            return (String)contentObj;
+        }
+        return "";
+    }
+    private static JSONArray getCleanHistoric(JSONArray historic,int histDepth){
+        int len = historic.length();
+        if( len< histDepth*2){
+            return historic;
+        }else{
+            JSONArray newHistoric = new JSONArray();
+            for(int i = len - 2*histDepth; i < len;i++ )
+                newHistoric.put(historic.getJSONObject(i));
+            return newHistoric;
+        }
+    }
+    private static JSONArray parsedPrompts(JSONArray prompts, boolean secure){
+        JSONArray newPrompts = new JSONArray();
+        for(Object p : prompts){
+            if(p instanceof JSONObject){
+                JSONObject contentJson = (JSONObject)p;
+                if(!contentJson.optBoolean(TRUSTED,false) && contentJson.has(TYPE_TEXT)){
+                    contentJson.put(TYPE_TEXT,JSONObject.quote(normalize(contentJson.getString(TYPE_TEXT),secure)));
+                }
+                if(contentJson.has(TRUSTED)){
+                    contentJson.remove(TRUSTED);
+                }
+                newPrompts.put(contentJson);
+            }else{
+               newPrompts.put(JSONObject.quote(normalize((String)p)));
+            }
+        }
+        return newPrompts;
+    }
     /**
      * Reads the error response from an HTTP connection and returns a formatted error message.
      *
@@ -167,10 +237,13 @@ public class AITools implements java.io.Serializable {
             while ((line = in.readLine()) != null) {
                 response.append(line);
             }
+            AppLog.info("AI API error :["+responseCode+"]"+response.toString(),g);
             JSONObject error = new JSONObject(response.toString());
+            String errorMessage = error.optJSONObject("error").optString("message","no message");
+            AppLog.info("AI API error :["+responseCode+"]: "+errorMessage,g);
             connection.disconnect();
-            AppLog.info("AI API error :["+responseCode+"]"+error.getJSONObject("error").getString("message"),g);
-            return "{\"code\":\""+responseCode+"\",\"error\":\""+error.getJSONObject("error").getString("message")+"\" }";
+            
+            return "{\"code\":\""+responseCode+"\",\"error\":\""+errorMessage+"\" }";
 
         } catch (IOException e) {
             AppLog.error(e,g);
@@ -196,63 +269,79 @@ public class AITools implements java.io.Serializable {
             }
             connection.disconnect();
             String res = response.toString();
-            AppLog.info("AI used token :"+new JSONObject(res).optJSONObject("usage").toString(1), g);
-            return res;
+            AppLog.info("AI API response :"+res,g);
+            JSONArray resArray = optJSONArray(res);
+            AppLog.info(resArray.toString(1), g);
+            if(Tool.isEmpty(resArray)){
+                AppLog.info("AI used token :"+new JSONObject(res).optJSONObject("usage").toString(1), g);
+                
+                return res;
+            }
+            String resultText = resArray.optJSONObject(0).getString("generated_text");
+            JSONObject resJson =new JSONObject().put("choices",new JSONArray().put(new JSONObject().put("message",new JSONObject().put(CONTENT_KEY,resultText))));
+            return resJson.toString();
         } catch (IOException e) {
             AppLog.error(e,g);
         }
         connection.disconnect();
         return "";
     }
+    private static JSONArray optJSONArray(String array){
+        try{
+            return new JSONArray(array);
+        }catch(Exception e){
+            return new JSONArray();
+        }
+    }
     /**
-     * call AICaller with default value
+     * call aiCaller with default value
      * @param g
      * @param specialisation
      * @param prompt
      * @return
      */
-    public static JSONObject AICaller(Grant g, String specialisation, Object prompt){
-        return AICaller(g, specialisation,prompt,null,true,false);
+    public static JSONObject aiCaller(Grant g, String specialisation, Object prompt){
+        return aiCaller(g, specialisation,prompt,null,true,false);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, boolean maxToken){
-        return AICaller(g, specialisation,prompt,null,maxToken,false);
+    public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, boolean maxToken){
+        return aiCaller(g, specialisation,prompt,null,maxToken,false);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, boolean maxToken,boolean secure){
-        return AICaller(g, specialisation,prompt,maxToken,secure,false);
+    public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, boolean maxToken,boolean secure){
+        return aiCaller(g, specialisation,prompt,maxToken,secure,false);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, boolean maxToken,boolean secure,boolean isSafeSpe){
-        return AICaller(g, specialisation,prompt,null,maxToken,secure,isSafeSpe);
+    public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, boolean maxToken,boolean secure,boolean isSafeSpe){
+        return aiCaller(g, specialisation,prompt,null,maxToken,secure,isSafeSpe);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken){
-        return AICaller(g, specialisation,prompt,historic,maxToken,false);
+    public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken){
+        return aiCaller(g, specialisation,prompt,historic,maxToken,false);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken,boolean secure){
-        return AICaller(g, specialisation,prompt,historic,maxToken,secure,false);
+    public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken,boolean secure){
+        return aiCaller(g, specialisation,prompt,historic,maxToken,secure,false);
     }
-    public static JSONObject AICaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken,boolean secure,boolean isSafeSpe){
+    public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken,boolean secure,boolean isSafeSpe){
         int tokens = 1500;
-        if(!Tool.isEmpty(AIApiParam)) {
-            tokens = maxToken?AIApiParam.getInt(MAX_TOKEN_PARAM_KEY):0;
+        if(!Tool.isEmpty(AI_API_PARAM)) {
+            tokens = maxToken?AI_API_PARAM.getInt(MAX_TOKEN_PARAM_KEY):0;
         }
-        return new JSONObject(AICaller(g, specialisation,prompt,historic,secure,isSafeSpe,tokens));
+        return new JSONObject(aiCaller(g, specialisation,prompt,historic,secure,isSafeSpe,tokens));
 
     }
-    public static JSONObject AICaller(Grant g, String specialisation, JSONArray historic, Object prompt){
-       return AICaller(g, specialisation,prompt,historic,true,false);
+    public static JSONObject aiCaller(Grant g, String specialisation, JSONArray historic, Object prompt){
+       return aiCaller(g, specialisation,prompt,historic,true,false);
     }
-    private static String AICaller(Grant g, String specialisation, Object prompt ,JSONArray historic, int maxToken){
-        return AICaller(g, specialisation,prompt,historic,false,maxToken);
+    private static String aiCaller(Grant g, String specialisation, Object prompt ,JSONArray historic, int maxToken){
+        return aiCaller(g, specialisation,prompt,historic,false,maxToken);
     
     }
 	/**
-     * call AICaller with specification for code usable in Simplicité.
+     * call aiCaller with specification for code usable in Simplicité.
 	 * @param g
 	 * @param prompt
 	 * @param historic
 	 * @return
 	 */
-	public static JSONObject AICodeHelper(Grant g, String prompt,JSONArray historic){
-        return new JSONObject(AICaller(g, "you are java expert, optimize your function, answer only function",prompt,historic,AIApiParam.getInt("code_max_token")));
+	public static JSONObject aiCodeHelper(Grant g, String prompt,JSONArray historic){
+        return new JSONObject(aiCaller(g, "you are java expert, optimize your function, answer only function",prompt,historic,AI_API_PARAM.getInt("code_max_token")));
     }
 
     /**
@@ -264,13 +353,13 @@ public class AITools implements java.io.Serializable {
     public static JSONArray formatMessageHistoric(String prompt, String response){
         JSONArray messages = new JSONArray();
         messages.put(new JSONObject().put("role","user").put(CONTENT_KEY,normalize(prompt)));
-        messages.put(new JSONObject().put("role","assistant").put(CONTENT_KEY,normalize(response)));
+        messages.put(new JSONObject().put("role",ASSISTANT_ROLE).put(CONTENT_KEY,normalize(response)));
         return messages;
 
     }
     public static JSONObject formatMessageHistoric(JSONObject json){
-        if(json.has("trusted")){
-            json.remove("trusted");
+        if(json.has(TRUSTED)){
+            json.remove(TRUSTED);
             return json;
         } 
 
@@ -299,7 +388,6 @@ public class AITools implements java.io.Serializable {
      */
     public static JSONArray formatMessageHistoricFromNotePad(String data, String trigger){
 		Pattern p = Pattern.compile("\\[.{4}\\-.{2}\\-.{2} .{2}\\:.{2} - (.+)\\]");
-        Pattern pTrigger=Pattern.compile("(?i)^"+trigger+"((?:.|\\s)+)");
 		JSONArray notePad = new JSONArray();
 		JSONObject text = new JSONObject();
 		String note="";
@@ -308,28 +396,14 @@ public class AITools implements java.io.Serializable {
 			if(m.matches()){
 				
 				if (text.has("role")){//if note first line
-					if("\n\n".equals(note.length()>2 ? note.substring(note.length() - 2):note))
-						note = note.length()>2 ? note.substring(0,note.length() - 2):"";
-
-                    //if user role and trigger ignore msg without trigger.
-                    if("user".equals(text.getString("role")) && !Tool.isEmpty(trigger)){
-                        Matcher mTrigger = pTrigger.matcher(note);
-                        if (mTrigger.matches()){
-                            text.put(CONTENT_KEY, normalize(mTrigger.group(1)));
-					        notePad.put(text);
-                        }
-                    }else{
-                        text.put(CONTENT_KEY, normalize(note));
-					    notePad.put(text);
-					    
-                    }
+					parseText(note, trigger, text, notePad);
                     text= new JSONObject();
                         
 					
 				}
 				note="";
                 if("ChatAI".equals(m.group(1))){
-				    text.put("role","assistant");// see AI doc
+				    text.put("role",ASSISTANT_ROLE);// see AI doc
                 }else{
                     text.put("role","user");// see AI doc
                 }
@@ -343,41 +417,48 @@ public class AITools implements java.io.Serializable {
 				
 		}
         if (text.has("role")){
-			if("\n\n".equals(note.length()>2 ? note.substring(note.length() - 2):note))
-				note = note.length()>2 ? note.substring(0,note.length() - 2):"";
-            if("user".equals(text.getString("role")) && !Tool.isEmpty(trigger)){
-                Matcher mTrigger = pTrigger.matcher(note);
-                if (mTrigger.matches()){
-                    text.put(CONTENT_KEY, normalize(mTrigger.group(1)));
-			        notePad.put(text);
-                }
-            }else{
-                text.put(CONTENT_KEY, normalize(note));
-				notePad.put(text);			    
-            }
+            parseText(note,trigger,text,notePad);
 		}
        
         
 		return invertJsonArray(notePad);
 	}
+    private static void parseText(String note,String trigger,JSONObject text,JSONArray notePad){
+        Pattern pTrigger=Pattern.compile("(?i)^"+trigger+"((?:.|\\s)+)");
+        if("\n\n".equals(note.length()>2 ? note.substring(note.length() - 2):note))
+            note = note.length()>2 ? note.substring(0,note.length() - 2):"";
+
+        //if user role and trigger ignore msg without trigger.
+        if("user".equals(text.getString("role")) && !Tool.isEmpty(trigger)){
+            Matcher mTrigger = pTrigger.matcher(note);
+            if (mTrigger.matches()){
+                text.put(CONTENT_KEY, normalize(mTrigger.group(1)));
+		        notePad.put(text);
+            }
+        }else{
+            text.put(CONTENT_KEY, normalize(note));
+		    notePad.put(text);
+        }
+    }
     private static String normalize(String text){
         text = removeAcent(text);
         return  Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^a-zA-Z0-9@.-]", " ");
     }
     public static String normalize(String text, boolean secure){
         text = removeAcent(text);
-        return secure?Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^\\w:\\(\\),`{}.\\[\\]\"@\\/:-]", " "):normalize(text);
+        return secure?Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^\\w\\(\\),`{}.\\[\\]\"@\\/:-]", " "):normalize(text);
     }
     public static String removeAcent(String text){
-        return text.replaceAll("(?i)[éèêë]", "e")
-                .replaceAll("(?i)[àâä]","a" )
-                .replaceAll("(?i)[îï]", "i")
-                .replaceAll("(?i)[ôö]", "o")
-                .replaceAll("(?i)[ùûü]", "u")
-                .replaceAll("(?i)ÿ", "y")
-                .replaceAll("(?i)ç", "c")
-                .replaceAll("(?i)æ","ae")
-                .replaceAll("(?i)œ","oe");
+        text = text.replaceAll("(?u)[éèêë]", "e")
+                .replaceAll("(?u)[àâä]","a" )
+                .replaceAll("(?u)[îï]", "i")
+                .replaceAll("(?u)[ôö]", "o")
+                .replaceAll("(?u)[ùûü]", "u")
+                .replaceAll("(?u)æ","ae")
+                .replaceAll("(?u)œ","oe");
+        text = Pattern.compile("(?u)ç",Pattern.CANON_EQ).matcher(text).replaceAll("c");
+        text = Pattern.compile("(?u)ÿ",Pattern.CANON_EQ).matcher(text).replaceAll("y");
+        return text;
                     
                     
     }
@@ -394,14 +475,14 @@ public class AITools implements java.io.Serializable {
         }
         return result;
     } 
-    public static JSONObject actionAICaller(Grant g, String specialisation, String prompt){
+    public static JSONObject actionAiCaller(Grant g, String specialisation, String prompt){
         
-        return AICaller(g, specialisation,prompt);
+        return aiCaller(g, specialisation,prompt);
     }
-    public static JSONObject actionAICaller(Grant g, String specialisation, String prompt,ObjectDB obj){
+    public static JSONObject actionAiCaller(Grant g, String specialisation, String prompt,ObjectDB obj){
          try {
             String parsedPrompt = parseExpresion(prompt,obj);
-            return AICaller(g, specialisation,parsedPrompt);
+            return aiCaller(g, specialisation,parsedPrompt);
          } catch (ScriptException e) {
             AppLog.error(e, g);
             return new JSONObject();
@@ -409,10 +490,10 @@ public class AITools implements java.io.Serializable {
         
     }
     //Call AI whith parsed expretion
-    public static JSONObject expresionAICaller(Grant g, String specialisation, String prompt,ObjectDB obj){
+    public static JSONObject expresionAiCaller(Grant g, String specialisation, String prompt,ObjectDB obj){
         try {
             String parsedPrompt = parseExpresion(prompt,obj);
-            String res = AICaller(g, specialisation,parsedPrompt,null,3500);
+            String res = aiCaller(g, specialisation,parsedPrompt,null,3500);
             return new JSONObject(res);
          } catch (ScriptException e) {
             AppLog.error(e, g);
@@ -444,7 +525,7 @@ public class AITools implements java.io.Serializable {
 
     public static List<String> getJSONBlock(String txt, Grant g){
 		List<String> list = new ArrayList<>(); 
-		String regex= "([^\0{]*?)(?:```)?(?:json)?\s*(\\{[^`]+\\})(?:```)?([^\0}]*)";
+		String regex = "^([^{}]*)(?:```)?(?:json)?\\s*(\\{[^`]+\\})(?:```)?([^}]*)$";//To check
         if(!txt.matches("[\\s\\S]*\\{[\\s\\S]*\\}[\\s\\S]*")){
             return list;
         }
@@ -557,12 +638,12 @@ public class AITools implements java.io.Serializable {
 		ModuleDB module = new ModuleDB(obj);
 		JSONObject swagger = new JSONObject(module.openAPI(JSONTool.OPENAPI_OAS3,true));
 		JSONObject newSchemas = new JSONObject();
-		JSONObject schemas = swagger.getJSONObject("components").getJSONObject("schemas");
+		JSONObject schemas = swagger.getJSONObject(SWAGGER_COMPONENTS).getJSONObject(SWAGGER_SHEMAS);
 		for(String id : ids){
 			String name = ObjectCore.getObjectName(id);
 			newSchemas.put(name, checkFields(schemas.getJSONObject(name), name,g));
 		}
-        return new JSONObject().put("components",new JSONObject().put("schemas",newSchemas)); 
+        return new JSONObject().put(SWAGGER_COMPONENTS,new JSONObject().put(SWAGGER_SHEMAS,newSchemas)); 
     }
 
     public static JSONObject checkFields(JSONObject obj, String name, Grant g) {
@@ -571,7 +652,7 @@ public class AITools implements java.io.Serializable {
         for (String key : properties.keySet()) {
             JSONObject val = properties.getJSONObject(key);
             ObjectField fld;
-            fld = objDB.getField(key.replaceAll("__", "."));
+            fld = objDB.getField(key.replace("__", "."));
             if (val.has("enum")) {
                 JSONArray enumCodes = new JSONArray();
                 for (EnumItem eItem : fld.getList().getAllItems()) {
@@ -590,13 +671,13 @@ public class AITools implements java.io.Serializable {
 		ModuleDB module = new ModuleDB(obj);
 		JSONObject swagger = new JSONObject(module.openAPI(JSONTool.OPENAPI_OAS3,true));
 		JSONObject newSchemas = new JSONObject();
-		JSONObject schemas = swagger.getJSONObject("components").getJSONObject("schemas");
+		JSONObject schemas = swagger.getJSONObject(SWAGGER_COMPONENTS).getJSONObject(SWAGGER_SHEMAS);
 		for(String id : ids){
 			String name = ObjectCore.getObjectName(id);
 			newSchemas.put(name, new JSONObject(schemas.getJSONObject(name).toString()));
 		}
         
-		swagger.getJSONObject("components").put("schemas", newSchemas);
+		swagger.getJSONObject(SWAGGER_COMPONENTS).put(SWAGGER_SHEMAS, newSchemas);
 		JSONObject paths = swagger.getJSONObject("paths");
 		JSONObject newPaths = new JSONObject();
 		for(String key : paths.keySet()){
@@ -619,7 +700,7 @@ public class AITools implements java.io.Serializable {
             case TYPE_TEXT:
                 res.put("type",TYPE_TEXT);
                 res.put(type,content);
-                if(trusted) res.put("trusted",trusted);
+                if(trusted) res.put(TRUSTED,trusted);
                 break;
             case TYPE_IMAGE_URL:
                 res.put("type",TYPE_IMAGE_URL);
@@ -634,4 +715,11 @@ public class AITools implements java.io.Serializable {
         }
         return res;
     }
+    public static String getDataDisclaimer(Grant g){
+        if (SHOW_DATA_DISCLAIMER){
+            return g.T("AI_DISCLAIMER_DATA").replace("[PROVIDER]", AI_PROVIDER);
+        }
+        return "";
+    }
+    
 }

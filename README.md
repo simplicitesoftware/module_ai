@@ -117,6 +117,8 @@ In a `view` add an `external page` of source `External object`: `AIMetricsChat?m
 ### Lists
 
 * `AI_CONF_MODELE`
+    - `AIML` ai/ml
+    - `HUGGINGFACE` huggingface
     - `MISTRAL` Mistral
     - `OPENAI` OpenAI
 

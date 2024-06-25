@@ -17,7 +17,7 @@ public class AIField implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String AI_ERROR_RETURN = "AI_ERROR_RETURN";
 	private static final String JSON_ERROR_KEY = "error";
-	private static String AIApiParamTrigger = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM").getString("trigger");
+	private static String aiApiParamTrigger = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM").getString("trigger");
 	public static List<String> validateAIField(ObjectField fld,Grant g){
 		return validateAIField(fld,null,g);
 	}
@@ -119,7 +119,7 @@ public class AIField implements java.io.Serializable {
 	private static List<String> validateNotepadAIFieldInternal(ObjectField fld, ObjectDB obj, Grant g, String spe) {
 		List<String> msgs = new ArrayList<>();
 		Pattern p = Pattern.compile("\\[.{4}\\-.{2}\\-.{2} .{2}\\:.{2} - (.+)\\]");
-		JSONArray historic = AITools.formatMessageHistoricFromNotePad(fld.getOldValue(),AIApiParamTrigger);
+		JSONArray historic = AITools.formatMessageHistoricFromNotePad(fld.getOldValue(),aiApiParamTrigger);
 		String prompt ="";
 		boolean begin = true;
 		StringBuilder promptBuilder = new StringBuilder();
@@ -136,7 +136,7 @@ public class AIField implements java.io.Serializable {
 			}
 		}
 		prompt = promptBuilder.toString();
-		p = Pattern.compile("(?i)^" + AIApiParamTrigger + "((?:.|\\s)+)");
+		p = Pattern.compile("(?i)^" + aiApiParamTrigger + "((?:.|\\s)+)");
 		Matcher m = p.matcher(prompt);
 
 		if(m.matches()){
@@ -147,7 +147,7 @@ public class AIField implements java.io.Serializable {
 				msgs.add(Message.formatError(AI_ERROR_RETURN,e.toString(),fld.getName()));
 				return msgs;
 			}
-			JSONObject result= AITools.AICaller(g, spe, historic, sentence );
+			JSONObject result= AITools.aiCaller(g, spe, historic, sentence );
 			if(result.has(JSON_ERROR_KEY)){
 				msgs.add(Message.formatError(AI_ERROR_RETURN,result.getString("code")+": "+result.getString(JSON_ERROR_KEY),"demoPrdDescription"));
 				return msgs;
@@ -179,7 +179,7 @@ public class AIField implements java.io.Serializable {
 		ObjectDB fldObj = Grant.getSystemAdmin().getTmpObject("Field");
 		synchronized(fldObj){
 			fldObj.select(fld.getId());
-			if(!(String.valueOf(ObjectField.TYPE_LONG_STRING).equals(fldObj.getFieldValue("fld_type")) && "AI".equals(fldObj.getFieldValue("fld_rendering")))){
+			if(!isAILongStrField(fldObj)){
 				msgs.add(Message.formatError("AI_NO_LONGSTRING_AI",null,null));
 				return msgs;
 			}
@@ -189,7 +189,7 @@ public class AIField implements java.io.Serializable {
 			String length = String.valueOf(fld.getSize());
 			String lengthDeclarasion = "FRA".equals(g.getLang())?("en maximum"+length+" caracteres"):("in maximum"+length+" characters");
 			String prompt = fld.getValue() + " "+lengthDeclarasion;
-			Pattern p = Pattern.compile("(?i)^"+AIApiParamTrigger+"((?:.|\\s)+)");
+			Pattern p = Pattern.compile("(?i)^"+aiApiParamTrigger+"((?:.|\\s)+)");
 			Matcher m = p.matcher(prompt);
 			
 			if(m.matches()){
@@ -200,7 +200,7 @@ public class AIField implements java.io.Serializable {
 					msgs.add(Message.formatError(AI_ERROR_RETURN,e.toString(),fld.getName()));
 					return msgs;
 				}
-				JSONObject result= AITools.AICaller(g, spe, null,  sentence);
+				JSONObject result= AITools.aiCaller(g, spe, null,  sentence);
 				if(result.has(JSON_ERROR_KEY)){
 					msgs.add(Message.formatError(AI_ERROR_RETURN,result.getString("code")+": "+result.getString(JSON_ERROR_KEY),"demoPrdDescription"));
 					return msgs;
@@ -210,6 +210,10 @@ public class AIField implements java.io.Serializable {
 			
 		}
 		return msgs;
+	}
+	private static boolean isAILongStrField(ObjectDB fieldObject){
+		return String.valueOf(ObjectField.TYPE_LONG_STRING).equals(fieldObject.getFieldValue("fld_type")) && "AI".equals(fieldObject.getFieldValue("fld_rendering"));
+
 	}
 	
 }

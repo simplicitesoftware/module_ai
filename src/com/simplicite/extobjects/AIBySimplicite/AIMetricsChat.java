@@ -1,6 +1,5 @@
 package com.simplicite.extobjects.AIBySimplicite;
 
-import com.simplicite.commons.AIBySimplicite.AiMetrics;
 import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
@@ -30,8 +29,10 @@ public class AIMetricsChat extends com.simplicite.util.ExternalObject {
 				return javascript("$ui.alert("+Message.formatError("AI_MODULE_ERROR", null,null)+")");
 			}
 			JSONObject swagger = AITools.getSimplifyedSwagger(moduleName, g);
-			AppLog.info("Swagger: "+swagger, getGrant());
-			return javascript(getName() + ".render(ctn,"+new JSONObject().put("components",new JSONObject().put("schemas",swagger.optJSONObject("components").optJSONObject("schemas"))).toString()+");");
+			String swaggerString = new JSONObject().put("components",new JSONObject().put("schemas",swagger.optJSONObject("components").optJSONObject("schemas"))).toString();
+			swaggerString = swaggerString.replace("\\", "\\\\").replace("\"", "\\\"");
+			AppLog.info("Swagger: "+swaggerString, getGrant());
+			return javascript(getName() + ".render(ctn,'"+swaggerString+"');");
 		} catch (PlatformException e) {
 			AppLog.error(e, g);
 		}

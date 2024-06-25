@@ -1,6 +1,5 @@
 
-<script>{{script}}</script>
-
+{{{script}}}
 <link rel="stylesheet" type="text/css" href="/resource?code=AI_STYLE&type=CSS"/>
 <style>{{css}}</style>
 
@@ -17,9 +16,9 @@
         <div class="input-area">
             <div id="input-img" style="display: none;"><img class="minified-img-chat" alt="" /></div>
             <div id="user-input">
-                <button id="add-img" class="chat-button" onclick="addImage()"><img id="add-img-icon" src="" alt="Add"></button>
-                <textarea id="module_user_message" class="user-message" placeholder="Type your message..." onkeypress="resizeUp()"></textarea>
-                <button id="send-button" class="chat-button" onclick="sendModuleMessage()" >Send</button>
+                <button id="add-img" class="chat-button" onclick="AIWfChatBot.addImage()"><img id="add-img-icon" src="" alt="Add"></button>
+                <textarea id="module_user_message" class="user-message" placeholder="Type your message..." onkeypress="AIWfChatBot.resizeUp()"></textarea>
+                <button id="send-button" class="chat-button" onclick="AIWfChatBot.sendModuleMessage()" >Send</button>
             </div>
         </div>
     </div>

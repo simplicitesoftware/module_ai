@@ -1,10 +1,9 @@
 package com.simplicite.objects.AIBySimplicite;
 
-import java.util.*;
-
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,13 +16,14 @@ public class AiSettings extends ObjectDB {
 	private static final String AI_API_KEY = "AI_API_KEY";
 	private static final String AI_API_PARAM = "AI_API_PARAM";
 	private static final String AI_API_URL = "AI_API_URL";
+	private static final String MODELE_FIELD = "aiSetModele";
+	private static final String SYS_CODE = "sys_code";
+	private static final String SYS_VAL2 = "sys_value2";
+	
 	@Override
 	public String preCreate() {
 
-		setFieldValue("aiSetConfig", getGrant().T("AI_CONFIG_"+getFieldValue("aiSetModele")));
-		//return Message.formatInfo("INFO_CODE", "Message", "fieldName");
-		//return Message.formatWarning("WARNING_CODE", "Message", "fieldName");
-		//return Message.formatError("ERROR_CODE", "Message", "fieldName");
+		setFieldValue("aiSetConfig", getGrant().T("AI_CONFIG_"+getFieldValue(MODELE_FIELD)));
 		return null;
 	}
 	public void active(Action action){
@@ -34,21 +34,20 @@ public class AiSettings extends ObjectDB {
 		BusinessObjectTool paramTool = paramObj.getTool();
 		synchronized(paramObj.getLock()){
 			try {
-				paramTool.selectForUpsert(new JSONObject().put("sys_code", AI_API_KEY));
-				paramObj.setFieldValue("sys_value2", key);
+				paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, AI_API_KEY));
+				paramObj.setFieldValue(SYS_VAL2, key);
 				paramTool.validateAndSave();
-				paramTool.selectForUpsert(new JSONObject().put("sys_code", AI_API_PARAM));
-				paramObj.setFieldValue("sys_value2", setting);
+				paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, AI_API_PARAM));
+				paramObj.setFieldValue(SYS_VAL2, setting);
 				paramTool.validateAndSave();
-				paramTool.selectForUpsert(new JSONObject().put("sys_code", AI_API_URL));
-				paramObj.setFieldValue("sys_value2", url);
+				paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, AI_API_URL));
+				paramObj.setFieldValue(SYS_VAL2, url);
 				paramTool.validateAndSave();
 			} catch (GetException | JSONException | ValidateException | SaveException e) {
 				AppLog.error( e, getGrant());
 
 			}
 		}
-		
 	}
 	@Override
 	public boolean isActionEnable(String[] arg0, String arg1) {

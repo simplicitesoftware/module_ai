@@ -49,6 +49,7 @@ public class AIModel implements java.io.Serializable {
 	private static final String JSON_VALUES_UPPER_KEY = "Values";
 	private static final String NOT_WORD_CHAR_REGEX = "[^\\w]";
 	private static final Random rand = new Random();
+	private static final String SHORT_TEXT ="Short text";
 	private static class LinkObject {
 		private String objId;
 		private String en;
@@ -67,12 +68,14 @@ public class AIModel implements java.io.Serializable {
 		private String mPrefix;
 		private String[] groupIds;
 		private String domainID;
+		private Grant g;
 
 		public ModuleInfo(String moduleId, String mPrefix, String[] groupIds, String domainID) {
 			this.moduleId = moduleId;
 			this.mPrefix = mPrefix;
 			this.groupIds = groupIds;
 			this.domainID = domainID;
+			this.g = Grant.getSystemAdmin();
 		}
 
 		
@@ -105,7 +108,7 @@ public class AIModel implements java.io.Serializable {
 	static {
 		typeTrad = new HashMap<>();
 		typeTrad.put("Short text < 4000", ObjectField.TYPE_STRING);
-		typeTrad.put("Short text", ObjectField.TYPE_STRING);
+		typeTrad.put(SHORT_TEXT, ObjectField.TYPE_STRING);
 		typeTrad.put("Long text", ObjectField.TYPE_LONG_STRING);
 		typeTrad.put("Integer", ObjectField.TYPE_INT);
 		typeTrad.put("Decimal", ObjectField.TYPE_FLOAT);
@@ -333,55 +336,71 @@ public class AIModel implements java.io.Serializable {
 			String objPrefix=getOboPrefix(jsonObj, objName);
 			//createObject
 			String oboId = createObject(jsonObj, objName, objPrefix, domainOrder,mInfo, dataMaps, g);
-			objPrefix = SyntaxTool.getObjectPrefix(oboId);
 			domainOrder+=100;
 			//createFields
 			if(jsonObj.has("attributes")){	
-				for(Object field:jsonObj.getJSONArray("attributes")){
-					
-					JSONObject jsonFld = (JSONObject) field;
-					String fldType =jsonFld.optString("type","Short text");
-					if(linkType.contains(fldType)){
-						String class2 = jsonFld.getString("name");
-						if(jsonFld.has("class")){
-							class2 = jsonFld.getString("class");
-						}else if(jsonFld.has(JSON_LINK_CLASS_TO_KEY)){
-							class2 = jsonFld.getString(JSON_LINK_CLASS_TO_KEY);
-						}
-						json.getJSONArray(JSON_LINK_KEY).put(new JSONObject().put(JSON_LINK_CLASS_FROM_KEY, objName).put(JSON_LINK_CLASS_TO_KEY,class2).put("type",fldType));
-					}else{
-						String fldId=addField(jsonFld, oboId, objPrefix, fieldOrder,mInfo, dataMaps, g);
-						if(jsonFld.has("key") && jsonFld.getBoolean("key")){
-							fKs.add(fldId);
-						}
-						fieldOrder+=10;
-					}
-				}
+				fKs.addAll(parsefield(jsonObj, json, oboId, fieldOrder, mInfo, dataMaps, g));
 			}
 			
 			//check if AI mis placed link
-			if(jsonObj.has(JSON_LINK_KEY)){
-				JSONArray links = jsonObj.getJSONArray(JSON_LINK_KEY);
-				for (Object link : links){
-					if(link instanceof JSONObject){
-						JSONObject rel = (JSONObject) link;
-						if(!rel.has(JSON_LINK_CLASS_FROM_KEY)){
-							rel.put(JSON_LINK_CLASS_FROM_KEY, objName);
-							if(rel.has("name")){
-								
-								String class2 = rel.getString("name");
-								rel.remove("name");
-								rel.put(JSON_LINK_CLASS_TO_KEY, class2);
-							}
-						}
-					}
-				}
-				json.getJSONArray(JSON_LINK_KEY).putAll(links);
-			}
+			json.getJSONArray(JSON_LINK_KEY).putAll(checkMisplacedLink(jsonObj,objName));
+	
 		}
 		
 		createLinks(json.getJSONArray(JSON_LINK_KEY),mInfo, dataMaps, g);
 		return new ArrayList<>(dataMaps.objCreate.values());
+	}
+	private static List<String> parsefield(JSONObject jsonObj,JSONObject json, String oboId, int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
+		String objName = formatObjectNames(jsonObj.getString("name"));
+		String objPrefix = SyntaxTool.getObjectPrefix(oboId);
+		List<String> fKs = new ArrayList<>();
+		for(Object field:jsonObj.getJSONArray("attributes")){
+					
+			JSONObject jsonFld = (JSONObject) field;
+			String fldType =jsonFld.optString("type",SHORT_TEXT);
+			if(linkType.contains(fldType)){
+				String class2 = getClassFromJson(jsonFld);
+				json.getJSONArray(JSON_LINK_KEY).put(new JSONObject().put(JSON_LINK_CLASS_FROM_KEY, objName).put(JSON_LINK_CLASS_TO_KEY,class2).put("type",fldType));
+			}else{
+				String fldId=addField(jsonFld, oboId, objPrefix, fieldOrder,mInfo, dataMaps, g);
+				if(jsonFld.optBoolean("key")){
+					fKs.add(fldId);
+				}
+				fieldOrder+=10;
+			}
+		}
+		return fKs;
+	}
+
+	private static String getClassFromJson(JSONObject jsonFld){
+		String class2 = jsonFld.getString("name");
+		if(jsonFld.has("class")){
+			class2 = jsonFld.getString("class");
+		}else if(jsonFld.has(JSON_LINK_CLASS_TO_KEY)){
+			class2 = jsonFld.getString(JSON_LINK_CLASS_TO_KEY);
+		}
+		return class2;
+	}
+	private static JSONArray checkMisplacedLink(JSONObject jsonObj,String objName){
+		if(jsonObj.has(JSON_LINK_KEY)){
+			JSONArray links = jsonObj.getJSONArray(JSON_LINK_KEY);
+			for (Object link : links){
+				if(link instanceof JSONObject){
+					JSONObject rel = (JSONObject) link;
+					if(!rel.has(JSON_LINK_CLASS_FROM_KEY)){
+						rel.put(JSON_LINK_CLASS_FROM_KEY, objName);
+						if(rel.has("name")){
+							
+							String class2 = rel.getString("name");
+							rel.remove("name");
+							rel.put(JSON_LINK_CLASS_TO_KEY, class2);
+						}
+					}
+				}
+			}
+			return links;
+		}
+		return new JSONArray();
 	}
 	private static String getOboPrefix(JSONObject jsonObj, String objName){
 		String objPrefix = "";
@@ -482,7 +501,7 @@ public class AIModel implements java.io.Serializable {
 	}
 	private static String addField(JSONObject jsonFld,String oboId, String objPrefix,  int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException , ValidateException, SaveException{
 		String fieldName = jsonFld.getString("name").replaceAll(NOT_WORD_CHAR_REGEX,"").replaceAll("\\s","");
-		String fldType =jsonFld.optString("type","Short text");
+		String fldType =jsonFld.optString("type",SHORT_TEXT);
 		int type = ObjectField.TYPE_STRING;
 		if(typeTrad.containsKey(fldType)){
 			type = typeTrad.get(fldType);
@@ -504,17 +523,19 @@ public class AIModel implements java.io.Serializable {
 		if(type == ObjectField.TYPE_ENUM || type == ObjectField.TYPE_ENUM_MULTI){
 			String enumId = createListOfValue(objPrefix, fieldName, mInfo, g);
 			field.put("fld_list_id",enumId);
-			if(jsonFld.has(JSON_VALUES_LOWER_KEY) && jsonFld.get(JSON_VALUES_LOWER_KEY) instanceof JSONArray|| jsonFld.has(JSON_VALUES_UPPER_KEY) && jsonFld.get(JSON_VALUES_UPPER_KEY) instanceof JSONArray){
-				completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY), g);
-			}else if(jsonFld.has(JSON_ENUM_KEY) && (jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) || jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_UPPER_KEY) ) ){
-				completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY), g);
-			}else if(jsonFld.has(JSON_ENUM_KEY.toLowerCase()) && (jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) || jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_UPPER_KEY) ) ){
-				completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY), g);
-			}
+			completeList(enumId, jsonFld, mInfo, g);
 		}
 		
 		String fldId = createOrUpdateWithJson(OBJECTFIELD,field, g);
 		dataMaps.fieldCreate.put(fieldName, fldId);
+		translateField(jsonFld, fldId, dataMaps, g);
+		String oboFldId = createObjectField(oboId, fieldName, fieldOrder, mInfo, dataMaps, g);
+		if(type == ObjectField.TYPE_ENUM && ("status".equalsIgnoreCase(fieldName) || jsonFld.has("isStatus") && jsonFld.getBoolean("isStatus"))){
+			addStateModel(oboId,  oboFldId,mInfo, g);
+		}
+		return fldId;
+	}
+	private static void translateField(JSONObject jsonFld, String fldId, DataMapObject dataMaps,Grant g) throws UpdateException, GetException, ValidateException{
 		String en ="";
 		String fr="";
 		if(jsonFld.has("en") && jsonFld.get("en") instanceof JSONObject){
@@ -537,12 +558,6 @@ public class AIModel implements java.io.Serializable {
 		updateTradField(Grant.getTranslateFieldId(fldId, Globals.LANG_FRENCH), fr, g);
 		dataMaps.fldEn.put(fldId, en);
 		dataMaps.fldFr.put(fldId, fr);	
-	
-		String oboFldId = createObjectField(oboId, fieldName, fieldOrder, mInfo, dataMaps, g);
-		if(type == ObjectField.TYPE_ENUM && ("status".equalsIgnoreCase(fieldName) || jsonFld.has("isStatus") && jsonFld.getBoolean("isStatus"))){
-			addStateModel(oboId,  oboFldId,mInfo, g);
-		}
-		return fldId;
 	}
 	private static void addStateModel(String oboId, String oboFldId,ModuleInfo mInfo, Grant g){
 		String pcs = "CreateStateModel";
@@ -642,7 +657,7 @@ public class AIModel implements java.io.Serializable {
 		}
 		return p.validate(act, null);
 	}
-	private static String createObjectField(String oboId,String fieldName,int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
+	private static String createObjectField(String oboId,String fieldName,int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g){
 		JSONObject oboField = new JSONObject();
 		oboField.put(OBJECTFIELD_OBJECT_FIELD, oboId);
 		oboField.put(OBJECTFIELD_FIELD_FIELD, dataMaps.fieldCreate.get(fieldName));
@@ -650,13 +665,13 @@ public class AIModel implements java.io.Serializable {
 		oboField.put(MODULE_ID_FIELD,mInfo.moduleId);
 		return createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboField, g);
 	}
-	private static String createListOfValue(String objPrefix,String fieldName,ModuleInfo mInfo,Grant g) throws GetException, ValidateException, SaveException{
+	private static String createListOfValue(String objPrefix,String fieldName,ModuleInfo mInfo,Grant g){
 		JSONObject enumObject = new JSONObject();
 		enumObject.put("lov_name",SyntaxTool.join(SyntaxTool.UPPER, new String[]{mInfo.mPrefix,objPrefix,fieldName}));
 		enumObject.put(MODULE_ID_FIELD,mInfo.moduleId);
 		return createOrUpdateWithJson("FieldList",enumObject, g);
 	}
-	private static void createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, CreateException, ValidateException, UpdateException {
+	private static void createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, ValidateException, UpdateException {
 		int linkorder = 10;
 		for (Object link : links) {
 			JSONObject jsonLink = (JSONObject) link;
@@ -682,14 +697,14 @@ public class AIModel implements java.io.Serializable {
 					case "m2o":
 					case "manytoone":
 					case "many-to-one":
-						createLink(class1Name, class2Name, linkorder, mInfo, dataMaps, g ,true);
+						createLink(class1Name, class2Name, linkorder, mInfo, dataMaps,true);
 						linkorder += 10;
 						break;
 					case "o2m":
 					case "onetomany":
 					case "one-to-many":
 					default:
-						createLink(class1Name, class2Name, linkorder, mInfo, dataMaps, g,false);
+						createLink(class1Name, class2Name, linkorder, mInfo, dataMaps,false);
 						linkorder += 10;
 						break;
 				}
@@ -697,7 +712,7 @@ public class AIModel implements java.io.Serializable {
 		}
 	}
 
-	private static void createManyToManyLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, CreateException, ValidateException, UpdateException{
+	private static void createManyToManyLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, ValidateException, UpdateException{
 		String oboId = dataMaps.objCreate.get(class1Name.toLowerCase());
 		String oboId2 = dataMaps.objCreate.get(class2Name.toLowerCase());
 		if (!dataMaps.linkDone.contains(class1Name + class2Name + "m2m") && !dataMaps.linkDone.contains(class2Name + class1Name + "m2m")) {
@@ -706,7 +721,7 @@ public class AIModel implements java.io.Serializable {
 		}
 	}
 
-	private static void createLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, Grant g, boolean isManyToOne) throws GetException, CreateException, ValidateException, UpdateException {
+	private static void createLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, boolean isManyToOne) throws GetException, ValidateException, UpdateException {
 		String oboId1 = dataMaps.objCreate.get(class1Name.toLowerCase());
 		String oboId2 = dataMaps.objCreate.get(class2Name.toLowerCase());
 		String linkType = isManyToOne ? "m2o" : "o2m";
@@ -714,10 +729,10 @@ public class AIModel implements java.io.Serializable {
 		if (!dataMaps.linkDone.contains(linkKey)) {
 			if (isManyToOne) {
 				LinkObject linkObject = new LinkObject(oboId2, dataMaps.objEn.get(oboId2), dataMaps.objFr.get(oboId2), linkorder);
-				manyToOneLink(oboId1, linkObject, mInfo, dataMaps, ObjectCore.DEL_RESTRICT, false, false, g);
+				manyToOneLink(oboId1, linkObject, mInfo, dataMaps, ObjectCore.DEL_RESTRICT, false, false);
 			} else {
 				LinkObject linkObject = new LinkObject(oboId1, dataMaps.objEn.get(oboId1), dataMaps.objFr.get(oboId1), linkorder);
-				manyToOneLink(oboId2, linkObject, mInfo, dataMaps, ObjectCore.DEL_RESTRICT, false, false, g);
+				manyToOneLink(oboId2, linkObject, mInfo, dataMaps, ObjectCore.DEL_RESTRICT, false, false);
 			}
 			dataMaps.linkDone.add(linkKey);
 		}
@@ -738,7 +753,7 @@ public class AIModel implements java.io.Serializable {
 		}
 		return formatObjectNames(className);
 	}
-	private static void createLinkObject(String name,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, CreateException, ValidateException{
+	private static void createLinkObject(String name,ModuleInfo mInfo, DataMapObject dataMaps,Grant g){
 		JSONObject linkFields = new JSONObject();
 		String namewp = getNameWithoutPrefix(name,mInfo.mPrefix,"");
 		linkFields.put(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,namewp}));
@@ -783,7 +798,7 @@ public class AIModel implements java.io.Serializable {
 		}
 		
 	}
-	private static void manyToManyLink(LinkObject objectData1,LinkObject objectData2, ModuleInfo mInfo,DataMapObject dataMaps,Grant g) throws GetException, CreateException, ValidateException, UpdateException{
+	private static void manyToManyLink(LinkObject objectData1,LinkObject objectData2, ModuleInfo mInfo,DataMapObject dataMaps,Grant g) throws GetException, ValidateException, UpdateException{
 		String childId="";
 		String prefix1=SyntaxTool.getObjectPrefix(objectData1.objId);
 		String prefix2=SyntaxTool.getObjectPrefix(objectData2.objId);
@@ -803,11 +818,12 @@ public class AIModel implements java.io.Serializable {
 			grantGroup(gId,childId,mInfo.moduleId,g);
 		}
 		
-		manyToOneLink(childId, objectData1, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId), g);
-		manyToOneLink(childId, objectData2, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId), g);
+		manyToOneLink(childId, objectData1, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId));
+		manyToOneLink(childId, objectData2, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId));
 	}
 	private static HashMap<String, String> linkIds = new HashMap<>();
-	private static void manyToOneLink(String childId,LinkObject objectData, ModuleInfo mInfo, DataMapObject dataMaps,char del,Boolean key,boolean recursive,Grant g) throws GetException, CreateException, ValidateException, UpdateException{
+	private static void manyToOneLink(String childId,LinkObject objectData, ModuleInfo mInfo, DataMapObject dataMaps,char del,Boolean key,boolean recursive) throws GetException, ValidateException, UpdateException{
+			Grant g = mInfo.g;
 			String triObj = SyntaxTool.getObjectPrefix(objectData.objId);
 			String triChild = SyntaxTool.getObjectPrefix(childId);
 			String fkFieldName=SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,triChild,triObj,"id"});
@@ -877,6 +893,21 @@ public class AIModel implements java.io.Serializable {
 		}
 		return fks;
 	}
+	private static void completeList(String enumId,JSONObject jsonFld,ModuleInfo mInfo,Grant g) throws GetException, ValidateException, UpdateException{
+		if(hasJsonArray(jsonFld,JSON_VALUES_UPPER_KEY,JSON_VALUES_LOWER_KEY)){
+			completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY), g);
+		}else if(hasNotCaseSensitibve(jsonFld.optJSONObject(JSON_ENUM_KEY), JSON_VALUES_UPPER_KEY, JSON_VALUES_LOWER_KEY)){
+			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY), g);
+		}else if(hasNotCaseSensitibve(jsonFld.optJSONObject(JSON_ENUM_KEY.toLowerCase()), JSON_VALUES_UPPER_KEY, JSON_VALUES_LOWER_KEY) ){
+			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY), g);
+		}
+	}
+	private static boolean hasJsonArray(JSONObject json, String upperkey, String lowerkey){
+		return json.has(upperkey) && json.get(upperkey) instanceof JSONArray || json.has(lowerkey) && json.get(lowerkey) instanceof JSONArray;
+	}
+	private static boolean hasNotCaseSensitibve(JSONObject json, String upperKey, String lowerKey){
+		return json.has(upperKey) || json.has(lowerKey);
+	}
 	private static void completeList(String moduleId,String listId,JSONArray values,Grant g) throws GetException, ValidateException, UpdateException{
 		int order = 1;
 		ObjectDB oTra = g.getTmpObject("FieldListValue");
@@ -915,7 +946,7 @@ public class AIModel implements java.io.Serializable {
 			return new JSONObject();
 		}
 	}
-	private static void addToDomain(String domainID,String objectId,String moduleId,int domainOrder,Grant g) throws GetException, CreateException, ValidateException{
+	private static void addToDomain(String domainID,String objectId,String moduleId,int domainOrder,Grant g){
 		JSONObject domain = new JSONObject();
 		domain.put("map_domain_id", domainID);
 		domain.put("map_object", "ObjectInternal:"+objectId);

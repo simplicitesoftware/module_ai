@@ -7,8 +7,6 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 
-import static org.mockito.ArgumentMatchers.booleanThat;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -35,9 +33,9 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 			JSONObject req = params.getJSONObject();
 			if (Tool.isEmpty(type)) type = "default";
-			switch (type) {
+			switch (type) { //use switch for future extension
 				case "metrics":
-					JSONObject swagger = new JSONObject(params.getParameter("swagger"));
+					JSONObject swagger = params.has("swagger")?new JSONObject(params.getParameter("swagger")):null;
 					String lang = params.getParameter("lang");
 					return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);	
 				default:
@@ -46,7 +44,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 					}else if (!Tool.isEmpty(prompt) ) {
 						return updateFieldByParam(prompt,params);
 					}else if(Tool.isEmpty(prompt) && !Tool.isEmpty(objectName) && !Tool.isEmpty(objectID)){
-						return frontAICaller(objectName, objectID);
+						return frontAiCaller(objectName, objectID);
 					} else {
 						return error(400, "Call me with a prompt or a object param please!");
 					}
@@ -56,7 +54,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			return error(e);
 		}
 	}
-	private Object frontAICaller(String objectName, String objectID){
+	private Object frontAiCaller(String objectName, String objectID){
 		ObjectDB obj = Grant.getSystemAdmin().getTmpObject(objectName);
 		JSONArray res = new JSONArray();
 		synchronized(obj.getLock()){
@@ -102,53 +100,57 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	private Object updateFieldByParam(String prompt, Parameters params){
 		Grant g = getGrant();
 		boolean isJsonPrompt = true;
-		JSONArray jsonPrompt;
-		try {
-			jsonPrompt = new JSONArray(prompt);
-		}catch(Exception e){
+		JSONArray jsonPrompt = optJSONArray(prompt);
+		if(Tool.isEmpty(jsonPrompt)){
 			isJsonPrompt = false;
-			jsonPrompt = new JSONArray();
 		}
-		
 		int histDepth = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM").getInt("hist_depth");
 		JSONObject res;
 		String specialisation = params.getParameter("specialisation");
 		String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 		String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 		String historicString = params.getParameter("historic");
+		ObjectDB obj = null;
+		
 		if(!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID) && !isJsonPrompt){
-			ObjectDB obj = Grant.getSystemAdmin().getTmpObject(objectName);
+			obj = Grant.getSystemAdmin().getTmpObject(objectName);
 			synchronized(obj.getLock()){
 				obj.select(objectID);
-				res = AITools.expresionAICaller(g, specialisation, prompt, obj);
+				res = AITools.expresionAiCaller(g, specialisation, prompt, obj);
 			}
 			
-		}else if (!Tool.isEmpty(historicString)){
-			JSONArray historic = new JSONArray();
-			int i=0;
-			JSONArray list = new JSONArray(historicString);
-			int begin = list.length()-histDepth*2;
-			for(Object hist : list){
-				if(i>=begin)
-					historic.put(AITools.formatMessageHistoric(new JSONObject((String) hist)));
-				i++;
-			}
-			if(isJsonPrompt){
-				res = AITools.AICaller(g, specialisation, historic, jsonPrompt);
-			}else{
-				res = AITools.AICaller(g, specialisation, historic, prompt);
-			}
 		}else{
+			JSONArray historic = optHistoric(historicString, histDepth);
 			if(isJsonPrompt){
-				res = AITools.AICaller(g, specialisation, jsonPrompt);
+				res = AITools.aiCaller(g, specialisation, historic, jsonPrompt);
 			}else{
-				res = AITools.AICaller(g, specialisation, prompt);
+				res = AITools.aiCaller(g, specialisation, historic, prompt);
 			}
 		}
 
 		return new JSONObject()
 			.put("request", prompt)
 			.put("response", res);
+	}
+	private JSONArray optJSONArray(String prompt){
+		try {
+			return new JSONArray(prompt);
+		}catch(Exception e){
+		 	return new JSONArray();
+		}
+	}
+	private JSONArray optHistoric(String historicString, int histDepth){
+		if (!Tool.isEmpty(historicString)) return null;
+		JSONArray historic = new JSONArray();
+		int i=0;
+		JSONArray list = new JSONArray(historicString);
+		int begin = list.length()-histDepth*2;
+		for(Object hist : list){
+			if(i>=begin)
+				historic.put(AITools.formatMessageHistoric(new JSONObject((String) hist)));
+			i++;
+		}
+		return historic;
 	}
 
 		

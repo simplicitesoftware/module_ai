@@ -2,6 +2,7 @@ package com.simplicite.extobjects.AIBySimplicite;
 
 import java.util.*;
 
+import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.util.tools.*;
 
@@ -33,13 +34,14 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 
 			String specialisation;
 			if(!Tool.isEmpty(object) &&!Tool.isEmpty(rowId) && !"undefined".equals(rowId)){
-				specialisation = getContextFromObject(object,rowId,g).replaceAll("\\\\\"","\\\\\\\\\"").replaceAll("\"","\\\\\"");
+				specialisation = getContextFromObject(object,rowId,g).replace("\\\\\"","\\\\\\\\\"").replace("\"","\\\\\"");
 			}else{
 				specialisation = params.getParameter("specialisation");
 			}
-			if(!Tool.isEmpty(specialisation)) return javascript(getName() + ".render(ctn,\""+specialisation+"\");");
+			AppLog.info(getName() + ".render(ctn,\""+specialisation+"\",\""+AITools.getDataDisclaimer(g)+"\");", g);
+			if(!Tool.isEmpty(specialisation)) return javascript(getName() + ".render(ctn,'"+specialisation+"',\""+AITools.getDataDisclaimer(g)+"\");");
 			
-			return javascript(getName() + ".render(ctn,\"\");");
+			return javascript(getName() + ".render(ctn,\"\",\""+AITools.getDataDisclaimer(g)+"\");");
 		}
 		catch (Exception e) {
 			AppLog.error(null, e, g);
@@ -61,7 +63,6 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 		ObjectDB obj = g.getTmpObject(name);
 		synchronized(obj.getLock()){
 			if(ModuleDB.isSystemModule(obj.getModuleName()) && !"User".equals(name)){//avoid technical object exept User whitch is frequently used
-				//AppLog.info("System module "+obj.getModuleName()+" is not allowed.", g);
 				return objectJSON;
 			}
 			obj.select(rowId);
@@ -72,20 +73,10 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			for (ObjectField field : obj.getFields()) {
 				if(!field.isTechnicalField() && !field.isReferenced() && Tool.isEmpty(field.getClassifications())){
 					if(field.isForeignKey()){
-						String refName=field.getRefObjectName();
-						String refRowId = field.getValue();
-						if(!done.contains(refName+":"+refRowId)){
-							done.add(refName+":"+refRowId);
-							JSONObject ref = getObjectValueJSON(refName,refRowId,done,g);
-							if(!Tool.isEmpty(ref)) links.put(ref);
-						}
-					}else if(field.isDocument()){
-						fields.put(field.getDisplay(), "Document");
-					}else if(field.isImage()){
-						fields.put(field.getDisplay(), "Image");
-					
-					}else{	
-						fields.put(field.getDisplay(), field.getValue());
+						JSONObject ref = getLinkByForeingKey(field, done, g);
+						if(!Tool.isEmpty(ref)) links.put(ref);
+					}else {
+						fields.put(field.getDisplay(), getFieldValueByType(field));
 					}
 					
 				}
@@ -95,5 +86,24 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			objectJSON.put("linkedObjects", links);
 		}
 		return objectJSON;
+	}
+	private String getFieldValueByType(ObjectField field){
+		if(field.isDocument()){
+			return "Document";
+		}else if(field.isImage()){
+			return "Image";
+		
+		}else{	
+			return field.getValue();
+		}
+	}
+	private JSONObject getLinkByForeingKey(ObjectField field,ArrayList<String> done,Grant g){
+		String refName=field.getRefObjectName();
+		String refRowId = field.getValue();
+		if(!done.contains(refName+":"+refRowId)){
+			done.add(refName+":"+refRowId);
+			return getObjectValueJSON(refName,refRowId,done,g);
+		}
+		return new JSONObject();
 	}
 }

@@ -35,7 +35,7 @@
       "sys_code": "AI_API_PARAM",
       "sys_value": "/",
       "sys_type": "PRV",
-      "sys_desc": "configuring api calls to an llm.\n===============================\n----\n**If necessary, specify the api key in the AI_API_KEY system parameter.**\n# Parrameters\n## hist_depth\nDefines the number of messages in the history used for the context.\nThe greater this number, the more tokens the request uses, but the more relevant is the response. \n## max_token\n*optional*  \nLimits the number of tokens in the ia response\n### default_max_token\nMaximum number of tokens in a usual context.\n### code_max_token\nMaximum number of tokens for thecnical calls.\n## trigger\nTo define a trigger for ia calls in fields (under development)\n\n# LLM spesific configuration exemple\n## OpenAI:\n```json \n{\n\t'model':'<gpt_model_to_use>',\n\t'OpenAI-Project': \"<my_openai_project_id>\",\n\t'OpenAI-Organization': \"<my_openai_organization_id>\",\n\t'hist_depth' : 3,\n\t'code_max_token' : 2000,\n\t'default_max_token':1500,\n\t'trigger':''\n}\n\n```\n## Mistral\n```json \n{\n\t'hist_depth' : 3,\n\t'code_max_token' : 2000,\n\t'default_max_token':1500,\n\t'trigger':''\n}\n\n```",
+      "sys_desc": "configuring api calls to an llm.\n===============================\n----\n**If necessary, specify the api key in the AI_API_KEY system parameter.**\n# Parrameters\n## hist_depth\nDefines the number of messages in the history used for the context.\nThe greater this number, the more tokens the request uses, but the more relevant is the response. \n## max_token\n## provider\nDefine provider for warning about data sovereignty\n*optional*  \nLimits the number of tokens in the ia response\n### default_max_token\nMaximum number of tokens in a usual context.\n### code_max_token\nMaximum number of tokens for thecnical calls.\n## trigger\nTo define a trigger for ia calls in fields (under development)\n\n# LLM spesific configuration exemple\n## OpenAI:\n```json \n{\n\t'provider': 'OpenAI',\n\t'model':'<gpt_model_to_use>',\n\t'OpenAI-Project': \"<my_openai_project_id>\",\n\t'OpenAI-Organization': \"<my_openai_organization_id>\",\n\t'hist_depth' : 3,\n\t'code_max_token' : 2000,\n\t'default_max_token':1500,\n\t'trigger':''\n}\n\n```\n## Mistral\n```json \n{\t\n\t'provider': 'MistralAI',\n\t'hist_depth' : 3,\n\t'code_max_token' : 2000,\n\t'default_max_token':1500,\n\t'trigger':''\n}\n\n```",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -74,7 +74,7 @@
     "item": {
      "viw_name": "AIViewExpTool",
      "viw_type": "V",
-     "viw_ui": "<div class=\"area\" data-area=\"1\"><\/div>",
+     "viw_ui": "<div>\n  <div class=\"area\" data-area=\"2\"><\/div>\n  <div class=\"area\" data-area=\"1\"><\/div>\n<\/div>",
      "viw_order": 1,
      "viw_icon": null,
      "row_module_id__mdl_name": "AIBySimplicite"
@@ -285,12 +285,38 @@
    "list": [
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_CONFIG_AIML~ANY",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_CONFIG_AIML",
+      "lov_lang": "ANY",
+      "lov_value": "{\n    \"provider\": \"AI/ML\",\n    \"model\": \"<model_to_use>\",\n    \"hist_depth\" : 3,\n    \"code_max_token\" : 2000,\n    \"default_max_token\":1500,\n    \"trigger\":\"\",\n    \"showDataDisclaimer\":true\n}",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_CONFIG_HUGGINGFACE~ANY",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_CONFIG_HUGGINGFACE",
+      "lov_lang": "ANY",
+      "lov_value": "{\n    \"provider\": \"Hugging Face\",\n    \"model\":\"<model_to_use>\",\n    \"hist_depth\" : 3,\n    \"code_max_token\" : 2000,\n    \"default_max_token\":1500,\n    \"trigger\":\"\",\n    \"showDataDisclaimer\":true\n}",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_CONFIG_MISTRAL~ANY",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_CONFIG_MISTRAL",
       "lov_lang": "ANY",
-      "lov_value": "{\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}",
+      "lov_value": "{\n    \"provider\": \"Mistral AI\",\n    \"hist_depth\" : 3,\n    \"code_max_token\" : 2000,\n    \"default_max_token\":1500,\n    \"trigger\":\"\",\n    \"showDataDisclaimer\":true\n}",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -303,7 +329,7 @@
       "lov_name": "TEXT",
       "lov_code": "AI_CONFIG_OPENAI",
       "lov_lang": "ANY",
-      "lov_value": "{\n    'model':'<gpt_model_to_use>',\n    'OpenAI-Project': \"<my_openai_project_id>\",\n    'OpenAI-Organization': \"<my_openai_organization_id>\",\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}",
+      "lov_value": "{\n    \"provider\": \"Open AI\",\n    \"model\":\"<gpt_model_to_use>\",\n    \"OpenAI-Project\": \"<my_openai_project_id>\",\n    \"OpenAI-Organization\": \"<my_openai_organization_id>\",\n    \"hist_depth\" : 3,\n    \"code_max_token\" : 2000,\n    \"default_max_token\":1500,\n    \"trigger\":\"\",\n    \"showDataDisclaimer\":true\n}",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -350,6 +376,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_DISCLAIMER_DATA~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_DISCLAIMER_DATA",
+      "lov_lang": "ENU",
+      "lov_value": "By using this chatbot, you agree that your data will be sent to [PROVIDER].",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_ERROR_RETURN~ENU",
      "item": {
       "lov_name": "TEXT",
@@ -369,6 +408,19 @@
       "lov_code": "AI_FINISH_REASON",
       "lov_lang": "ENU",
       "lov_value": "The answer from AI is finished with the code:",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_GRAPH_DISCLAIMER~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_GRAPH_DISCLAIMER",
+      "lov_lang": "ENU",
+      "lov_value": "<h1>Disclaimer on the Use of AI and the Reliability of Generated Charts<\/h1>\n<p>The charts generated by this artificial intelligence, provided by Simplicité Software, are for informational purposes only. While considerable efforts are made to ensure the accuracy and relevance of the information provided, it is important to note that the results may contain inconsistencies and are not guaranteed.<\/p>\n\n <h2>Responsibility<\/h2>\n <p><strong>No Guarantee:<\/strong> The charts generated by the AI may contain errors or omissions. Simplicité Software does not guarantee the accuracy, reliability, or relevance of the information provided by the AI.<\/p>\n<p><strong>Prudent Use:<\/strong> The use of the charts and information generated by the AI should be done with caution. Users are encouraged to independently verify the data and consult qualified professionals before making any decisions based on this information.<\/p>\n<p><strong>Limitation of Liability:<\/strong> Under no circumstances shall Simplicité Software be liable for any direct, indirect, special, incidental, or consequential damages arising from the use or inability to use the charts generated by the AI. This includes, but is not limited to, financial losses, loss of profits, loss of opportunities, business interruptions, loss of data, material damage, or harm to professional reputation, even if Simplicité Software has been advised of the possibility of such damages.<\/p>\n\n<h2>Recommendation<\/h2>\n<p>We strongly recommend verifying all information obtained through the AI and consulting additional sources or qualified professionals before making any decisions based on these charts.<\/p>",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -454,6 +506,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_DISCLAIMER_DATA~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_DISCLAIMER_DATA",
+      "lov_lang": "FRA",
+      "lov_value": "En utilisant ce chatbot, vous acceptez que vos données soient envoyées à  [PROVIDER].",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_ERROR_RETURN~FRA",
      "item": {
       "lov_name": "TEXT",
@@ -473,6 +538,19 @@
       "lov_code": "AI_FINISH_REASON",
       "lov_lang": "FRA",
       "lov_value": "Le processus s'est terminé avec le code:",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_GRAPH_DISCLAIMER~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_GRAPH_DISCLAIMER",
+      "lov_lang": "FRA",
+      "lov_value": "<h1>Avertissement sur l'utilisation de l'IA et la fiabilité des graphiques générés<\/h1>\n<p>Les graphiques générés par cette intelligence artificielle, fournis par Simplicité Software, sont présentés à titre informatif uniquement. Bien que des efforts considérables soient déployés pour assurer l'exactitude et la pertinence des informations fournies, il est important de noter que les résultats peuvent contenir des incohérences et ne sont pas garantis.<\/p>\n\n<h2>Responsabilité<\/h2>\n<p><strong>Absence de garantie :<\/strong> Les graphiques générés par l'IA peuvent comporter des erreurs ou des omissions. Simplicité Software ne garantit pas l'exactitude, la fiabilité ou la pertinence des informations fournies par l'IA.<\/p>\n<p><strong>Utilisation prudente :<\/strong> L'utilisation des graphiques et des informations générés par l'IA doit se faire avec discernement. Les utilisateurs sont encouragés à vérifier indépendamment les données et à consulter des professionnels qualifiés avant de prendre des décisions fondées sur ces informations.<\/p>\n<p><strong>Limitation de responsabilité :<\/strong> En aucun cas, Simplicité Software ne saurait être tenu responsable des dommages directs, indirects, spéciaux, accessoires ou consécutifs découlant de l'utilisation ou de l'impossibilité d'utiliser les graphiques générés par l'IA. Cela inclut, sans s'y limiter, les pertes financières, les pertes de profits, les pertes d'opportunités, les interruptions d'activité, les pertes de données, les dommages matériels ou les atteintes à la réputation professionnelle, même si Simplicité Software a été informé de la possibilité de tels dommages.<\/p>\n\n<h2>Recommandation<\/h2>\n<p>Nous recommandons vivement de vérifier toutes les informations obtenues par l'intermédiaire de l'IA et de consulter des sources supplémentaires ou des professionnels qualifiés avant de prendre des décisions basées sur ces graphiques.<\/p>",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -553,6 +631,36 @@
    "icon": "img/system/list_of_values",
    "field": "row_module_id",
    "list": [
+    {
+     "object": "FieldListCode",
+     "userkey": "AI_CONF_MODELE~AIML",
+     "item": {
+      "lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code": "AIML",
+      "lov_order_by": 10,
+      "lov_label": "ai/ml",
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "lov_color": null,
+      "lov_color_bg": null,
+      "lov_icon": null,
+      "lov_display": ["L"]
+     }
+    },
+    {
+     "object": "FieldListCode",
+     "userkey": "AI_CONF_MODELE~HUGGINGFACE",
+     "item": {
+      "lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code": "HUGGINGFACE",
+      "lov_order_by": 10,
+      "lov_label": "huggingface",
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "lov_color": null,
+      "lov_color_bg": null,
+      "lov_icon": null,
+      "lov_display": ["L"]
+     }
+    },
     {
      "object": "FieldListCode",
      "userkey": "AI_CONF_MODELE~MISTRAL",
@@ -675,6 +783,28 @@
     },
     {
      "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~HUGGINGFACE~ENU",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "HUGGINGFACE",
+      "lov_lang": "ENU",
+      "lov_value": "huggingface",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~AIML~ENU",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "AIML",
+      "lov_lang": "ENU",
+      "lov_value": "ai/ml",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "FieldListValue",
      "userkey": "AI_CONF_MODELE~MISTRAL~FRA",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
@@ -692,6 +822,28 @@
       "lov_code_id__lov_code": "OPENAI",
       "lov_lang": "FRA",
       "lov_value": "OpenAI",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~HUGGINGFACE~FRA",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "HUGGINGFACE",
+      "lov_lang": "FRA",
+      "lov_value": "huggingface",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~AIML~FRA",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "AIML",
+      "lov_lang": "FRA",
+      "lov_value": "ai/ml",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -1551,7 +1703,7 @@
      "obo_exportorder": null,
      "obo_distinct": false,
      "obo_indexable": false,
-     "obo_groupby": false,
+     "obo_groupby": null,
      "obo_dfltref": null,
      "obo_template_id__tpl_name": "AiConfiguration",
      "obo_copy": true,
@@ -1570,13 +1722,13 @@
      "obo_useform": true,
      "obo_title": null,
      "obo_icon": "icon/color/define",
-     "obo_refcount": false,
-     "obo_tree": false,
+     "obo_refcount": null,
+     "obo_tree": null,
      "obo_viewmode": "T",
      "obo_historic": null,
      "obo_printable": true,
      "obo_followlink": true,
-     "obo_mergeable": false,
+     "obo_mergeable": null,
      "obo_social": ["1"],
      "obo_rowid_id__fld_name": null,
      "obo_extend_id__obj_name": null,
@@ -1607,7 +1759,7 @@
      "obo_sortable": true,
      "obo_list_areas": null,
      "obo_minifiable": "M",
-     "obo_minified": false,
+     "obo_minified": null,
      "obo_permalink": null,
      "obo_btn_searchform": true,
      "aiFieldsParam": null
@@ -4699,30 +4851,56 @@
    "label": "View areas",
    "icon": "object",
    "field": "row_module_id",
-   "list": [{
-    "object": "ViewItem",
-    "userkey": "AIViewExpTool~1",
-    "item": {
-     "vwi_view_id__viw_name": "AIViewExpTool",
-     "vwi_position": 1,
-     "vwi_type": "E",
-     "vwi_title": false,
-     "vwi_research_id__rch_name": null,
-     "vwi_research_id__rch_object_id__obo_name": null,
-     "vwi_research_id__rch_user_id__usr_login": null,
-     "vwi_search_spec": null,
-     "vwi_lov_code": null,
-     "vwi_show": null,
-     "vwi_url": "[EXPR:HTMLTool.getExternalObjectURL(\"AIExpTool\")]",
-     "vwi_image": null,
-     "vwi_subview_id__viw_name": null,
-     "vwi_treeview_id__trv_name": null,
-     "vwi_crosstab_id__ctb_name": null,
-     "vwi_printtmpl_id__prt_name": null,
-     "vwi_printtmpl_id__prt_lang": null,
-     "row_module_id__mdl_name": "AIBySimplicite"
+   "list": [
+    {
+     "object": "ViewItem",
+     "userkey": "AIViewExpTool~1",
+     "item": {
+      "vwi_view_id__viw_name": "AIViewExpTool",
+      "vwi_position": 1,
+      "vwi_type": "E",
+      "vwi_title": false,
+      "vwi_research_id__rch_name": null,
+      "vwi_research_id__rch_object_id__obo_name": null,
+      "vwi_research_id__rch_user_id__usr_login": null,
+      "vwi_search_spec": null,
+      "vwi_lov_code": null,
+      "vwi_show": null,
+      "vwi_url": "[EXPR:HTMLTool.getExternalObjectURL(\"AIExpTool\")]",
+      "vwi_image": null,
+      "vwi_subview_id__viw_name": null,
+      "vwi_treeview_id__trv_name": null,
+      "vwi_crosstab_id__ctb_name": null,
+      "vwi_printtmpl_id__prt_name": null,
+      "vwi_printtmpl_id__prt_lang": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ViewItem",
+     "userkey": "AIViewExpTool~2",
+     "item": {
+      "vwi_view_id__viw_name": "AIViewExpTool",
+      "vwi_position": 2,
+      "vwi_type": "C",
+      "vwi_title": true,
+      "vwi_research_id__rch_name": null,
+      "vwi_research_id__rch_object_id__obo_name": null,
+      "vwi_research_id__rch_user_id__usr_login": null,
+      "vwi_search_spec": null,
+      "vwi_lov_code": "AI_GRAPH_DISCLAIMER",
+      "vwi_show": null,
+      "vwi_url": null,
+      "vwi_image": null,
+      "vwi_subview_id__viw_name": null,
+      "vwi_treeview_id__trv_name": null,
+      "vwi_crosstab_id__ctb_name": null,
+      "vwi_printtmpl_id__prt_name": null,
+      "vwi_printtmpl_id__prt_lang": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
-   }]
+   ]
   },
   {
    "object": "Resource",
