@@ -565,11 +565,19 @@ public class AITools implements java.io.Serializable {
                 Map<String, Object> map = mapper.readValue(json, new TypeReference<Map<String, Object>>(){});
                 res = new JSONObject(map);
             } catch (Exception e2) {
-                return null;
+                try {
+                    json = removeComments(json);
+                    res = new JSONObject(json);
+                } catch (Exception e3) {
+                    return null;
+                }
             }
 		}
 		return res;
 	}
+    private static String removeComments(String json) {
+        return json.replaceAll("\\/\\/[^\"]*?([\\]\"\\}\\n])", "$1");
+    }
     /**
 	 * Removes the elements from the given list that are not creatable based on the provided name index and grant.
 	 * 

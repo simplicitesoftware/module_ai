@@ -261,8 +261,8 @@ paths:
         type: string
         required: false
         enum:
-        - MISTRAL
         - HUGGINGFACE
+        - MISTRAL
         - AIML
         - OPENAI
       - in: query
@@ -433,8 +433,8 @@ definitions:
         description: Model
         type: string
         enum:
-        - MISTRAL
         - HUGGINGFACE
+        - MISTRAL
         - AIML
         - OPENAI
       aiSetConfig:

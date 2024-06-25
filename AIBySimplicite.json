@@ -2756,7 +2756,7 @@
       },
       "pcs_max_duration": null,
       "pcs_duration_unit": "D",
-      "pcs_persitant": false,
+      "pcs_persitant": null,
       "pcs_persist_depth": null,
       "pcs_alert_id__alt_name": null,
       "pcs_compensate_id__pcs_name": null,
@@ -3713,6 +3713,21 @@
     },
     {
      "object": "BPMData",
+     "userkey": "AIGenData~GGD_0100~Filter~mdl_type",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
+      "dta_activity_id__acy_step": "GGD_0100",
+      "dta_activity_id__acy_name": "SelectModule",
+      "dta_group": "Filter",
+      "dta_name": "mdl_type",
+      "dta_order": 1,
+      "dta_value": "is null or not in ('S','A')",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
      "userkey": "AIGenData~GGD_0100~Object~Name",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
@@ -4007,6 +4022,21 @@
       "dta_name": "Mandatory",
       "dta_order": 1,
       "dta_value": "true",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_0100~Filter~mdl_type",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_0100",
+      "dta_activity_id__acy_name": "SelectModule",
+      "dta_group": "Filter",
+      "dta_name": "mdl_type",
+      "dta_order": 1,
+      "dta_value": "is null or not in ('S','A')",
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -4768,6 +4798,25 @@
    "icon": "img/system/main_menu",
    "field": "row_module_id",
    "list": [
+    {
+     "object": "Map",
+     "userkey": "AIDomain~ViewSimple(DaaModulesFilter)~5",
+     "item": {
+      "map_domain_id__obd_name": "AIDomain",
+      "map_object_id__obj_name": null,
+      "map_process_id__pcs_name": null,
+      "map_object": {
+       "item": {"viw_name": "DaaModulesFilter"},
+       "icon": "img/system/view",
+       "label": "Simple view",
+       "userkeylabel": "DaaModulesFilter",
+       "object": "ViewSimple"
+      },
+      "map_order": 5,
+      "map_ext": true,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
     {
      "object": "Map",
      "userkey": "AIDomain~BPMProcess(AIModuleCreate)~150",
@@ -6286,7 +6335,7 @@
        "object": "Field"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "API KEY",
+      "tsl_value": "API key",
       "tsl_simplehelp": null,
       "tsl_plural_value": null,
       "tsl_short_value": null,
@@ -6308,7 +6357,7 @@
        "object": "Field"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "API KEY",
+      "tsl_value": "Clé d'API",
       "tsl_simplehelp": null,
       "tsl_plural_value": null,
       "tsl_short_value": null,

@@ -130,8 +130,8 @@ components:
           description: Model
           type: string
           enum:
-          - MISTRAL
           - HUGGINGFACE
+          - MISTRAL
           - AIML
           - OPENAI
         aiSetConfig:
@@ -451,8 +451,8 @@ paths:
       - schema:
           type: string
           enum:
-          - MISTRAL
           - HUGGINGFACE
+          - MISTRAL
           - AIML
           - OPENAI
         in: query
