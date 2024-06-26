@@ -23,6 +23,7 @@ give me this modele using this json template, complete and extrapolate data if n
 								"code":"",
 								"en":"",
 								"fr":"",
+								"color":""//("red", "orange", "green", "blue", "purple", "pink", "brown", "black", "white", "yellow", "grey")
 							},
 							...
         				]

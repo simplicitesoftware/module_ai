@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.docx4j.model.datastorage.XPathEnhancerParser.filterExpr_return;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -50,6 +51,23 @@ public class AIModel implements java.io.Serializable {
 	private static final String NOT_WORD_CHAR_REGEX = "[^\\w]";
 	private static final Random rand = new Random();
 	private static final String SHORT_TEXT ="Short text";
+	private static final String HEXA_BLACK ="#303030";
+	private static final String HEXA_WHITE ="#FFFFFF";
+	
+	private static class enumFieldStyle {
+		private String bg;   //background color
+		private String hexa; //hexadecimal color
+		private String color; //text color
+		private String icon; //icon name
+		
+		public enumFieldStyle(String bg, String hexa,String color, String icon) {
+			this.bg = bg;
+			this.hexa = hexa;
+			this.color = color;
+			this.icon = icon;
+			
+		}
+	}
 	private static class LinkObject {
 		private String objId;
 		private String en;
@@ -105,6 +123,7 @@ public class AIModel implements java.io.Serializable {
 	private static List<String> shortListIcon;
 	private static List<String> listIcon;
 	private static List<String> linkType;
+	private static HashMap<String, enumFieldStyle> enumColors;
 	static {
 		typeTrad = new HashMap<>();
 		typeTrad.put("Short text < 4000", ObjectField.TYPE_STRING);
@@ -131,6 +150,18 @@ public class AIModel implements java.io.Serializable {
 		typeTrad.put("Phone number", ObjectField.TYPE_PHONENUM);
 		typeTrad.put("Color", ObjectField.TYPE_COLOR);
 		typeTrad.put("Geographical coordinates", ObjectField.TYPE_GEOCOORDS);
+		enumColors = new HashMap<>();
+		enumColors.put("red", new enumFieldStyle("redbg", "#D9534F", HEXA_WHITE, "btn_red"));
+		enumColors.put("orange", new enumFieldStyle("orangebg", "#F0AD4E", HEXA_WHITE, "btn_orange"));
+		enumColors.put("pink", new enumFieldStyle("pinkbg", "#FF8EC1", HEXA_WHITE, "btn_pink"));
+		enumColors.put("green", new enumFieldStyle("greenbg", "#5CB85C", HEXA_WHITE, "btn_green"));
+		enumColors.put("blue", new enumFieldStyle("bluebg", "#5BC0DE", HEXA_WHITE, "btn_blue"));
+		enumColors.put("white", new enumFieldStyle("whitebg", HEXA_WHITE, HEXA_BLACK, "btn_white"));
+		enumColors.put("black", new enumFieldStyle("blackbg", HEXA_BLACK, HEXA_WHITE, "btn_black"));
+		enumColors.put("yellow", new enumFieldStyle("yellowbg", "#FFEF8D", HEXA_BLACK, "btn_yellow"));
+		enumColors.put("purple", new enumFieldStyle("purplebg", "#8C6AC4", HEXA_WHITE, "btn_purple"));
+		enumColors.put("brown", new enumFieldStyle("brownbg", "#CE8E67", HEXA_WHITE, "btn_brown"));
+		enumColors.put("grey", new enumFieldStyle("greybg", "#D0D0D0", HEXA_WHITE, "btn_grey"));
 		shortListIcon = Arrays.asList("star", "book", "arrow-up", "arrow-down", "clock", "envelope", "search", "folder", "list", "phone", "cloud", "key", "file", "calendar");
 		listIcon = Arrays.asList("1-circle-fill","1-circle","1-square-fill","1-square","123","2-circle-fill","2-circle","2-square-fill","2-square","3-circle-fill",
 		"3-circle","3-square-fill","3-square","4-circle-fill","4-circle","4-square-fill","4-square","5-circle-fill","5-circle","5-square-fill",
@@ -351,6 +382,7 @@ public class AIModel implements java.io.Serializable {
 		return new ArrayList<>(dataMaps.objCreate.values());
 	}
 	private static List<String> parsefield(JSONObject jsonObj,JSONObject json, String oboId, int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
+
 		String objName = formatObjectNames(jsonObj.getString("name"));
 		String objPrefix = SyntaxTool.getObjectPrefix(oboId);
 		List<String> fKs = new ArrayList<>();
@@ -501,6 +533,7 @@ public class AIModel implements java.io.Serializable {
 	}
 	private static String addField(JSONObject jsonFld,String oboId, String objPrefix,  int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException , ValidateException, SaveException{
 		String fieldName = jsonFld.getString("name").replaceAll(NOT_WORD_CHAR_REGEX,"").replaceAll("\\s","");
+		String objName = getObjectNameById(oboId, g);
 		String fldType =jsonFld.optString("type",SHORT_TEXT);
 		int type = ObjectField.TYPE_STRING;
 		if(typeTrad.containsKey(fldType)){
@@ -508,7 +541,8 @@ public class AIModel implements java.io.Serializable {
 		}
 		JSONObject field = new JSONObject();
 		String fldNameWP = getNameWithoutPrefix(fieldName, mInfo.mPrefix, objPrefix);
-		field.put("fld_name", SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,objPrefix,fldNameWP}));
+		String fldName = SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,objPrefix,fldNameWP});
+		field.put("fld_name", fldName);
 		field.put("fld_dbname", SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,objPrefix,fldNameWP}));
 		field.put("fld_type", type);
 		field.put("fld_fonctid", jsonFld.optBoolean("key"));
@@ -523,7 +557,7 @@ public class AIModel implements java.io.Serializable {
 		if(type == ObjectField.TYPE_ENUM || type == ObjectField.TYPE_ENUM_MULTI){
 			String enumId = createListOfValue(objPrefix, fieldName, mInfo, g);
 			field.put("fld_list_id",enumId);
-			completeList(enumId, jsonFld, mInfo, g);
+			completeList(enumId, jsonFld,objName,fldName, mInfo, g);
 		}
 		
 		String fldId = createOrUpdateWithJson(OBJECTFIELD,field, g);
@@ -534,6 +568,13 @@ public class AIModel implements java.io.Serializable {
 			addStateModel(oboId,  oboFldId,mInfo, g);
 		}
 		return fldId;
+	}
+	private static String getObjectNameById(String oboId,Grant g){
+		ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
+		synchronized(obj.getLock()){
+			obj.select(oboId);
+			return obj.getFieldValue(OBJECT_NAME_FIELD);
+		}
 	}
 	private static void translateField(JSONObject jsonFld, String fldId, DataMapObject dataMaps,Grant g) throws UpdateException, GetException, ValidateException{
 		String en ="";
@@ -893,13 +934,13 @@ public class AIModel implements java.io.Serializable {
 		}
 		return fks;
 	}
-	private static void completeList(String enumId,JSONObject jsonFld,ModuleInfo mInfo,Grant g) throws GetException, ValidateException, UpdateException{
+	private static void completeList(String enumId,JSONObject jsonFld,String objName,String fldName,ModuleInfo mInfo,Grant g) throws GetException, ValidateException, UpdateException{
 		if(hasJsonArray(jsonFld,JSON_VALUES_UPPER_KEY,JSON_VALUES_LOWER_KEY)){
-			completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY), g);
+			completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
 		}else if(hasNotCaseSensitibve(jsonFld.optJSONObject(JSON_ENUM_KEY), JSON_VALUES_UPPER_KEY, JSON_VALUES_LOWER_KEY)){
-			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY), g);
+			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
 		}else if(hasNotCaseSensitibve(jsonFld.optJSONObject(JSON_ENUM_KEY.toLowerCase()), JSON_VALUES_UPPER_KEY, JSON_VALUES_LOWER_KEY) ){
-			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY), g);
+			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
 		}
 	}
 	private static boolean hasJsonArray(JSONObject json, String upperkey, String lowerkey){
@@ -908,20 +949,32 @@ public class AIModel implements java.io.Serializable {
 	private static boolean hasNotCaseSensitibve(JSONObject json, String upperKey, String lowerKey){
 		return json.has(upperKey) || json.has(lowerKey);
 	}
-	private static void completeList(String moduleId,String listId,JSONArray values,Grant g) throws GetException, ValidateException, UpdateException{
+	private static void completeList(String moduleId,String listId,JSONArray values,String objName,String fldName,Grant g) throws GetException, ValidateException, UpdateException{
 		int order = 1;
 		ObjectDB oTra = g.getTmpObject("FieldListValue");
 		BusinessObjectTool oTraT = oTra.getTool();
 		for( Object value : values){
 			JSONObject jsonValue = getJsonValue(value,g);
+			String color = jsonValue.optString("color").toLowerCase();
 			if(Tool.isEmpty(jsonValue)){
 				return;
 			}
+			String code = SyntaxTool.forceCase(jsonValue.getString("code"), 1).toUpperCase();
 			JSONObject enumCodeFields = new JSONObject();
 			enumCodeFields.put("lov_list_id", listId);
-			enumCodeFields.put("lov_code", SyntaxTool.forceCase(jsonValue.getString("code"), 1).toUpperCase());
+			enumCodeFields.put("lov_code", code);
 			enumCodeFields.put("lov_order_by", order);
 			enumCodeFields.put(MODULE_ID_FIELD,moduleId);
+			
+			if (!Tool.isEmpty(color)){
+				enumFieldStyle style = enumColors.get(color);
+				if(!Tool.isEmpty(style)){
+					enumCodeFields.put("lov_color_bg", style.hexa);
+					enumCodeFields.put("lov_icon", style.icon);
+					enumCodeFields.put("lov_color", style.color);
+				}
+				addFieldStyle(objName,fldName,code,style.bg,moduleId,g);
+			}
 			String enumId = createOrUpdateWithJson("FieldListCode",enumCodeFields, g);
 			if(jsonValue.has("en") && (jsonValue.get("en") instanceof String) && (oTraT.selectForCreateOrUpdate(new JSONObject().put("lov_code_id",enumId).put("lov_lang",Globals.LANG_ENGLISH)))){
 					oTra.setFieldValue("lov_value", jsonValue.getString("en"));
@@ -933,6 +986,16 @@ public class AIModel implements java.io.Serializable {
 			} 
 			order+=1;
 		}
+	}
+	private static void addFieldStyle(String objName,String fldName,String code,String style,String moduleId,Grant g) throws GetException, ValidateException, UpdateException{
+		JSONObject fieldStyle= new JSONObject();
+		fieldStyle.put("sty_object", objName);
+		fieldStyle.put("sty_field", fldName);
+		fieldStyle.put("sty_value", code);
+		fieldStyle.put("sty_style", style);
+		fieldStyle.put(MODULE_ID_FIELD,moduleId);
+		createOrUpdateWithJson("FieldStyle",fieldStyle, g);
+
 	}
 	private static JSONObject getJsonValue(Object value, Grant g){
 		if(value instanceof String){

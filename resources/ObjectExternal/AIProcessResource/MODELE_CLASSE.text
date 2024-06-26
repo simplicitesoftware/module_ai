@@ -20,6 +20,7 @@
 						"code":"",
 						"en":"",
 						"fr":"",
+						"color":"",//("red", "orange", "green", "blue", "purple", "pink", "brown", "black", "white", "yellow", "grey")
 					},
 					...
         		]

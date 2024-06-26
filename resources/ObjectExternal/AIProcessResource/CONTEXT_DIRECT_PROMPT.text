@@ -25,7 +25,8 @@ following the model:
 							{
 								"code":"",
 								"en":"",
-								"fr":"",
+								"fr":"",,
+								"color":"",//("red", "orange", "green", "blue", "purple", "pink", "brown", "black", "white", "yellow", "grey")
 							},
 							...
         				]
