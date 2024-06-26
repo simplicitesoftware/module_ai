@@ -60,4 +60,5 @@ public class AIGenData extends Processus {
 		return "<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\" name=\"json_return\">"+response.toString(1)+"</textarea>"+"<script>"+aceEditor+"</script>";
 		
 	}
+	
 }

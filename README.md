@@ -126,6 +126,19 @@ In a `view` add an `external page` of source `External object`: `AIMetricsChat?m
 
 * `AI_ACTIVE_SETTINGS`: 
 
+`AIChartCrossTable` business process definition
+-----------------------------------------------
+
+Converting a chart.js script into a pivot table and saving it.
+
+### Activities
+
+* `Module`: 
+* `DefineChart`: 
+* `Display`: 
+* `Begin`: 
+* `End`: 
+
 `AIGenData` business process definition
 ---------------------------------------
 

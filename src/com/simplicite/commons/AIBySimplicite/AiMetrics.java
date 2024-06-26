@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import com.simplicite.util.*;
 
+import ch.simschla.minify.cli.App;
+
 import org.json.JSONArray;
 
 
@@ -32,6 +34,7 @@ public class AiMetrics implements java.io.Serializable {
 	"```\n";
 	private static final long serialVersionUID = 1L;
 	public static JSONObject getJavaScriptMetrics(String prompt, JSONObject swagger , String lang){
+		AppLog.info("AI request: "+swagger, null);
 		JSONArray arrayPrompts = new JSONArray();
 		prompt = AITools.normalize(AITools.removeAcent(prompt),false);
 		prompt =  "give me Script js to display: "+prompt+("FRA".equals(lang)?" in french":"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?" in french":"")+". Do not create data use search";
@@ -42,6 +45,7 @@ public class AiMetrics implements java.io.Serializable {
 		JSONObject res = AITools.aiCaller(null, "\n ```OppenAPI "+swagger+"```",arrayPrompts,false,true,true);
 		String result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 		JSONObject resultJS = splitRes(result,swagger.optJSONObject("components").getJSONObject("schemas"));
+		AppLog.info("AI response: "+resultJS.toString(1), null);
 		if (resultJS.has("error")) {
 			res = AITools.aiCaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
 			result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");

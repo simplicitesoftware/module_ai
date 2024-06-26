@@ -261,9 +261,9 @@ paths:
         type: string
         required: false
         enum:
-        - HUGGINGFACE
         - MISTRAL
         - AIML
+        - HUGGINGFACE
         - OPENAI
       - in: query
         name: aiSetConfig
@@ -433,9 +433,9 @@ definitions:
         description: Model
         type: string
         enum:
-        - HUGGINGFACE
         - MISTRAL
         - AIML
+        - HUGGINGFACE
         - OPENAI
       aiSetConfig:
         description: Setting
