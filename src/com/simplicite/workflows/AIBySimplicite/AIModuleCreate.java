@@ -80,7 +80,8 @@ public class AIModuleCreate extends Processus {
 		JSONObject json = objectToJSON(objs,getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD));
 
 		getContext(getActivity(ACTIVITY_GEN)).setDataFile("Data",EXISTING_OBJECT,getObjsIds(objs,g));
-		String contextApp =AITools.aiCaller(g, "you help to describe UML for non technical person","Describes the application defined by this JSON in a graphical way for non-technical users: "+json.toString() , null,false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		JSONObject jsonResponse =AITools.aiCaller(g, "you help to describe UML for non technical person","Describes the application defined by this JSON in a graphical way for non-technical users: "+json.toString() , null,false,true);
+		String contextApp =AITools.parseJsonOpenAIResponse(jsonResponse);
 		contextApp = formatAnswerAI(contextApp);
 		return getModuleChat(contextApp,g);
 
@@ -234,7 +235,8 @@ public class AIModuleCreate extends Processus {
 		if(Tool.isEmpty(prompt)){//for test
 			return new ArrayList<>();
 		}
-		String result = AITools.aiCaller(g, "you help to create UML in json for application, your answers are automatically processed in java", prompt, historic,false,true).getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+		JSONObject jsonResponse = AITools.aiCaller(g, "you help to create UML in json for application, your answers are automatically processed in java", prompt, historic,false,true);
+		String result = AITools.parseJsonOpenAIResponse(jsonResponse);
 		
 		List<String> listResult = new ArrayList<>();
 		JSONObject jsonres = AITools.getValidJson(result);

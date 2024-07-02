@@ -7,6 +7,7 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -33,11 +34,16 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 			JSONObject req = params.getJSONObject();
 			if (Tool.isEmpty(type)) type = "default";
+			JSONObject swagger = params.has("swagger")?new JSONObject(params.getParameter("swagger")):null;
 			switch (type) { //use switch for future extension
 				case "metrics":
-					JSONObject swagger = params.has("swagger")?new JSONObject(params.getParameter("swagger")):null;
 					String lang = params.getParameter("lang");
-					return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);	
+					return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);
+				case "saveMetrics":
+					String mdlName = params.getParameter("moduleName");
+					String function = params.getParameter("function");
+					String ctx = params.getParameter("ctx");
+					return saveMetricsAsCrosstable(ctx,swagger,function,mdlName);	
 				default:
 					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
 						return updateFieldByRequest(req);
@@ -151,6 +157,32 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			i++;
 		}
 		return historic;
+	}
+	private String saveMetricsAsCrosstable(String ctx,JSONObject swagger, String function, String mdlName){
+		
+		String mldId = ModuleDB.getModuleId(mdlName);
+		JSONObject jsonRes = AiMetrics.iaConvert(swagger.toString(), function);
+		if (Tool.isEmpty(jsonRes)) {
+			return "Error:No valid json response from AI, see logs for more details.";
+		}
+		jsonRes.put("mldId", mldId);
+		JSONObject ct = AiMetrics.createCrossTable(jsonRes);
+
+		return displayCrossTable(ctx,ct.optString("objName"),ct.optString("ctName"),jsonRes.optString("type","bar"));
+	}
+	private static String displayCrossTable(String ctx,String objName, String tableName, String type){
+		String js ="$ui.displayCrosstab("+ctx+", \""+objName+"\", \""+tableName+"\", {\"options\":{\r\n" + //
+				" \"zwidth\": \"100%\",\r\n" + //
+				" \"zheight\": \"30rem\",\r\n" + //
+				" \"zcaption\": \"no\",\r\n" + //
+				" \"zcontrol\": \"yes\",\r\n" + //
+				" \"zstotal\": \"no\",\r\n" + //
+				" \"ztable\": \"no\",\r\n" + //
+				" \"zgraph\": \""+type+"\",\r\n" + //
+				" \"zstcolor\": \"#D9D2E9\"\r\n" + //
+				"}},null);";
+			AppLog.info("JS: "+js,null);
+			return "javascript:"+js;
 	}
 
 		

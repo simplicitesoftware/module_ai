@@ -1,0 +1,27 @@
+convert this graph into a cross-tab defined by a json:
+```json
+{
+    "name": "",//mandatory 	PascalCase
+    "en":"",
+    "fr":"",
+    "function": "",//("sum","text","product","min","max","formula","algebraic average","geometric average") mandatory
+    "object":"",
+    "type":"",//("bar", "bar_stack", "pie", "area","area_stack")
+		]
+    "column":[
+        {
+            "object":"",//mandatory
+            "field":"",//mandatory
+            "order": int,//mandatory
+            "function": "",//("sum","text","product","min","max","formula","algebraic average","geometric average")
+        },//...
+    ],
+    "line":[
+        {
+            "object":"",//mandatory
+            "field":"",//mandatory
+            "order": int,//mandatory
+            "function": "",//("sum","text","product","min","max","formula","algebraic average","geometric average")
+        },//...
+    ]
+}```

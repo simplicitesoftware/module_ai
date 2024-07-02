@@ -4,9 +4,14 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	let userTemplateMetrics ="<div class=\"user-messages\"><strong>{{user}}: </strong><span class=\"msg\">{{msg}}</span></div>";
 	let swagger="";
 	let userName = "user";
-	function render(params,s) {
+	let moduleName = "";
+	let lastScript = "";
+
+	function render(params,module,s) {
 		// set button text
-		console.log("AIMetricsChat render: "+s);
+		moduleName = module;
+		$("#work .actions").append('<button class="btn btn-secondary" type="button" onclick="AIMetricsChat.saveAsCrosstable()"><span>Save as crosstable</span></button>');
+		console.log("AIMetricsChat render: "+moduleName);
 		$('#metrics_user_text').click(function() { showWarn();});
 		app.getTexts(function(textes){
 			let sendText = textes?.AI_BUTTON_SEND ||"Send";
@@ -91,10 +96,13 @@ var AIMetricsChat = AIMetricsChat || (function() {
 					if(botResponse.js.indexOf(botResponse.function) == -1) {
 						eval(botResponse.function);
 					}
-					
+					lastScript = botResponse.js;
+
 				}catch(e){
 					$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 				}
+			}else{
+				lastScript = $("#ia_html script").text();
 			}
 			// Définir les options globales pour Chart.js
 			Chart.defaults.responsive = true;
@@ -122,6 +130,20 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			$('#metrics_user_text').unbind('click');
 		});
 	}
-	return { render: render ,sendMetricsMessage:sendMetricsMessage};
+	function saveAsCrosstable(){
+		
+		let func = lastScript;
+		console.log("callProcess: "+func);
+		let params = {reqType:"saveMetrics",swagger:swagger,moduleName:moduleName,function:func,ctx:"$('#ia_html')"};
+		let url = Simplicite.ROOT+"/ext/AIRestAPI";
+
+		let useAsync = true;
+		app._call(useAsync, url, params, function callback(botResponse){
+			console.log(botResponse);
+			eval(botResponse.script);
+		});
+		
+	}
+	return { render: render ,sendMetricsMessage:sendMetricsMessage,saveAsCrosstable:saveAsCrosstable};
 })();
 

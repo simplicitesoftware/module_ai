@@ -32,7 +32,8 @@ public class AIMetricsChat extends com.simplicite.util.ExternalObject {
 			String swaggerString = new JSONObject().put("components",new JSONObject().put("schemas",swagger.optJSONObject("components").optJSONObject("schemas"))).toString();
 			swaggerString = swaggerString.replace("\\", "\\\\").replace("\"", "\\\"");
 			AppLog.info("Swagger: "+swaggerString, getGrant());
-			return javascript(getName() + ".render(ctn,'"+swaggerString+"');");
+			AppLog.info(getName() + ".render(ctn,'"+moduleName+"','"+swaggerString+"');", getGrant());
+			return javascript(getName() + ".render(ctn,'"+moduleName+"','"+swaggerString+"');");
 		} catch (PlatformException e) {
 			AppLog.error(e, g);
 		}

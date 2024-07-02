@@ -30,6 +30,7 @@ public class AITools implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
     private static final JSONObject AI_API_PARAM = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM");
     private static final String CONTENT_KEY = "content";
+    private static final String MESSAGE_KEY = "message";
     private static final String MAX_TOKEN_PARAM_KEY = "default_max_token";
     private static final String ASSISTANT_ROLE="assistant";
     private static final String MAX_TOKEN = "max_tokens";
@@ -239,7 +240,7 @@ public class AITools implements java.io.Serializable {
             }
             AppLog.info("AI API error :["+responseCode+"]"+response.toString(),g);
             JSONObject error = new JSONObject(response.toString());
-            String errorMessage = error.optJSONObject("error").optString("message","no message");
+            String errorMessage = error.optJSONObject("error").optString(MESSAGE_KEY,"no message");
             AppLog.info("AI API error :["+responseCode+"]: "+errorMessage,g);
             connection.disconnect();
             
@@ -278,7 +279,7 @@ public class AITools implements java.io.Serializable {
                 return res;
             }
             String resultText = resArray.optJSONObject(0).getString("generated_text");
-            JSONObject resJson =new JSONObject().put("choices",new JSONArray().put(new JSONObject().put("message",new JSONObject().put(CONTENT_KEY,resultText))));
+            JSONObject resJson =new JSONObject().put("choices",new JSONArray().put(new JSONObject().put(MESSAGE_KEY,new JSONObject().put(CONTENT_KEY,resultText))));
             return resJson.toString();
         } catch (IOException e) {
             AppLog.error(e,g);
@@ -728,6 +729,47 @@ public class AITools implements java.io.Serializable {
             return g.T("AI_DISCLAIMER_DATA").replace("[PROVIDER]", AI_PROVIDER);
         }
         return "";
+    }
+    public static String createOrUpdateWithJson(String objName,JSONObject fields, Grant g){
+        AppLog.info("Create or update object :"+objName,g);
+		JSONObject filters = getFKFilters(objName,fields, g);
+		ObjectDB obj = g.getTmpObject(objName);
+		try{
+			synchronized(obj.getLock()){
+				BusinessObjectTool objTool = obj.getTool();
+				if(!objTool.selectForCreateOrUpdate(filters)){
+                    AppLog.info("Create object :"+objName,g);
+					obj.setValuesFromJSONObject(fields, false, false);
+					obj.populate(true);
+					objTool.validateAndCreate();
+				}
+			}
+			return obj.getRowId();
+		}catch(GetException | ValidateException | SaveException e){
+			AppLog.error(null, e, g);
+		}
+		
+		return "0";
+	}
+	private static JSONObject getFKFilters(String objName,JSONObject fields, Grant g){
+		JSONObject filters = new JSONObject();
+		ObjectDB obj = g.getTmpObject(objName);
+		synchronized(obj.getLock()){
+			for(ObjectField fk : obj.getFunctId()){
+				String name = fk.getName();
+				if("map_order".equals(name)){//to avoid duplicate object in domain
+					continue;
+				}
+				if(fields.has(name) && !fields.isNull(name)){
+					filters.put(name, fields.get(name));
+				}
+			}
+		}
+		
+		return filters;
+	}
+    public static String parseJsonOpenAIResponse(JSONObject res){
+        return res.getJSONArray("choices").getJSONObject(0).getJSONObject(MESSAGE_KEY).getString(CONTENT_KEY);
     }
     
 }

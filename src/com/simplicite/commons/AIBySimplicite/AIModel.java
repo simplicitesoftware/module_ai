@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.docx4j.model.datastorage.XPathEnhancerParser.filterExpr_return;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -466,7 +465,7 @@ public class AIModel implements java.io.Serializable {
 			}
 		}
 		fields.put(OBJECT_DESCRIPTION, comment);
-		String oboId = createOrUpdateWithJson(OBJECT_INTERNAL_NAME,fields, g);
+		String oboId = AITools.createOrUpdateWithJson(OBJECT_INTERNAL_NAME,fields, g);
 		dataMaps.objCreate.put(objName.toLowerCase(),oboId);
 
 		String en= (jsonObj.has("en") && (jsonObj.get("en") instanceof String))?  jsonObj.getString("en"):"";
@@ -482,42 +481,7 @@ public class AIModel implements java.io.Serializable {
 		}
 		return oboId;
 	}
-	private static String createOrUpdateWithJson(String objName,JSONObject fields, Grant g){
-		JSONObject filters = getFKFilters(objName,fields, g);
-		ObjectDB obj = g.getTmpObject(objName);
-		try{
-			synchronized(obj.getLock()){
-				BusinessObjectTool objTool = obj.getTool();
-				if(!objTool.selectForCreateOrUpdate(filters)){
-					obj.setValuesFromJSONObject(fields, false, false);
-					obj.populate(true);
-					objTool.validateAndCreate();
-				}
-			}
-			return obj.getRowId();
-		}catch(GetException | ValidateException | SaveException e){
-			AppLog.error(null, e, g);
-		}
-		
-		return "0";
-	}
-	private static JSONObject getFKFilters(String objName,JSONObject fields, Grant g){
-		JSONObject filters = new JSONObject();
-		ObjectDB obj = g.getTmpObject(objName);
-		synchronized(obj.getLock()){
-			for(ObjectField fk : obj.getFunctId()){
-				String name = fk.getName();
-				if("map_order".equals(name)){//to avoid duplicate object in domain
-					continue;
-				}
-				if(fields.has(name) && !fields.isNull(name)){
-					filters.put(name, fields.get(name));
-				}
-			}
-		}
-		
-		return filters;
-	}
+	
 	private static String getIcon(String icon){
 		if(!Tool.isEmpty(icon)){
 			icon = icon.replace("bi-","");
@@ -560,7 +524,7 @@ public class AIModel implements java.io.Serializable {
 			completeList(enumId, jsonFld,objName,fldName, mInfo, g);
 		}
 		
-		String fldId = createOrUpdateWithJson(OBJECTFIELD,field, g);
+		String fldId = AITools.createOrUpdateWithJson(OBJECTFIELD,field, g);
 		dataMaps.fieldCreate.put(fieldName, fldId);
 		translateField(jsonFld, fldId, dataMaps, g);
 		String oboFldId = createObjectField(oboId, fieldName, fieldOrder, mInfo, dataMaps, g);
@@ -704,13 +668,13 @@ public class AIModel implements java.io.Serializable {
 		oboField.put(OBJECTFIELD_FIELD_FIELD, dataMaps.fieldCreate.get(fieldName));
 		oboField.put(OBJECTFIELD_ORDER_FIELD, fieldOrder);
 		oboField.put(MODULE_ID_FIELD,mInfo.moduleId);
-		return createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboField, g);
+		return AITools.createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboField, g);
 	}
 	private static String createListOfValue(String objPrefix,String fieldName,ModuleInfo mInfo,Grant g){
 		JSONObject enumObject = new JSONObject();
 		enumObject.put("lov_name",SyntaxTool.join(SyntaxTool.UPPER, new String[]{mInfo.mPrefix,objPrefix,fieldName}));
 		enumObject.put(MODULE_ID_FIELD,mInfo.moduleId);
-		return createOrUpdateWithJson("FieldList",enumObject, g);
+		return AITools.createOrUpdateWithJson("FieldList",enumObject, g);
 	}
 	private static void createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, ValidateException, UpdateException {
 		int linkorder = 10;
@@ -802,7 +766,7 @@ public class AIModel implements java.io.Serializable {
 		linkFields.put(MODULE_ID_FIELD, mInfo.moduleId);
 		linkFields.put(OBJECT_PREFIX_FIELD, namewp.substring(0, 3).toLowerCase());
 		linkFields.put(OBJECT_ICON_FIELD, getIcon(""));
-		String oboId = createOrUpdateWithJson(OBJECT_INTERNAL_NAME,linkFields, g);
+		String oboId = AITools.createOrUpdateWithJson(OBJECT_INTERNAL_NAME,linkFields, g);
 		dataMaps.objCreate.put(name.toLowerCase(),oboId);			
 		
 	}
@@ -853,7 +817,7 @@ public class AIModel implements java.io.Serializable {
 		objFields.put(OBJECT_PREFIX_FIELD, prefix1+prefix2);
 		objFields.put(OBJECT_ICON_FIELD, getIcon(""));
 		objFields.put(OBJECT_DESCRIPTION, "NN between "+objectData1.en+" and "+objectData2.en);
-		childId = createOrUpdateWithJson(OBJECT_INTERNAL_NAME,objFields, g);
+		childId = AITools.createOrUpdateWithJson(OBJECT_INTERNAL_NAME,objFields, g);
 		dataMaps.objCreate.put(name.toLowerCase(),childId);
 		for (String gId: mInfo.groupIds){
 			grantGroup(gId,childId,mInfo.moduleId,g);
@@ -886,7 +850,7 @@ public class AIModel implements java.io.Serializable {
 				fields.put("fld_fonctid",true);
 				fields.put("fld_required",true);
 			}
-			refId = createOrUpdateWithJson(OBJECTFIELD,fields, g);
+			refId = AITools.createOrUpdateWithJson(OBJECTFIELD,fields, g);
 			JSONObject oboFields = new JSONObject();
 			oboFields.put(OBJECTFIELD_OBJECT_FIELD, childId);
 			oboFields.put(OBJECTFIELD_FIELD_FIELD, refId);
@@ -894,7 +858,7 @@ public class AIModel implements java.io.Serializable {
 			oboFields.put(MODULE_ID_FIELD,mInfo.moduleId);
 			oboFields.put("obf_ref_object_id",objectData.objId);
 			oboFields.put("obf_cascad", Character.toString(del));
-			createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboFields, g);
+			AITools.createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboFields, g);
 			//Joined field Add key of child in main object.
 			objectData.linkorder += 1;
 			addJoinedField(childId, refId, objectData, mInfo, dataMaps, objectData.linkorder, g);
@@ -911,7 +875,7 @@ public class AIModel implements java.io.Serializable {
 				fields.put(MODULE_ID_FIELD,mInfo.moduleId);
 				fields.put("obf_ref_object_id",objectData.objId);
 				fields.put("obf_ref_field_id",refId);
-				String oboFldId = createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,fields, g);
+				String oboFldId = AITools.createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,fields, g);
 				if(dataMaps.fldEn.containsKey(fkField) && !Tool.isEmpty(objectData.en)){
 					createOrUpdateTranslation(OBJECT_FIELD_SYSTEM_NAME, oboFldId, Globals.LANG_ENGLISH, objectData.en +" "+dataMaps.fldEn.get(fkField), mInfo.moduleId, g);
 				}
@@ -975,7 +939,7 @@ public class AIModel implements java.io.Serializable {
 				}
 				addFieldStyle(objName,fldName,code,style.bg,moduleId,g);
 			}
-			String enumId = createOrUpdateWithJson("FieldListCode",enumCodeFields, g);
+			String enumId = AITools.createOrUpdateWithJson("FieldListCode",enumCodeFields, g);
 			if(jsonValue.has("en") && (jsonValue.get("en") instanceof String) && (oTraT.selectForCreateOrUpdate(new JSONObject().put("lov_code_id",enumId).put("lov_lang",Globals.LANG_ENGLISH)))){
 					oTra.setFieldValue("lov_value", jsonValue.getString("en"));
 					oTraT.validateAndUpdate();
@@ -987,14 +951,14 @@ public class AIModel implements java.io.Serializable {
 			order+=1;
 		}
 	}
-	private static void addFieldStyle(String objName,String fldName,String code,String style,String moduleId,Grant g) throws GetException, ValidateException, UpdateException{
+	private static void addFieldStyle(String objName,String fldName,String code,String style,String moduleId,Grant g){
 		JSONObject fieldStyle= new JSONObject();
 		fieldStyle.put("sty_object", objName);
 		fieldStyle.put("sty_field", fldName);
 		fieldStyle.put("sty_value", code);
 		fieldStyle.put("sty_style", style);
 		fieldStyle.put(MODULE_ID_FIELD,moduleId);
-		createOrUpdateWithJson("FieldStyle",fieldStyle, g);
+		AITools.createOrUpdateWithJson("FieldStyle",fieldStyle, g);
 
 	}
 	private static JSONObject getJsonValue(Object value, Grant g){
@@ -1015,7 +979,7 @@ public class AIModel implements java.io.Serializable {
 		domain.put("map_object", "ObjectInternal:"+objectId);
 		domain.put("map_order", domainOrder);
 		domain.put(MODULE_ID_FIELD,moduleId);
-		createOrUpdateWithJson("Map",domain, g);
+		AITools.createOrUpdateWithJson("Map",domain, g);
 	}	
 	private static void grantGroup(String groupId,String objectId,String moduleId,Grant g){
 		ObjectDB funcObj = g.getTmpObject("Function");
@@ -1031,7 +995,7 @@ public class AIModel implements java.io.Serializable {
 		grant.put("grt_group_id", groupId);
 		grant.put(MODULE_ID_FIELD,moduleId);
 		grant.put("grt_function_id",funcId);
-		createOrUpdateWithJson("Grant",grant, g);
+		AITools.createOrUpdateWithJson("Grant",grant, g);
 	}
 	private static String formatObjectNames(String name){
 		String regex="\\s(\\w)";

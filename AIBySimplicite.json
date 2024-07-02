@@ -89,27 +89,6 @@
    "list": [
     {
      "object": "Model",
-     "userkey": "Model-AIChartCrossTable",
-     "item": {
-      "mod_name": "Model-AIChartCrossTable",
-      "mod_template_id__mtp_name": "ModelProcess",
-      "mod_template_id__mtp_type": "P",
-      "mod_json": null,
-      "mod_doc": {
-       "path": "files/Model/Model-AIChartCrossTable.svg",
-       "mime": "image/svg+xml",
-       "name": "model.svg"
-      },
-      "mod_image": {
-       "path": "files/Model/Model-AIChartCrossTable.png",
-       "mime": "image/png",
-       "name": "Model-AIChartCrossTable.png"
-      },
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "Model",
      "userkey": "Model-AiChartToCrossTable",
      "item": {
       "mod_name": "Model-AiChartToCrossTable",
@@ -2780,39 +2759,6 @@
    "list": [
     {
      "object": "BPMProcess",
-     "userkey": "AIChartCrossTable",
-     "item": {
-      "pcs_name": "AIChartCrossTable",
-      "pcs_short_name": "ACCT",
-      "pcs_comment": "Converting a chart.js script into a pivot table and saving it.",
-      "pcs_type": "0",
-      "pcs_class": null,
-      "pcs_script_id": {
-       "path": "src/com/simplicite/workflows/AIBySimplicite/AIChartCrossTable.java",
-       "mime": "text/plain",
-       "name": "AIChartCrossTable.java"
-      },
-      "pcs_max_duration": null,
-      "pcs_duration_unit": "D",
-      "pcs_persitant": false,
-      "pcs_persist_depth": null,
-      "pcs_alert_id__alt_name": null,
-      "pcs_compensate_id__pcs_name": null,
-      "pcs_model_id__mod_name": "Model-AIChartCrossTable",
-      "pcs_model_id__mod_image": {
-       "path": "files/Model/Model-AIChartCrossTable.png",
-       "mime": "image/png",
-       "name": "Model-AIChartCrossTable.png"
-      },
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "pcs_mainact_id__acy_step": null,
-      "pcs_mainact_id__acy_name": null,
-      "pcs_mainact_id__acy_process_id__pcs_name": null,
-      "pcs_main_del": null
-     }
-    },
-    {
-     "object": "BPMProcess",
      "userkey": "AIGenData",
      "item": {
       "pcs_name": "AIGenData",
@@ -2885,101 +2831,6 @@
    "icon": "img/system/activity",
    "field": "row_module_id",
    "list": [
-    {
-     "object": "BPMActivity",
-     "userkey": "AIChartCrossTable~ACCT-0100",
-     "item": {
-      "acy_process_id__pcs_name": "AIChartCrossTable",
-      "acy_step": "ACCT-0100",
-      "acy_name": "Module",
-      "acy_comment": null,
-      "acy_type": "C",
-      "acy_posx": null,
-      "acy_posy": null,
-      "acy_reversible": "N",
-      "acy_max_duration": null,
-      "acy_duration_unit": null,
-      "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMActivity",
-     "userkey": "AIChartCrossTable~ACCT-0200",
-     "item": {
-      "acy_process_id__pcs_name": "AIChartCrossTable",
-      "acy_step": "ACCT-0200",
-      "acy_name": "DefineChart",
-      "acy_comment": null,
-      "acy_type": "X",
-      "acy_posx": null,
-      "acy_posy": null,
-      "acy_reversible": "N",
-      "acy_max_duration": null,
-      "acy_duration_unit": null,
-      "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMActivity",
-     "userkey": "AIChartCrossTable~ACCT-0300",
-     "item": {
-      "acy_process_id__pcs_name": "AIChartCrossTable",
-      "acy_step": "ACCT-0300",
-      "acy_name": "Display",
-      "acy_comment": null,
-      "acy_type": "X",
-      "acy_posx": null,
-      "acy_posy": null,
-      "acy_reversible": "N",
-      "acy_max_duration": null,
-      "acy_duration_unit": null,
-      "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMActivity",
-     "userkey": "AIChartCrossTable~ACCT-BEG",
-     "item": {
-      "acy_process_id__pcs_name": "AIChartCrossTable",
-      "acy_step": "ACCT-BEG",
-      "acy_name": "Begin",
-      "acy_comment": null,
-      "acy_type": "B",
-      "acy_posx": null,
-      "acy_posy": null,
-      "acy_reversible": "N",
-      "acy_max_duration": null,
-      "acy_duration_unit": "D",
-      "acy_alert_id__alt_name": null,
-      "acy_user_dlg": false,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMActivity",
-     "userkey": "AIChartCrossTable~ACCT-END",
-     "item": {
-      "acy_process_id__pcs_name": "AIChartCrossTable",
-      "acy_step": "ACCT-END",
-      "acy_name": "End",
-      "acy_comment": null,
-      "acy_type": "E",
-      "acy_posx": null,
-      "acy_posy": null,
-      "acy_reversible": "N",
-      "acy_max_duration": null,
-      "acy_duration_unit": "D",
-      "acy_alert_id__alt_name": null,
-      "acy_user_dlg": false,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
     {
      "object": "BPMActivity",
      "userkey": "AIGenData~GGD-BEG",
@@ -3408,82 +3259,6 @@
    "list": [
     {
      "object": "BPMTransition",
-     "userkey": "AIChartCrossTable~AIChartCrossTable~ACCT-0100~AIChartCrossTable~ACCT-0200",
-     "item": {
-      "trs_process_id__pcs_name": "AIChartCrossTable",
-      "trs_from_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "trs_from_id__acy_step": "ACCT-0100",
-      "trs_from_id__acy_name": "Module",
-      "trs_to_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "trs_to_id__acy_step": "ACCT-0200",
-      "trs_to_id__acy_name": "DefineChart",
-      "trs_name": null,
-      "trs_action_id__act_name": null,
-      "trs_condition": null,
-      "trs_callback": null,
-      "trs_alert_id__alt_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMTransition",
-     "userkey": "AIChartCrossTable~AIChartCrossTable~ACCT-0200~AIChartCrossTable~ACCT-0300",
-     "item": {
-      "trs_process_id__pcs_name": "AIChartCrossTable",
-      "trs_from_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "trs_from_id__acy_step": "ACCT-0200",
-      "trs_from_id__acy_name": "DefineChart",
-      "trs_to_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "trs_to_id__acy_step": "ACCT-0300",
-      "trs_to_id__acy_name": "Display",
-      "trs_name": null,
-      "trs_action_id__act_name": null,
-      "trs_condition": null,
-      "trs_callback": null,
-      "trs_alert_id__alt_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMTransition",
-     "userkey": "AIChartCrossTable~AIChartCrossTable~ACCT-0300~AIChartCrossTable~ACCT-END",
-     "item": {
-      "trs_process_id__pcs_name": "AIChartCrossTable",
-      "trs_from_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "trs_from_id__acy_step": "ACCT-0300",
-      "trs_from_id__acy_name": "Display",
-      "trs_to_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "trs_to_id__acy_step": "ACCT-END",
-      "trs_to_id__acy_name": "End",
-      "trs_name": null,
-      "trs_action_id__act_name": null,
-      "trs_condition": null,
-      "trs_callback": null,
-      "trs_alert_id__alt_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMTransition",
-     "userkey": "AIChartCrossTable~AIChartCrossTable~ACCT-BEG~AIChartCrossTable~ACCT-0100",
-     "item": {
-      "trs_process_id__pcs_name": "AIChartCrossTable",
-      "trs_from_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "trs_from_id__acy_step": "ACCT-BEG",
-      "trs_from_id__acy_name": "Begin",
-      "trs_to_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "trs_to_id__acy_step": "ACCT-0100",
-      "trs_to_id__acy_name": "Module",
-      "trs_name": null,
-      "trs_action_id__act_name": null,
-      "trs_condition": null,
-      "trs_callback": null,
-      "trs_alert_id__alt_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMTransition",
      "userkey": "AIGenData~AIGenData~GGD-BEG~AIGenData~GGD_0100",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
@@ -3910,126 +3685,6 @@
    "list": [
     {
      "object": "BPMData",
-     "userkey": "AIChartCrossTable~ACCT-0100~Constraint~Mandatory",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "dta_activity_id__acy_step": "ACCT-0100",
-      "dta_activity_id__acy_name": "Module",
-      "dta_group": "Constraint",
-      "dta_name": "Mandatory",
-      "dta_order": 1,
-      "dta_value": "true",
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
-     "userkey": "AIChartCrossTable~ACCT-0100~Object~Name",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "dta_activity_id__acy_step": "ACCT-0100",
-      "dta_activity_id__acy_name": "Module",
-      "dta_group": "Object",
-      "dta_name": "Name",
-      "dta_order": 1,
-      "dta_value": "Module",
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
-     "userkey": "AIChartCrossTable~ACCT-0200~Data~swagger",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "dta_activity_id__acy_step": "ACCT-0200",
-      "dta_activity_id__acy_name": "DefineChart",
-      "dta_group": "Data",
-      "dta_name": "swagger",
-      "dta_order": 1,
-      "dta_value": null,
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
-     "userkey": "AIChartCrossTable~ACCT-0200~Data~js",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "dta_activity_id__acy_step": "ACCT-0200",
-      "dta_activity_id__acy_name": "DefineChart",
-      "dta_group": "Data",
-      "dta_name": "js",
-      "dta_order": 1,
-      "dta_value": null,
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
-     "userkey": "AIChartCrossTable~ACCT-0200~Page~Method",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "dta_activity_id__acy_step": "ACCT-0200",
-      "dta_activity_id__acy_name": "DefineChart",
-      "dta_group": "Page",
-      "dta_name": "Method",
-      "dta_order": 1,
-      "dta_value": "defineChart",
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
-     "userkey": "AIChartCrossTable~ACCT-0300~Data~objName",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "dta_activity_id__acy_step": "ACCT-0300",
-      "dta_activity_id__acy_name": "Display",
-      "dta_group": "Data",
-      "dta_name": "objName",
-      "dta_order": 1,
-      "dta_value": null,
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
-     "userkey": "AIChartCrossTable~ACCT-0300~Data~ctName",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "dta_activity_id__acy_step": "ACCT-0300",
-      "dta_activity_id__acy_name": "Display",
-      "dta_group": "Data",
-      "dta_name": "ctName",
-      "dta_order": 1,
-      "dta_value": null,
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
-     "userkey": "AIChartCrossTable~ACCT-0300~Page~Method",
-     "item": {
-      "dta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "dta_activity_id__acy_step": "ACCT-0300",
-      "dta_activity_id__acy_name": "Display",
-      "dta_group": "Page",
-      "dta_name": "Method",
-      "dta_order": 1,
-      "dta_value": "display",
-      "dta_field_id__fld_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMData",
      "userkey": "AIGenData~GGD-END~Forward~PARAM=1",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
@@ -4083,7 +3738,7 @@
       "dta_group": "Filter",
       "dta_name": "mdl_type",
       "dta_order": 1,
-      "dta_value": "is null or not in ('S','A')",
+      "dta_value": "is null or not in ('S')",
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -4398,7 +4053,7 @@
       "dta_group": "Filter",
       "dta_name": "mdl_type",
       "dta_order": 1,
-      "dta_value": "is null or not in ('S','A')",
+      "dta_value": "is null or not in ('S')",
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -4879,54 +4534,6 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_BUSINESS~AIChartCrossTable~ACCT-0100",
-     "item": {
-      "gta_group_id__grp_name": "AI_BUSINESS",
-      "gta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "gta_activity_id__acy_step": "ACCT-0100",
-      "gta_activity_id__acy_name": "Module",
-      "gta_grant": [
-       "R",
-       "W",
-       "C"
-      ],
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMGrantActivity",
-     "userkey": "AI_BUSINESS~AIChartCrossTable~ACCT-0200",
-     "item": {
-      "gta_group_id__grp_name": "AI_BUSINESS",
-      "gta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "gta_activity_id__acy_step": "ACCT-0200",
-      "gta_activity_id__acy_name": "DefineChart",
-      "gta_grant": [
-       "R",
-       "W",
-       "C"
-      ],
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMGrantActivity",
-     "userkey": "AI_BUSINESS~AIChartCrossTable~ACCT-0300",
-     "item": {
-      "gta_group_id__grp_name": "AI_BUSINESS",
-      "gta_activity_id__acy_process_id__pcs_name": "AIChartCrossTable",
-      "gta_activity_id__acy_step": "ACCT-0300",
-      "gta_activity_id__acy_name": "Display",
-      "gta_grant": [
-       "R",
-       "W",
-       "C"
-      ],
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMGrantActivity",
      "userkey": "AI_DESIGNER~AIGenData~GGD_0100",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
@@ -5168,19 +4775,6 @@
     },
     {
      "object": "BPMGrantProcess",
-     "userkey": "AI_BUSINESS~AIChartCrossTable",
-     "item": {
-      "gtp_group_id__grp_name": "AI_BUSINESS",
-      "gtp_process_id__pcs_name": "AIChartCrossTable",
-      "gtp_grant": [
-       "N",
-       "C"
-      ],
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMGrantProcess",
      "userkey": "AI_DESIGNER~AIGenData",
      "item": {
       "gtp_group_id__grp_name": "AI_DESIGNER",
@@ -5210,6 +4804,46 @@
        "R",
        "C"
       ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    }
+   ]
+  },
+  {
+   "object": "Crosstab",
+   "label": "Pivot tables",
+   "icon": "img/system/pivot_table",
+   "field": "row_module_id",
+   "list": [
+    {
+     "object": "Crosstab",
+     "userkey": "OrderStatusChart",
+     "item": {
+      "ctb_name": "OrderStatusChart",
+      "ctb_object_id__obo_name": "DemoOrder",
+      "ctb_function": "S",
+      "ctb_visible": "1",
+      "ctb_fixedcolors": true,
+      "ctb_precision": null,
+      "ctb_subtotal": false,
+      "ctb_totalcolor": null,
+      "ctb_caption": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Crosstab",
+     "userkey": "OrderStatusCrossTab",
+     "item": {
+      "ctb_name": "OrderStatusCrossTab",
+      "ctb_object_id__obo_name": "DemoOrder",
+      "ctb_function": "S",
+      "ctb_visible": "1",
+      "ctb_fixedcolors": true,
+      "ctb_precision": null,
+      "ctb_subtotal": false,
+      "ctb_totalcolor": null,
+      "ctb_caption": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
@@ -5639,6 +5273,30 @@
        "path": "resources/ObjectExternal/AIProcessResource/CONTEXT_INTERACTION_PROMPT.text",
        "mime": "application/octet-stream",
        "name": "CONTEXT_INTERACTION_PROMPT.text"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Resource",
+     "userkey": "ObjectExternal(AIProcessResource)~ANY~CROSSTABLE_PROMPT",
+     "item": {
+      "res_object": {
+       "item": {"obe_name": "AIProcessResource"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "AIProcessResource",
+       "object": "ObjectExternal"
+      },
+      "res_type": "OTHER",
+      "res_lang": "ANY",
+      "res_code": "CROSSTABLE_PROMPT",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectExternal/AIProcessResource/CROSSTABLE_PROMPT.text",
+       "mime": "application/octet-stream",
+       "name": "AIProcessResource_CROSSTABLE_PROMPT.text"
       },
       "res_image": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -6515,6 +6173,78 @@
       "tsl_lang": "FRA",
       "tsl_value": "Activer",
       "tsl_simplehelp": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    }
+   ]
+  },
+  {
+   "object": "TranslateCrosstab",
+   "label": "Pivot table translation",
+   "icon": "img/system/translation",
+   "field": "row_module_id",
+   "list": [
+    {
+     "object": "TranslateCrosstab",
+     "userkey": "Crosstab(OrderStatusCrossTab)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"ctb_name": "OrderStatusCrossTab"},
+       "icon": "img/system/pivot_table",
+       "label": "Pivot table",
+       "userkeylabel": "OrderStatusCrossTab",
+       "object": "Crosstab"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Order status cross tab",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateCrosstab",
+     "userkey": "Crosstab(OrderStatusCrossTab)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"ctb_name": "OrderStatusCrossTab"},
+       "icon": "img/system/pivot_table",
+       "label": "Pivot table",
+       "userkeylabel": "OrderStatusCrossTab",
+       "object": "Crosstab"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Order status cross tab",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateCrosstab",
+     "userkey": "Crosstab(OrderStatusChart)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"ctb_name": "OrderStatusChart"},
+       "icon": "img/system/pivot_table",
+       "label": "Pivot table",
+       "userkeylabel": "OrderStatusChart",
+       "object": "Crosstab"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Order status chart",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateCrosstab",
+     "userkey": "Crosstab(OrderStatusChart)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"ctb_name": "OrderStatusChart"},
+       "icon": "img/system/pivot_table",
+       "label": "Pivot table",
+       "userkeylabel": "OrderStatusChart",
+       "object": "Crosstab"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Order status chart",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
@@ -8169,196 +7899,6 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-BEG)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-BEG"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-BEG",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Begin",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-BEG)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-BEG"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-BEG",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Begin",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-END)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-END"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-END",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "End",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-END)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-END"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-END",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "End",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-0100)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-0100"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-0100",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Module",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-0100)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-0100"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-0100",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Module",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-0200)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-0200"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-0200",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Define chart",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-0200)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-0200"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-0200",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Définir le graphique",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-0300)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-0300"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-0300",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Display",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIChartCrossTable ACCT-0300)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {
-        "acy_process_id__pcs_name": "AIChartCrossTable",
-        "acy_step": "ACCT-0300"
-       },
-       "icon": "img/system/activity",
-       "label": "Activity",
-       "userkeylabel": "AIChartCrossTable ACCT-0300",
-       "object": "BPMActivity"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Affichage",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
      "userkey": "BPMActivity(AIGenData GGD-END)~ENU",
      "item": {
       "tsl_object": {
@@ -8580,38 +8120,6 @@
       "tsl_value": "Génération du module",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
-    },
-    {
-     "object": "TranslateProcess",
-     "userkey": "BPMProcess(AIChartCrossTable)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"pcs_name": "AIChartCrossTable"},
-       "icon": "img/system/process",
-       "label": "Business process",
-       "userkeylabel": "AIChartCrossTable",
-       "object": "BPMProcess"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Convert to crosstab",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateProcess",
-     "userkey": "BPMProcess(AIChartCrossTable)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"pcs_name": "AIChartCrossTable"},
-       "icon": "img/system/process",
-       "label": "Business process",
-       "userkeylabel": "AIChartCrossTable",
-       "object": "BPMProcess"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Convertir en tableau croisé",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
     }
    ]
   },
@@ -8632,6 +8140,26 @@
        "label": "External object",
        "userkeylabel": "AIProcessResource",
        "object": "ObjectExternal"
+      },
+      "prm_perm": true,
+      "prm_upd": false,
+      "prm_req": false,
+      "prm_prop": null,
+      "prm_value": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Permission",
+     "userkey": "AI_BUSINESS~Crosstab(OrderStatusChart)~",
+     "item": {
+      "prm_group_id__grp_name": "AI_BUSINESS",
+      "prm_object": {
+       "item": {"ctb_name": "OrderStatusChart"},
+       "icon": "img/system/pivot_table",
+       "label": "Pivot table",
+       "userkeylabel": "OrderStatusChart",
+       "object": "Crosstab"
       },
       "prm_perm": true,
       "prm_upd": false,

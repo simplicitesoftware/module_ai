@@ -1,13 +1,15 @@
 package com.simplicite.commons.AIBySimplicite;
 
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
-import com.simplicite.util.*;
 
-import ch.simschla.minify.cli.App;
+import com.simplicite.util.*;
+import com.simplicite.util.tools.BusinessObjectTool;
+import com.simplicite.util.exceptions.*;
 
 import org.json.JSONArray;
 
@@ -18,6 +20,16 @@ import org.json.JSONArray;
  * Shared code AiMetrics
  */
 public class AiMetrics implements java.io.Serializable {
+	private static final JSONObject FUNCTIONS = new JSONObject("{" + //
+				"  \"text\": \"T\"," + //
+				"  \"sum\": \"S\"," + //
+				"  \"product\": \"P\"," + //
+				"  \"algebraic average\": \"A\"," + //
+				"  \"geometric average\": \"G\"," + //
+				"  \"min\": \"L\"," + //
+				"  \"max\": \"H\"," + //
+				"  \"formula\": \"F\"" + //
+				"}");
 
 	static final String EXEMPLE=" ```javascript\n"+ 
 	"function(){//code exemple to do search on the object myObject witch has a field myField\n"+
@@ -32,6 +44,8 @@ public class AiMetrics implements java.io.Serializable {
 		"//be careful with var names with spaces in json use 'var'.\n"+
 	"}\n"+
 	"```\n";
+	private static final String FUNCTION_KEY = "function";
+	private static final String MODULE_ID = "mldId";
 	private static final long serialVersionUID = 1L;
 	public static JSONObject getJavaScriptMetrics(String prompt, JSONObject swagger , String lang){
 		AppLog.info("AI request: "+swagger, null);
@@ -41,15 +55,12 @@ public class AiMetrics implements java.io.Serializable {
 
 		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
 		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
-
-		JSONObject res = AITools.aiCaller(null, "\n ```OppenAPI "+swagger+"```",arrayPrompts,false,true,true);
-		String result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-		JSONObject resultJS = splitRes(result,swagger.optJSONObject("components").getJSONObject("schemas"));
+		JSONObject res = AITools.aiCaller(null, "\n ```OpenAPI "+swagger+"```",arrayPrompts,false,true,true);
+		JSONObject resultJS = splitRes(AITools.parseJsonOpenAIResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
 		AppLog.info("AI response: "+resultJS.toString(1), null);
 		if (resultJS.has("error")) {
 			res = AITools.aiCaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
-			result = res.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-			return new JSONObject().put("text",result);
+			return new JSONObject().put("text",AITools.parseJsonOpenAIResponse(res));
 		}
 		return resultJS;
 	}
@@ -102,7 +113,7 @@ public class AiMetrics implements java.io.Serializable {
 		result.put("js", regexJSResult);
 		result.put("html", regexHTMLResult);
 		result.put("text", textResult);
-		result.put("function", getFunctionCall(regexJSResult));
+		result.put(FUNCTION_KEY, getFunctionCall(regexJSResult));
 		AppLog.info("AI response: "+result.toString(1), null);
 		return result;
 	}
@@ -194,4 +205,134 @@ public class AiMetrics implements java.io.Serializable {
 		AppLog.info("AI null response: Data are invented", null);
 		return true;
 	}
+	// SAVE AS CROSS TABLE
+	public static JSONObject iaConvert(String swagger, String js){
+		Grant g = Grant.getSystemAdmin();
+		byte[] prompt =g.getExternalObject("AIProcessResource").getResourceContent(Resource.TYPE_OTHER,"CROSSTABLE_PROMPT");
+		String stringPrompt = prompt!=null?new String(prompt):"";
+		JSONArray promptArray = new JSONArray();
+		promptArray.put(AITools.getformatedContentByType(stringPrompt, AITools.TYPE_TEXT, true));
+		StringBuilder spec = new StringBuilder();
+		spec.append("Objects: ```openAPI\n");
+		spec.append(swagger);
+		spec.append("\n```");
+		spec.append("\n\nchart.js script ```javascript\n");
+		spec.append(js);
+		spec.append("\n```");
+		JSONObject res = AITools.aiCaller(g, spec.toString(), promptArray, false, true, true);
+		String result = AITools.parseJsonOpenAIResponse(res);
+		JSONObject jsonRes = AITools.getValidJson(result);
+		if(Tool.isEmpty(jsonRes)){	
+			List<String> listResult = AITools.getJSONBlock(result,g);
+			if(Tool.isEmpty(listResult) ){
+				AppLog.error(new PlatformException("Sorry AI do not return interpretable json: \n"+result),g);
+			}else{
+				jsonRes =AITools.getValidJson(listResult.get(1));
+				if(Tool.isEmpty(jsonRes)){
+					AppLog.error(new PlatformException("Sorry AI do not return interpretable json: \n"+listResult.get(1)),g);
+				}
+			}
+		}
+		return jsonRes;
+	}
+	public  static JSONObject	createCrossTable(JSONObject def){
+		String objName = def.optString("object");
+		String ctName = def.optString("name");
+		String mldId = def.optString(MODULE_ID);
+		Grant g = Grant.getSystemAdmin();
+
+		String ctId = createCt(def,ctName,objName,g);
+		grantCt(ctId,mldId,g);
+		String en = def.optString("en");
+		String fr = def.optString("fr");
+		try {
+			updateTradField(Grant.getTranslateId("TranslateCrosstab",ctId, Globals.LANG_ENGLISH),en, g);
+			updateTradField(Grant.getTranslateId("TranslateCrosstab",ctId, Globals.LANG_FRENCH), fr, g);
+		} catch (Exception e) {
+			AppLog.error(e, g);
+		}
+		int i = 1;
+		for(Object clm : def.optJSONArray("column")){
+			JSONObject axis = (JSONObject) clm;
+			createAxis(axis,"C",ctId,mldId,i,g);
+			i++;
+		}
+		i = 1;
+		for(Object row : def.optJSONArray("line")){
+			JSONObject axis = (JSONObject) row;
+			createAxis(axis,"L",ctId,mldId,i,g);
+			i++;
+		}
+		return new JSONObject().put("ctName", ctName).put("objName", objName);
+	}
+	private static void grantCt(String ctId,String mldId,Grant g){
+		JSONObject perm = new JSONObject();
+		perm.put("prm_group_id", GroupDB.getGroupId("AI_BUSINESS"));
+		perm.put("row_mdl_id", mldId);
+		perm.put("prm_object", "Crosstab:"+ctId);
+		AITools.createOrUpdateWithJson("Permission", perm, g);
+	}
+	private static String createCt(JSONObject def,String ctName,String objName,Grant g){
+		JSONObject ct = new JSONObject();
+		ct.put("ctb_name", ctName);
+		ct.put("ctb_function", FUNCTIONS.optString(def.optString(FUNCTION_KEY,"sum"),"S"));
+		ct.put("ctb_object_id", ObjectCore.getObjectId(objName));
+		ct.put("row_module_id",def.optString(MODULE_ID));
+		String mldId = def.optString(MODULE_ID);
+		AppLog.info("ct module : "+mldId+": "+ModuleDB.getModuleName(mldId), g);
+		return AITools.createOrUpdateWithJson("Crosstab", ct, g);
+	}
+	private static String createAxis(JSONObject def,String type,String ctId,String mldId,int defaultOrder,Grant g){
+		String field = def.optString("field");
+		if(Tool.isEmpty(field) || "row_id".equals(field)){
+			return null;
+		}
+		JSONObject axis = new JSONObject();
+		AppLog.info("def: "+def.toString(1), g);
+		axis.put("cax_crosstab_id", ctId);
+		axis.put("cax_type", type);
+		String function =FUNCTIONS.optString(def.optString(FUNCTION_KEY,"sum"),"");
+		if(!Tool.isEmpty(function)){
+			axis.put("cax_function", function);
+		}
+		axis.put("row_module_id", mldId);
+		String objFldId = getObjectFieldId(def.optString("object"), field,g);
+		axis.put("cax_objfield_id", objFldId);
+		axis.put("cax_order", def.optInt("order",defaultOrder));
+		AppLog.info("axis: "+axis.toString(1), g);
+		return AITools.createOrUpdateWithJson("CrosstabAxis", axis, g);
+
+	}
+	private static void updateTradField(String tradId,String val,Grant g) throws GetException, UpdateException, ValidateException{
+		ObjectDB oTra = g.getTmpObject("Translate");
+		synchronized(oTra.getLock()){
+			BusinessObjectTool oTraT = oTra.getTool();
+			if(!Tool.isEmpty(val) && !Tool.isEmpty(tradId)){
+				oTraT.selectForUpdate(tradId);
+				oTra.setFieldValue("tsl_value", val);
+				oTraT.validateAndUpdate();
+			}
+		}
+		
+	}
+	private static String getObjectFieldId(String object,String field,Grant g){
+		AppLog.info("object: "+object+" field: "+field, g);
+		ObjectDB obj = g.getTmpObject("ObjectFieldSystem");
+		synchronized (obj) {
+			obj.resetFilters();
+				
+			obj.setFieldFilter("obf_object_id", ObjectCore.getObjectId(object));
+			obj.setFieldFilter("obf_field_id", ObjectField.getFieldId(field));
+			List<String[]> res = obj.search();
+			AppLog.info("res: "+res.size(), g);
+			for(String[] r : res){
+				AppLog.info("r: "+String.join(", ", r), g);
+			}
+			if (!Tool.isEmpty(res)){
+				return res.get(0)[obj.getRowIdFieldIndex()];
+			}
+		}
+		return null;
+	}
+	
 }
