@@ -3672,25 +3672,6 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_CHECK_CONF~AIModuleCreate~AIC-NC-END",
-     "item": {
-      "trs_process_id__pcs_name": "AIModuleCreate",
-      "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
-      "trs_from_id__acy_step": "AIC_CHECK_CONF",
-      "trs_from_id__acy_name": "CheckAIConfig",
-      "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
-      "trs_to_id__acy_step": "AIC-NC-END",
-      "trs_to_id__acy_name": "needConfig",
-      "trs_name": null,
-      "trs_action_id__act_name": null,
-      "trs_condition": "1",
-      "trs_callback": null,
-      "trs_alert_id__alt_name": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "BPMTransition",
      "userkey": "AIModuleCreate~AIModuleCreate~AIC_CHECK_CONF~AIModuleCreate~AIC_0005",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
@@ -3702,7 +3683,7 @@
       "trs_to_id__acy_name": "Choice",
       "trs_name": null,
       "trs_action_id__act_name": null,
-      "trs_condition": "0",
+      "trs_condition": null,
       "trs_callback": null,
       "trs_alert_id__alt_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
