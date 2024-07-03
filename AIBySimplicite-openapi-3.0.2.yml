@@ -130,9 +130,6 @@ components:
           description: Model
           type: string
           enum:
-          - ANTRHROPIC
-          - AIML
-          - HUGGINGFACE
           - MISTRAL
           - OPENAI
         aiSetConfig:
@@ -452,9 +449,6 @@ paths:
       - schema:
           type: string
           enum:
-          - ANTRHROPIC
-          - AIML
-          - HUGGINGFACE
           - MISTRAL
           - OPENAI
         in: query
