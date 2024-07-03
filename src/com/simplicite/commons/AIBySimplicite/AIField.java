@@ -155,7 +155,7 @@ public class AIField implements java.io.Serializable {
 
 			fld.addNotepad(g.getLogin(), sentence);
 			fld.setOldValue(fld.getValue());
-			fld.addNotepad("ChatAI",AITools.parseJsonOpenAIResponse(result));
+			fld.addNotepad("ChatAI",AITools.parseJsonResponse(result));
 		}
 		return msgs;
 	}
@@ -205,7 +205,7 @@ public class AIField implements java.io.Serializable {
 					msgs.add(Message.formatError(AI_ERROR_RETURN,result.getString("code")+": "+result.getString(JSON_ERROR_KEY),"demoPrdDescription"));
 					return msgs;
 				}
-				fld.setValue(AITools.parseJsonOpenAIResponse(result));
+				fld.setValue(AITools.parseJsonResponse(result));
 			}
 			
 		}

@@ -10,13 +10,14 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	function render(params,module,s) {
 		// set button text
 		moduleName = module;
-		$("#work .actions").append('<button class="btn btn-secondary" type="button" onclick="AIMetricsChat.saveAsCrosstable()"><span>Save as crosstable</span></button>');
 		console.log("AIMetricsChat render: "+moduleName);
 		$('#metrics_user_text').click(function() { showWarn();});
 		app.getTexts(function(textes){
+			let actLabel = textes?.AiSaveAsCrosstableAction||"Save as crosstable";
 			let sendText = textes?.AI_BUTTON_SEND ||"Send";
 			let cancelText = textes?.AI_BUTTON_CANCEL || "Cancel";
 			let length = Math.max(sendText.length, cancelText.length);
+			$("#work .actions").prepend('<button class="btn btn-secondary" type="button" onclick="AIMetricsChat.saveAsCrosstable()"><span>'+actLabel+'</span></button>');
 			$('.chat-button').css('min-width', length + 'em');
 			$('.user-message').css('width', 'calc(100% - ' + (length + 1) + 'em)');
 			$('#metrics_send_button').text(sendText);

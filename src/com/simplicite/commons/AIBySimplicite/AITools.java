@@ -29,10 +29,18 @@ import com.simplicite.util.tools.*;
 public class AITools implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
     private static final JSONObject AI_API_PARAM = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM");
+    private static final String LLM = getLLM();
+    private static final String CLAUDE_LLM ="CLAUDE";
+    private static final String HUGGINGFACE_LLM ="HUGGINGFACE";
     private static final String CONTENT_KEY = "content";
     private static final String MESSAGE_KEY = "message";
+    private static final String MESSAGES_KEY = "messages";
+    private static final String USAGE_KEY = "usage";
+
     private static final String MAX_TOKEN_PARAM_KEY = "default_max_token";
     private static final String ASSISTANT_ROLE="assistant";
+    private static final String SYSTEM_ROLE= "system";
+    
     private static final String MAX_TOKEN = "max_tokens";
     public static final String TYPE_TEXT = "text";
     public static final String TYPE_IMAGE_URL = "image_url";
@@ -41,7 +49,13 @@ public class AITools implements java.io.Serializable {
     private static final String TRUSTED = "trusted";
     private static final String SWAGGER_COMPONENTS="components";
     private static final String SWAGGER_SHEMAS="schemas";
+
     
+    private static String getLLM(){
+        if(AI_API_PARAM.optBoolean("ClaudeAPI", false)) return CLAUDE_LLM;
+        if(AI_API_PARAM.optBoolean("HuggingAPI", false)) return HUGGINGFACE_LLM;
+        return "GPT";
+    }
 	/**
      * Function to format the call to chatAI API.
      * Need the AI_API_KEY parameter set up with your key.
@@ -74,14 +88,14 @@ public class AITools implements java.io.Serializable {
 	private static String aiCaller(Grant g, String specialisation, JSONArray prompt ,JSONArray historic, boolean secure,boolean isSafeSpe, int maxToken){
         specialisation = removeAcent(specialisation);
         if(!isSafeSpe) specialisation = JSONObject.quote(normalize(specialisation,true));
-
+        if("\"\"".equals(specialisation)) specialisation = "";
         prompt = parsedPrompts(prompt,secure);
         int histDepth = AI_API_PARAM.getInt("hist_depth");
 		String apiKey = Grant.getSystemAdmin().getParameter("AI_API_KEY");
         String apiUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
         String model =AI_API_PARAM.optString("model","");
-        String projet = AI_API_PARAM.optString("OpenAI-Project","");
-        String org = AI_API_PARAM.optString("OpenAI-Organization","");
+        boolean isClaudeAPI = CLAUDE_LLM.equals(LLM);
+        
         if("/".equals(apiUrl)){
             AppLog.info("AI_API_URL not set", g);
             return "";
@@ -91,15 +105,11 @@ public class AITools implements java.io.Serializable {
         try {
             URI url = new URI(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + apiKey);
-            if(!Tool.isEmpty(projet) && !Tool.isEmpty(org)){
-                connection.setRequestProperty("OpenAI-Project", projet);
-                connection.setRequestProperty("OpenAI-Organization", org);
-            }
             connection.setDoOutput(true);
+            addSpecificHeaders(connection,apiKey);
+            
             // format data
             JSONObject postData = new JSONObject();
             if(maxToken>0)
@@ -109,17 +119,20 @@ public class AITools implements java.io.Serializable {
             JSONArray messages = new JSONArray();
             // format specialisation.
             if(!Tool.isEmpty(specialisation))
-                messages.put(new JSONObject().put("role","system").put(CONTENT_KEY,specialisation));
+                messages.put(new JSONObject().put("role",SYSTEM_ROLE).put(CONTENT_KEY,specialisation));
             // add historic (restrict to Param histDepth the number of messages )
             if(!Tool.isEmpty(historic)){
                 messages.putAll(getCleanHistoric(historic,histDepth));
             }
             
             messages.put(new JSONObject().put("role","user").put(CONTENT_KEY,prompt));
-            postData.put("messages", messages);
+            postData.put(MESSAGES_KEY, messages);
             AppLog.info("AI API call :"+postData.toString(1),g);
-            if(AI_API_PARAM.optBoolean("huggingAPI", false)){
+            if(HUGGINGFACE_LLM.equals(LLM)){
                 postData = getHuggingFormatData(postData);
+            }
+            if(isClaudeAPI){
+                postData = getClaudeFormatData(postData);
             }
             AppLog.info("AI API call :"+postData.toString(),g);
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
@@ -145,13 +158,83 @@ public class AITools implements java.io.Serializable {
         return "";
 
     }
+    private static void addSpecificHeaders(HttpURLConnection connection,String apiKey){
+        String projet = AI_API_PARAM.optString("OpenAI-Project","");
+        String org = AI_API_PARAM.optString("OpenAI-Organization","");
+        switch (LLM) {
+            case CLAUDE_LLM:
+                connection.setRequestProperty("x-api-key",apiKey);
+                connection.setRequestProperty("anthropic-version","2023-06-01");
+                break;
+            case HUGGINGFACE_LLM:
+                connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+                break;
+            default:
+                connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+                if(!Tool.isEmpty(projet) && !Tool.isEmpty(org)){
+                    connection.setRequestProperty("OpenAI-Project", projet);
+                    connection.setRequestProperty("OpenAI-Organization", org);
+                }
+                break;
+        }
+    }
+    private static JSONObject getClaudeFormatData(JSONObject postData){
+        JSONArray messages = postData.getJSONArray(MESSAGES_KEY);
+        int toremove = -1;
+        
+        for (int i = 0; i < messages.length(); i++) {
+            JSONObject message = messages.getJSONObject(i);
+            // Perform your condition here
+            if (SYSTEM_ROLE.equals(message.optString("role"))) {
+                String content = message.optString(CONTENT_KEY);
+                postData.put(SYSTEM_ROLE, content);
+                toremove = i;
+                AppLog.info("AI API system to claude :"+content,Grant.getSystemAdmin());
+                
+            }else if("user".equals(message.optString("role")) && !Tool.isEmpty(message.optString(CONTENT_KEY))){// to clomplete
+                JSONArray contentArray = message.optJSONArray(CONTENT_KEY);
+                for(int j = 0; j < contentArray.length(); j++){
+                    JSONObject contentJson = contentArray.getJSONObject(j);
+                    if(TYPE_IMAGE_URL.equals(contentJson.optString("type"))){
+                        refactorImageForClaudeAPI(contentJson);
+                    }
+                }
+            }
+        }
+        if(toremove>=0){
+            messages.remove(toremove);
+        }
+        if(!postData.has(MAX_TOKEN)){
+            postData.put(MAX_TOKEN,AI_API_PARAM.getInt(MAX_TOKEN_PARAM_KEY));
+        }
+        return postData;
+    }
+    private static void refactorImageForClaudeAPI(JSONObject contentJson){
+        contentJson.put("type","image");
+        String url = contentJson.optJSONObject(TYPE_IMAGE_URL).optString("url");
+        contentJson.remove(TYPE_IMAGE_URL);
+        JSONObject source = new JSONObject();
+        String regexUrl = "data:([\\w\\/]*);(\\w*),(.*)";
+        Pattern pattern = Pattern.compile(regexUrl);
+        Matcher matcher = pattern.matcher(url);
+        if(matcher.matches()){
+            source.put("type",matcher.group(2));
+            source.put("media_type",matcher.group(1));
+            source.put("data",matcher.group(3));
+            
+        }
+        if(!Tool.isEmpty(source)){
+            contentJson.put("source",source);
+        }
+
+    }
     private static JSONObject getHuggingFormatData(JSONObject postData){
         JSONObject newPostData = new JSONObject();
         StringBuilder dialogBuilder = new StringBuilder("");
         JSONObject params = new JSONObject();
         if(postData.has(MAX_TOKEN))
             params.put("max_length",postData.getInt(MAX_TOKEN));
-        JSONArray messages = postData.getJSONArray("messages");
+        JSONArray messages = postData.getJSONArray(MESSAGES_KEY);
         for(int i = 0; i < messages.length(); i++){
             JSONObject message = messages.getJSONObject(i);
             String role = message.optString("role","user");
@@ -161,7 +244,7 @@ public class AITools implements java.io.Serializable {
                     AppLog.info("AI API assistant :"+content,Grant.getSystemAdmin());
                     dialogBuilder.append("bot: "+content+"\n");
                     break;
-                case "system":
+                case SYSTEM_ROLE:
                     AppLog.info("AI API system :"+content,Grant.getSystemAdmin());
                     if(Tool.isEmpty(content) || "\"\"".equals(content)) break;
                     dialogBuilder.append("context: "+ content+"\n");
@@ -271,15 +354,10 @@ public class AITools implements java.io.Serializable {
             connection.disconnect();
             String res = response.toString();
             AppLog.info("AI API response :"+res,g);
-            JSONArray resArray = optJSONArray(res);
-            AppLog.info(resArray.toString(1), g);
-            if(Tool.isEmpty(resArray)){
-                AppLog.info("AI used token :"+new JSONObject(res).optJSONObject("usage").toString(1), g);
-                
-                return res;
+            JSONObject resJson = refactorAiResponseInGPT(res);
+            if(resJson.has(USAGE_KEY )){
+                AppLog.info("AI used token :"+new JSONObject(res).optJSONObject(USAGE_KEY).toString(1), g);
             }
-            String resultText = resArray.optJSONObject(0).getString("generated_text");
-            JSONObject resJson =new JSONObject().put("choices",new JSONArray().put(new JSONObject().put(MESSAGE_KEY,new JSONObject().put(CONTENT_KEY,resultText))));
             return resJson.toString();
         } catch (IOException e) {
             AppLog.error(e,g);
@@ -768,8 +846,30 @@ public class AITools implements java.io.Serializable {
 		
 		return filters;
 	}
-    public static String parseJsonOpenAIResponse(JSONObject res){
-        return res.getJSONArray("choices").getJSONObject(0).getJSONObject(MESSAGE_KEY).getString(CONTENT_KEY);
+    private static JSONObject refactorAiResponseInGPT(String res){
+        String resultText = "";
+        switch (LLM) {
+            case "HUUGINGFACE":
+                JSONArray resArray = optJSONArray(res);
+                resultText = resArray.optJSONObject(0).getString("generated_text");
+                return formatJsonOpenAIFormat(resultText);
+            case CLAUDE_LLM:
+                JSONObject resJson = new JSONObject(res);
+                resultText = resJson.getJSONArray(CONTENT_KEY).getJSONObject(0).getString("text");
+                JSONObject gptFormat = formatJsonOpenAIFormat(resultText);
+                gptFormat.put(USAGE_KEY,resJson.optJSONObject(USAGE_KEY));
+                return gptFormat;
+        
+            default:
+                return new JSONObject(res);
+        }
     }
-    
+    public static String parseJsonResponse(JSONObject res){
+       return res.getJSONArray("choices").getJSONObject(0).getJSONObject(MESSAGE_KEY).getString(CONTENT_KEY);
+    }
+    public static JSONObject formatJsonOpenAIFormat(String result){
+        return new JSONObject().put("choices",new JSONArray().put(new JSONObject().put(MESSAGE_KEY,new JSONObject().put(CONTENT_KEY,result))));
+    }
+
+
 }

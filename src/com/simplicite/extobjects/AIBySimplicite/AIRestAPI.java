@@ -7,7 +7,6 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -57,6 +56,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			}
 			
 		} catch (Exception e) {
+			AppLog.error(null, e, getGrant());
 			return error(e);
 		}
 	}

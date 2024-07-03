@@ -315,6 +315,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_CONFIG_ANTRHROPIC~ANY",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_CONFIG_ANTRHROPIC",
+      "lov_lang": "ANY",
+      "lov_value": "{\n    \"provider\": \"anthropic\",\n    \"model\": \"<model_to_use>\",\n    \"hist_depth\" : 3,\n    \"code_max_token\" : 2000,\n    \"default_max_token\":1500,\n    \"trigger\":\"\",\n   \"ClaudeAPI\":true,\n    \"showDataDisclaimer\":true\n}",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_CONFIG_HUGGINGFACE~ANY",
      "item": {
       "lov_name": "TEXT",
@@ -484,6 +497,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AiSaveAsCrosstableAction~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AiSaveAsCrosstableAction",
+      "lov_lang": "ENU",
+      "lov_value": "Save as crosstable",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_BUTTON_CANCEL~FRA",
      "item": {
       "lov_name": "TEXT",
@@ -611,6 +637,19 @@
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AiSaveAsCrosstableAction~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AiSaveAsCrosstableAction",
+      "lov_lang": "FRA",
+      "lov_value": "Enregistrer en tant que tableau croisé",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -648,6 +687,21 @@
    "icon": "img/system/list_of_values",
    "field": "row_module_id",
    "list": [
+    {
+     "object": "FieldListCode",
+     "userkey": "AI_CONF_MODELE~ANTRHROPIC",
+     "item": {
+      "lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code": "ANTRHROPIC",
+      "lov_order_by": 1,
+      "lov_label": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "lov_color": null,
+      "lov_color_bg": null,
+      "lov_icon": null,
+      "lov_display": ["L"]
+     }
+    },
     {
      "object": "FieldListCode",
      "userkey": "AI_CONF_MODELE~AIML",
@@ -822,6 +876,17 @@
     },
     {
      "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~ANTRHROPIC~ENU",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "ANTRHROPIC",
+      "lov_lang": "ENU",
+      "lov_value": "Antrhropic (claude)",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "FieldListValue",
      "userkey": "AI_CONF_MODELE~MISTRAL~FRA",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
@@ -861,6 +926,17 @@
       "lov_code_id__lov_code": "AIML",
       "lov_lang": "FRA",
       "lov_value": "ai/ml",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "FieldListValue",
+     "userkey": "AI_CONF_MODELE~ANTRHROPIC~FRA",
+     "item": {
+      "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
+      "lov_code_id__lov_code": "ANTRHROPIC",
+      "lov_lang": "FRA",
+      "lov_value": "Antrhropic (claude)",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -2367,6 +2443,34 @@
       "act_confirm_ui": null,
       "act_plus": false,
       "act_comment": "For AIModuleCreate process call generation on interaction context",
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "act_exec": "NUL",
+      "act_count": null,
+      "act_order": null,
+      "act_color": null,
+      "act_color_bg": null,
+      "act_image": null,
+      "act_group_id__acg_name": null,
+      "act_queue_id__acq_name": null,
+      "act_queue_id__acq_type": null
+     }
+    },
+    {
+     "object": "Action",
+     "userkey": "AiSaveAsCrosstable",
+     "item": {
+      "act_name": "AiSaveAsCrosstable",
+      "act_type": "H",
+      "act_async": "0",
+      "act_job_depth": null,
+      "act_method": null,
+      "act_script": null,
+      "act_url": "saveAsCrosstable();",
+      "act_confirm": false,
+      "act_confirm_expr": null,
+      "act_confirm_ui": null,
+      "act_plus": false,
+      "act_comment": null,
       "row_module_id__mdl_name": "AIBySimplicite",
       "act_exec": "NUL",
       "act_count": null,
@@ -6172,6 +6276,40 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Activer",
+      "tsl_simplehelp": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateAction",
+     "userkey": "Action(AiSaveAsCrosstable)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"act_name": "AiSaveAsCrosstable"},
+       "icon": "img/system/action_btn",
+       "label": "Action",
+       "userkeylabel": "AiSaveAsCrosstable",
+       "object": "Action"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Save as crosstable",
+      "tsl_simplehelp": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateAction",
+     "userkey": "Action(AiSaveAsCrosstable)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"act_name": "AiSaveAsCrosstable"},
+       "icon": "img/system/action_btn",
+       "label": "Action",
+       "userkeylabel": "AiSaveAsCrosstable",
+       "object": "Action"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Enregistrer en tant que tableau croisé",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }

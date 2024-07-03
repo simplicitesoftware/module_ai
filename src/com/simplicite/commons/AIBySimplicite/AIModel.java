@@ -53,13 +53,13 @@ public class AIModel implements java.io.Serializable {
 	private static final String HEXA_BLACK ="#303030";
 	private static final String HEXA_WHITE ="#FFFFFF";
 	
-	private static class enumFieldStyle {
+	private static class EnumFieldStyle {
 		private String bg;   //background color
 		private String hexa; //hexadecimal color
 		private String color; //text color
 		private String icon; //icon name
 		
-		public enumFieldStyle(String bg, String hexa,String color, String icon) {
+		public EnumFieldStyle(String bg, String hexa,String color, String icon) {
 			this.bg = bg;
 			this.hexa = hexa;
 			this.color = color;
@@ -122,7 +122,7 @@ public class AIModel implements java.io.Serializable {
 	private static List<String> shortListIcon;
 	private static List<String> listIcon;
 	private static List<String> linkType;
-	private static HashMap<String, enumFieldStyle> enumColors;
+	private static HashMap<String, EnumFieldStyle> enumColors;
 	static {
 		typeTrad = new HashMap<>();
 		typeTrad.put("Short text < 4000", ObjectField.TYPE_STRING);
@@ -150,17 +150,17 @@ public class AIModel implements java.io.Serializable {
 		typeTrad.put("Color", ObjectField.TYPE_COLOR);
 		typeTrad.put("Geographical coordinates", ObjectField.TYPE_GEOCOORDS);
 		enumColors = new HashMap<>();
-		enumColors.put("red", new enumFieldStyle("redbg", "#D9534F", HEXA_WHITE, "btn_red"));
-		enumColors.put("orange", new enumFieldStyle("orangebg", "#F0AD4E", HEXA_WHITE, "btn_orange"));
-		enumColors.put("pink", new enumFieldStyle("pinkbg", "#FF8EC1", HEXA_WHITE, "btn_pink"));
-		enumColors.put("green", new enumFieldStyle("greenbg", "#5CB85C", HEXA_WHITE, "btn_green"));
-		enumColors.put("blue", new enumFieldStyle("bluebg", "#5BC0DE", HEXA_WHITE, "btn_blue"));
-		enumColors.put("white", new enumFieldStyle("whitebg", HEXA_WHITE, HEXA_BLACK, "btn_white"));
-		enumColors.put("black", new enumFieldStyle("blackbg", HEXA_BLACK, HEXA_WHITE, "btn_black"));
-		enumColors.put("yellow", new enumFieldStyle("yellowbg", "#FFEF8D", HEXA_BLACK, "btn_yellow"));
-		enumColors.put("purple", new enumFieldStyle("purplebg", "#8C6AC4", HEXA_WHITE, "btn_purple"));
-		enumColors.put("brown", new enumFieldStyle("brownbg", "#CE8E67", HEXA_WHITE, "btn_brown"));
-		enumColors.put("grey", new enumFieldStyle("greybg", "#D0D0D0", HEXA_WHITE, "btn_grey"));
+		enumColors.put("red", new EnumFieldStyle("redbg", "#D9534F", HEXA_WHITE, "btn_red"));
+		enumColors.put("orange", new EnumFieldStyle("orangebg", "#F0AD4E", HEXA_WHITE, "btn_orange"));
+		enumColors.put("pink", new EnumFieldStyle("pinkbg", "#FF8EC1", HEXA_WHITE, "btn_pink"));
+		enumColors.put("green", new EnumFieldStyle("greenbg", "#5CB85C", HEXA_WHITE, "btn_green"));
+		enumColors.put("blue", new EnumFieldStyle("bluebg", "#5BC0DE", HEXA_WHITE, "btn_blue"));
+		enumColors.put("white", new EnumFieldStyle("whitebg", HEXA_WHITE, HEXA_BLACK, "btn_white"));
+		enumColors.put("black", new EnumFieldStyle("blackbg", HEXA_BLACK, HEXA_WHITE, "btn_black"));
+		enumColors.put("yellow", new EnumFieldStyle("yellowbg", "#FFEF8D", HEXA_BLACK, "btn_yellow"));
+		enumColors.put("purple", new EnumFieldStyle("purplebg", "#8C6AC4", HEXA_WHITE, "btn_purple"));
+		enumColors.put("brown", new EnumFieldStyle("brownbg", "#CE8E67", HEXA_WHITE, "btn_brown"));
+		enumColors.put("grey", new EnumFieldStyle("greybg", "#D0D0D0", HEXA_WHITE, "btn_grey"));
 		shortListIcon = Arrays.asList("star", "book", "arrow-up", "arrow-down", "clock", "envelope", "search", "folder", "list", "phone", "cloud", "key", "file", "calendar");
 		listIcon = Arrays.asList("1-circle-fill","1-circle","1-square-fill","1-square","123","2-circle-fill","2-circle","2-square-fill","2-square","3-circle-fill",
 		"3-circle","3-square-fill","3-square","4-circle-fill","4-circle","4-square-fill","4-square","5-circle-fill","5-circle","5-square-fill",
@@ -931,7 +931,7 @@ public class AIModel implements java.io.Serializable {
 			enumCodeFields.put(MODULE_ID_FIELD,moduleId);
 			
 			if (!Tool.isEmpty(color)){
-				enumFieldStyle style = enumColors.get(color);
+				EnumFieldStyle style = enumColors.get(color);
 				if(!Tool.isEmpty(style)){
 					enumCodeFields.put("lov_color_bg", style.hexa);
 					enumCodeFields.put("lov_icon", style.icon);

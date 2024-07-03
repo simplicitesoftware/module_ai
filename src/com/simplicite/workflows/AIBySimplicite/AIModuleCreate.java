@@ -81,7 +81,7 @@ public class AIModuleCreate extends Processus {
 
 		getContext(getActivity(ACTIVITY_GEN)).setDataFile("Data",EXISTING_OBJECT,getObjsIds(objs,g));
 		JSONObject jsonResponse =AITools.aiCaller(g, "you help to describe UML for non technical person","Describes the application defined by this JSON in a graphical way for non-technical users: "+json.toString() , null,false,true);
-		String contextApp =AITools.parseJsonOpenAIResponse(jsonResponse);
+		String contextApp =AITools.parseJsonResponse(jsonResponse);
 		contextApp = formatAnswerAI(contextApp);
 		return getModuleChat(contextApp,g);
 
@@ -236,7 +236,7 @@ public class AIModuleCreate extends Processus {
 			return new ArrayList<>();
 		}
 		JSONObject jsonResponse = AITools.aiCaller(g, "you help to create UML in json for application, your answers are automatically processed in java", prompt, historic,false,true);
-		String result = AITools.parseJsonOpenAIResponse(jsonResponse);
+		String result = AITools.parseJsonResponse(jsonResponse);
 		
 		List<String> listResult = new ArrayList<>();
 		JSONObject jsonres = AITools.getValidJson(result);

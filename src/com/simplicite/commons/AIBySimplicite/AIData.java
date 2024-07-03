@@ -260,7 +260,7 @@ public class AIData implements java.io.Serializable {
 	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
 		JSONObject jsonResponse = AITools.aiCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least 2 entries per class",false,true);
-		String response = AITools.parseJsonOpenAIResponse(jsonResponse);
+		String response = AITools.parseJsonResponse(jsonResponse);
 		JSONObject json = AITools.getValidJson(response);
 		if(Tool.isEmpty(json)){	
 			

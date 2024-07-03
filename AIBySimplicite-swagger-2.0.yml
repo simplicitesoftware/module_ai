@@ -261,9 +261,10 @@ paths:
         type: string
         required: false
         enum:
+        - ANTRHROPIC
+        - HUGGINGFACE
         - MISTRAL
         - AIML
-        - HUGGINGFACE
         - OPENAI
       - in: query
         name: aiSetConfig
@@ -433,9 +434,10 @@ definitions:
         description: Model
         type: string
         enum:
+        - ANTRHROPIC
+        - HUGGINGFACE
         - MISTRAL
         - AIML
-        - HUGGINGFACE
         - OPENAI
       aiSetConfig:
         description: Setting

@@ -56,11 +56,11 @@ public class AiMetrics implements java.io.Serializable {
 		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
 		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
 		JSONObject res = AITools.aiCaller(null, "\n ```OpenAPI "+swagger+"```",arrayPrompts,false,true,true);
-		JSONObject resultJS = splitRes(AITools.parseJsonOpenAIResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
+		JSONObject resultJS = splitRes(AITools.parseJsonResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
 		AppLog.info("AI response: "+resultJS.toString(1), null);
 		if (resultJS.has("error")) {
 			res = AITools.aiCaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
-			return new JSONObject().put("text",AITools.parseJsonOpenAIResponse(res));
+			return new JSONObject().put("text",AITools.parseJsonResponse(res));
 		}
 		return resultJS;
 	}
@@ -220,7 +220,7 @@ public class AiMetrics implements java.io.Serializable {
 		spec.append(js);
 		spec.append("\n```");
 		JSONObject res = AITools.aiCaller(g, spec.toString(), promptArray, false, true, true);
-		String result = AITools.parseJsonOpenAIResponse(res);
+		String result = AITools.parseJsonResponse(res);
 		JSONObject jsonRes = AITools.getValidJson(result);
 		if(Tool.isEmpty(jsonRes)){	
 			List<String> listResult = AITools.getJSONBlock(result,g);
