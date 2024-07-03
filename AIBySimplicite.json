@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.11",
+  "mdl_version": "0.12",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\",\n    \"branch\": \"6\"\n}",
@@ -497,19 +497,6 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AiSaveAsCrosstableAction~ENU",
-     "item": {
-      "lov_name": "TEXT",
-      "lov_code": "AiSaveAsCrosstableAction",
-      "lov_lang": "ENU",
-      "lov_value": "Save as crosstable",
-      "lov_order_by": 1,
-      "lov_event_id__lev_code": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "ListOfValue",
      "userkey": "TEXT~AI_BUTTON_CANCEL~FRA",
      "item": {
       "lov_name": "TEXT",
@@ -637,19 +624,6 @@
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
-    },
-    {
-     "object": "ListOfValue",
-     "userkey": "TEXT~AiSaveAsCrosstableAction~FRA",
-     "item": {
-      "lov_name": "TEXT",
-      "lov_code": "AiSaveAsCrosstableAction",
-      "lov_lang": "FRA",
-      "lov_value": "Enregistrer en tant que tableau croisé",
-      "lov_order_by": 1,
-      "lov_event_id__lev_code": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
     }
    ]
   },
@@ -687,51 +661,6 @@
    "icon": "img/system/list_of_values",
    "field": "row_module_id",
    "list": [
-    {
-     "object": "FieldListCode",
-     "userkey": "AI_CONF_MODELE~ANTRHROPIC",
-     "item": {
-      "lov_list_id__lov_name": "AI_CONF_MODELE",
-      "lov_code": "ANTRHROPIC",
-      "lov_order_by": 1,
-      "lov_label": null,
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "lov_color": null,
-      "lov_color_bg": null,
-      "lov_icon": null,
-      "lov_display": ["L"]
-     }
-    },
-    {
-     "object": "FieldListCode",
-     "userkey": "AI_CONF_MODELE~AIML",
-     "item": {
-      "lov_list_id__lov_name": "AI_CONF_MODELE",
-      "lov_code": "AIML",
-      "lov_order_by": 10,
-      "lov_label": "ai/ml",
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "lov_color": null,
-      "lov_color_bg": null,
-      "lov_icon": null,
-      "lov_display": ["L"]
-     }
-    },
-    {
-     "object": "FieldListCode",
-     "userkey": "AI_CONF_MODELE~HUGGINGFACE",
-     "item": {
-      "lov_list_id__lov_name": "AI_CONF_MODELE",
-      "lov_code": "HUGGINGFACE",
-      "lov_order_by": 10,
-      "lov_label": "huggingface",
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "lov_color": null,
-      "lov_color_bg": null,
-      "lov_icon": null,
-      "lov_display": ["L"]
-     }
-    },
     {
      "object": "FieldListCode",
      "userkey": "AI_CONF_MODELE~MISTRAL",
@@ -4914,46 +4843,6 @@
    ]
   },
   {
-   "object": "Crosstab",
-   "label": "Pivot tables",
-   "icon": "img/system/pivot_table",
-   "field": "row_module_id",
-   "list": [
-    {
-     "object": "Crosstab",
-     "userkey": "OrderStatusChart",
-     "item": {
-      "ctb_name": "OrderStatusChart",
-      "ctb_object_id__obo_name": "DemoOrder",
-      "ctb_function": "S",
-      "ctb_visible": "1",
-      "ctb_fixedcolors": true,
-      "ctb_precision": null,
-      "ctb_subtotal": false,
-      "ctb_totalcolor": null,
-      "ctb_caption": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "Crosstab",
-     "userkey": "OrderStatusCrossTab",
-     "item": {
-      "ctb_name": "OrderStatusCrossTab",
-      "ctb_object_id__obo_name": "DemoOrder",
-      "ctb_function": "S",
-      "ctb_visible": "1",
-      "ctb_fixedcolors": true,
-      "ctb_precision": null,
-      "ctb_subtotal": false,
-      "ctb_totalcolor": null,
-      "ctb_caption": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    }
-   ]
-  },
-  {
    "object": "Map",
    "label": "Main menu",
    "icon": "img/system/main_menu",
@@ -6311,78 +6200,6 @@
       "tsl_lang": "FRA",
       "tsl_value": "Enregistrer en tant que tableau croisé",
       "tsl_simplehelp": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    }
-   ]
-  },
-  {
-   "object": "TranslateCrosstab",
-   "label": "Pivot table translation",
-   "icon": "img/system/translation",
-   "field": "row_module_id",
-   "list": [
-    {
-     "object": "TranslateCrosstab",
-     "userkey": "Crosstab(OrderStatusCrossTab)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"ctb_name": "OrderStatusCrossTab"},
-       "icon": "img/system/pivot_table",
-       "label": "Pivot table",
-       "userkeylabel": "OrderStatusCrossTab",
-       "object": "Crosstab"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Order status cross tab",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateCrosstab",
-     "userkey": "Crosstab(OrderStatusCrossTab)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"ctb_name": "OrderStatusCrossTab"},
-       "icon": "img/system/pivot_table",
-       "label": "Pivot table",
-       "userkeylabel": "OrderStatusCrossTab",
-       "object": "Crosstab"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Order status cross tab",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateCrosstab",
-     "userkey": "Crosstab(OrderStatusChart)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"ctb_name": "OrderStatusChart"},
-       "icon": "img/system/pivot_table",
-       "label": "Pivot table",
-       "userkeylabel": "OrderStatusChart",
-       "object": "Crosstab"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Order status chart",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateCrosstab",
-     "userkey": "Crosstab(OrderStatusChart)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"ctb_name": "OrderStatusChart"},
-       "icon": "img/system/pivot_table",
-       "label": "Pivot table",
-       "userkeylabel": "OrderStatusChart",
-       "object": "Crosstab"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Order status chart",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
@@ -8278,26 +8095,6 @@
        "label": "External object",
        "userkeylabel": "AIProcessResource",
        "object": "ObjectExternal"
-      },
-      "prm_perm": true,
-      "prm_upd": false,
-      "prm_req": false,
-      "prm_prop": null,
-      "prm_value": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "Permission",
-     "userkey": "AI_BUSINESS~Crosstab(OrderStatusChart)~",
-     "item": {
-      "prm_group_id__grp_name": "AI_BUSINESS",
-      "prm_object": {
-       "item": {"ctb_name": "OrderStatusChart"},
-       "icon": "img/system/pivot_table",
-       "label": "Pivot table",
-       "userkeylabel": "OrderStatusChart",
-       "object": "Crosstab"
       },
       "prm_perm": true,
       "prm_upd": false,

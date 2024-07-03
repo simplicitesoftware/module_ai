@@ -2,7 +2,7 @@
 # / __(_)_ __  _ __| (_)__(_) |_ /_/
 # \__ \ | '  \| '_ \ | / _| |  _/ -_)
 # |___/_|_|_|_| .__/_|_\__|_|\__\___|
-#             |_| Module: AIBySimplicite 0.11
+#             |_| Module: AIBySimplicite 0.12
 components:
   schemas:
     Error404:
@@ -131,9 +131,9 @@ components:
           type: string
           enum:
           - ANTRHROPIC
+          - AIML
           - HUGGINGFACE
           - MISTRAL
-          - AIML
           - OPENAI
         aiSetConfig:
           description: Setting
@@ -453,9 +453,9 @@ paths:
           type: string
           enum:
           - ANTRHROPIC
+          - AIML
           - HUGGINGFACE
           - MISTRAL
-          - AIML
           - OPENAI
         in: query
         name: aiSetModele
@@ -511,7 +511,7 @@ info:
     email: contact@simplicitesoftware.com
   description: API for module AIBySimplicite
   title: AIBySimplicite
-  version: '0.11'
+  version: '0.12'
 tags:
 - name: AiSettings
   description: Configuring the wizard
