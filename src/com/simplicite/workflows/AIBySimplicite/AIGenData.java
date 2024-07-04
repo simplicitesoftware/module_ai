@@ -14,8 +14,9 @@ public class AIGenData extends Processus {
 	public String genData(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)
 			return null;
-		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
-		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
+		String pSetting = Grant.getSystemAdmin().hasParameter("AI_API_PARAM")?Grant.getSystemAdmin().getParameter("AI_API_PARAM"):"/";
+		String pUrl = Grant.getSystemAdmin().hasParameter("AI_API_URL")?Grant.getSystemAdmin().getParameter("AI_API_URL"):"/";
+			
 		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
 		String moduleId = getContext(getActivity("GGD_0100")).getDataValue("Field", "mdl_name");
 		JSONObject json = new JSONObject( getContext(getActivity("GGD_0150")).getDataValue("Data", "json_return"));

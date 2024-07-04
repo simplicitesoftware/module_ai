@@ -50,8 +50,9 @@ public class AIModuleCreate extends Processus {
 
 	public String checkConf(com.simplicite.bpm.ActivityFile context,com.simplicite.util.Grant g,java.util.List<String> list){
 		AppLog.info("checkConf: "+context.getActivity().getStep()+" "+String.join(", ", list), g);
-		String pSetting = Grant.getSystemAdmin().getParameter(AI_API_PARAM);
-		String pUrl = Grant.getSystemAdmin().getParameter(AI_API_URL);
+		String pSetting = Grant.getSystemAdmin().hasParameter(AI_API_PARAM)?Grant.getSystemAdmin().getParameter(AI_API_PARAM):"/";
+		String pUrl = Grant.getSystemAdmin().hasParameter(AI_API_URL)?Grant.getSystemAdmin().getParameter(AI_API_URL):"/";
+		
 		AppLog.info(HTMLTool.getListURL("AiSettings",""),g);
 		if("/".equals(pSetting) || "/".equals(pUrl)) {
 			AppLog.info((AI_SETTING_NEED),g);
@@ -72,8 +73,9 @@ public class AIModuleCreate extends Processus {
 	public String chatBot(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
-		String pSetting = Grant.getSystemAdmin().getParameter(AI_API_PARAM);
-		String pUrl = Grant.getSystemAdmin().getParameter(AI_API_URL);
+		String pSetting = Grant.getSystemAdmin().hasParameter(AI_API_PARAM)?Grant.getSystemAdmin().getParameter(AI_API_PARAM):"/";
+		String pUrl = Grant.getSystemAdmin().hasParameter(AI_API_URL)?Grant.getSystemAdmin().getParameter(AI_API_URL):"/";
+			
 		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T(AI_SETTING_NEED);
 		List<String[]> objs = getModuleObjects(getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID),g);
 		if (Tool.isEmpty(objs)) return getModuleChat("",g);
@@ -217,8 +219,9 @@ public class AIModuleCreate extends Processus {
 						"\t\t\t});\n" + //
 						"\t\t\t\n" + //
 						"\t\t});";
-		String pSetting = Grant.getSystemAdmin().getParameter(AI_API_PARAM);
-		String pUrl = Grant.getSystemAdmin().getParameter(AI_API_URL);
+		String pSetting = Grant.getSystemAdmin().hasParameter(AI_API_PARAM)?Grant.getSystemAdmin().getParameter(AI_API_PARAM):"/";
+		String pUrl = Grant.getSystemAdmin().hasParameter(AI_API_URL)?Grant.getSystemAdmin().getParameter(AI_API_URL):"/";
+						
 		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T(AI_SETTING_NEED);
 		List<String> listResult = getJsonAi( getPreviousContext(context).getActivity().getStep(), g);
 		if(Tool.isEmpty(listResult)) return EMPTY_TEXTAREA+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
@@ -321,8 +324,9 @@ public class AIModuleCreate extends Processus {
 	public String gen(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE){
 			return null;}
-		String pSetting = Grant.getSystemAdmin().getParameter(AI_API_PARAM);
-		String pUrl = Grant.getSystemAdmin().getParameter(AI_API_URL);
+		String pSetting = Grant.getSystemAdmin().hasParameter(AI_API_PARAM)?Grant.getSystemAdmin().getParameter(AI_API_PARAM):"/";
+		String pUrl = Grant.getSystemAdmin().hasParameter(AI_API_URL)?Grant.getSystemAdmin().getParameter(AI_API_URL):"/";
+			
 		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T(AI_SETTING_NEED);
 		String json = getAIAnswer(context,g);
 		if (Tool.isEmpty(json)){

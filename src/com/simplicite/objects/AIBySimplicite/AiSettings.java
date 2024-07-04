@@ -34,13 +34,25 @@ public class AiSettings extends ObjectDB {
 		BusinessObjectTool paramTool = paramObj.getTool();
 		synchronized(paramObj.getLock()){
 			try {
-				paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, AI_API_KEY));
+				if(!paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, AI_API_KEY))){
+					paramObj.setFieldValue(SYS_CODE, AI_API_KEY);
+					paramObj.setFieldValue("sys_value", "/");
+					paramObj.setFieldValue("row_module_id",ModuleDB.getModuleId("Application"));
+				}
 				paramObj.setFieldValue(SYS_VAL2, key);
 				paramTool.validateAndSave();
-				paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, AI_API_PARAM));
+				if(!paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, AI_API_PARAM))){
+					paramObj.setFieldValue(SYS_CODE, AI_API_PARAM);
+					paramObj.setFieldValue("sys_value", "{}");
+					paramObj.setFieldValue("row_module_id",ModuleDB.getModuleId("Application"));
+				}
 				paramObj.setFieldValue(SYS_VAL2, setting);
 				paramTool.validateAndSave();
-				paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, AI_API_URL));
+				if(!paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, AI_API_URL))){
+					paramObj.setFieldValue(SYS_CODE, AI_API_URL);
+					paramObj.setFieldValue("sys_value", "/");
+					paramObj.setFieldValue("row_module_id",ModuleDB.getModuleId("Application"));
+				}
 				paramObj.setFieldValue(SYS_VAL2, url);
 				paramTool.validateAndSave();
 			} catch (GetException | JSONException | ValidateException | SaveException e) {

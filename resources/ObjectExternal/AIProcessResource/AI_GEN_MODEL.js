@@ -157,5 +157,3 @@ var aiGenModel = aiGenModel || (function() {
 	}
 	return{AINewModel:AINewModel};
 })();
-
-

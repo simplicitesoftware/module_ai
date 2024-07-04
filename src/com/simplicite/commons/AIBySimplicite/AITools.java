@@ -28,7 +28,7 @@ import com.simplicite.util.tools.*;
  */
 public class AITools implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-    private static final JSONObject AI_API_PARAM = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM");
+    private static final JSONObject AI_API_PARAM = Grant.getSystemAdmin().hasParameter("AI_API_PARAM")? Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM"):createDefaultParam();
     private static final String LLM = getLLM();
     private static final String CLAUDE_LLM ="CLAUDE";
     private static final String HUGGINGFACE_LLM ="HUGGINGFACE";
@@ -50,7 +50,26 @@ public class AITools implements java.io.Serializable {
     private static final String SWAGGER_COMPONENTS="components";
     private static final String SWAGGER_SHEMAS="schemas";
 
-    
+    private static JSONObject createDefaultParam(){
+        ObjectDB obj = Grant.getSystemAdmin().getTmpObject("SystemParam");
+        BusinessObjectTool objT = obj.getTool();
+        synchronized(obj.getLock()){
+            try {
+                if(objT.selectForCreateOrUpdate(new JSONObject().put("sys_code", "AI_API_PARAM"))){
+                    return new JSONObject(obj.getFieldValue("sys_value"));
+                }else{
+                    obj.setFieldValue("sys_code", "AI_API_PARAM");
+                    obj.setFieldValue("row_module_id", ModuleDB.getModuleId("Application"));
+                    obj.setFieldValue("sys_value", "{}");
+                    objT.validateAndCreate();
+                }
+               
+            } catch (Exception e) {
+                AppLog.error(e,Grant.getSystemAdmin());
+            }
+        }
+        return new JSONObject();
+    }
     private static String getLLM(){
         if(AI_API_PARAM.optBoolean("ClaudeAPI", false)) return CLAUDE_LLM;
         if(AI_API_PARAM.optBoolean("HuggingAPI", false)) return HUGGINGFACE_LLM;
@@ -81,7 +100,7 @@ public class AITools implements java.io.Serializable {
             arrayPrompt= (JSONArray)prompt;
         }else{
             AppLog.info("Prompt must be a String or a JSONArray",g);
-            return "";
+            return "{}";
         }
         return aiCaller(g, specialisation,arrayPrompt,historic,secure,isSafeSpe,maxToken);
     }
@@ -90,15 +109,17 @@ public class AITools implements java.io.Serializable {
         if(!isSafeSpe) specialisation = JSONObject.quote(normalize(specialisation,true));
         if("\"\"".equals(specialisation)) specialisation = "";
         prompt = parsedPrompts(prompt,secure);
-        int histDepth = AI_API_PARAM.getInt("hist_depth");
-		String apiKey = Grant.getSystemAdmin().getParameter("AI_API_KEY");
-        String apiUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
+        int histDepth = AI_API_PARAM.optInt("hist_depth");
+        
+		String apiKey =  Grant.getSystemAdmin().hasParameter("AI_API_KEY")?Grant.getSystemAdmin().getParameter("AI_API_KEY"):"/";
+        String apiUrl = Grant.getSystemAdmin().hasParameter("AI_API_URL")?Grant.getSystemAdmin().getParameter("AI_API_URL"):"/";
+
         String model =AI_API_PARAM.optString("model","");
         boolean isClaudeAPI = CLAUDE_LLM.equals(LLM);
         
         if("/".equals(apiUrl)){
             AppLog.info("AI_API_URL not set", g);
-            return "";
+            return "{}";
         }
         if("/".equals(apiKey))apiKey = "";
        
@@ -155,7 +176,7 @@ public class AITools implements java.io.Serializable {
         } catch (IOException | URISyntaxException e) {
             AppLog.error(e,g);
         }
-        return "";
+        return "{}";
 
     }
     private static void addSpecificHeaders(HttpURLConnection connection,String apiKey){
@@ -333,7 +354,7 @@ public class AITools implements java.io.Serializable {
             AppLog.error(e,g);
         }
         connection.disconnect();
-        return "";
+        return "{}";
     }
     
     /**
@@ -363,7 +384,7 @@ public class AITools implements java.io.Serializable {
             AppLog.error(e,g);
         }
         connection.disconnect();
-        return "";
+        return "{}";
     }
     private static JSONArray optJSONArray(String array){
         try{
@@ -865,7 +886,8 @@ public class AITools implements java.io.Serializable {
         }
     }
     public static String parseJsonResponse(JSONObject res){
-       return res.getJSONArray("choices").getJSONObject(0).getJSONObject(MESSAGE_KEY).getString(CONTENT_KEY);
+        if(Tool.isEmpty(res)) return "Sorry an error occured";
+        return res.getJSONArray("choices").getJSONObject(0).getJSONObject(MESSAGE_KEY).getString(CONTENT_KEY);
     }
     public static JSONObject formatJsonOpenAIFormat(String result){
         return new JSONObject().put("choices",new JSONArray().put(new JSONObject().put(MESSAGE_KEY,new JSONObject().put(CONTENT_KEY,result))));

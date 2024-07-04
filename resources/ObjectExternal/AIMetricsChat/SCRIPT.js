@@ -147,4 +147,3 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	}
 	return { render: render ,sendMetricsMessage:sendMetricsMessage,saveAsCrosstable:saveAsCrosstable};
 })();
-
