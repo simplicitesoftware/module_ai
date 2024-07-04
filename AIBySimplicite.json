@@ -16,52 +16,17 @@
    "label": "System parameters",
    "icon": "img/system/system_param",
    "field": "row_module_id",
-   "list": [
-    {
-     "object": "SystemParam",
-     "userkey": "AI_API_KEY",
-     "item": {
-      "sys_code": "AI_API_KEY",
-      "sys_value": "/",
-      "sys_type": "PRV",
-      "sys_desc": "AI API key",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "SystemParam",
-     "userkey": "AI_API_PARAM",
-     "item": {
-      "sys_code": "AI_API_PARAM",
-      "sys_value": "/",
-      "sys_type": "PRV",
-      "sys_desc": "configuring api calls to an llm.\n===============================\n----\n**If necessary, specify the api key in the AI_API_KEY system parameter.**\n# Parrameters\n## hist_depth\nDefines the number of messages in the history used for the context.\nThe greater this number, the more tokens the request uses, but the more relevant is the response. \n## max_token\n## provider\nDefine provider for warning about data sovereignty\n*optional*  \nLimits the number of tokens in the ia response\n### default_max_token\nMaximum number of tokens in a usual context.\n### code_max_token\nMaximum number of tokens for thecnical calls.\n## trigger\nTo define a trigger for ia calls in fields (under development)\n\n# LLM spesific configuration exemple\n## OpenAI:\n```json \n{\n\t'provider': 'OpenAI',\n\t'model':'<gpt_model_to_use>',\n\t'OpenAI-Project': \"<my_openai_project_id>\",\n\t'OpenAI-Organization': \"<my_openai_organization_id>\",\n\t'hist_depth' : 3,\n\t'code_max_token' : 2000,\n\t'default_max_token':1500,\n\t'trigger':''\n}\n\n```\n## Mistral\n```json \n{\t\n\t'provider': 'MistralAI',\n\t'hist_depth' : 3,\n\t'code_max_token' : 2000,\n\t'default_max_token':1500,\n\t'trigger':''\n}\n\n```",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "SystemParam",
-     "userkey": "AI_API_URL",
-     "item": {
-      "sys_code": "AI_API_URL",
-      "sys_value": "/",
-      "sys_type": "PRV",
-      "sys_desc": "AI API URL",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "SystemParam",
-     "userkey": "AI_CHAT_BOT_NAME",
-     "item": {
-      "sys_code": "AI_CHAT_BOT_NAME",
-      "sys_value": "Georges",
-      "sys_type": "LFL",
-      "sys_desc": "Name of AI",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
+   "list": [{
+    "object": "SystemParam",
+    "userkey": "AI_CHAT_BOT_NAME",
+    "item": {
+     "sys_code": "AI_CHAT_BOT_NAME",
+     "sys_value": "Georges",
+     "sys_type": "LFL",
+     "sys_desc": "Name of AI",
+     "row_module_id__mdl_name": "AIBySimplicite"
     }
-   ]
+   }]
   },
   {
    "object": "View",
