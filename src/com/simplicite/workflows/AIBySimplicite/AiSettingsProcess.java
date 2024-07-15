@@ -10,8 +10,10 @@ import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
-
+import com.simplicite.util.tools.APITool;
 import com.simplicite.webapp.ObjectContextWeb;
+
+import ch.simschla.minify.cli.App;
 /**
  * Process AiSettingsProcess
  */
@@ -28,7 +30,30 @@ public class AiSettingsProcess extends Processus {
 	private static final String PARAM_ACT = "ASP-0400";
 	private static final String AI_DEFAULT_PARAM = "AI_DEFAULT_PARAM";
 	private static final String ERR_REQUIRED = "ERR_REQUIRED";
-
+	@Override
+	public void postActivate() {
+		// If no provider defined automatic import of datasets
+		Grant g = Grant.getSystemAdmin();
+		g.addResponsibility("AI_ADMIN");
+		ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);
+		obj.resetFilters();
+		if(obj.search().isEmpty()){
+			ObjectDB datasets = g.getTmpObject("Dataset");
+			synchronized(datasets.getLock()){
+				datasets.resetFilters();
+				datasets.setFieldFilter("row_module_id", getModuleId());
+				for(String[] row: datasets.search()){
+					datasets.select(row[datasets.getRowIdFieldIndex()]);
+					try {
+						datasets.invokeAction("Dataset-apply");
+					} catch (ActionException e) {
+						AppLog.error(e, g);
+					}
+				}
+			}
+		}
+		super.postActivate();
+	}
 	public String setAuth(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g) throws MethodException{
 		ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);
 		String providerid = getContext(getActivity(PROVIDER_ACT)).getDataValue(FIELD_DATA, ROW_ID);

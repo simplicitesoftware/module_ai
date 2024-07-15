@@ -25,7 +25,7 @@ public class AIGenData extends Processus {
 	public String callIA(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)
 			return null;
-		if(AITools.isAIParam(true)) return  g.T("AI_SETTING_NEED");
+		if(!AITools.isAIParam(true)) return  g.T("AI_SETTING_NEED");
 		String moduleId = getContext(getActivity("GGD_0100")).getDataValue("Field", "mdl_name");
 		JSONObject response = AIData.genDataForModule(moduleId,getGrant());
 		if(response.has("error")) return response.getString("error");

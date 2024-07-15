@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AIModel;
 import com.simplicite.commons.AIBySimplicite.AITools;
@@ -12,6 +13,7 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 import com.simplicite.webapp.ObjectContextWeb;
+
 
 
 
@@ -44,6 +46,8 @@ public class AIModuleCreate extends Processus {
 	private static final String END_SCRIPT="</script>";
 	private static final String DOMAIN="Domain";
 
+	
+	
 	/**
 	 * This method is used to generate the HTML content for the chat bot.
 	 * 
