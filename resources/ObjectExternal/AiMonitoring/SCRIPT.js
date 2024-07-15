@@ -7,7 +7,12 @@ var AiMonitoring = (function() {
 	}
 	function renderAINotParam(params){
 		$('#panel_AIMonitoring_3').hide();
-		$('#aimonitoring').append($T('AI_SETTING_NEED'));
+		if($T('AI_SETTING_NEED')==='AI_SETTING_NEED'){
+			$ui.getApp().getTexts((texts) => ctn.html(parseMsg(texts.AI_SETTING_NEED)));
+		}else{
+			$('#aimonitoring').append($T('AI_SETTING_NEED'));
+		}
+		
 		
 	}
 	function renderPingBannerAndChatBot(msg){
