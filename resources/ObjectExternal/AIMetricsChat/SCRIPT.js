@@ -30,9 +30,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			userName =app.getGrant().login;
 		}
 		userTemplateMetrics=userTemplateMetrics.replace('{{user}}', userName);
-		app.getSysParam(function(param){
-			botTemplateMetrics = botTemplateMetrics.replace("{{botName}}",param);
-		},"AI_CHAT_BOT_NAME");
+		setBotName();
 		$('#metrics_user_text').keypress(function(e) {
 			if (e.which === 13) {
 				sendMetricsMessage();
@@ -145,6 +143,16 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		});
 		
 	}
+	function setBotName(){
+		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+		let postParams = {"reqType":"BOT_NAME"};
+		app._call(false, url, postParams, function callback(botResponse){
+			console.log(botResponse);
+			let param = botResponse.botName;
+			botTemplateMetrics = botTemplateMetrics.replace("{{botName}}",param);
+			return true;
+		});
+		return false;
+	}
 	return { render: render ,sendMetricsMessage:sendMetricsMessage,saveAsCrosstable:saveAsCrosstable};
 })();
-

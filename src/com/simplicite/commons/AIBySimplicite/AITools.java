@@ -2,6 +2,7 @@ package com.simplicite.commons.AIBySimplicite;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONException;
 import java.util.*;
 
 import com.simplicite.util.*;
@@ -18,8 +19,11 @@ import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
+
+
 
 
 
@@ -28,38 +32,77 @@ import com.simplicite.util.tools.*;
  */
 public class AITools implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-    private static final JSONObject AI_API_PARAM = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM");
-    private static final String LLM = getLLM();
+    private static final String SYSPARAM_AI_API_PARAM="AI_API_PARAM";
     private static final String CLAUDE_LLM ="CLAUDE";
     private static final String HUGGINGFACE_LLM ="HUGGINGFACE";
+    private static final String AUTH_PREFIX = "Bearer ";
+    private static final String AUTH_PROPERTY = "Authorization";
+
     private static final String CONTENT_KEY = "content";
     private static final String MESSAGE_KEY = "message";
     private static final String MESSAGES_KEY = "messages";
     private static final String USAGE_KEY = "usage";
+    private static final String PROVIDER_KEY = "provider";
+    private static final String API_KEY = "api_key";
+    private static final String MODEL_KEY = "model";
+    private static final String ERROR_KEY = "error";
+    private static final String LABEL_KEY = "label";
+
 
     private static final String MAX_TOKEN_PARAM_KEY = "default_max_token";
     private static final String ASSISTANT_ROLE="assistant";
     private static final String SYSTEM_ROLE= "system";
+    private static final String HTML_LEFT_COLUMN_ID = "left_column";
     
     private static final String MAX_TOKEN = "max_tokens";
     public static final String TYPE_TEXT = "text";
     public static final String TYPE_IMAGE_URL = "image_url";
-    private static final boolean SHOW_DATA_DISCLAIMER = AI_API_PARAM.optBoolean("showDataDisclaimer",true);
-    private static final String AI_PROVIDER = AI_API_PARAM.optString("provider");
+   
     private static final String TRUSTED = "trusted";
     private static final String SWAGGER_COMPONENTS="components";
     private static final String SWAGGER_SHEMAS="schemas";
 
-    
+	private static final String SYS_CODE = "sys_code";
+	private static final String SYS_VAL2 = "sys_value2";
+    private static final String DEFAULT_MODULE = "Application";
+
+    public static final String PING_SUCCESS = "200";
+
+    private static  JSONObject aiApiParam =getOptAiApiParam();
+    private static  int aiHistDepth = aiApiParam.optInt("hist_depth");
+    private static  String aiChatBotName = getAIParam("bot_name", "George");
+    private static  String llm = getLLM();
+    private static  boolean showDataDisclaimer = aiApiParam.optBoolean("showDataDisclaimer",true);
+    private static  String aiProvider = getAIParam(PROVIDER_KEY);
+    private static String apiKey = getAIParam(API_KEY);
+
+    private static JSONObject getOptAiApiParam(){
+        if (Grant.getSystemAdmin().hasParameter(SYSPARAM_AI_API_PARAM)) {
+            return Grant.getSystemAdmin().getJSONObjectParameter(SYSPARAM_AI_API_PARAM);
+        }
+        JSONObject param = new JSONObject();
+        setParameters(param);
+        return param;
+    }
     private static String getLLM(){
-        if(AI_API_PARAM.optBoolean("ClaudeAPI", false)) return CLAUDE_LLM;
-        if(AI_API_PARAM.optBoolean("HuggingAPI", false)) return HUGGINGFACE_LLM;
+        if(aiApiParam.optBoolean("ClaudeAPI", false)) return CLAUDE_LLM;
+        if(aiApiParam.optBoolean("HuggingAPI", false)) return HUGGINGFACE_LLM;
         return "GPT";
+    }
+    private static void reloadAIParams(){
+        AppLog.info("Reload AI parameters",Grant.getSystemAdmin());
+        aiApiParam =getOptAiApiParam();
+        aiHistDepth = aiApiParam.optInt("hist_depth");
+        aiChatBotName = getAIParam("bot_name", "George");
+        llm = getLLM();
+        showDataDisclaimer = aiApiParam.optBoolean("showDataDisclaimer",true);
+        aiProvider = getAIParam(PROVIDER_KEY);
+        apiKey = getAIParam(API_KEY);
     }
 	/**
      * Function to format the call to chatAI API.
-     * Need the AI_API_KEY parameter set up with your key.
-     * Use the AI_API_PARAM hist_depth parameter to limit the number of exchanges in the historic (useful to limit the number off token of requests).
+     * Need the api key parameter set up with your key.
+     * Use the aiApiParam hist_depth parameter to limit the number of exchanges in the historic (useful to limit the number off token of requests).
 	 * @param g Grant
 	 * @param specialisation Prompt to specialise chatbot (ex: You're a java developer).
 	 * @param prompt 
@@ -90,18 +133,14 @@ public class AITools implements java.io.Serializable {
         if(!isSafeSpe) specialisation = JSONObject.quote(normalize(specialisation,true));
         if("\"\"".equals(specialisation)) specialisation = "";
         prompt = parsedPrompts(prompt,secure);
-        int histDepth = AI_API_PARAM.getInt("hist_depth");
-		String apiKey = Grant.getSystemAdmin().getParameter("AI_API_KEY");
-        String apiUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
-        String model =AI_API_PARAM.optString("model","");
-        boolean isClaudeAPI = CLAUDE_LLM.equals(LLM);
+        String apiUrl =getAIParam("completion_url");
+        String model =getAIParam(MODEL_KEY);
+        boolean isClaudeAPI = CLAUDE_LLM.equals(llm);
         
-        if("/".equals(apiUrl)){
-            AppLog.info("AI_API_URL not set", g);
+        if(Tool.isEmpty(apiUrl)){
+            AppLog.info("completion url not set", g);
             return "";
         }
-        if("/".equals(apiKey))apiKey = "";
-       
         try {
             URI url = new URI(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
@@ -115,34 +154,32 @@ public class AITools implements java.io.Serializable {
             if(maxToken>0)
                 postData.put(MAX_TOKEN, maxToken);
             if(!Tool.isEmpty(model))
-                postData.put("model", model);
+                postData.put(MODEL_KEY, model);
             JSONArray messages = new JSONArray();
             // format specialisation.
             if(!Tool.isEmpty(specialisation))
                 messages.put(new JSONObject().put("role",SYSTEM_ROLE).put(CONTENT_KEY,specialisation));
             // add historic (restrict to Param histDepth the number of messages )
             if(!Tool.isEmpty(historic)){
-                messages.putAll(getCleanHistoric(historic,histDepth));
+                messages.putAll(getCleanHistoric(historic));
             }
             
             messages.put(new JSONObject().put("role","user").put(CONTENT_KEY,prompt));
             postData.put(MESSAGES_KEY, messages);
-            AppLog.info("AI API call :"+postData.toString(1),g);
-            if(HUGGINGFACE_LLM.equals(LLM)){
+            
+            if(HUGGINGFACE_LLM.equals(llm)){
                 postData = getHuggingFormatData(postData);
             }
             if(isClaudeAPI){
                 postData = getClaudeFormatData(postData);
             }
-            AppLog.info("AI API call :"+postData.toString(),g);
+
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
                 outputStream.writeBytes(postData.toString());
                 outputStream.flush();
             }
             
             int responseCode = connection.getResponseCode();
-            AppLog.info("AI API response code :"+responseCode,g);
-
             if(responseCode!=200){
                 
                 return readError(connection,responseCode,g);
@@ -159,18 +196,18 @@ public class AITools implements java.io.Serializable {
 
     }
     private static void addSpecificHeaders(HttpURLConnection connection,String apiKey){
-        String projet = AI_API_PARAM.optString("OpenAI-Project","");
-        String org = AI_API_PARAM.optString("OpenAI-Organization","");
-        switch (LLM) {
+        String projet = getAIParam("OpenAI-Project");
+        String org = getAIParam("OpenAI-Organization");
+        switch (llm) {
             case CLAUDE_LLM:
                 connection.setRequestProperty("x-api-key",apiKey);
                 connection.setRequestProperty("anthropic-version","2023-06-01");
                 break;
             case HUGGINGFACE_LLM:
-                connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+                connection.setRequestProperty(AUTH_PROPERTY, AUTH_PREFIX + apiKey);
                 break;
             default:
-                connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+                connection.setRequestProperty(AUTH_PROPERTY, AUTH_PREFIX + apiKey);
                 if(!Tool.isEmpty(projet) && !Tool.isEmpty(org)){
                     connection.setRequestProperty("OpenAI-Project", projet);
                     connection.setRequestProperty("OpenAI-Organization", org);
@@ -189,7 +226,6 @@ public class AITools implements java.io.Serializable {
                 String content = message.optString(CONTENT_KEY);
                 postData.put(SYSTEM_ROLE, content);
                 toremove = i;
-                AppLog.info("AI API system to claude :"+content,Grant.getSystemAdmin());
                 
             }else if("user".equals(message.optString("role")) && !Tool.isEmpty(message.optString(CONTENT_KEY))){// to clomplete
                 JSONArray contentArray = message.optJSONArray(CONTENT_KEY);
@@ -205,7 +241,7 @@ public class AITools implements java.io.Serializable {
             messages.remove(toremove);
         }
         if(!postData.has(MAX_TOKEN)){
-            postData.put(MAX_TOKEN,AI_API_PARAM.getInt(MAX_TOKEN_PARAM_KEY));
+            postData.put(MAX_TOKEN,aiApiParam.getInt(MAX_TOKEN_PARAM_KEY));
         }
         return postData;
     }
@@ -276,13 +312,13 @@ public class AITools implements java.io.Serializable {
         }
         return "";
     }
-    private static JSONArray getCleanHistoric(JSONArray historic,int histDepth){
+    private static JSONArray getCleanHistoric(JSONArray historic){
         int len = historic.length();
-        if( len< histDepth*2){
+        if( len< aiHistDepth*2){
             return historic;
         }else{
             JSONArray newHistoric = new JSONArray();
-            for(int i = len - 2*histDepth; i < len;i++ )
+            for(int i = len - 2*aiHistDepth; i < len;i++ )
                 newHistoric.put(historic.getJSONObject(i));
             return newHistoric;
         }
@@ -323,7 +359,7 @@ public class AITools implements java.io.Serializable {
             }
             AppLog.info("AI API error :["+responseCode+"]"+response.toString(),g);
             JSONObject error = new JSONObject(response.toString());
-            String errorMessage = error.optJSONObject("error").optString(MESSAGE_KEY,"no message");
+            String errorMessage = error.optJSONObject(ERROR_KEY).optString(MESSAGE_KEY,"no message");
             AppLog.info("AI API error :["+responseCode+"]: "+errorMessage,g);
             connection.disconnect();
             
@@ -353,7 +389,6 @@ public class AITools implements java.io.Serializable {
             }
             connection.disconnect();
             String res = response.toString();
-            AppLog.info("AI API response :"+res,g);
             JSONObject resJson = refactorAiResponseInGPT(res);
             if(resJson.has(USAGE_KEY )){
                 AppLog.info("AI used token :"+new JSONObject(res).optJSONObject(USAGE_KEY).toString(1), g);
@@ -399,8 +434,8 @@ public class AITools implements java.io.Serializable {
     }
     public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken,boolean secure,boolean isSafeSpe){
         int tokens = 1500;
-        if(!Tool.isEmpty(AI_API_PARAM)) {
-            tokens = maxToken?AI_API_PARAM.getInt(MAX_TOKEN_PARAM_KEY):0;
+        if(!Tool.isEmpty(aiApiParam)) {
+            tokens = maxToken?aiApiParam.getInt(MAX_TOKEN_PARAM_KEY):0;
         }
         return new JSONObject(aiCaller(g, specialisation,prompt,historic,secure,isSafeSpe,tokens));
 
@@ -420,7 +455,7 @@ public class AITools implements java.io.Serializable {
 	 * @return
 	 */
 	public static JSONObject aiCodeHelper(Grant g, String prompt,JSONArray historic){
-        return new JSONObject(aiCaller(g, "you are java expert, optimize your function, answer only function",prompt,historic,AI_API_PARAM.getInt("code_max_token")));
+        return new JSONObject(aiCaller(g, "you are java expert, optimize your function, answer only function",prompt,historic,aiApiParam.getInt("code_max_token")));
     }
 
     /**
@@ -743,7 +778,7 @@ public class AITools implements java.io.Serializable {
             if (val.has("enum")) {
                 JSONArray enumCodes = new JSONArray();
                 for (EnumItem eItem : fld.getList().getAllItems()) {
-                    enumCodes.put(new JSONObject().put("code",eItem.getCode()).put("label", eItem.getValue().replace(" ", "_")));
+                    enumCodes.put(new JSONObject().put("code",eItem.getCode()).put(LABEL_KEY, eItem.getValue().replace(" ", "_")));
                 }
                 val.put("enum", enumCodes);
             }
@@ -803,20 +838,18 @@ public class AITools implements java.io.Serializable {
         return res;
     }
     public static String getDataDisclaimer(Grant g){
-        if (SHOW_DATA_DISCLAIMER){
-            return g.T("AI_DISCLAIMER_DATA").replace("[PROVIDER]", AI_PROVIDER);
+        if (showDataDisclaimer){
+            return g.T("AI_DISCLAIMER_DATA").replace("[PROVIDER]", aiProvider);
         }
         return "";
     }
     public static String createOrUpdateWithJson(String objName,JSONObject fields, Grant g){
-        AppLog.info("Create or update object :"+objName,g);
 		JSONObject filters = getFKFilters(objName,fields, g);
 		ObjectDB obj = g.getTmpObject(objName);
 		try{
 			synchronized(obj.getLock()){
 				BusinessObjectTool objTool = obj.getTool();
 				if(!objTool.selectForCreateOrUpdate(filters)){
-                    AppLog.info("Create object :"+objName,g);
 					obj.setValuesFromJSONObject(fields, false, false);
 					obj.populate(true);
 					objTool.validateAndCreate();
@@ -848,7 +881,7 @@ public class AITools implements java.io.Serializable {
 	}
     private static JSONObject refactorAiResponseInGPT(String res){
         String resultText = "";
-        switch (LLM) {
+        switch (llm) {
             case "HUUGINGFACE":
                 JSONArray resArray = optJSONArray(res);
                 resultText = resArray.optJSONObject(0).getString("generated_text");
@@ -870,6 +903,182 @@ public class AITools implements java.io.Serializable {
     public static JSONObject formatJsonOpenAIFormat(String result){
         return new JSONObject().put("choices",new JSONArray().put(new JSONObject().put(MESSAGE_KEY,new JSONObject().put(CONTENT_KEY,result))));
     }
+    public static String pingAI(){
+        Grant g = Grant.getSystemAdmin();
+        String apiUrl = getAIParam("ping_url");
+        if(Tool.isEmpty(apiUrl)){
+            AppLog.info("ping url not set", g);
+            return Message.formatWarning("AI_NO_PING_URL",null,null);
+        }
+        try {
+            URI url = new URI(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty(AUTH_PROPERTY, AUTH_PREFIX + apiKey);
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return PING_SUCCESS;
+            }else{
+                JSONObject error = new JSONObject(readError(connection,responseCode,g));
+                return Message.formatError("AI_PING_ERROR",error.getString("code")+": "+error.getString(ERROR_KEY),null);
+            }
+        } catch (IOException | URISyntaxException e) {
+            AppLog.error(e,g);
+            return Message.formatError("AI_PING_ERROR",e.getMessage(),null);
+        }
+       
 
+        
+    }
+    public static List<String> getModels(String url,String apiKey,Grant g) throws IOException, URISyntaxException{
+        URI apiUrl = new URI(url);
+        HttpURLConnection connection = (HttpURLConnection) apiUrl.toURL().openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty(AUTH_PROPERTY, AUTH_PREFIX + apiKey);
+        ArrayList<String> res = new ArrayList<>();
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
 
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+           
+            JSONObject resJson = new JSONObject(response.toString());
+            for(Object model : resJson.optJSONArray("data")){
+                JSONObject jsonModel = (JSONObject)model;
+                if(jsonModel.has("id") && MODEL_KEY.equals(jsonModel.optString("object"))){
+                    res.add(jsonModel.getString("id"));
+                }
+            }
+
+        } else {
+            JSONObject error = new JSONObject(readError(connection,responseCode,g));
+            res.add(ERROR_KEY);
+            res.add(error.getString("code")+": "+error.getString(ERROR_KEY));
+            
+
+        }
+        connection.disconnect();
+        return res;
+    }
+    public static void setParameters(JSONObject setting){
+        Grant g = Grant.getSystemAdmin();
+        ObjectDB paramObj = g.getTmpObject("SystemParam");
+		BusinessObjectTool paramTool = paramObj.getTool();
+		synchronized(paramObj.getLock()){
+			try {
+				if(!paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, SYSPARAM_AI_API_PARAM))){
+					paramObj.setFieldValue(SYS_CODE, SYSPARAM_AI_API_PARAM);
+					paramObj.setFieldValue("sys_value", "{}");
+                    paramObj.setFieldValue("sys_type", "PRV");
+					paramObj.setFieldValue("row_module_id",ModuleDB.getModuleId(DEFAULT_MODULE));
+				}
+                if(!Tool.isEmpty(setting)) paramObj.setFieldValue(SYS_VAL2, setting.toString(1));
+				paramTool.validateAndSave();
+			} catch (GetException | JSONException | ValidateException | SaveException e) {
+				AppLog.error( e, g);
+
+			}
+		}
+        SystemParameters.clearCache();
+        if(!Tool.isEmpty(setting)) reloadAIParams();
+    }
+    public static boolean isAIParam(){
+        return isAIParam(true);
+    }
+    public static boolean isAIParam(boolean checkPing){
+		String pUrl = getAIParam("completion_url");
+        String ping = pingAI();
+        return !(Tool.isEmpty(aiApiParam)|| Tool.isEmpty(pUrl) || (checkPing && (!"/".equals(aiApiParam.optString("ping_url","/")) && !PING_SUCCESS.equals(ping))));
+    }
+    public static String getBotName(){
+        return aiChatBotName;
+    }
+    public static int getHistDepth(){
+        return aiHistDepth;
+    }
+
+    public static JSONObject getParameters(boolean forDisplay,String lang){
+        JSONObject params = new JSONObject(aiApiParam,JSONObject.getNames(aiApiParam));
+        if(!forDisplay) return params;
+        JSONObject defaultParam = new JSONObject(Grant.getSystemAdmin().T("AI_DEFAULT_PARAM"));
+        AppLog.info(defaultParam.toString(1), null);
+		JSONArray specificParam = new JSONArray();
+        JSONObject newParam = new JSONObject();
+        newParam.put(HTML_LEFT_COLUMN_ID, new JSONArray());
+        newParam.put("right_column", new JSONArray());
+		for(String key: params.keySet()){
+            if(API_KEY.equals(key)) continue;
+            if(defaultParam.has(key)){
+                JSONObject data = new JSONObject().put("field", key).put("value", getDisplayField(key,params.get(key),defaultParam.optJSONObject(key))).put(LABEL_KEY, optLabel(key,defaultParam,lang));
+                if(defaultParam.optJSONObject(key).optBoolean(HTML_LEFT_COLUMN_ID)){
+                    newParam.getJSONArray(HTML_LEFT_COLUMN_ID).put(data);
+                }else{
+                    newParam.getJSONArray("right_column").put(data);
+                }
+            }else{
+                specificParam.put(new JSONObject().put("key", key).put("value", params.get(key)));
+            }
+		}
+        newParam.put(PROVIDER_KEY, aiProvider);
+        newParam.put("providerFields", specificParam);
+        String ping = pingAI();
+        boolean isSuccess = PING_SUCCESS.equals(ping);
+        newParam.put("ping_success",isSuccess);
+        if(!isSuccess){
+            newParam.put(ERROR_KEY,ping);
+        }
+        AppLog.info(newParam.toString(1), null);
+        return newParam;
+    }
+    public static String getAIParam(String key){
+        return getAIParam(key,"");
+    }
+    public static String getAIParam(String key,String defaultValue){
+        return aiApiParam.optString(key,defaultValue);
+    }
+    public static Object getAIParam(String key,Object defaultValue){
+        return aiApiParam.has(key)?aiApiParam.get(key):defaultValue;
+    }
+    public static JSONObject getCurrentParams(JSONObject defaultParams){
+        JSONObject params = new JSONObject();
+        List<String> notCopyField= Arrays.asList(API_KEY,PROVIDER_KEY);
+        for(String k : defaultParams.keySet()){
+            Object field = defaultParams.get(k);
+            AppLog.info((field instanceof JSONObject?"isJson":"isString"),null);
+            String defaultValue = field instanceof JSONObject?((JSONObject)field).optString("defaultValue"):field.toString();
+            AppLog.info(defaultParams.optString(k), null);
+            AppLog.info(defaultValue, null);
+            if(!notCopyField.contains(k)){
+                params.put(k,getAIParam(k,defaultValue));
+            }else{
+                params.put(k,defaultValue);
+            }
+        }
+        AppLog.info(params.toString(1), null);
+        return params;
+    }
+    private static String getDisplayField(String key, Object value,JSONObject defaultField){
+        switch(defaultField.optString("type")){
+            case "boolean":
+                return (boolean)value?"Yes":"No";
+            case "url":
+                return "<a id=\""+key+"\" href=\""+value+"\">"+value+"</a>";
+            default:
+                return value.toString();
+
+        }
+    }
+    public static String optLabel(String key,JSONObject defaultFields,String lang){
+		JSONObject fieldDefLabel = defaultFields.optJSONObject(key,new JSONObject()).optJSONObject(LABEL_KEY);
+		if(Tool.isEmpty(fieldDefLabel)) return key.replaceAll("[_-]", " ");
+		if(!fieldDefLabel.has(lang)) lang = "ENU";
+		String label = fieldDefLabel.optString(lang);
+		return  (Tool.isEmpty(fieldDefLabel)?key.replaceAll("[_-]", " "):label);
+	}
 }

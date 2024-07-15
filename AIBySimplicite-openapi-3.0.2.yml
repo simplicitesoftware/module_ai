@@ -2,7 +2,7 @@
 # / __(_)_ __  _ __| (_)__(_) |_ /_/
 # \__ \ | '  \| '_ \ | / _| |  _/ -_)
 # |___/_|_|_|_| .__/_|_\__|_|\__\___|
-#             |_| Module: AIBySimplicite 0.12
+#             |_| Module: AIBySimplicite 0.13
 components:
   schemas:
     Error404:
@@ -16,16 +16,16 @@ components:
           type: integer
           enum:
           - 404
-    ArrayOfAiSettings:
-      type: array
-      items:
-        $ref: '#/components/schemas/AiSettings'
     ActionResult:
       type: object
       properties:
         result:
           description: Action result
           type: string
+    ArrayOfAIProvider:
+      type: array
+      items:
+        $ref: '#/components/schemas/AIProvider'
     TreeviewData:
       type: object
       properties:
@@ -106,6 +106,33 @@ components:
         name:
           description: Name
           type: string
+    AIProvider:
+      type: object
+      properties:
+        aiPrvDefaultUrl:
+          description: Default url
+          type: string
+        aiPrvPingUrl:
+          description: Ping url
+          type: string
+        aiPrvProvider:
+          description: Provider
+          type: string
+        aiPrvDataModel:
+          description: Specific parameter
+          type: string
+        aiPrvCompletionUrl:
+          description: Completion url
+          type: string
+        aiPrvHelp:
+          description: Key and endpoints help
+          type: string
+        row_id:
+          description: Unique technical row ID
+          type: string
+        aiPrvModelsUrl:
+          description: Models url
+          type: string
     Error403:
       type: object
       properties:
@@ -117,30 +144,6 @@ components:
           type: integer
           enum:
           - 403
-    AiSettings:
-      type: object
-      properties:
-        aiSetUrl:
-          description: Set api url
-          type: string
-        aiSetActive:
-          description: Active
-          type: boolean
-        aiSetModele:
-          description: Model
-          type: string
-          enum:
-          - ANTRHROPIC
-          - AIML
-          - HUGGINGFACE
-          - MISTRAL
-          - OPENAI
-        aiSetConfig:
-          description: Setting
-          type: string
-        row_id:
-          description: Unique technical row ID
-          type: string
   securitySchemes:
     basicAuth:
       scheme: basic
@@ -203,24 +206,24 @@ paths:
                 $ref: '#/components/schemas/Error401'
       tags:
       - session
-  /rest/AiSettings/{row_id}:
+  /rest/AIProvider/{row_id}:
     post:
-      summary: Create a new AiSettings business object record
+      summary: Create a new AIProvider business object record
       security:
       - bearerAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AiSettings'
-      operationId: obj-aisettings-create
+              $ref: '#/components/schemas/AIProvider'
+      operationId: obj-aiprovider-create
       responses:
         '200':
           description: Success in creating a new business object record
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AiSettings'
+                $ref: '#/components/schemas/AIProvider'
         '400':
           description: Bad request
           content:
@@ -247,19 +250,19 @@ paths:
         description: Row ID (or empty or _ for all row IDs)
         required: true
       tags:
-      - AiSettings
+      - AIProvider
     get:
-      summary: Get a AiSettings business object record
+      summary: Get a AIProvider business object record
       security:
       - bearerAuth: []
-      operationId: obj-aisettings-get
+      operationId: obj-aiprovider-get
       responses:
         '200':
           description: Success in getting a single business object record
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AiSettings'
+                $ref: '#/components/schemas/AIProvider'
         '401':
           description: Unauthorized
           content:
@@ -304,12 +307,12 @@ paths:
         description: Inline objects?
         required: false
       tags:
-      - AiSettings
+      - AIProvider
     delete:
-      summary: Delete a AiSettings business object record
+      summary: Delete a AIProvider business object record
       security:
       - bearerAuth: []
-      operationId: obj-aisettings-delete
+      operationId: obj-aiprovider-delete
       responses:
         '200':
           description: Success in deleting a business object record
@@ -347,24 +350,24 @@ paths:
         description: Row ID (or empty or _ for all row IDs)
         required: true
       tags:
-      - AiSettings
+      - AIProvider
     put:
-      summary: Update a AiSettings business object record
+      summary: Update a AIProvider business object record
       security:
       - bearerAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AiSettings'
-      operationId: obj-aisettings-update
+              $ref: '#/components/schemas/AIProvider'
+      operationId: obj-aiprovider-update
       responses:
         '200':
           description: Success in updating a business object record
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AiSettings'
+                $ref: '#/components/schemas/AIProvider'
         '400':
           description: Bad request
           content:
@@ -397,13 +400,13 @@ paths:
         description: Row ID (or empty or _ for all row IDs)
         required: true
       tags:
-      - AiSettings
-  /rest/AiSettings:
+      - AIProvider
+  /rest/AIProvider:
     get:
-      summary: Search AiSettings business object records or get contextualized metadata
+      summary: Search AIProvider business object records or get contextualized metadata
       security:
       - bearerAuth: []
-      operationId: obj-aisettings-search
+      operationId: obj-aiprovider-search
       responses:
         '200':
           description: Success in searching business object records (or in getting
@@ -411,7 +414,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArrayOfAiSettings'
+                $ref: '#/components/schemas/ArrayOfAIProvider'
         '401':
           description: Unauthorized
           content:
@@ -444,37 +447,49 @@ paths:
         description: Documentation?
         required: false
       - schema:
-          type: boolean
-        in: query
-        name: aiSetActive
-        description: Search filter for Active
-        required: false
-      - schema:
           type: string
-          enum:
-          - ANTRHROPIC
-          - AIML
-          - HUGGINGFACE
-          - MISTRAL
-          - OPENAI
         in: query
-        name: aiSetModele
-        description: Search filter for Model
+        name: aiPrvProvider
+        description: Search filter for Provider
         required: false
       - schema:
           type: string
         in: query
-        name: aiSetConfig
-        description: Search filter for Setting
+        name: aiPrvDefaultUrl
+        description: Search filter for Default url
         required: false
       - schema:
           type: string
         in: query
-        name: aiSetUrl
-        description: Search filter for Set api url
+        name: aiPrvDataModel
+        description: Search filter for Specific parameter
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvModelsUrl
+        description: Search filter for Models url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvHelp
+        description: Search filter for Key and endpoints help
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvCompletionUrl
+        description: Search filter for Completion url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvPingUrl
+        description: Search filter for Ping url
         required: false
       tags:
-      - AiSettings
+      - AIProvider
   /:
     get:
       summary: Get user session information
@@ -511,7 +526,7 @@ info:
     email: contact@simplicitesoftware.com
   description: API for module AIBySimplicite
   title: AIBySimplicite
-  version: '0.12'
+  version: '0.13'
 tags:
-- name: AiSettings
-  description: Configuring the wizard
+- name: AIProvider
+  description: Provider

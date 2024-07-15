@@ -17,7 +17,7 @@ public class AIField implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String AI_ERROR_RETURN = "AI_ERROR_RETURN";
 	private static final String JSON_ERROR_KEY = "error";
-	private static String aiApiParamTrigger = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM").getString("trigger");
+	private static String aiApiParamTrigger = AITools.getAIParam("trigger");
 	public static List<String> validateAIField(ObjectField fld,Grant g){
 		return validateAIField(fld,null,g);
 	}

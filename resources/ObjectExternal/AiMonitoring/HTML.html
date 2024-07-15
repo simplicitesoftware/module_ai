@@ -1,0 +1,44 @@
+<template id="AiMonitoringTemplate">
+    <div class="container">
+        <h1>AI parameters</h1>
+        <div class="left_column">
+            {{#left_column}}
+            <div class="item">
+                <label for="{{field}}">{{label}}:</label>
+                <span id="field">{{{value}}}</span>
+            </div>
+            {{/left_column}}
+        </div>
+        <div class="right_column">
+            {{#right_column}}
+            <div class="item">
+                <label for="{{field}}">{{label}}:</label>
+                <span id="field">{{{value}}}</span>
+            </div>
+            {{/right_column}}
+        </div>
+    </div>
+
+    <div class="provider-fields-container container">
+        <h1>Specific Parameters for {{provider}}</h1>
+        <div class="provider-fields">
+            {{#providerFields}}
+            <div class="item">
+                <label for="{{key}}">{{key}}:</label>
+                <span id="{{key}}">{{value}}</span>
+            </div>
+            {{/providerFields}}
+        </div>
+    </div>
+    
+    <div id="ping_banner" class="ping-banner {{#ping_success}}success-banner{{/ping_success}}{{^ping_success}}error-banner{{/ping_success}}">
+        {{#ping_success}}
+            successful ping
+        {{/ping_success}}
+        {{^ping_success}}
+            {{error}}
+        {{/ping_success}}
+    </div>
+</template>    
+
+<div id="aimonitoring" ></div>

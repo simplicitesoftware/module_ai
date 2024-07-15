@@ -35,10 +35,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		$("#add-img-icon").attr("src", $ui.getApp().getIconURL("icon/color/camera"));
 		botTemplate = $("#botTemplate").html();
 		userTemplate = $("#userTemplate").html();
-		app.getSysParam(function(param){
-			botTemplate = botTemplate.replace("{{botName}}",param);
-			$("#AIchatbotProcess").html($("#AIchatbotProcess").html().replace("{{botName}}",param));
-		},"AI_CHAT_BOT_NAME");
+		setBotName();
 		
 		if(app.getGrant().firstname ){
 			userName =app.getGrant().firstname;
@@ -157,7 +154,18 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		};
 		input.click();
 	}
-	
+	function setBotName(){
+		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+		let postParams = {"reqType":"BOT_NAME"};
+		app._call(false, url, postParams, function callback(botResponse){
+			console.log(botResponse);
+			let param = botResponse.botName;
+			botTemplate = botTemplate.replace("{{botName}}",param);
+			$("#AIchatbotProcess").html($("#AIchatbotProcess").html().replace("{{botName}}",param));
+			return true;
+		});
+		return false;
+	}
 	return {
 		sendModuleMessage: sendModuleMessage,
 		addImage: addImage,

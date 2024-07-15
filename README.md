@@ -100,7 +100,7 @@ The `Personal data`, `Confidential data` and `Intimate` fields are not sent to t
 Generating AI graphs on a module's data
 In a `view` add an `external page` of source `External object`: `AIMetricsChat?module=<you_module_name>`
 
-`AiSettings` business object definition
+`AIProvider` business object definition
 ---------------------------------------
 
 
@@ -109,23 +109,13 @@ In a `view` add an `external page` of source `External object`: `AIMetricsChat?m
 
 | Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
 |--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
-| `aiSetActive`                                                | boolean                                  | yes      | yes       |          | -                                                                                |
-| `aiSetModele`                                                | enum(100) using `AI_CONF_MODELE` list    | yes*     | yes       |          | -                                                                                |
-| `aiSetConfig`                                                | text(1000)                               |          |           |          | -                                                                                |
-| `aiSetUrl`                                                   | url(100)                                 |          | yes       |          | -                                                                                |
-
-### Lists
-
-* `AI_CONF_MODELE`
-    - `ANTRHROPIC` 
-    - `AIML` ai/ml
-    - `HUGGINGFACE` huggingface
-    - `MISTRAL` Mistral
-    - `OPENAI` OpenAI
-
-### Custom actions
-
-* `AI_ACTIVE_SETTINGS`: 
+| `aiPrvProvider`                                              | char(100)                                | yes*     | yes       |          | -                                                                                |
+| `aiPrvDefaultUrl`                                            | url(100)                                 | yes      | yes       |          | -                                                                                |
+| `aiPrvDataModel`                                             | text(1000)                               | yes      | yes       |          | -                                                                                |
+| `aiPrvModelsUrl`                                             | url(100)                                 | yes      | yes       |          | -                                                                                |
+| `aiPrvHelp`                                                  | text(5000)                               |          | yes       |          | -                                                                                |
+| `aiPrvCompletionUrl`                                         | url(100)                                 | yes      | yes       |          | -                                                                                |
+| `aiPrvPingUrl`                                               | url(100)                                 |          | yes       |          | -                                                                                |
 
 `AIGenData` business process definition
 ---------------------------------------
@@ -165,6 +155,19 @@ Auomatic model generation process
 * `RemoveModule`: Remove module
 * `CheckAIConfig`: 
 
+`AiSettingsProcess` business process definition
+-----------------------------------------------
+
+
+
+### Activities
+
+* `SelectProvider`: 
+* `Auth`: 
+* `OtherParam`: 
+* `Begin`: 
+* `End`: 
+
 `AIChatBot` external object definition
 --------------------------------------
 
@@ -182,6 +185,12 @@ Front tool
 
 AI contextual chat for personalised metrics. 
 Use parameter "module" to specify context.
+
+
+`AiMonitoring` external object definition
+-----------------------------------------
+
+
 
 
 `AIProcessResource` external object definition

@@ -2,7 +2,7 @@
 # / __(_)_ __  _ __| (_)__(_) |_ /_/
 # \__ \ | '  \| '_ \ | / _| |  _/ -_)
 # |___/_|_|_|_| .__/_|_\__|_|\__\___|
-#             |_| Module: AIBySimplicite 0.12
+#             |_| Module: AIBySimplicite 0.13
 basePath: /api
 paths:
   /login:
@@ -50,18 +50,18 @@ paths:
           description: Unauthorized
       tags:
       - session
-  /rest/AiSettings/{row_id}:
+  /rest/AIProvider/{row_id}:
     post:
-      summary: Create a new AiSettings business object record
+      summary: Create a new AIProvider business object record
       security:
       - bearerAuth: []
       produces:
       - application/json
-      operationId: obj-aisettings-create
+      operationId: obj-aiprovider-create
       responses:
         '200':
           schema:
-            $ref: '#/definitions/AiSettings'
+            $ref: '#/definitions/AIProvider'
           description: Success in creating a new business object record
         '400':
           schema:
@@ -82,24 +82,24 @@ paths:
         type: string
         required: true
       - schema:
-          $ref: '#/definitions/AiSettings'
+          $ref: '#/definitions/AIProvider'
         in: body
         name: body
       tags:
-      - AiSettings
+      - AIProvider
       consumes:
       - application/json
     get:
-      summary: Get a AiSettings business object record
+      summary: Get a AIProvider business object record
       security:
       - bearerAuth: []
       produces:
       - application/json
-      operationId: obj-aisettings-get
+      operationId: obj-aiprovider-get
       responses:
         '200':
           schema:
-            $ref: '#/definitions/AiSettings'
+            $ref: '#/definitions/AIProvider'
           description: Success in getting a single business object record
         '401':
           schema:
@@ -135,14 +135,14 @@ paths:
         type: boolean
         required: false
       tags:
-      - AiSettings
+      - AIProvider
     delete:
-      summary: Delete a AiSettings business object record
+      summary: Delete a AIProvider business object record
       security:
       - bearerAuth: []
       produces:
       - application/json
-      operationId: obj-aisettings-delete
+      operationId: obj-aiprovider-delete
       responses:
         '200':
           description: Success in deleting a business object record
@@ -169,18 +169,18 @@ paths:
         type: string
         required: true
       tags:
-      - AiSettings
+      - AIProvider
     put:
-      summary: Update a AiSettings business object record
+      summary: Update a AIProvider business object record
       security:
       - bearerAuth: []
       produces:
       - application/json
-      operationId: obj-aisettings-update
+      operationId: obj-aiprovider-update
       responses:
         '200':
           schema:
-            $ref: '#/definitions/AiSettings'
+            $ref: '#/definitions/AIProvider'
           description: Success in updating a business object record
         '400':
           schema:
@@ -205,25 +205,25 @@ paths:
         type: string
         required: true
       - schema:
-          $ref: '#/definitions/AiSettings'
+          $ref: '#/definitions/AIProvider'
         in: body
         name: body
       tags:
-      - AiSettings
+      - AIProvider
       consumes:
       - application/json
-  /rest/AiSettings:
+  /rest/AIProvider:
     get:
-      summary: Search AiSettings business object records or get contextualized metadata
+      summary: Search AIProvider business object records or get contextualized metadata
       security:
       - bearerAuth: []
       produces:
       - application/json
-      operationId: obj-aisettings-search
+      operationId: obj-aiprovider-search
       responses:
         '200':
           schema:
-            $ref: '#/definitions/ArrayOfAiSettings'
+            $ref: '#/definitions/ArrayOfAIProvider'
           description: Success in searching business object records (or in getting
             contextualized business object metadata, documentation, ...)
         '401':
@@ -251,33 +251,42 @@ paths:
         type: boolean
         required: false
       - in: query
-        name: aiSetActive
-        description: Search filter for Active
-        type: boolean
-        required: false
-      - in: query
-        name: aiSetModele
-        description: Search filter for Model
-        type: string
-        required: false
-        enum:
-        - ANTRHROPIC
-        - AIML
-        - HUGGINGFACE
-        - MISTRAL
-        - OPENAI
-      - in: query
-        name: aiSetConfig
-        description: Search filter for Setting
+        name: aiPrvProvider
+        description: Search filter for Provider
         type: string
         required: false
       - in: query
-        name: aiSetUrl
-        description: Search filter for Set api url
+        name: aiPrvDefaultUrl
+        description: Search filter for Default url
+        type: string
+        required: false
+      - in: query
+        name: aiPrvDataModel
+        description: Search filter for Specific parameter
+        type: string
+        required: false
+      - in: query
+        name: aiPrvModelsUrl
+        description: Search filter for Models url
+        type: string
+        required: false
+      - in: query
+        name: aiPrvHelp
+        description: Search filter for Key and endpoints help
+        type: string
+        required: false
+      - in: query
+        name: aiPrvCompletionUrl
+        description: Search filter for Completion url
+        type: string
+        required: false
+      - in: query
+        name: aiPrvPingUrl
+        description: Search filter for Ping url
         type: string
         required: false
       tags:
-      - AiSettings
+      - AIProvider
   /:
     get:
       summary: Get user session information
@@ -320,16 +329,16 @@ definitions:
         type: integer
         enum:
         - 404
-  ArrayOfAiSettings:
-    type: array
-    items:
-      $ref: '#/definitions/AiSettings'
   ActionResult:
     type: object
     properties:
       result:
         description: Action result
         type: string
+  ArrayOfAIProvider:
+    type: array
+    items:
+      $ref: '#/definitions/AIProvider'
   TreeviewData:
     type: object
     properties:
@@ -410,6 +419,33 @@ definitions:
       name:
         description: Name
         type: string
+  AIProvider:
+    type: object
+    properties:
+      aiPrvDefaultUrl:
+        description: Default url
+        type: string
+      aiPrvPingUrl:
+        description: Ping url
+        type: string
+      aiPrvProvider:
+        description: Provider
+        type: string
+      aiPrvDataModel:
+        description: Specific parameter
+        type: string
+      aiPrvCompletionUrl:
+        description: Completion url
+        type: string
+      aiPrvHelp:
+        description: Key and endpoints help
+        type: string
+      row_id:
+        description: Unique technical row ID
+        type: string
+      aiPrvModelsUrl:
+        description: Models url
+        type: string
   Error403:
     type: object
     properties:
@@ -421,30 +457,6 @@ definitions:
         type: integer
         enum:
         - 403
-  AiSettings:
-    type: object
-    properties:
-      aiSetUrl:
-        description: Set api url
-        type: string
-      aiSetActive:
-        description: Active
-        type: boolean
-      aiSetModele:
-        description: Model
-        type: string
-        enum:
-        - ANTRHROPIC
-        - AIML
-        - HUGGINGFACE
-        - MISTRAL
-        - OPENAI
-      aiSetConfig:
-        description: Setting
-        type: string
-      row_id:
-        description: Unique technical row ID
-        type: string
 swagger: '2.0'
 info:
   license:
@@ -456,7 +468,7 @@ info:
     email: contact@simplicitesoftware.com
   description: API for module AIBySimplicite
   title: AIBySimplicite
-  version: '0.12'
+  version: '0.13'
 tags:
-- name: AiSettings
-  description: Configuring the wizard
+- name: AIProvider
+  description: Provider

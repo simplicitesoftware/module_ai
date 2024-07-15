@@ -8,10 +8,7 @@ var AIChatBot = AIChatBot || (function() {
 	function render(params,spe,dataDisclaimer) {
 		console.log("AIChatBot render");
 		botTemplate = $("#botTemplate").html();
-		app.getSysParam(function(param){
-			botTemplate = Mustache.render(botTemplate, {botName:param});
-		},"AI_CHAT_BOT_NAME");
-		
+		setBotName();
 		if(app.getGrant().firstname ){
 			userName =app.getGrant().firstname;
 		}else{
@@ -40,10 +37,12 @@ var AIChatBot = AIChatBot || (function() {
 			let text ={};
 			text.role = "user";
 			text.content = $(this).find(".msg").text();
+			console.log(text);
 			historic.push(JSON.stringify(text));
 			text={};
 			text.role = "assistant";
 			text.content = $(this).next(".bot-messages").find(".msg").text();
+			console.log(text);
 			historic.push(JSON.stringify(text));
 			
 		});
@@ -91,6 +90,17 @@ var AIChatBot = AIChatBot || (function() {
 			"'": '&#039;'
 		};
 		return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+	}
+	function setBotName(){
+		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+		let postParams = {"reqType":"BOT_NAME"};
+		app._call(false, url, postParams, function callback(botResponse){
+			console.log(botResponse);
+			let param = botResponse.botName;
+			botTemplate = Mustache.render(botTemplate, {botName:param});
+			return true;
+		});
+		return false;
 	}
 	return { render: render, chatbotSendMessage: chatbotSendMessage};
 
