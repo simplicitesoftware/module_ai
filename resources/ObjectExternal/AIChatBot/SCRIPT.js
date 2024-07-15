@@ -6,7 +6,6 @@ var AIChatBot = AIChatBot || (function() {
 	let userName ="user";
 	
 	function render(params,spe,dataDisclaimer) {
-		console.log("AIChatBot render");
 		botTemplate = $("#botTemplate").html();
 		setBotName();
 		if(app.getGrant().firstname ){
@@ -37,12 +36,10 @@ var AIChatBot = AIChatBot || (function() {
 			let text ={};
 			text.role = "user";
 			text.content = $(this).find(".msg").text();
-			console.log(text);
 			historic.push(JSON.stringify(text));
 			text={};
 			text.role = "assistant";
 			text.content = $(this).next(".bot-messages").find(".msg").text();
-			console.log(text);
 			historic.push(JSON.stringify(text));
 			
 		});
@@ -95,7 +92,6 @@ var AIChatBot = AIChatBot || (function() {
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"BOT_NAME"};
 		app._call(false, url, postParams, function callback(botResponse){
-			console.log(botResponse);
 			let param = botResponse.botName;
 			botTemplate = Mustache.render(botTemplate, {botName:param});
 			return true;

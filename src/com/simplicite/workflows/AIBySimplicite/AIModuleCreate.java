@@ -197,7 +197,6 @@ public class AIModuleCreate extends Processus {
 						"\t\t\taceEditor.getSession().setValue($(\"#json_return\").val(), 0);\r\n" + //
 						"\t\t\taceEditor.getSession().on('change', function() {\r\n" + //
 						"\t\t\t\tlet val=aceEditor.getSession().getValue();\r\n" + //
-						"\t\t\t\tconsole.log(val);\r\n" + //
 						"\t\t\t\t$(\"#json_return\").val(val);\r\n" + //
 						"\t\t\t});\n" + //
 						"\t\t\t\n" + //

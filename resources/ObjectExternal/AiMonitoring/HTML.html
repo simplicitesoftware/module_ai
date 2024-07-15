@@ -31,14 +31,14 @@
         </div>
     </div>
     
-    <div id="ping_banner" class="ping-banner {{#ping_success}}success-banner{{/ping_success}}{{^ping_success}}error-banner{{/ping_success}}">
-        {{#ping_success}}
-            successful ping
-        {{/ping_success}}
-        {{^ping_success}}
-            {{error}}
-        {{/ping_success}}
+    <div id="ping_banner" class="ping-banner ">
     </div>
+    <script>
+        
+        console.log("test : {{ping}}");
+        AiMonitoring.renderPingBannerAndChatBot("{{ping}}");
+       
+    </script>
 </template>    
 
 <div id="aimonitoring" ></div>

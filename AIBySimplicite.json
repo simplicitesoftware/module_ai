@@ -325,6 +325,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_DEFAULT_PROVIDER_NAME~ANY",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_DEFAULT_PROVIDER_NAME",
+      "lov_lang": "ANY",
+      "lov_value": "the AI provider",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~ChatBot~ANY",
      "item": {
       "lov_name": "TEXT",
@@ -487,6 +500,19 @@
       "lov_code": "AI_SUCCESS",
       "lov_lang": "ENU",
       "lov_value": "Your module has been generated successfully.",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_SUCCESS_PING~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_SUCCESS_PING",
+      "lov_lang": "ENU",
+      "lov_value": "Successful ping",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -669,6 +695,19 @@
       "lov_code": "AI_SUCCESS",
       "lov_lang": "FRA",
       "lov_value": "Votre module a été généré avec succès.",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_SUCCESS_PING~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_SUCCESS_PING",
+      "lov_lang": "FRA",
+      "lov_value": "Ping réussi",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -5991,7 +6030,7 @@
       "res_file": {
        "path": "resources/ObjectExternal/AIMetricsChat/SCRIPT.js",
        "mime": "text/javascript",
-       "name": "SCRIPT.js"
+       "name": "CHAT_BOT_SCRIPT.js"
       },
       "res_image": null,
       "row_module_id__mdl_name": "AIBySimplicite"

@@ -10,10 +10,8 @@ import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
-import com.simplicite.util.tools.APITool;
 import com.simplicite.webapp.ObjectContextWeb;
 
-import ch.simschla.minify.cli.App;
 /**
  * Process AiSettingsProcess
  */
@@ -153,9 +151,6 @@ public class AiSettingsProcess extends Processus {
 	@Override
 	public void postValidate(ActivityFile context) {
 		if(PARAM_ACT.equals(context.getActivity().getStep())){
-			for(DataFile d: context.getDataFiles("Data")){
-				AppLog.info(d.getName()+": "+String.join(", ",d.getValues()), getGrant());
-			}
 			ObjectDB obj = getGrant().getTmpObject(PROVIDER_OBJECT);
 			JSONObject param = new JSONObject();
 			synchronized(obj.getLock()){

@@ -19,10 +19,8 @@ import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
-
 
 
 
@@ -33,6 +31,9 @@ import com.simplicite.util.tools.*;
 public class AITools implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
     private static final String SYSPARAM_AI_API_PARAM="AI_API_PARAM";
+    private static final String SYSPARAM_AI_CHAT_BOT_NAME="AI_CHAT_BOT_NAME";
+    private static final String SYSPARAM_AI_API_KEY="AI_API_KEY";
+    private static final String SYSPARAM_AI_API_URL="AI_API_URL";
     private static final String CLAUDE_LLM ="CLAUDE";
     private static final String HUGGINGFACE_LLM ="HUGGINGFACE";
     private static final String AUTH_PREFIX = "Bearer ";
@@ -47,6 +48,9 @@ public class AITools implements java.io.Serializable {
     private static final String MODEL_KEY = "model";
     private static final String ERROR_KEY = "error";
     private static final String LABEL_KEY = "label";
+    private static final String BOT_NAME_KEY = "bot_name";
+    private static final String COMPLETION_KEY = "completion_url";
+
 
 
     private static final String MAX_TOKEN_PARAM_KEY = "default_max_token";
@@ -70,19 +74,91 @@ public class AITools implements java.io.Serializable {
 
     private static  JSONObject aiApiParam =getOptAiApiParam();
     private static  int aiHistDepth = aiApiParam.optInt("hist_depth");
-    private static  String aiChatBotName = getAIParam("bot_name", "George");
+    private static  String aiChatBotName = getAIParam(BOT_NAME_KEY, "George");
     private static  String llm = getLLM();
     private static  boolean showDataDisclaimer = aiApiParam.optBoolean("showDataDisclaimer",true);
-    private static  String aiProvider = getAIParam(PROVIDER_KEY);
+    private static  String aiProvider = getProvider();
     private static String apiKey = getAIParam(API_KEY);
-
+    private static String completionUrl = getAIParam(COMPLETION_KEY);
     private static JSONObject getOptAiApiParam(){
-        if (Grant.getSystemAdmin().hasParameter(SYSPARAM_AI_API_PARAM)) {
-            return Grant.getSystemAdmin().getJSONObjectParameter(SYSPARAM_AI_API_PARAM);
+        Grant g = Grant.getSystemAdmin();
+        if (g.hasParameter(SYSPARAM_AI_API_PARAM)) {
+            JSONObject param = new JSONObject(g.getParameter(SYSPARAM_AI_API_PARAM));
+            if(g.hasParameter(SYSPARAM_AI_CHAT_BOT_NAME) || g.hasParameter(SYSPARAM_AI_API_KEY) || g.hasParameter(SYSPARAM_AI_API_URL)){
+                patchSysParamMerged(param);
+            }
+            return param;
         }
         JSONObject param = new JSONObject();
         setParameters(param);
         return param;
+    }
+    private static String getProvider(){
+        String provider = getAIParam(PROVIDER_KEY);
+        if(Tool.isEmpty(provider)){
+            String regex = "\\/\\/([\\w\\.]+)";
+            Pattern pattern = Pattern.compile(regex);
+            String url = getAIParam(COMPLETION_KEY);
+            Matcher matcher = pattern.matcher(url);
+            if(matcher.find()){
+                provider = matcher.group(1);
+            }
+            if(!Tool.isEmpty(provider)){
+                setParameters(aiApiParam.put(PROVIDER_KEY, provider));   
+            }else{
+                provider = Grant.getSystemAdmin().T("AI_DEFAULT_PROVIDER_NAME");
+            }
+        }
+        return provider;
+    }
+    /**
+     * This method is used to patch the merged system parameters.
+     * It checks if the old AI sysparams style exists and if so, it patches the new AI sysparams.
+     * If there are conflicting parameters, the new parameters are preserved.
+     * 
+     * @param None
+     * @return None
+     */
+    private static boolean patchSysParamMerged(JSONObject param){
+        Grant g = Grant.getSystemAdmin();
+        if(!Tool.isEmpty(param)){
+            //bot name
+            checkOldSysParam(SYSPARAM_AI_CHAT_BOT_NAME,BOT_NAME_KEY,param,g);
+            
+            //api key
+            checkOldSysParam(SYSPARAM_AI_API_KEY, API_KEY, param, g);
+            //api completion url
+            checkOldSysParam(SYSPARAM_AI_API_URL, COMPLETION_KEY, param, g);
+            
+            setParameters(param);
+        }
+        return true;
+    }
+    private static Boolean checkOldSysParam(String name,String paramKey,JSONObject param,Grant g){
+        if(g.hasParameter(name)){
+            String tmpVal= g.getParameter(name);
+            if(!param.has(paramKey)){
+                param.put(paramKey,tmpVal);
+            }
+            ObjectDB paramObj = g.getTmpObject("SystemParam");
+            BusinessObjectTool paramTool = paramObj.getTool();
+            synchronized(paramObj.getLock()){
+                try{
+                    List<String[]> parameters = paramTool.search(new JSONObject().put(SYS_CODE,name));
+                    if(parameters.size()==1){
+                        paramTool.selectForDelete(parameters.get(0)[paramObj.getRowIdFieldIndex()]);
+                        paramTool.delete();
+
+                    }
+                }catch(GetException | DeleteException | SearchException | JSONException e){
+                    AppLog.error(e,g);
+                    return false;
+                }
+                
+            }
+        }
+        return true;
+
     }
     private static String getLLM(){
         if(aiApiParam.optBoolean("ClaudeAPI", false)) return CLAUDE_LLM;
@@ -90,11 +166,11 @@ public class AITools implements java.io.Serializable {
         return "GPT";
     }
     private static void reloadAIParams(){
-        AppLog.info("Reload AI parameters",Grant.getSystemAdmin());
-        aiApiParam =getOptAiApiParam();
+                aiApiParam =getOptAiApiParam();
         aiHistDepth = aiApiParam.optInt("hist_depth");
-        aiChatBotName = getAIParam("bot_name", "George");
+        aiChatBotName = getAIParam(BOT_NAME_KEY, "George");
         llm = getLLM();
+        completionUrl = getAIParam(COMPLETION_KEY);
         showDataDisclaimer = aiApiParam.optBoolean("showDataDisclaimer",true);
         aiProvider = getAIParam(PROVIDER_KEY);
         apiKey = getAIParam(API_KEY);
@@ -133,16 +209,15 @@ public class AITools implements java.io.Serializable {
         if(!isSafeSpe) specialisation = JSONObject.quote(normalize(specialisation,true));
         if("\"\"".equals(specialisation)) specialisation = "";
         prompt = parsedPrompts(prompt,secure);
-        String apiUrl =getAIParam("completion_url");
         String model =getAIParam(MODEL_KEY);
         boolean isClaudeAPI = CLAUDE_LLM.equals(llm);
         
-        if(Tool.isEmpty(apiUrl)){
+        if(Tool.isEmpty(completionUrl)){
             AppLog.info("completion url not set", g);
             return "";
         }
         try {
-            URI url = new URI(apiUrl);
+            URI url = new URI(completionUrl);
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
@@ -992,9 +1067,8 @@ public class AITools implements java.io.Serializable {
         return isAIParam(true);
     }
     public static boolean isAIParam(boolean checkPing){
-		String pUrl = getAIParam("completion_url");
         String ping = pingAI();
-        return !(Tool.isEmpty(aiApiParam)|| Tool.isEmpty(pUrl) || (checkPing && (!"/".equals(aiApiParam.optString("ping_url","/")) && !PING_SUCCESS.equals(ping))));
+        return !(Tool.isEmpty(aiApiParam)|| Tool.isEmpty(completionUrl) || (checkPing && (!"/".equals(aiApiParam.optString("ping_url","/")) && !PING_SUCCESS.equals(ping))));
     }
     public static String getBotName(){
         return aiChatBotName;
@@ -1007,8 +1081,7 @@ public class AITools implements java.io.Serializable {
         JSONObject params = new JSONObject(aiApiParam,JSONObject.getNames(aiApiParam));
         if(!forDisplay) return params;
         JSONObject defaultParam = new JSONObject(Grant.getSystemAdmin().T("AI_DEFAULT_PARAM"));
-        AppLog.info(defaultParam.toString(1), null);
-		JSONArray specificParam = new JSONArray();
+        		JSONArray specificParam = new JSONArray();
         JSONObject newParam = new JSONObject();
         newParam.put(HTML_LEFT_COLUMN_ID, new JSONArray());
         newParam.put("right_column", new JSONArray());
@@ -1029,12 +1102,11 @@ public class AITools implements java.io.Serializable {
         newParam.put("providerFields", specificParam);
         String ping = pingAI();
         boolean isSuccess = PING_SUCCESS.equals(ping);
-        newParam.put("ping_success",isSuccess);
-        if(!isSuccess){
-            newParam.put(ERROR_KEY,ping);
+        if(isSuccess){
+           ping = Message.formatInfo("AI_SUCCESS_PING",null,null);
         }
-        AppLog.info(newParam.toString(1), null);
-        return newParam;
+        newParam.put("ping",ping);
+                return newParam;
     }
     public static String getAIParam(String key){
         return getAIParam(key,"");
@@ -1050,17 +1122,13 @@ public class AITools implements java.io.Serializable {
         List<String> notCopyField= Arrays.asList(API_KEY,PROVIDER_KEY);
         for(String k : defaultParams.keySet()){
             Object field = defaultParams.get(k);
-            AppLog.info((field instanceof JSONObject?"isJson":"isString"),null);
             String defaultValue = field instanceof JSONObject?((JSONObject)field).optString("defaultValue"):field.toString();
-            AppLog.info(defaultParams.optString(k), null);
-            AppLog.info(defaultValue, null);
             if(!notCopyField.contains(k)){
                 params.put(k,getAIParam(k,defaultValue));
             }else{
                 params.put(k,defaultValue);
             }
         }
-        AppLog.info(params.toString(1), null);
         return params;
     }
     private static String getDisplayField(String key, Object value,JSONObject defaultField){

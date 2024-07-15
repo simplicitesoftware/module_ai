@@ -158,8 +158,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"BOT_NAME"};
 		app._call(false, url, postParams, function callback(botResponse){
-			console.log(botResponse);
-			let param = botResponse.botName;
+						let param = botResponse.botName;
 			botTemplate = botTemplate.replace("{{botName}}",param);
 			$("#AIchatbotProcess").html($("#AIchatbotProcess").html().replace("{{botName}}",param));
 			return true;

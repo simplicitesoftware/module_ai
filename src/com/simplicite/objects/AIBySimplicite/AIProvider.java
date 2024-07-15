@@ -34,8 +34,7 @@ public class AIProvider extends ObjectDB {
 	public String getParamPage(String[] models,List<String> requiredFields){
 		JSONObject defaultFields = getDefaultFields();
 		String htmlTemplate = HTMLTool.getResourceHTMLContent(this,"AISettingsParamTemplate");
-		AppLog.info("default: "+defaultFields.toString(1), getGrant());
-		JSONObject specificParam = new JSONObject(getFieldValue("aiPrvDataModel"));
+				JSONObject specificParam = new JSONObject(getFieldValue("aiPrvDataModel"));
 		JSONObject param = AITools.getCurrentParams(defaultFields);
 		specificParam = AITools.getCurrentParams(specificParam);
 		param.put("provider", getFieldValue("aiPrvProvider"));
@@ -60,8 +59,7 @@ public class AIProvider extends ObjectDB {
 		JSONArray fieldsHtml = new JSONArray();
 		for (String field : fields) {
 			JSONObject json = getFieldJSON(field,param,models,requiredFields,fieldsParam);
-			AppLog.info("field: "+json.toString(1), getGrant());
-			fieldsHtml.put(MustacheTool.apply(fieldTemplate, json));
+						fieldsHtml.put(MustacheTool.apply(fieldTemplate, json));
 		}
 		return fieldsHtml;
 
