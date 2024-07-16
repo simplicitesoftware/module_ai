@@ -22,6 +22,10 @@ components:
         result:
           description: Action result
           type: string
+    ArrayOfAIProvider:
+      type: array
+      items:
+        $ref: '#/components/schemas/AIProvider'
     TreeviewData:
       type: object
       properties:
@@ -102,6 +106,33 @@ components:
         name:
           description: Name
           type: string
+    AIProvider:
+      type: object
+      properties:
+        aiPrvDefaultUrl:
+          description: Default url
+          type: string
+        aiPrvPingUrl:
+          description: Ping url
+          type: string
+        aiPrvProvider:
+          description: Provider
+          type: string
+        aiPrvDataModel:
+          description: Specific parameter
+          type: string
+        aiPrvCompletionUrl:
+          description: Completion url
+          type: string
+        aiPrvHelp:
+          description: Key and endpoints help
+          type: string
+        row_id:
+          description: Unique technical row ID
+          type: string
+        aiPrvModelsUrl:
+          description: Models url
+          type: string
     Error403:
       type: object
       properties:
@@ -175,6 +206,290 @@ paths:
                 $ref: '#/components/schemas/Error401'
       tags:
       - session
+  /rest/AIProvider/{row_id}:
+    post:
+      summary: Create a new AIProvider business object record
+      security:
+      - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIProvider'
+      operationId: obj-aiprovider-create
+      responses:
+        '200':
+          description: Success in creating a new business object record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProvider'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      tags:
+      - AIProvider
+    get:
+      summary: Get a AIProvider business object record
+      security:
+      - bearerAuth: []
+      operationId: obj-aiprovider-get
+      responses:
+        '200':
+          description: Success in getting a single business object record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProvider'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      - schema:
+          type: boolean
+        in: query
+        name: _inline_documents
+        description: Inline documents?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _inline_thumbnails
+        description: Inline documents' thumbnails?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _inline_objects
+        description: Inline objects?
+        required: false
+      tags:
+      - AIProvider
+    delete:
+      summary: Delete a AIProvider business object record
+      security:
+      - bearerAuth: []
+      operationId: obj-aiprovider-delete
+      responses:
+        '200':
+          description: Success in deleting a business object record
+          content:
+            application/json: {}
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      tags:
+      - AIProvider
+    put:
+      summary: Update a AIProvider business object record
+      security:
+      - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIProvider'
+      operationId: obj-aiprovider-update
+      responses:
+        '200':
+          description: Success in updating a business object record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProvider'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      tags:
+      - AIProvider
+  /rest/AIProvider:
+    get:
+      summary: Search AIProvider business object records or get contextualized metadata
+      security:
+      - bearerAuth: []
+      operationId: obj-aiprovider-search
+      responses:
+        '200':
+          description: Success in searching business object records (or in getting
+            contextualized business object metadata, documentation, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfAIProvider'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      parameters:
+      - schema:
+          type: boolean
+        in: query
+        name: _metadata
+        description: Metadata?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _count
+        description: Count?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _doc
+        description: Documentation?
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvProvider
+        description: Search filter for Provider
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvDefaultUrl
+        description: Search filter for Default url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvDataModel
+        description: Search filter for Specific parameter
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvModelsUrl
+        description: Search filter for Models url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvHelp
+        description: Search filter for Key and endpoints help
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvCompletionUrl
+        description: Search filter for Completion url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvPingUrl
+        description: Search filter for Ping url
+        required: false
+      tags:
+      - AIProvider
   /:
     get:
       summary: Get user session information
@@ -212,3 +527,6 @@ info:
   description: API for module AIBySimplicite
   title: AIBySimplicite
   version: '0.13'
+tags:
+- name: AIProvider
+  description: Provider

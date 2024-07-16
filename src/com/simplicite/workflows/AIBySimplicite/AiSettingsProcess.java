@@ -130,9 +130,9 @@ public class AiSettingsProcess extends Processus {
 			if(Tool.isEmpty(url) || Tool.isEmpty(completion)) return formatURLError(Tool.isEmpty(url),Tool.isEmpty(completion),g);
 			try {
 				List<String> models = AITools.getModels(url, key, g);
-				if("ERROR".equals(models.get(0))){
+				if("error".equals(models.get(0))){
 					m = new Message();
-					m.raiseError(Message.formatError("ERROR_API_CALL", models.get(1), null));
+					m.raiseError(Message.formatError("AI_ERROR_RETURN", models.get(1), null));
 					return m;
 				}else{
 					context.setDataFile("Data", "aiPrvModels", models);

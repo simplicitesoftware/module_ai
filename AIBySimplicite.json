@@ -7,7 +7,7 @@
   "mdl_version": "0.13",
   "mdl_type": "T",
   "mdl_icon": null,
-  "mdl_url": "{\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"\n\t},\n\t\"type\": \"git\",\n\t\"branch\": \"6.1\"\n}",
+  "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\",\n    \"branch\": \"6.1\"\n}",
   "mdl_comment": "### Introduction\nExploratory module on the use of AI in Simplicite\n\n### Import\nTo import this module:\n\nCreate a module named `AIBySimplicite`\nSet the settings as:\n```json\n{\n\t\"origin\": {\n\t\t\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"\n\t},\n\t\"type\": \"git\"\n}\n```\nClick on the Import module button\n### Configure\nTo configure the ia connection, use the `Configuring the wizard`  object in `AI assistant` domain.\n\nSelect the model (LLM) you wish to use, configure the parameters and the url of your API.  \n\n<details>\n  <summary>LLM spesific configuration exemple<\/summary>\n\n#### OpenAI:\n```json\n{\n    'model':'<gpt_model_to_use>',\n    'OpenAI-Project': \"<my_openai_project_id>\", // Optional\n    'OpenAI-Organization': \"<my_openai_organization_id>\", //Optional\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}\n```\n#### Mistral  \n```json\n{\n    'hist_depth' : 3,\n    'code_max_token' : 2000,\n    'default_max_token':1500,\n    'trigger':''\n}\n```\n<\/details>\n\n\n<details>\n  <summary>Parrameters details<\/summary>\n\n##### hist_depth\nDefines the number of messages in the history used for the context.\nThe greater this number, the more tokens the request uses, but the more relevant is the response. \n##### max_token\n*optional*  \nLimits the number of tokens in the ia response\n###### default_max_token\nMaximum number of tokens in a usual context.\n###### code_max_token\nMaximum number of tokens for thecnical calls.\n##### trigger\nTo define a trigger for ia calls in fields (under development)\n\n<\/details>  \n  \n  \nUse the `Activate` action to save your settings and enter your API key if required.\n\n### wizzard\n#### Module generation\nUse AI to co-create or update a module based on your business needs\n`Module generation` in `AI assistant` domain.\n\n#### Data generation\nUse AI to generate test data for a module.\n`Data generation` in `AI assistant` domain.\n\n#### Business chatbot\nA shortcut to a chatbot contextualized according to the form on which it is opened.\nThe user must have `AI_BUSINESS` rights.\nThe `Personal data`, `Confidential data` and `Intimate` fields are not sent to the AI.\n\n\n#### Metrics\nGenerating AI graphs on a module's data\nIn a `view` add an `external page` of source `External object`: `AIMetricsChat?module=<you_module_name>`"
  },
  "links": [
@@ -2285,47 +2285,6 @@
       "obf_joined_id__obf_field_id__fld_name": null,
       "obf_joined_id__obf_order": null
      }
-    },
-    {
-     "object": "ObjectFieldSystem",
-     "userkey": "Field~aiFldSpe~330",
-     "item": {
-      "obf_object_id__obo_name": "Field",
-      "obf_object_id__obo_dbtable": "m_field",
-      "obf_field_id__fld_name": "aiFldSpe",
-      "obf_field_id__fld_dbname": "ai_fld_spe",
-      "obf_field_id__fld_type": "13",
-      "obf_order": 330,
-      "obf_group_by": null,
-      "obf_dfault_order": null,
-      "obf_input": null,
-      "obf_ref_field_id__fld_name": null,
-      "obf_ref_object_id__obo_name": null,
-      "obf_cascad": null,
-      "obf_card": null,
-      "obf_visible": null,
-      "obf_ref_export": true,
-      "obf_copy": null,
-      "obf_ref_order": null,
-      "obf_fld_visible": null,
-      "obf_fld_required": null,
-      "obf_fld_updatable": null,
-      "obf_fld_research": null,
-      "obf_fld_more": null,
-      "obf_fld_listmore": null,
-      "obf_fld_researchreq": null,
-      "obf_fld_dfault": null,
-      "obf_field_id__fld_dfault": null,
-      "obf_fld_exportable": null,
-      "obf_field_id__fld_exportable": true,
-      "obf_fld_uk": null,
-      "obf_area_id__ofa_name": "Field-Display",
-      "obf_area_id__ofa_position": 3,
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "obf_joined_id__obf_object_id__obo_name": null,
-      "obf_joined_id__obf_field_id__fld_name": null,
-      "obf_joined_id__obf_order": null
-     }
     }
    ]
   },
@@ -2908,31 +2867,6 @@
    }]
   },
   {
-   "object": "ConstraintImpact",
-   "label": "Impacts",
-   "icon": "img/system/impact",
-   "field": "row_module_id",
-   "list": [{
-    "object": "ConstraintImpact",
-    "userkey": "Constraint-AISpeField~Field~10",
-    "item": {
-     "csi_const_id__cst_name": "Constraint-AISpeField",
-     "csi_const_id__cst_object_id__obo_name": "Field",
-     "csi_const_id__cst_order": 1,
-     "csi_order": 10,
-     "csi_object_prop": null,
-     "csi_field_prop": "V",
-     "csi_apply": "F",
-     "csi_expr": "[VALUE:fld_rendering] == \"AI\"",
-     "csi_target": null,
-     "csi_objfield_id__obf_object_id__obo_name": "Field",
-     "csi_objfield_id__obf_field_id__fld_name": "aiFldSpe",
-     "csi_objfield_id__obf_order": 330,
-     "row_module_id__mdl_name": "AIBySimplicite"
-    }
-   }]
-  },
-  {
    "object": "BPMProcess",
    "label": "Business process",
    "icon": "img/system/process",
@@ -3020,7 +2954,7 @@
       },
       "pcs_max_duration": null,
       "pcs_duration_unit": "D",
-      "pcs_persitant": false,
+      "pcs_persitant": null,
       "pcs_persist_depth": null,
       "pcs_alert_id__alt_name": null,
       "pcs_compensate_id__pcs_name": null,
@@ -9481,27 +9415,6 @@
     },
     {
      "object": "PermGroup",
-     "userkey": "PUBLIC~AI_BUSINESS~ObjectExternal(AIChatBot)~",
-     "item": {
-      "pmg_group_id__grp_name": "PUBLIC",
-      "pmg_perm_id__prm_group_id__grp_name": "AI_BUSINESS",
-      "pmg_perm_id__prm_object": {
-       "item": {"obe_name": "AIChatBot"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "AIChatBot",
-       "object": "ObjectExternal"
-      },
-      "pmg_perm_id__prm_perm": true,
-      "pmg_perm_id__prm_upd": false,
-      "pmg_perm_id__prm_req": false,
-      "pmg_perm_id__prm_prop": null,
-      "pmg_perm_id__prm_value": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "PermGroup",
      "userkey": "AI_DESIGNER~AI_BUSINESS~ShortCut(AIBot)~",
      "item": {
       "pmg_group_id__grp_name": "AI_DESIGNER",
@@ -9526,6 +9439,27 @@
      "userkey": "AI_DESIGNER~AI_BUSINESS~ObjectExternal(AIChatBot)~",
      "item": {
       "pmg_group_id__grp_name": "AI_DESIGNER",
+      "pmg_perm_id__prm_group_id__grp_name": "AI_BUSINESS",
+      "pmg_perm_id__prm_object": {
+       "item": {"obe_name": "AIChatBot"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "AIChatBot",
+       "object": "ObjectExternal"
+      },
+      "pmg_perm_id__prm_perm": true,
+      "pmg_perm_id__prm_upd": false,
+      "pmg_perm_id__prm_req": false,
+      "pmg_perm_id__prm_prop": null,
+      "pmg_perm_id__prm_value": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "PermGroup",
+     "userkey": "PUBLIC~AI_BUSINESS~ObjectExternal(AIChatBot)~",
+     "item": {
+      "pmg_group_id__grp_name": "PUBLIC",
       "pmg_perm_id__prm_group_id__grp_name": "AI_BUSINESS",
       "pmg_perm_id__prm_object": {
        "item": {"obe_name": "AIChatBot"},
