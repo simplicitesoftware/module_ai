@@ -6197,6 +6197,30 @@
     },
     {
      "object": "Resource",
+     "userkey": "ObjectExternal(AiMonitoring)~FRA~HTML",
+     "item": {
+      "res_object": {
+       "item": {"obe_name": "AiMonitoring"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "AiMonitoring",
+       "object": "ObjectExternal"
+      },
+      "res_type": "HTML",
+      "res_lang": "FRA",
+      "res_code": "HTML",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectExternal/AiMonitoring/FRA/HTML.html",
+       "mime": "text/html",
+       "name": "HTML.html"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Resource",
      "userkey": "ObjectExternal(AiMonitoring)~ANY~SCRIPT",
      "item": {
       "res_object": {
