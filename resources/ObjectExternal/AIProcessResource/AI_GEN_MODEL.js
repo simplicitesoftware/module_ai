@@ -46,12 +46,12 @@ var aiGenModel = aiGenModel || (function() {
 		
 		// Needs objects to insert
 		if (!ids?.length || ids.length==0){
-			$ui.alert("no selection");
+			$ui.alert("No objects to insert.");
 			return;
 		}
 		let list = construcNodesList(ids);
 		// Load SVG engine
-		$ui.loadDiagramEngine().then(function() {
+		$ui.loadDiagramEngine(false, function() {
 			try {
 				// Create the model in silent mode
 				let currentDate = new Date();
@@ -85,6 +85,7 @@ var aiGenModel = aiGenModel || (function() {
 		});
 	}
 	function choiceModel(list){
+		console.log("choiceModel ",list);
 		$(".extern").append("<div id='modeler' class='modeler_picker'></div>");
 		$("#modeler").append("<div id='choice' class='items'></div>");
 		$("#choice").css("display","grid");
@@ -113,7 +114,7 @@ var aiGenModel = aiGenModel || (function() {
 		}	
 	}
 	function updateModel(modelId){
-		$ui.loadDiagramEngine().then(() => openAndUpdateModel(modelId));
+		$ui.loadDiagramEngine(false, () => openAndUpdateModel(modelId));
 	}
 	function openAndUpdateModel(modelId){
 		let ids = data.createdIds.values;

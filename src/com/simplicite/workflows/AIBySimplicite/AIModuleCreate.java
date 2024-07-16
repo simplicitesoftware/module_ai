@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AIModel;
 import com.simplicite.commons.AIBySimplicite.AITools;
@@ -12,6 +13,7 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 import com.simplicite.webapp.ObjectContextWeb;
+
 
 
 
@@ -38,29 +40,14 @@ public class AIModuleCreate extends Processus {
 	private static final String ACTIVITY_GEN ="AIC_0600";
 	private static final String ACTIVITY_TRL_DOMAIN ="AIC_0015";
 	private static final String ACTIVITY_NEW_SCOPE="AIC_0017";
-	private static final String ACTIVITY_NEED_CONFIG_END="AIC-NC-END";
-	private static final String AI_API_PARAM="AI_API_PARAM";
-	private static final String AI_API_URL="AI_API_URL";
 	private static final String AI_SETTING_NEED="AI_SETTING_NEED";
 	private static final String EXISTING_OBJECT="exisitingObject";
 	private static final String BEGIN_SCRIPT="<script>";
 	private static final String END_SCRIPT="</script>";
 	private static final String DOMAIN="Domain";
-	private static final String BOT_NAME=Grant.getSystemAdmin().getParameter("AI_CHAT_BOT_NAME");
 
-	public String checkConf(com.simplicite.bpm.ActivityFile context,com.simplicite.util.Grant g,java.util.List<String> list){
-		AppLog.info("checkConf: "+context.getActivity().getStep()+" "+String.join(", ", list), g);
-		String pSetting = Grant.getSystemAdmin().hasParameter(AI_API_PARAM)?Grant.getSystemAdmin().getParameter(AI_API_PARAM):"/";
-		String pUrl = Grant.getSystemAdmin().hasParameter(AI_API_URL)?Grant.getSystemAdmin().getParameter(AI_API_URL):"/";
-		
-		AppLog.info(HTMLTool.getListURL("AiSettings",""),g);
-		if("/".equals(pSetting) || "/".equals(pUrl)) {
-			AppLog.info((AI_SETTING_NEED),g);
-			return ACTIVITY_NEED_CONFIG_END;
-
-		}
-		return "AIC_0005";
-	}
+	
+	
 	/**
 	 * This method is used to generate the HTML content for the chat bot.
 	 * 
@@ -73,10 +60,7 @@ public class AIModuleCreate extends Processus {
 	public String chatBot(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
-		String pSetting = Grant.getSystemAdmin().hasParameter(AI_API_PARAM)?Grant.getSystemAdmin().getParameter(AI_API_PARAM):"/";
-		String pUrl = Grant.getSystemAdmin().hasParameter(AI_API_URL)?Grant.getSystemAdmin().getParameter(AI_API_URL):"/";
-			
-		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T(AI_SETTING_NEED);
+		if(!AITools.isAIParam(true)) return  g.T(AI_SETTING_NEED);
 		List<String[]> objs = getModuleObjects(getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID),g);
 		if (Tool.isEmpty(objs)) return getModuleChat("",g);
 		JSONObject json = objectToJSON(objs,getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD));
@@ -160,13 +144,12 @@ public class AIModuleCreate extends Processus {
 	private String getModuleChat(String response,Grant g){
 
 		String script =HTMLTool.jsBlock(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("CHAT_BOT_SCRIPT"));
-		AppLog.info("script: "+script, g);
 		String css = HTMLTool.lessToCss(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceCSSContent("CHAT_BOT_CSS"));
 		String html = g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceHTMLContent("CHAT_BOT_MODEL");
 		html = html.replace("{{{script}}}", script);
 		html = html.replace("{{css}}", css);
 		html = html.replace("{{init}}", Globals.LANG_FRENCH.equals(g.getLang())?"Bonjour! Comment puis-je vous aider avec la conception d'applications? Voulez-vous que je vous aide a definir vos besoin ou avez-vous des questions spécifiques sur la conception?":"Hello! How can I help you with application design? Do you want me to help you define your needs or do you have specific questions about design?");
-		html = html.replace("{{botMesage}}", Tool.isEmpty(response)?"":"<div class=\"bot-messages\" id=\"context\"><strong>"+BOT_NAME+": </strong><span class=\"msg\">"+response+"</span></div>");
+		html = html.replace("{{botMesage}}", Tool.isEmpty(response)?"":"<div class=\"bot-messages\" id=\"context\"><strong>"+AITools.getBotName()+": </strong><span class=\"msg\">"+response+"</span></div>");
 		return html;
 	}
 	/**
@@ -214,15 +197,11 @@ public class AIModuleCreate extends Processus {
 						"\t\t\taceEditor.getSession().setValue($(\"#json_return\").val(), 0);\r\n" + //
 						"\t\t\taceEditor.getSession().on('change', function() {\r\n" + //
 						"\t\t\t\tlet val=aceEditor.getSession().getValue();\r\n" + //
-						"\t\t\t\tconsole.log(val);\r\n" + //
 						"\t\t\t\t$(\"#json_return\").val(val);\r\n" + //
 						"\t\t\t});\n" + //
 						"\t\t\t\n" + //
 						"\t\t});";
-		String pSetting = Grant.getSystemAdmin().hasParameter(AI_API_PARAM)?Grant.getSystemAdmin().getParameter(AI_API_PARAM):"/";
-		String pUrl = Grant.getSystemAdmin().hasParameter(AI_API_URL)?Grant.getSystemAdmin().getParameter(AI_API_URL):"/";
-						
-		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T(AI_SETTING_NEED);
+		if(!AITools.isAIParam(true)) return  g.T(AI_SETTING_NEED);
 		List<String> listResult = getJsonAi( getPreviousContext(context).getActivity().getStep(), g);
 		if(Tool.isEmpty(listResult)) return EMPTY_TEXTAREA+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
 		if(listResult.size()!=3)return Message.formatError("AI_ERROR_RETURN", listResult.get(0),null );
@@ -294,7 +273,7 @@ public class AIModuleCreate extends Processus {
 	}
 	
 	private String getPromptFromInteractionActivity(Grant g, JSONArray historic){
-		int histDepth = Grant.getSystemAdmin().getJSONObjectParameter(AI_API_PARAM).getInt("hist_depth");
+		int histDepth = AITools.getHistDepth();
 		String historicString = getContext(getActivity(ACTIVITY_INTERACTION)).getDataValue("Data", "AI_data");
 			if(Tool.isEmpty(historicString)){//for test
 				return "";
@@ -324,10 +303,7 @@ public class AIModuleCreate extends Processus {
 	public String gen(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE){
 			return null;}
-		String pSetting = Grant.getSystemAdmin().hasParameter(AI_API_PARAM)?Grant.getSystemAdmin().getParameter(AI_API_PARAM):"/";
-		String pUrl = Grant.getSystemAdmin().hasParameter(AI_API_URL)?Grant.getSystemAdmin().getParameter(AI_API_URL):"/";
-			
-		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T(AI_SETTING_NEED);
+		if(!AITools.isAIParam(true)) return  g.T(AI_SETTING_NEED);
 		String json = getAIAnswer(context,g);
 		if (Tool.isEmpty(json)){
 			return g.getText("AI_ERROR");
@@ -400,7 +376,6 @@ public class AIModuleCreate extends Processus {
 	public void postValidate(ActivityFile context) {
 		String step = context.getActivity().getStep();
 		if(ACTIVITY_CREATE_MODULE.equals(step)){
-			AppLog.info("postValidate: "+ context.getDataValue(FIELD, ROW_ID), getGrant());
 			getContext(getActivity(ACTIVITY_SELECT_MODULE)).setDataFile(FIELD,ROW_ID, context.getDataValue(FIELD, ROW_ID));
 			String groupId = createGroup(context);
 			if(!Tool.isEmpty(groupId)){
@@ -413,7 +388,6 @@ public class AIModuleCreate extends Processus {
 			grantGroupToDomain(domainId,groupId,context.getDataValue(FIELD, ROW_ID));
 
 		}else if(ACTIVITY_GRANT_USER.equals(step)){
-			AppLog.info("postValidate: "+ACTIVITY_GRANT_USER+" data: "+ context.getDataValue("Data", "AREA:1"), getGrant());
 			boolean isGrantUser ="1".equals(context.getDataValue("Data", "AREA:1")); 
 			if(isGrantUser){
 				String groupName = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataValue(FIELD, "grp_name");

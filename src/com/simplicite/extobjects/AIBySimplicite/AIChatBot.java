@@ -21,9 +21,7 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 	@Override
 	public Object display(Parameters params) {
 		Grant g = getGrant();
-		String pSetting = Grant.getSystemAdmin().hasParameter("AI_API_PARAM")?Grant.getSystemAdmin().getParameter("AI_API_PARAM"):"/";
-		String pUrl = Grant.getSystemAdmin().hasParameter("AI_API_URL")?Grant.getSystemAdmin().getParameter("AI_API_URL"):"/";
-		if("/".equals(pSetting) || "/".equals(pUrl)) return javascript("$ui.alert({ content: \""+ g.T("AI_SETTING_NEED")+"\", type: \"warning\" });");
+		if(!AITools.isAIParam(true)) return javascript("$ui.alert({ content: \""+ g.T("AI_SETTING_NEED")+"\", type: \"warning\" });");
 		try {
 			addMustache();
 			addMarkdown();
@@ -38,7 +36,6 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			}else{
 				specialisation = params.getParameter("specialisation");
 			}
-			AppLog.info(getName() + ".render(ctn,\""+specialisation+"\",\""+AITools.getDataDisclaimer(g)+"\");", g);
 			if(!Tool.isEmpty(specialisation)) return javascript(getName() + ".render(ctn,'"+specialisation+"',\""+AITools.getDataDisclaimer(g)+"\");");
 			
 			return javascript(getName() + ".render(ctn,\"\",\""+AITools.getDataDisclaimer(g)+"\");");

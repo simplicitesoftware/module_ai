@@ -43,6 +43,8 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 					String function = params.getParameter("function");
 					String ctx = params.getParameter("ctx");
 					return saveMetricsAsCrosstable(ctx,swagger,function,mdlName);	
+				case "BOT_NAME":
+					return new JSONObject().put("botName",AITools.getBotName());
 				default:
 					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
 						return updateFieldByRequest(req);
@@ -110,7 +112,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		if(Tool.isEmpty(jsonPrompt)){
 			isJsonPrompt = false;
 		}
-		int histDepth = Grant.getSystemAdmin().getJSONObjectParameter("AI_API_PARAM").getInt("hist_depth");
+		int histDepth = AITools.getHistDepth();
 		JSONObject res;
 		String specialisation = params.getParameter("specialisation");
 		String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
@@ -146,7 +148,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		}
 	}
 	private JSONArray optHistoric(String historicString, int histDepth){
-		if (!Tool.isEmpty(historicString)) return null;
+		if (Tool.isEmpty(historicString)) return null;
 		JSONArray historic = new JSONArray();
 		int i=0;
 		JSONArray list = new JSONArray(historicString);
@@ -181,7 +183,6 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 				" \"zgraph\": \""+type+"\",\r\n" + //
 				" \"zstcolor\": \"#D9D2E9\"\r\n" + //
 				"}},null);";
-			AppLog.info("JS: "+js,null);
 			return "javascript:"+js;
 	}
 

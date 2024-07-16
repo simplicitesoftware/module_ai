@@ -48,7 +48,6 @@ public class AiMetrics implements java.io.Serializable {
 	private static final String MODULE_ID = "mldId";
 	private static final long serialVersionUID = 1L;
 	public static JSONObject getJavaScriptMetrics(String prompt, JSONObject swagger , String lang){
-		AppLog.info("AI request: "+swagger, null);
 		JSONArray arrayPrompts = new JSONArray();
 		prompt = AITools.normalize(AITools.removeAcent(prompt),false);
 		prompt =  "give me Script js to display: "+prompt+("FRA".equals(lang)?" in french":"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?" in french":"")+". Do not create data use search";
@@ -57,7 +56,6 @@ public class AiMetrics implements java.io.Serializable {
 		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
 		JSONObject res = AITools.aiCaller(null, "\n ```OpenAPI "+swagger+"```",arrayPrompts,false,true,true);
 		JSONObject resultJS = splitRes(AITools.parseJsonResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
-		AppLog.info("AI response: "+resultJS.toString(1), null);
 		if (resultJS.has("error")) {
 			res = AITools.aiCaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
 			return new JSONObject().put("text",AITools.parseJsonResponse(res));
@@ -114,7 +112,8 @@ public class AiMetrics implements java.io.Serializable {
 		result.put("html", regexHTMLResult);
 		result.put("text", textResult);
 		result.put(FUNCTION_KEY, getFunctionCall(regexJSResult));
-		AppLog.info("AI response: "+result.toString(1), null);
+
+
 		return result;
 	}
 	private static String getFunctionCall(String regexJSResult) {
@@ -278,8 +277,6 @@ public class AiMetrics implements java.io.Serializable {
 		ct.put("ctb_function", FUNCTIONS.optString(def.optString(FUNCTION_KEY,"sum"),"S"));
 		ct.put("ctb_object_id", ObjectCore.getObjectId(objName));
 		ct.put("row_module_id",def.optString(MODULE_ID));
-		String mldId = def.optString(MODULE_ID);
-		AppLog.info("ct module : "+mldId+": "+ModuleDB.getModuleName(mldId), g);
 		return AITools.createOrUpdateWithJson("Crosstab", ct, g);
 	}
 	private static String createAxis(JSONObject def,String type,String ctId,String mldId,int defaultOrder,Grant g){
@@ -288,7 +285,6 @@ public class AiMetrics implements java.io.Serializable {
 			return null;
 		}
 		JSONObject axis = new JSONObject();
-		AppLog.info("def: "+def.toString(1), g);
 		axis.put("cax_crosstab_id", ctId);
 		axis.put("cax_type", type);
 		String function =FUNCTIONS.optString(def.optString(FUNCTION_KEY,"sum"),"");
@@ -299,7 +295,6 @@ public class AiMetrics implements java.io.Serializable {
 		String objFldId = getObjectFieldId(def.optString("object"), field,g);
 		axis.put("cax_objfield_id", objFldId);
 		axis.put("cax_order", def.optInt("order",defaultOrder));
-		AppLog.info("axis: "+axis.toString(1), g);
 		return AITools.createOrUpdateWithJson("CrosstabAxis", axis, g);
 
 	}
@@ -316,7 +311,6 @@ public class AiMetrics implements java.io.Serializable {
 		
 	}
 	private static String getObjectFieldId(String object,String field,Grant g){
-		AppLog.info("object: "+object+" field: "+field, g);
 		ObjectDB obj = g.getTmpObject("ObjectFieldSystem");
 		synchronized (obj) {
 			obj.resetFilters();
@@ -324,10 +318,6 @@ public class AiMetrics implements java.io.Serializable {
 			obj.setFieldFilter("obf_object_id", ObjectCore.getObjectId(object));
 			obj.setFieldFilter("obf_field_id", ObjectField.getFieldId(field));
 			List<String[]> res = obj.search();
-			AppLog.info("res: "+res.size(), g);
-			for(String[] r : res){
-				AppLog.info("r: "+String.join(", ", r), g);
-			}
 			if (!Tool.isEmpty(res)){
 				return res.get(0)[obj.getRowIdFieldIndex()];
 			}

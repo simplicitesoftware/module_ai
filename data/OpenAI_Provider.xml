@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simplicite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.simplicite.fr/base" xsi:schemaLocation="http://www.simplicite.fr/base https://www.simplicite.io/resources/schemas/base.xsd">
+<object>
+	<name>AIProvider</name>
+	<action>upsert</action>
+	<data>
+		<aiPrvProvider>Open AI</aiPrvProvider>
+		<aiPrvDefaultUrl><![CDATA[https://api.openai.com/]]></aiPrvDefaultUrl>
+		<aiPrvDataModel><![CDATA[{
+    "OpenAI-Project": {
+        "help": "Unique identifier for your OpenAI project. You can find it in your OpenAI projects dashboard: [OpenAI Projects Dashboard](https://platform.openai.com/settings/organization/general), under the Project => General tab.",
+        "defaultValue": "",
+        "label": {
+            "FRA": "Identifiant du projet OpenAI",
+            "ENU": "OpenAI Project ID"
+        },
+        "type": "text"
+    },
+    "OpenAI-Organization": {
+        "help": "Unique identifier for your OpenAI organization. You can find it in your OpenAI organization dashboard: [OpenAI Organization Dashboard](https://platform.openai.com/settings/organization/general).",
+        "defaultValue": "",
+        "label": {
+            "FRA": "Identifiant de l'Organisation OpenAI",
+            "ENU": "OpenAI Organization ID"
+        },
+        "type": "text"
+    }
+}]]></aiPrvDataModel>
+		<aiPrvModelsUrl><![CDATA[https://api.openai.com/v1/models]]></aiPrvModelsUrl>
+		<aiPrvHelp><![CDATA[### Finding Your API Key
+
+**Sign In to OpenAI:**
+- Go to the [OpenAI website](https://platform.openai.com/) and sign in with your credentials.
+
+**Access API Keys:**
+- Navigate to the [API keys section](https://platform.openai.com/account/api-keys).
+- Generate a new API key if you don't have one, or copy your existing API key.
+
+---
+
+### Default Endpoints
+
+For standard deployments, use the following endpoints:
+
+**Ping Endpoint:**
+- **URL:** `https://api.openai.com/v1/models`
+- **Purpose:** This endpoint is used to check the availability of the OpenAI server. Note that OpenAI doesn't provide a ping endpoint. We use the models endpoint to check credentials, but it does not verify the availability of tokens or remaining usage limits. It primarily checks server availability.
+
+**Models Endpoint:**
+- **URL:** `https://api.openai.com/v1/models`
+- **Purpose:** Retrieve a list of available AI models.
+
+**Completion Endpoint:**
+- **URL:** `https://api.openai.com/v1/completions`
+- **Purpose:** Generate text based on a given prompt.
+
+### Security Tips
+
+- **Keep Your API Key Secure:** Do not expose your API key in client-side code or public repositories.
+- **Rotate API Keys Regularly:** Periodically change your API key to enhance security.
+- **Monitor Usage:** Keep track of your API usage to ensure you stay within your usage limits on [Organization usage](https://platform.openai.com/organization/usage).
+- **Set Limits for Projects:** Define usage limits and quotas for each project or application using the API to prevent unexpected usage spikes and ensure budget control.]]></aiPrvHelp>
+		<aiPrvCompletionUrl><![CDATA[https://api.openai.com/v1/chat/completions]]></aiPrvCompletionUrl>
+		<aiPrvPingUrl><![CDATA[https://api.openai.com/v1/models]]></aiPrvPingUrl>
+	</data>
+</object>
+</simplicite>

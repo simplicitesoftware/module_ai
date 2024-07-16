@@ -1,149 +1,178 @@
-var AIMetricsChat = AIMetricsChat || (function() {
-	const app = $ui.getApp();
-	let botTemplateMetrics = "<div class=\"bot-messages\"><strong>{{botName}}: </strong><span class=\"msg\">...</span></div>";
-	let userTemplateMetrics ="<div class=\"user-messages\"><strong>{{user}}: </strong><span class=\"msg\">{{msg}}</span></div>";
-	let swagger="";
-	let userName = "user";
-	let moduleName = "";
-	let lastScript = "";
 
-	function render(params,module,s) {
-		// set button text
-		moduleName = module;
-		console.log("AIMetricsChat render: "+moduleName);
-		$('#metrics_user_text').click(function() { showWarn();});
-		app.getTexts(function(textes){
-			let actLabel = textes?.AiSaveAsCrosstableAction||"";
-			let sendText = textes?.AI_BUTTON_SEND ||"Send";
-			let cancelText = textes?.AI_BUTTON_CANCEL || "Cancel";
-			let length = Math.max(sendText.length, cancelText.length);
-			if(!actLabel == "")$("#work .actions").prepend('<button class="btn btn-secondary" type="button" onclick="AIMetricsChat.saveAsCrosstable()"><span>'+actLabel+'</span></button>');
-			$('.chat-button').css('min-width', length + 'em');
-			$('.user-message').css('width', 'calc(100% - ' + (length + 1) + 'em)');
-			$('#metrics_send_button').text(sendText);
-			$('#metrics_cancel_button').text(cancelText);
-		},null);
-		swagger=s;
+var AIWfChatBot = AIWfChatBot || (function() {
+	let botTemplate;
+	let userTemplate;
+	const app = $ui.getApp();
+	let userName ="user";
+	let image_base64 ="";
+	function resizeUp(){
+		const vh = window.innerHeight * 0.01;
+		const maxHeight = `${45 * vh - 250}px`;
+		const minHeight = `40px`;
+		
+		$("#module_user_message").css("height", minHeight);
+		let textheight = $("#module_user_message").prop('scrollHeight')-5 ;
+		let areaheight = $("#chat-container").height();
+		let imgheight = $("#input-img").is(':hidden')?0: $("#input-img").height();
+		if(textheight >maxHeight-imgheight){
+			textheight = maxHeight-imgheight;
+			
+		}else if(textheight < minHeight){
+			textheight = minHeight;
+		}
+		$("#module_user_message").css("height", textheight);
+		areaheight = areaheight - (textheight +30)-imgheight;
+		$("#module_chat_messages").css("height", areaheight);
+	}
+	
+
+	function render() {
+		$(".btn-validate").remove();
+		$(window).resize(function() {
+			resizeUp();
+		});
+		// add url to img bootstrap $ui.getApp().getIconURL("icon/color/camera");
+		$("#add-img-icon").attr("src", $ui.getApp().getIconURL("icon/color/camera"));
+		botTemplate = $("#botTemplate").html();
+		userTemplate = $("#userTemplate").html();
+		setBotName();
+		
 		if(app.getGrant().firstname ){
 			userName =app.getGrant().firstname;
 		}else{
 			userName =app.getGrant().login;
 		}
-		userTemplateMetrics=userTemplateMetrics.replace('{{user}}', userName);
-		app.getSysParam(function(param){
-			botTemplateMetrics = botTemplateMetrics.replace("{{botName}}",param);
-		},"AI_CHAT_BOT_NAME");
-		$('#metrics_user_text').keypress(function(e) {
-			if (e.which === 13) {
-				sendMetricsMessage();
-			}
-		});
-		
+		userTemplate=userTemplate.replace('{{user}}', userName);
 	}
-	function sendMetricsMessage(){
-		console.log("sendMetricsMessage: "+swagger);
-		let isCancelled = false;
-		$('#metrics_cancel_button').show();
-		$('#metrics_cancel_button').click(function() {
-			isCancelled = true;
-			resetChat();
-		});
-		let input = '';
-		$('#metrics_messages').html('');
-		let canvas = $('canvas');
-		canvas.each(function(canva) {
-			let id = canvas[canva].id;
-			let graph = Chart.getChart(id);
-			if(graph) graph.destroy();
-			
-			
-		});
-		$('#ia_html').html('');
-		input = $('#metrics_user_text').val();
-		$('#metrics_user_text').val('');
-		$('#metrics_send_button').prop('disabled', true);
-		$('#metrics_send_button').hide();
-		$('#metrics_user_text').prop('disabled', true);
-		let params = {prompt:input, reqType:"metrics",swagger:swagger,lang:app.grant.lang};
-		$('#metrics_messages').append(userTemplateMetrics.replace('{{msg}}',input));
-		$('#metrics_messages').append(botTemplateMetrics);
-		let url = Simplicite.ROOT+"/ext/AIRestAPI";
-		let useAsync = true;
-		app._call(useAsync, url, params, function callback(botResponse){
-			if(isCancelled){
-				
-				return;
-			}
-			reOpenChat();
-			if(botResponse.html == null && botResponse.js == null && botResponse.text != null){
-				$('#metrics_messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
-				return;
-			}
-			if(botResponse.error !=null || ((botResponse.js == null && !botResponse?.html?.includes("script")))){
-				$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
-				
-				return;
-			}
-			if(botResponse.text == null){
-				botResponse.text = "";
-			}
-			$('#metrics_messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
-			$('#ia_html').html(botResponse.html);
-			
-			if(botResponse.js != ""){
-				try {
-					eval(botResponse.js);
-					//check if function is auto call
-					if(botResponse.js.indexOf(botResponse.function) == -1) {
-						eval(botResponse.function);
-					}
-					lastScript = botResponse.js;
+	function sendModuleMessage() {
+		let userMessage = document.getElementById('module_user_message').value;
+		let userImage = $("#input-img img").attr("src");
+		let chatMessages = document.getElementById('module_chat_messages');
+		let historic = [];
+		if ($("#context").length >0) {
+			let text = {};
+			text.role = "assistant";
+			text.content = $("#context").text();
+			historic.push(JSON.stringify(text));
+		}
 
-				}catch(e){
-					$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
-				}
+		$(".user-messages").each(function() {
+			let text ={};
+			text.role = "user";
+			let contents =[];
+			let content = {"type":"text","text":$(this).find(".msg").text()};
+			contents.push(content);
+			let img = $(this).find(".img");
+			if(img.length >0){
+				content = {"type":"image_url","image_url":{"url":img.attr("src")}};
+				contents.push(content);
+			}
+			text.content = contents
+			historic.push(JSON.stringify(text));
+			text={};
+			text.role = "assistant";
+			text.content = $(this).next(".bot-messages").find(".msg").text();
+			historic.push(JSON.stringify(text));
+			
+		});
+
+		// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
+		let userCompletMessage =userTemplate.replace('{{msg}}', userMessage.replaceAll("\n","<br>"));
+		if(userImage){
+			userCompletMessage = userCompletMessage.replace('{{img}}', "<img class='img' src='"+userImage+"' >");
+		}else{
+			userCompletMessage = userCompletMessage.replace('{{img}}', "");
+		
+		}
+		chatMessages.innerHTML += userCompletMessage;
+		chatMessages.innerHTML += botTemplate;
+		$("#send-button").attr("disabled", "disabled");
+		// Params
+		let useAsync = true; // use async callback pattern
+		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+		let prompt =[];
+		prompt.push({"type":"text","text":userMessage});
+		if(userImage){
+			prompt.push({"type":"image_url","image_url":{"url":userImage}});
+		}
+		let postParams = {prompt:JSON.stringify(prompt), specialisation: "You help design uml for object-oriented applications. Without function and whith relation description. Respond with a text", historic: JSON.stringify(historic)}; // post params
+		
+		// Efface le champ de saisie utilisateur
+		document.getElementById('module_user_message').value = '';
+		$("#input-img img").removeAttr("src");
+		$("#input-img").hide();
+		resizeUp();
+
+		// Faites défiler vers le bas pour afficher les messages les plus récents
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+		// Call Webservice (POST requests only)
+		
+		app._call(useAsync, url, postParams, function callback(botResponse){
+			let text ={};
+			text.role = "user";
+			text.content = userMessage;
+			historic.push(JSON.stringify(text));
+			if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
+				let result = botResponse.response.choices[0].message.content;
+				result = result.replaceAll("\n","<br>");
+				$(".bot-messages:last-child span").html(result);
+				
+				text={};
+				text.role = "assistant";
+				text.content =result;
+				historic.push(JSON.stringify(text));
+				
+				
 			}else{
-				lastScript = $("#ia_html script").text();
+				$(".bot-messages:last-child span").text("Sorry, an error occurred");
+				
+				text={};
+				text.role = "assistant";
+				text.content ="Sorry, an error occurred";
+				historic.push(JSON.stringify(text));
 			}
-			// Définir les options globales pour Chart.js
-			Chart.defaults.responsive = true;
-			Chart.defaults.maintainAspectRatio = false;
-			
-	
+			$("#AI_data").html(JSON.stringify(historic));
+			$("#send-button").removeAttr("disabled");
+			chatMessages.scrollTop = chatMessages.scrollHeight;
 		});
 		
 	}
-	function reOpenChat(){
-		$('#metrics_user_text').prop('disabled', false);
-		$('#metrics_send_button').show();
-		$('#metrics_send_button').prop('disabled', false);
-		$('#metrics_cancel_button').hide();
-		$('#metrics_cancel_button').onclick = null;
+	function addImage(){
+		let input = document.createElement('input');
+		input.type = 'file';
+		input.accept = 'image/jpeg';
+		input.onchange = function(event) {
+			let file = event.target.files[0];
+			let reader = new FileReader();
+			reader.onload = function(event) {
+				image_base64 = event.target.result;
+				$("#input-img img").attr("src", image_base64);
+				$("#input-img").show();
+				resizeUp();
+			};
+			reader.readAsDataURL(file);
+		};
+		input.click();
 	}
-	function resetChat(){
-		$('#metrics_messages').html('');
-		reOpenChat();
-	
-	}
-	function showWarn(){
-		app.getTexts(function(textes){
-			$ui.alert(app.getText(textes?.AI_GRAPH_DISCLAIMER, false));
-			$('#metrics_user_text').unbind('click');
+	function setBotName(){
+		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+		let postParams = {"reqType":"BOT_NAME"};
+		app._call(false, url, postParams, function callback(botResponse){
+						let param = botResponse.botName;
+			botTemplate = botTemplate.replace("{{botName}}",param);
+			$("#AIchatbotProcess").html($("#AIchatbotProcess").html().replace("{{botName}}",param));
+			return true;
 		});
+		return false;
 	}
-	function saveAsCrosstable(){
-		
-		let func = lastScript;
-		console.log("callProcess: "+func);
-		let params = {reqType:"saveMetrics",swagger:swagger,moduleName:moduleName,function:func,ctx:"$('#ia_html')"};
-		let url = Simplicite.ROOT+"/ext/AIRestAPI";
-
-		let useAsync = true;
-		app._call(useAsync, url, params, function callback(botResponse){
-			console.log(botResponse);
-			eval(botResponse.script);
-		});
-		
-	}
-	return { render: render ,sendMetricsMessage:sendMetricsMessage,saveAsCrosstable:saveAsCrosstable};
+	return {
+		sendModuleMessage: sendModuleMessage,
+		addImage: addImage,
+		render: render,
+		resizeUp: resizeUp
+	};
 })();
+$(document).ready(function() {
+	AIWfChatBot.render();
+	
+});

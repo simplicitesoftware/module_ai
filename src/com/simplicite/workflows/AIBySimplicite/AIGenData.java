@@ -2,6 +2,7 @@ package com.simplicite.workflows.AIBySimplicite;
 
 import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AIData;
+import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.webapp.ObjectContextWeb;
 
@@ -14,10 +15,7 @@ public class AIGenData extends Processus {
 	public String genData(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)
 			return null;
-		String pSetting = Grant.getSystemAdmin().hasParameter("AI_API_PARAM")?Grant.getSystemAdmin().getParameter("AI_API_PARAM"):"/";
-		String pUrl = Grant.getSystemAdmin().hasParameter("AI_API_URL")?Grant.getSystemAdmin().getParameter("AI_API_URL"):"/";
-			
-		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
+		if(!AITools.isAIParam(true)) return  g.T("AI_SETTING_NEED");
 		String moduleId = getContext(getActivity("GGD_0100")).getDataValue("Field", "mdl_name");
 		JSONObject json = new JSONObject( getContext(getActivity("GGD_0150")).getDataValue("Data", "json_return"));
 		return AIData.createDataFromJSON(moduleId,json,getGrant());
@@ -27,9 +25,7 @@ public class AIGenData extends Processus {
 	public String callIA(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)
 			return null;
-		String pSetting = Grant.getSystemAdmin().getParameter("AI_API_PARAM");
-		String pUrl = Grant.getSystemAdmin().getParameter("AI_API_URL");
-		if("/".equals(pSetting) || "/".equals(pUrl)) return  g.T("AI_SETTING_NEED");
+		if(!AITools.isAIParam(true)) return  g.T("AI_SETTING_NEED");
 		String moduleId = getContext(getActivity("GGD_0100")).getDataValue("Field", "mdl_name");
 		JSONObject response = AIData.genDataForModule(moduleId,getGrant());
 		if(response.has("error")) return response.getString("error");
@@ -53,7 +49,6 @@ public class AIGenData extends Processus {
 						"\t\t\taceEditor.getSession().setValue($(\"#json_return\").val(), 0);\r\n" + //
 						"\t\t\taceEditor.getSession().on('change', function() {\r\n" + //
 						"\t\t\t\tlet val=aceEditor.getSession().getValue();\r\n" + //
-						"\t\t\t\tconsole.log(val);\r\n" + //
 						"\t\t\t\t$(\"#json_return\").val(val);\r\n" + //
 						"\t\t\t});\n" + //
 						"\t\t\t\n" + //
