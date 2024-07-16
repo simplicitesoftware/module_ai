@@ -51,7 +51,7 @@ var aiGenModel = aiGenModel || (function() {
 		}
 		let list = construcNodesList(ids);
 		// Load SVG engine
-		$ui.loadDiagramEngine(false, function() {
+		$ui.loadDiagramEngine().then(function() {
 			try {
 				// Create the model in silent mode
 				let currentDate = new Date();
@@ -114,7 +114,7 @@ var aiGenModel = aiGenModel || (function() {
 		}	
 	}
 	function updateModel(modelId){
-		$ui.loadDiagramEngine(false, () => openAndUpdateModel(modelId));
+		$ui.loadDiagramEngine().then(() => openAndUpdateModel(modelId));
 	}
 	function openAndUpdateModel(modelId){
 		let ids = data.createdIds.values;
