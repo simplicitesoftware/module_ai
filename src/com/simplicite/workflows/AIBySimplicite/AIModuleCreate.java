@@ -27,6 +27,7 @@ public class AIModuleCreate extends Processus {
 	private static final String FIELD ="Field";
 	private static final String MDL_PREFIX_FIELD ="mdl_prefix";
 	private static final String ROW_MODULE_ID_FIELD ="row_module_id";
+	private static final String DOMAIN_NAME_FIELD ="obd_name";
 	private static final String ROW_ID ="row_id";
 	private static final String EMPTY_TEXTAREA ="<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" id=\"json_return\" name=\"json_return\"></textarea>";
 	private static final String ACTIVITY_CREATE_MODULE ="AIC_0010";
@@ -476,7 +477,7 @@ public class AIModuleCreate extends Processus {
 	private String createDomain(ActivityFile context){
 		String moduleId =context.getDataValue(FIELD, ROW_ID);
 		String domainName = SyntaxTool.join(SyntaxTool.PASCAL, new String[]{context.getDataValue(FIELD,MDL_PREFIX_FIELD),DOMAIN});
-		JSONObject domainFlds = new JSONObject().put("obd_name", domainName);
+		JSONObject domainFlds = new JSONObject().put(DOMAIN_NAME_FIELD, domainName);
 		ObjectDB obj = getGrant().getTmpObject(DOMAIN);
 		synchronized(obj.getLock()){
 			try{
@@ -484,7 +485,7 @@ public class AIModuleCreate extends Processus {
 				int i=1;
 				
 				while(objTool.selectForCreateOrUpdate(domainFlds)){
-					domainFlds.put("obd_name", domainName+String.valueOf(i));
+					domainFlds.put(DOMAIN_NAME_FIELD, domainName+String.valueOf(i));
 					i++;
 				}
 				domainFlds.put(ROW_MODULE_ID_FIELD, moduleId).put("obd_nohome",1);
@@ -526,7 +527,7 @@ public class AIModuleCreate extends Processus {
 		{
 			dom.setValues(v.get(j), false);
 			html.append("<tr>");
-			html.append(getTdField(dom.getFieldValue("obd_name")));
+			html.append(getTdField(dom.getFieldValue(DOMAIN_NAME_FIELD)));
 			for (int i=0; i<langCodes.length; i++)
 			{
 				String lang = langCodes[i];
