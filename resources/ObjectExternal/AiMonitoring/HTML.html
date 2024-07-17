@@ -18,7 +18,7 @@
             {{/right_column}}
         </div>
     </div>
-    {{#providerFields}}
+    {{#providerFields.length}}
     <div class="provider-fields-container container">
         <h1>Specific Parameters for {{provider}}</h1>
         <div class="provider-fields">
@@ -30,7 +30,7 @@
             {{/providerFields}}
         </div>
     </div>
-    {{/providerFields}}
+    {{/providerFields.length}}
     <div id="ping_banner" class="ping-banner ">
     </div>
     <script>

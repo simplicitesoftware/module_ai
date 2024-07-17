@@ -1,10 +1,6 @@
 package com.simplicite.workflows.AIBySimplicite;
 
-import static org.mockito.ArgumentMatchers.booleanThat;
-
 import java.util.*;
-
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 

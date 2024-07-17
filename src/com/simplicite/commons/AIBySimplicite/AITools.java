@@ -259,7 +259,7 @@ public class AITools implements java.io.Serializable {
             int responseCode = connection.getResponseCode();
             if(responseCode!=200){
                 
-                return readError(connection,responseCode,g);
+                return readError(connection,responseCode,g).toString();
                 
             }
            
@@ -426,7 +426,7 @@ public class AITools implements java.io.Serializable {
      * @param g The Grant object.
      * @return A JSON-formatted error message containing the response code and error message.
      */
-    public static String readError(HttpURLConnection connection,int responseCode,Grant g){
+    private static JSONObject readError(HttpURLConnection connection,int responseCode,Grant g){
         try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()))) {
             String line;
             StringBuilder response = new StringBuilder();
@@ -434,26 +434,28 @@ public class AITools implements java.io.Serializable {
             while ((line = in.readLine()) != null) {
                 response.append(line);
             }
-            AppLog.info("AI API error :["+responseCode+"]"+response.toString(),g);
-            String errorMessage;
-            try{
-                JSONObject error = new JSONObject(response.toString());
-                errorMessage = error.optJSONObject(ERROR_KEY).optString(MESSAGE_KEY,"no message");
-            }catch(JSONException e){
-                errorMessage = response.toString();
-            }
-            AppLog.info("AI API error :["+responseCode+"]: "+errorMessage,g);
+            JSONObject errorMessage = formatErrorMsg(responseCode,response);
+            AppLog.info("AI API error :["+responseCode+"]: "+errorMessage.getString(ERROR_KEY),g);
             connection.disconnect();
             
-            return "{\"code\":\""+responseCode+"\",\"error\":\""+errorMessage+"\" }";
+            return errorMessage;
 
         } catch (IOException e) {
             AppLog.error(e,g);
         }
         connection.disconnect();
-        return "";
+        return null;
     }
-    
+    private static JSONObject formatErrorMsg(int responseCode,StringBuilder response ){
+        String errorMessage;
+        try{
+            JSONObject error = new JSONObject(response.toString());
+            errorMessage = error.optJSONObject(ERROR_KEY).optString(MESSAGE_KEY,"no message");
+        }catch(JSONException e){
+            errorMessage = response.toString();
+        }
+        return new JSONObject().put("code",String.valueOf(responseCode)).put(ERROR_KEY,errorMessage);
+    }
     /**
      * Reads the response from an HTTP connection and returns it as a string.
      *
@@ -996,13 +998,13 @@ public class AITools implements java.io.Serializable {
             URI url = new URI(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty(AUTH_PROPERTY, AUTH_PREFIX + apiKey);
+            addSpecificHeaders(connection,apiKey);
             connection.connect();
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 return PING_SUCCESS;
             }else{
-                JSONObject error = new JSONObject(readError(connection,responseCode,g));
+                JSONObject error = readError(connection,responseCode,g);
                 return Message.formatError("AI_PING_ERROR",error.getString("code")+": "+error.getString(ERROR_KEY),null);
             }
         } catch (IOException | URISyntaxException e) {
@@ -1038,7 +1040,7 @@ public class AITools implements java.io.Serializable {
             }
 
         } else {
-            JSONObject error = new JSONObject(readError(connection,responseCode,g));
+            JSONObject error = readError(connection,responseCode,g);
             res.add(ERROR_KEY);
             res.add(error.getString("code")+": "+error.getString(ERROR_KEY));
             
