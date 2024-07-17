@@ -1,5 +1,7 @@
 package com.simplicite.workflows.AIBySimplicite;
 
+import static org.mockito.ArgumentMatchers.booleanThat;
+
 import java.util.*;
 
 
@@ -47,8 +49,6 @@ public class AIModuleCreate extends Processus {
 	private static final String END_SCRIPT="</script>";
 	private static final String DOMAIN="Domain";
 	private boolean displayPrefixWarning = false; 
-
-	
 	
 	/**
 	 * This method is used to generate the HTML content for the chat bot.
@@ -377,6 +377,7 @@ public class AIModuleCreate extends Processus {
 	}
 	@Override
 	public Message preValidate(ActivityFile context) {
+		
 		if(ACTIVITY_CREATE_MODULE.equals(context.getActivity().getStep()) && !displayPrefixWarning){
 			Object prefix = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD); 
 			ObjectDB obj = getGrant().getTmpObject("Module");

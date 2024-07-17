@@ -435,8 +435,13 @@ public class AITools implements java.io.Serializable {
                 response.append(line);
             }
             AppLog.info("AI API error :["+responseCode+"]"+response.toString(),g);
-            JSONObject error = new JSONObject(response.toString());
-            String errorMessage = error.optJSONObject(ERROR_KEY).optString(MESSAGE_KEY,"no message");
+            String errorMessage;
+            try{
+                JSONObject error = new JSONObject(response.toString());
+                errorMessage = error.optJSONObject(ERROR_KEY).optString(MESSAGE_KEY,"no message");
+            }catch(JSONException e){
+                errorMessage = response.toString();
+            }
             AppLog.info("AI API error :["+responseCode+"]: "+errorMessage,g);
             connection.disconnect();
             
