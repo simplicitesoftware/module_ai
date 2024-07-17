@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simplicite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.simplicite.fr/base" xsi:schemaLocation="http://www.simplicite.fr/base https://www.simplicite.io/resources/schemas/base.xsd">
+<object>
+	<name>AIProvider</name>
+	<action>upsert</action>
+	<data>
+		<aiPrvProvider>Mistral AI_</aiPrvProvider>
+		<aiPrvDefaultUrl><![CDATA[https://api.mistral.ai/]]></aiPrvDefaultUrl>
+		<aiPrvDataModel><![CDATA[{}]]></aiPrvDataModel>
+		<aiPrvModelsUrl><![CDATA[https://api.mistral.ai/v1/models]]></aiPrvModelsUrl>
+		<aiPrvHelp><![CDATA[### Finding Your API Key
+
+**Sign In to Mistral AI:**
+- Go to the [Mistral AI website](https://console.mistral.ai/) and sign in with your credentials.
+
+**Access API Keys:**
+- Navigate to the [API keys section](https://console.mistral.ai/api-keys/) on your dashboard.
+- Generate a new API key if you don't have one, or copy your existing API key.
+
+---
+
+### Default Endpoints
+
+For standard deployments, use the following endpoints:
+
+
+**Models Endpoint:**
+- **URL:** `https://api.mistral.ai/v1/models`
+- **Purpose:** Retrieve a list of available AI models.
+
+**Completion Endpoint:**
+- **URL:** `https://api.mistral.ai/v1/chat/completions`
+- **Purpose:** Generate text based on a given prompt.
+
+**Ping Endpoint:**
+- **URL:** `https://api.mistral.ai/v1/models`
+- **Purpose:** This endpoint is used to check the availability of the Mistral AI server. Note that Mistral AI doesn't provide a specific ping endpoint. We use the models endpoint to check credentials, but it does not verify the availability of tokens or remaining usage limits. It primarily checks server availability.
+
+
+### Security Tips
+
+- **Keep Your API Key Secure:** Do not expose your API key in client-side code or public repositories.
+- **Rotate API Keys Regularly:** Periodically change your API key to enhance security.
+- **Monitor Usage:** Keep track of your [API usage](https://console.mistral.ai/usage/) to ensure you stay within your usage limits.
+- **Set Limits for Projects:** Define usage limits and quotas for using the API to prevent unexpected usage spikes and ensure budget control.]]></aiPrvHelp>
+		<aiPrvCompletionUrl><![CDATA[https://api.mistral.ai/v1/chat/completions]]></aiPrvCompletionUrl>
+		<aiPrvPingUrl><![CDATA[https://api.mistral.ai/v1/models]]></aiPrvPingUrl>
+	</data>
+</object>
+</simplicite>

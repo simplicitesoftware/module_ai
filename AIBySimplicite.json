@@ -9196,20 +9196,36 @@
    "label": "Datasets",
    "icon": "img/color/file",
    "field": "row_module_id",
-   "list": [{
-    "object": "Dataset",
-    "userkey": "AIBySimplicite~OpenAI_Provider",
-    "item": {
-     "row_module_id__mdl_name": "AIBySimplicite",
-     "dt_name": "OpenAI_Provider",
-     "dt_file": {
-      "path": "data/OpenAI_Provider.xml",
-      "mime": "text/xml",
-      "name": "OpenAI_Provider.xml"
-     },
-     "dt_desc": "OpenAI provider default parameters"
+   "list": [
+    {
+     "object": "Dataset",
+     "userkey": "AIBySimplicite~MistralAI_Povider",
+     "item": {
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "dt_name": "MistralAI_Povider",
+      "dt_file": {
+       "path": "data/MistralAI_Povider.xml",
+       "mime": "text/xml",
+       "name": "MistralAI_Povider.xml"
+      },
+      "dt_desc": "Mistral AI_ provider default parameters"
+     }
+    },
+    {
+     "object": "Dataset",
+     "userkey": "AIBySimplicite~OpenAI_Provider",
+     "item": {
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "dt_name": "OpenAI_Provider",
+      "dt_file": {
+       "path": "data/OpenAI_Provider.xml",
+       "mime": "text/xml",
+       "name": "OpenAI_Provider.xml"
+      },
+      "dt_desc": "OpenAI provider default parameters"
+     }
     }
-   }]
+   ]
   },
   {
    "object": "Permission",
