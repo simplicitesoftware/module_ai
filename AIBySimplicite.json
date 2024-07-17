@@ -520,6 +520,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_WARN_PREFIX~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_WARN_PREFIX",
+      "lov_lang": "ENU",
+      "lov_value": "Warning: This prefix is already in use, which could cause modifications to existing objects or unexpected behaviors. Affected modules",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_BUTTON_CANCEL~FRA",
      "item": {
       "lov_name": "TEXT",
@@ -708,6 +721,19 @@
       "lov_code": "AI_SUCCESS_PING",
       "lov_lang": "FRA",
       "lov_value": "Ping réussi",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_WARN_PREFIX~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_WARN_PREFIX",
+      "lov_lang": "FRA",
+      "lov_value": "Attention : ce préfixe est déjà utilisé, ce qui pourrait provoquer des modifications des objets existants ou des comportements inattendus. Modules concernés",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -999,92 +1025,6 @@
       "fld_case": null,
       "fld_righttoleft": false,
       "fld_rendering": "AI",
-      "fld_speech": null,
-      "fld_calc": null,
-      "fld_objlist": null,
-      "fld_comment": null,
-      "fld_classification": null,
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
-     }
-    },
-    {
-     "object": "Field",
-     "userkey": "aiFieldsParam",
-     "item": {
-      "fld_name": "aiFieldsParam",
-      "fld_dbname": "ai_fields_param",
-      "fld_visible": "2",
-      "fld_updatable": "1",
-      "fld_required": false,
-      "fld_fonctid": false,
-      "fld_research": "1",
-      "fld_researchreq": "0",
-      "fld_sort": "C",
-      "fld_more": false,
-      "fld_listmore": false,
-      "fld_listsum": null,
-      "fld_exportable": true,
-      "fld_tray": null,
-      "fld_type": "13",
-      "fld_type_id__flt_code": null,
-      "fld_list_id__lov_name": null,
-      "fld_copy": true,
-      "fld_size": 100,
-      "fld_minsize": null,
-      "fld_precision": null,
-      "fld_fromdate_id__fld_name": null,
-      "fld_dfault": null,
-      "fld_indexable": false,
-      "fld_autocomp": "0",
-      "fld_groupby": false,
-      "fld_updall": true,
-      "fld_case": null,
-      "fld_righttoleft": false,
-      "fld_rendering": null,
-      "fld_speech": null,
-      "fld_calc": null,
-      "fld_objlist": null,
-      "fld_comment": "List of fields to take into account for the chatbot",
-      "fld_classification": null,
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
-     }
-    },
-    {
-     "object": "Field",
-     "userkey": "aiFldSpe",
-     "item": {
-      "fld_name": "aiFldSpe",
-      "fld_dbname": "ai_fld_spe",
-      "fld_visible": "3",
-      "fld_updatable": "1",
-      "fld_required": false,
-      "fld_fonctid": false,
-      "fld_research": "1",
-      "fld_researchreq": "0",
-      "fld_sort": "C",
-      "fld_more": true,
-      "fld_listmore": false,
-      "fld_listsum": null,
-      "fld_exportable": true,
-      "fld_tray": null,
-      "fld_type": "13",
-      "fld_type_id__flt_code": null,
-      "fld_list_id__lov_name": null,
-      "fld_copy": true,
-      "fld_size": 100,
-      "fld_minsize": null,
-      "fld_precision": null,
-      "fld_fromdate_id__fld_name": null,
-      "fld_dfault": null,
-      "fld_indexable": false,
-      "fld_autocomp": "0",
-      "fld_groupby": false,
-      "fld_updall": true,
-      "fld_case": null,
-      "fld_righttoleft": false,
-      "fld_rendering": null,
       "fld_speech": null,
       "fld_calc": null,
       "fld_objlist": null,
@@ -6970,94 +6910,6 @@
       "tsl_lang": "FRA",
       "tsl_value": "Grant user",
       "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(aiFldSpe)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "aiFldSpe"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "aiFldSpe",
-       "object": "Field"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Specification AI",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(aiFldSpe)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "aiFldSpe"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "aiFldSpe",
-       "object": "Field"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Spécification IA",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(aiFieldsParam)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "aiFieldsParam"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "aiFieldsParam",
-       "object": "Field"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "List of IA attributes",
-      "tsl_simplehelp": "<p>List of attributes to consider when calling the chatbot.<\/p>\n<ul>\n<li>Use semicolons or new lines to list the eligible fields.<\/li>\n<li>If empty, no attributes will be taken into account.<\/li>\n<\/ul>",
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(aiFieldsParam)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "aiFieldsParam"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "aiFieldsParam",
-       "object": "Field"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Liste des attributs de l'AI",
-      "tsl_simplehelp": "<p>Liste des attributs &agrave; prendre en compte lors de l'appel du chatbot.<\/p>\n<ul>\n<li>Utilisez des points-virgules ou des nouvelles lignes pour lister les&nbsp; attribut admissibles.<\/li>\n<li>Si vide, aucun attribut ne sera pris en compte.&nbsp;<\/li>\n<\/ul>",
       "tsl_plural_value": null,
       "tsl_short_value": null,
       "tsl_placeholder": null,
