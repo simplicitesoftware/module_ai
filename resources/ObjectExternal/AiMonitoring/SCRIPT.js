@@ -16,8 +16,10 @@ var AiMonitoring = (function() {
 		
 	}
 	function renderPingBannerAndChatBot(msg){
-		
 		msg = msg.replaceAll("&#x2F;", "/");
+		msg = msg.replaceAll("&#39;", "'");
+		msg = msg.replaceAll("&lt;", "<");
+		msg = msg.replaceAll("&gt;", ">");
 		let jsonMsg = $ui.getApp().messageToJson(msg);
 		
         let ctn = $("#ping_banner");
@@ -58,4 +60,4 @@ var AiMonitoring = (function() {
 	}
 	return { render: render,renderAINotParam:renderAINotParam,renderPingBannerAndChatBot:renderPingBannerAndChatBot};
 	
-})();;
+})();
