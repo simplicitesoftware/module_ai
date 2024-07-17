@@ -312,9 +312,9 @@
    "list": [
     {
      "object": "ListOfValue",
-     "userkey": "Text~AI_DEFAULT_PARAM~ANY",
+     "userkey": "TEXT~AI_DEFAULT_PARAM~ANY",
      "item": {
-      "lov_name": "Text",
+      "lov_name": "TEXT",
       "lov_code": "AI_DEFAULT_PARAM",
       "lov_lang": "ANY",
       "lov_value": "{\n    \"bot_name\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"George\",\n        \"help\": \"The name of the bot that will be displayed to users.\",\n        \"label\": {\n            \"FRA\": \"Nom du bot\",\n            \"ENU\": \"Bot Name\"\n        },\n        \"left_column\": true\n    },\n    \"code_max_token\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"2000\",\n        \"help\": \"The maximum number of tokens the bot can handle for all technical calls, including  chart and modules generation.\",\n        \"label\": {\n            \"FRA\": \"Nombre maximum de jetons pour appels techniques\",\n            \"ENU\": \"Max Token for Technical Calls\"\n        }\n    },\n    \"default_max_token\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"1500\",\n        \"help\": \"The maximum number of tokens the bot can handle by default for each interaction.\",\n        \"label\": {\n            \"FRA\": \"Nombre maximum de jetons par défaut\",\n            \"ENU\": \"Default Max Token\"\n        }\n    },\n    \"hist_depth\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"3\",\n        \"help\": \"The number of previous messages the bot will consider when generating a new response.\",\n        \"label\": {\n            \"FRA\": \"Profondeur de l'historique\",\n            \"ENU\": \"History Depth\"\n        },\n        \"left_column\": true\n    },\n    \"provider\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"\",\n        \"help\": \"Name of the model provider, used in the data disclaimer.\",\n        \"label\": {\n            \"FRA\": \"Fournisseur\",\n            \"ENU\": \"Provider\"\n        },\n        \"left_column\": true\n    },\n    \"showDataDisclaimer\": {\n        \"type\": \"boolean\",\n        \"defaultValue\": true,\n        \"help\": \"Indicates whether the data disclaimer should be shown to users.\",\n        \"label\": {\n            \"FRA\": \"Afficher la clause de non-responsabilité des données\",\n            \"ENU\": \"Show Data Disclaimer\"\n        },\n        \"left_column\": true\n    },\n    \"model\": {\n        \"type\": \"select\",\n        \"defaultValue\": \"\",\n        \"help\": \"Select the AI model to use for interactions.\",\n        \"label\": {\n            \"FRA\": \"Modèle\",\n            \"ENU\": \"Model\"\n        },\n        \"left_column\": true\n    },\n    \"api_key\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"\",\n        \"help\": \"API key used to authenticate requests to the AI server.\",\n        \"label\": {\n            \"FRA\": \"Clé API\",\n            \"ENU\": \"API Key\"\n        }\n    },\n    \"completion_url\": {\n        \"type\": \"url\",\n        \"defaultValue\": \"\",\n        \"help\": \"URL where text completion requests will be sent.\",\n        \"label\": {\n            \"FRA\": \"URL de complétion\",\n            \"ENU\": \"Completion URL\"\n        }\n    },\n    \"ping_url\": {\n        \"type\": \"url\",\n        \"defaultValue\": \"\",\n        \"help\": \"URL used to check the availability of the AI server.\",\n        \"label\": {\n            \"FRA\": \"URL de ping\",\n            \"ENU\": \"Ping URL\"\n        }\n    }\n}",
@@ -520,6 +520,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_WARN_PREFIX~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_WARN_PREFIX",
+      "lov_lang": "ENU",
+      "lov_value": "Warning: This prefix is already in use, which could cause modifications to existing objects or unexpected behaviors. Affected modules",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_BUTTON_CANCEL~FRA",
      "item": {
       "lov_name": "TEXT",
@@ -708,6 +721,19 @@
       "lov_code": "AI_SUCCESS_PING",
       "lov_lang": "FRA",
       "lov_value": "Ping réussi",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_WARN_PREFIX~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_WARN_PREFIX",
+      "lov_lang": "FRA",
+      "lov_value": "Attention : ce préfixe est déjà utilisé, ce qui pourrait provoquer des modifications des objets existants ou des comportements inattendus. Modules concernés",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -1006,98 +1032,6 @@
       "fld_case": null,
       "fld_righttoleft": false,
       "fld_rendering": "AI",
-      "fld_speech": null,
-      "fld_calc": null,
-      "fld_objlist": null,
-      "fld_comment": null,
-      "fld_classification": null,
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
-     }
-    },
-    {
-     "object": "Field",
-     "userkey": "aiFieldsParam",
-     "item": {
-      "fld_name": "aiFieldsParam",
-      "fld_dbname": "ai_fields_param",
-      "fld_visible": "2",
-      "fld_updatable": [
-       "2",
-       "3"
-      ],
-      "fld_required": false,
-      "fld_fonctid": false,
-      "fld_research": "1",
-      "fld_researchreq": "0",
-      "fld_sort": "C",
-      "fld_more": false,
-      "fld_listmore": false,
-      "fld_listsum": null,
-      "fld_exportable": true,
-      "fld_tray": null,
-      "fld_type": "13",
-      "fld_type_id__flt_code": null,
-      "fld_list_id__lov_name": null,
-      "fld_copy": true,
-      "fld_size": 100,
-      "fld_minsize": null,
-      "fld_precision": null,
-      "fld_fromdate_id__fld_name": null,
-      "fld_dfault": null,
-      "fld_indexable": false,
-      "fld_autocomp": "0",
-      "fld_groupby": false,
-      "fld_updall": true,
-      "fld_case": null,
-      "fld_righttoleft": false,
-      "fld_rendering": null,
-      "fld_speech": null,
-      "fld_calc": null,
-      "fld_objlist": null,
-      "fld_comment": "List of fields to take into account for the chatbot",
-      "fld_classification": null,
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "fld_incrementsyntax": null
-     }
-    },
-    {
-     "object": "Field",
-     "userkey": "aiFldSpe",
-     "item": {
-      "fld_name": "aiFldSpe",
-      "fld_dbname": "ai_fld_spe",
-      "fld_visible": "3",
-      "fld_updatable": [
-       "2",
-       "3"
-      ],
-      "fld_required": false,
-      "fld_fonctid": false,
-      "fld_research": "1",
-      "fld_researchreq": "0",
-      "fld_sort": "C",
-      "fld_more": true,
-      "fld_listmore": false,
-      "fld_listsum": null,
-      "fld_exportable": true,
-      "fld_tray": null,
-      "fld_type": "13",
-      "fld_type_id__flt_code": null,
-      "fld_list_id__lov_name": null,
-      "fld_copy": true,
-      "fld_size": 100,
-      "fld_minsize": null,
-      "fld_precision": null,
-      "fld_fromdate_id__fld_name": null,
-      "fld_dfault": null,
-      "fld_indexable": false,
-      "fld_autocomp": "0",
-      "fld_groupby": false,
-      "fld_updall": true,
-      "fld_case": null,
-      "fld_righttoleft": false,
-      "fld_rendering": null,
       "fld_speech": null,
       "fld_calc": null,
       "fld_objlist": null,
@@ -2920,7 +2854,7 @@
       },
       "pcs_max_duration": null,
       "pcs_duration_unit": "D",
-      "pcs_persitant": false,
+      "pcs_persitant": null,
       "pcs_persist_depth": null,
       "pcs_alert_id__alt_name": null,
       "pcs_compensate_id__pcs_name": null,
@@ -4174,6 +4108,21 @@
       "dta_order": 1,
       "dta_value": "0",
       "dta_field_id__fld_name": "aiSelectProcess",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_0005~Data~AREA=_n_",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_0005",
+      "dta_activity_id__acy_name": "Choice",
+      "dta_group": "Data",
+      "dta_name": "AREA:_n_",
+      "dta_order": 1,
+      "dta_value": "_required_field_",
+      "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -6862,50 +6811,6 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiFieldsParam)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "aiFieldsParam"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "aiFieldsParam",
-       "object": "Field"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "List of IA attributes",
-      "tsl_simplehelp": "<p>List of attributes to consider when calling the chatbot.<\/p>\n<ul>\n<li>Use semicolons or new lines to list the eligible fields.<\/li>\n<li>If empty, no attributes will be taken into account.<\/li>\n<\/ul>",
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(aiFieldsParam)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "aiFieldsParam"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "aiFieldsParam",
-       "object": "Field"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Liste des attributs de l'AI",
-      "tsl_simplehelp": "<p>Liste des attributs &agrave; prendre en compte lors de l'appel du chatbot.<\/p>\n<ul>\n<li>Utilisez des points-virgules ou des nouvelles lignes pour lister les&nbsp; attribut admissibles.<\/li>\n<li>Si vide, aucun attribut ne sera pris en compte.&nbsp;<\/li>\n<\/ul>",
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateField",
      "userkey": "Field(aiGrantUser)~ENU",
      "item": {
       "tsl_object": {
@@ -6939,50 +6844,6 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Grant user",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(aiFldSpe)~ENU",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "aiFldSpe"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "aiFldSpe",
-       "object": "Field"
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Specification AI",
-      "tsl_simplehelp": null,
-      "tsl_plural_value": null,
-      "tsl_short_value": null,
-      "tsl_placeholder": null,
-      "tsl_listhelp": null,
-      "tsl_tooltip": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateField",
-     "userkey": "Field(aiFldSpe)~FRA",
-     "item": {
-      "tsl_object": {
-       "item": {"fld_name": "aiFldSpe"},
-       "icon": "img/system/field",
-       "label": "Field",
-       "userkeylabel": "aiFldSpe",
-       "object": "Field"
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Spécification IA",
       "tsl_simplehelp": null,
       "tsl_plural_value": null,
       "tsl_short_value": null,

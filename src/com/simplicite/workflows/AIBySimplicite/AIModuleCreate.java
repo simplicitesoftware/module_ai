@@ -45,6 +45,7 @@ public class AIModuleCreate extends Processus {
 	private static final String BEGIN_SCRIPT="<script>";
 	private static final String END_SCRIPT="</script>";
 	private static final String DOMAIN="Domain";
+	private boolean displayPrefixWarning = false; 
 
 	
 	
@@ -347,6 +348,7 @@ public class AIModuleCreate extends Processus {
 		
 		
 	}
+	
 	private String getAIAnswer(ActivityFile context,Grant g){
 		if (!getActivity(ACTIVITY_AI).isUserDialog()){
 			List<String> result = getJsonAi(getPreviousContext(getPreviousContext(context)).getActivity().getStep(), g);
@@ -373,6 +375,32 @@ public class AIModuleCreate extends Processus {
 		return answer.replaceAll("(\r\n|\n)", "<br>");
 	}
 	@Override
+	public Message preValidate(ActivityFile context) {
+		if(ACTIVITY_CREATE_MODULE.equals(context.getActivity().getStep()) && !displayPrefixWarning){
+			Object prefix = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD); 
+			ObjectDB obj = getGrant().getTmpObject("Module");
+			synchronized(obj.getLock()){
+				obj.resetFilters();
+				obj.setFieldFilter(MDL_PREFIX_FIELD, prefix);
+				List<String[]> search = obj.search();
+				if(!search.isEmpty()){
+					List<String> modules = new ArrayList<>();
+					for(String[] el : search){
+						modules.add(el[obj.getFieldIndex("mdl_name")]);
+					}
+					Message m = new Message();
+					m.raiseError(Message.formatWarning("AI_WARN_PREFIX", String.join(", ",modules), MDL_PREFIX_FIELD));
+					displayPrefixWarning = true;
+					return m;
+				}
+
+			}
+			
+			
+		}
+		return super.preValidate(context);
+	}
+	@Override
 	public void postValidate(ActivityFile context) {
 		String step = context.getActivity().getStep();
 		if(ACTIVITY_CREATE_MODULE.equals(step)){
@@ -386,6 +414,7 @@ public class AIModuleCreate extends Processus {
 				getContext(getActivity(ACTIVITY_SELECT_DOMAIN)).setDataFile(FIELD, ROW_ID, domainId);
 			}
 			grantGroupToDomain(domainId,groupId,context.getDataValue(FIELD, ROW_ID));
+			displayPrefixWarning = false;
 
 		}else if(ACTIVITY_GRANT_USER.equals(step)){
 			boolean isGrantUser ="1".equals(context.getDataValue("Data", "AREA:1")); 
@@ -452,12 +481,16 @@ public class AIModuleCreate extends Processus {
 		synchronized(obj.getLock()){
 			try{
 				BusinessObjectTool objTool = obj.getTool();
-				if(!objTool.selectForCreateOrUpdate(domainFlds)){
-					domainFlds.put(ROW_MODULE_ID_FIELD, moduleId).put("obd_nohome",1);
-					obj.setValuesFromJSONObject(domainFlds, false, false);
-					obj.populate(true);
-					objTool.validateAndCreate();
+				int i=1;
+				
+				while(objTool.selectForCreateOrUpdate(domainFlds)){
+					domainFlds.put("obd_name", domainName+String.valueOf(i));
+					i++;
 				}
+				domainFlds.put(ROW_MODULE_ID_FIELD, moduleId).put("obd_nohome",1);
+				obj.setValuesFromJSONObject(domainFlds, false, false);
+				obj.populate(true);
+				objTool.validateAndCreate();
 				return obj.getRowId();
 			}catch(Exception e){
 				AppLog.error(e, getGrant());
@@ -466,6 +499,7 @@ public class AIModuleCreate extends Processus {
 		}
 
 	}
+
 	public String translateDomain(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		Activity a = p.getActivity(ACTIVITY_TRL_DOMAIN);
 		ActivityFile af = getContext(a);
