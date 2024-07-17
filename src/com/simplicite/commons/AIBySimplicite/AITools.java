@@ -36,6 +36,7 @@ public class AITools implements java.io.Serializable {
     private static final String SYSPARAM_AI_API_URL="AI_API_URL";
     private static final String CLAUDE_LLM ="CLAUDE";
     private static final String HUGGINGFACE_LLM ="HUGGINGFACE";
+    private static final String MISTRAL_LLM ="Mistral AI_";
     private static final String AUTH_PREFIX = "Bearer ";
     private static final String AUTH_PROPERTY = "Authorization";
 
@@ -163,6 +164,7 @@ public class AITools implements java.io.Serializable {
     private static String getLLM(){
         if(aiApiParam.optBoolean("ClaudeAPI", false)) return CLAUDE_LLM;
         if(aiApiParam.optBoolean("HuggingAPI", false)) return HUGGINGFACE_LLM;
+        if(MISTRAL_LLM.equals(getAIParam(PROVIDER_KEY))) return MISTRAL_LLM;
         return "GPT";
     }
     private static void reloadAIParams(){
@@ -1022,7 +1024,6 @@ public class AITools implements java.io.Serializable {
                 response.append(inputLine);
             }
             in.close();
-           
             JSONObject resJson = new JSONObject(response.toString());
             for(Object model : resJson.optJSONArray("data")){
                 JSONObject jsonModel = (JSONObject)model;
