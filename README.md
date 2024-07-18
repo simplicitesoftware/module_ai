@@ -14,72 +14,63 @@
 ### Introduction
 Exploratory module on the use of AI in Simplicite
 
-### Import
-To import this module:
+---
 
-Create a module named `AIBySimplicite`
-Set the settings as:
+### Import
+To import this module, you have two options:
+
+#### Option 1: Git Repository
+
+1. Create a module named `AIBySimplicite`.
+2. Set the settings as:
 ```json
 {
 	"origin": {
 		"uri": "https://github.com/simplicitesoftware/module_ai.git"
 	},
-	"type": "git"
+	"type": "git",
+	"branch": "6"
 }
 ```
-Click on the Import module button
+3. Click on the Import module button.
+
+#### Option 2: App Store
+
+1. Navigate to the App Store in the Project domain.
+2. Go to the Tools tab.
+3. Select "AI integrations" from the list.
+4. Follow the on-screen instructions to import the module.
+
+---
+
 ### Configure
-To configure the ia connection, use the `Configuring the wizard`  object in `AI assistant` domain.
+To configure the AI connection, utilize the `configuring the wizard` process in the `AI assistant` domain in extended mode.
 
-Select the model (LLM) you wish to use, configure the parameters and the url of your API.  
+Select the model (LLM) you wish to use, configure the API key, and the URL of your API.
 
-<details>
-  <summary>LLM spesific configuration exemple</summary>
+**Follow the process:**
 
-#### OpenAI:
-```json
-{
-    'model':'<gpt_model_to_use>',
-    'OpenAI-Project': "<my_openai_project_id>", // Optional
-    'OpenAI-Organization': "<my_openai_organization_id>", //Optional
-    'hist_depth' : 3,
-    'code_max_token' : 2000,
-    'default_max_token':1500,
-    'trigger':''
-}
-```
-#### Mistral  
-```json
-{
-    'hist_depth' : 3,
-    'code_max_token' : 2000,
-    'default_max_token':1500,
-    'trigger':''
-}
-```
-</details>
-
+After configuring, you will obtain the details of your now active configuration. This summary is available on the homepage of the domain.
 
 <details>
-  <summary>Parrameters details</summary>
+  <summary>Parameters details</summary>
 
 ##### hist_depth
-Defines the number of messages in the history used for the context.
-The greater this number, the more tokens the request uses, but the more relevant is the response. 
+Defines the number of messages in the history used for the context. The greater this number, the more tokens the request uses, but the more relevant is the response.
+
 ##### max_token
 *optional*  
-Limits the number of tokens in the ia response
+Limits the number of tokens in the AI response.
+
 ###### default_max_token
 Maximum number of tokens in a usual context.
-###### code_max_token
-Maximum number of tokens for thecnical calls.
-##### trigger
-To define a trigger for ia calls in fields (under development)
 
-</details>  
-  
-  
-Use the `Activate` action to save your settings and enter your API key if required.
+###### code_max_token
+Maximum number of tokens for technical calls.
+
+</details>
+
+---
 
 ### wizzard
 #### Module generation
