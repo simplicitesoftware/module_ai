@@ -372,8 +372,20 @@ public class AIModuleCreate extends Processus {
 		return answer.replaceAll("(\r\n|\n)", "<br>");
 	}
 	@Override
+	public Message preAbandon() {
+		Activity act = getActivity("GGD-END");
+		getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
+		return super.preAbandon();
+	}
+	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
+		return getGrant().T("AI_SETTING_NEED");
+	}
+	@Override
 	public Message preValidate(ActivityFile context) {
-		
+		if("AIC_0050".equals(context.getActivity().getStep())){
+			context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
+			AppLog.info(context.getDataValue("Return","Code"), getGrant());
+		}
 		if(ACTIVITY_CREATE_MODULE.equals(context.getActivity().getStep()) && !displayPrefixWarning){
 			Object prefix = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD); 
 			ObjectDB obj = getGrant().getTmpObject("Module");

@@ -115,8 +115,11 @@ In a `view` add an `external page` of source `External object`: `AIMetricsChat?m
 
 ### Activities
 
+* `EndHome`: 
 * `Begin`: 
 * `End`: 
+* `IsParam`: 
+* `NoParam`: 
 * `SelectModule`: Selection module
 * `Confirm`: 
 * `GenData`: AI call for data gen
@@ -130,11 +133,14 @@ Auomatic model generation process
 
 * `Begin`: 
 * `End`: 
+* `EndHome`: 
 * `Choice`: 
 * `CreateModule`: 
 * `TranslateDomain`: 
 * `NewScope`: 
 * `GrantUser`: 
+* `isParam`: 
+* `NoParam`: 
 * `SelectModule`: Selection module
 * `SelectGroup`: Selection group
 * `SelectDomain`: Selection Domain
