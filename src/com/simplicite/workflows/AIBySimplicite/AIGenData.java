@@ -16,6 +16,7 @@ public class AIGenData extends Processus {
 	@Override
 	public Message preValidate(ActivityFile context) {
 
+
 		if("GGD_0050".equals(context.getActivity().getStep())){
 			context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
 			AppLog.info(context.getDataValue("Return","Code"), getGrant());
@@ -38,7 +39,10 @@ public class AIGenData extends Processus {
 	@Override
 	public Message preAbandon() {
 		Activity act = getActivity("GGD-END");
-		getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
+		if(!Tool.isEmpty(act)){
+			getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
+		}
+		
 		return super.preAbandon();
 	}
 	public String callIA(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
