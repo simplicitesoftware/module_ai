@@ -1,8 +1,6 @@
 package com.simplicite.workflows.AIBySimplicite;
 
 import java.util.*;
-
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,7 +25,7 @@ public class AIModuleCreate extends Processus {
 	private static final String FIELD ="Field";
 	private static final String MDL_PREFIX_FIELD ="mdl_prefix";
 	private static final String ROW_MODULE_ID_FIELD ="row_module_id";
-	private static final String DOMAIN_NAME_FIELD = "obd_name";
+	private static final String DOMAIN_NAME_FIELD ="obd_name";
 	private static final String ROW_ID ="row_id";
 	private static final String EMPTY_TEXTAREA ="<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" id=\"json_return\" name=\"json_return\"></textarea>";
 	private static final String ACTIVITY_CREATE_MODULE ="AIC_0010";
@@ -47,7 +45,6 @@ public class AIModuleCreate extends Processus {
 	private static final String END_SCRIPT="</script>";
 	private static final String DOMAIN="Domain";
 	private boolean displayPrefixWarning = false; 
-	
 	
 	/**
 	 * This method is used to generate the HTML content for the chat bot.
@@ -348,6 +345,7 @@ public class AIModuleCreate extends Processus {
 		
 		
 	}
+	
 	private String getAIAnswer(ActivityFile context,Grant g){
 		if (!getActivity(ACTIVITY_AI).isUserDialog()){
 			List<String> result = getJsonAi(getPreviousContext(getPreviousContext(context)).getActivity().getStep(), g);
@@ -374,7 +372,20 @@ public class AIModuleCreate extends Processus {
 		return answer.replaceAll("(\r\n|\n)", "<br>");
 	}
 	@Override
+	public Message preAbandon() {
+		Activity act = getActivity("GGD-END");
+		getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
+		return super.preAbandon();
+	}
+	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
+		return getGrant().T("AI_SETTING_NEED");
+	}
+	@Override
 	public Message preValidate(ActivityFile context) {
+		if("AIC_0050".equals(context.getActivity().getStep())){
+			context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
+			AppLog.info(context.getDataValue("Return","Code"), getGrant());
+		}
 		if(ACTIVITY_CREATE_MODULE.equals(context.getActivity().getStep()) && !displayPrefixWarning){
 			Object prefix = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD); 
 			ObjectDB obj = getGrant().getTmpObject("Module");
@@ -414,6 +425,7 @@ public class AIModuleCreate extends Processus {
 			}
 			grantGroupToDomain(domainId,groupId,context.getDataValue(FIELD, ROW_ID));
 			displayPrefixWarning = false;
+
 		}else if(ACTIVITY_GRANT_USER.equals(step)){
 			boolean isGrantUser ="1".equals(context.getDataValue("Data", "AREA:1")); 
 			if(isGrantUser){
@@ -497,6 +509,7 @@ public class AIModuleCreate extends Processus {
 		}
 
 	}
+
 	public String translateDomain(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		Activity a = p.getActivity(ACTIVITY_TRL_DOMAIN);
 		ActivityFile af = getContext(a);
