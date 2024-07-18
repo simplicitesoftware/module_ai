@@ -974,6 +974,9 @@ public class AIModel implements java.io.Serializable {
 		}
 	}
 	private static void addToDomain(String domainID,String objectId,String moduleId,int domainOrder,Grant g){
+		if(Tool.isEmpty(domainID)){
+			return;
+		}
 		JSONObject domain = new JSONObject();
 		domain.put("map_domain_id", domainID);
 		domain.put("map_object", "ObjectInternal:"+objectId);

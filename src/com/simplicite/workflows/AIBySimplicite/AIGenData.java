@@ -38,7 +38,9 @@ public class AIGenData extends Processus {
 	@Override
 	public Message preAbandon() {
 		Activity act = getActivity("GGD-END");
-		getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
+		if(!Tool.isEmpty(act)){
+			getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
+		}
 		return super.preAbandon();
 	}
 	public String callIA(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){

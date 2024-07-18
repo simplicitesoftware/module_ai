@@ -311,14 +311,15 @@ public class AIModuleCreate extends Processus {
 		if(ACTIVITY_SELECT_DOMAIN.equals(test)){
 			objs = getObjsIds(getModuleObjects(getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID),g),g);
 		}else{
-			DataFile data = context.getDataFile("Data", EXISTING_OBJECT,true);
+			DataFile data = context.getDataFile("Data", EXISTING_OBJECT,false);
 			if(!Tool.isEmpty(data)){
-				objs = context.getDataFile("Data", EXISTING_OBJECT,true).getValues();
+				objs = data.getValues();
 			}	
 		}
 		
 		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
-		String[] groupIds = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataFile(FIELD, ROW_ID,false).getValues();
+		DataFile dataGroup = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataFile(FIELD, ROW_ID,false);
+		String[] groupIds = Tool.isEmpty(dataGroup)?new String[]{}:dataGroup.getValues();
 		String domainId = getContext(getActivity(ACTIVITY_SELECT_DOMAIN)).getDataValue(FIELD, ROW_ID);
 		try{
 			JSONObject jsonObject = AITools.getValidJson(json);
@@ -374,7 +375,8 @@ public class AIModuleCreate extends Processus {
 	@Override
 	public Message preAbandon() {
 		Activity act = getActivity("GGD-END");
-		getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
+		if(!Tool.isEmpty(act))
+			getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
 		return super.preAbandon();
 	}
 	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){

@@ -4520,7 +4520,7 @@
       "dta_group": "Constraint",
       "dta_name": "Mandatory",
       "dta_order": 1,
-      "dta_value": "true",
+      "dta_value": "false",
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -4565,7 +4565,7 @@
       "dta_group": "Constraint",
       "dta_name": "Mandatory",
       "dta_order": 1,
-      "dta_value": "true",
+      "dta_value": "false",
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
