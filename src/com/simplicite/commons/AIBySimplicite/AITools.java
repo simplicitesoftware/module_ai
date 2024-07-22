@@ -1,5 +1,6 @@
 package com.simplicite.commons.AIBySimplicite;
 
+import org.eclipse.paho.client.mqttv3.internal.SystemHighResolutionTimer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -21,6 +22,8 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
+
+import ch.simschla.minify.cli.App;
 
 
 
@@ -82,6 +85,14 @@ public class AITools implements java.io.Serializable {
     private static String apiKey = getAIParam(API_KEY);
     private static String completionUrl = getAIParam(COMPLETION_KEY);
     private static JSONObject getOptAiApiParam(){
+        String env = System.getenv(SYSPARAM_AI_API_PARAM);
+        AppLog.info("AI API param :"+env,Grant.getSystemAdmin());
+        if(Tool.isEmpty(env)){
+            return getOptAiApiParamByGrant();
+        }
+        return new JSONObject(env);
+    }
+    private static JSONObject getOptAiApiParamByGrant(){
         Grant g = Grant.getSystemAdmin();
         if (g.hasParameter(SYSPARAM_AI_API_PARAM)) {
             JSONObject param = new JSONObject(g.getParameter(SYSPARAM_AI_API_PARAM));
