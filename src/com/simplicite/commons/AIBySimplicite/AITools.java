@@ -1,6 +1,4 @@
 package com.simplicite.commons.AIBySimplicite;
-
-import org.eclipse.paho.client.mqttv3.internal.SystemHighResolutionTimer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -23,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
 
-import ch.simschla.minify.cli.App;
 
 
 
@@ -77,6 +74,7 @@ public class AITools implements java.io.Serializable {
     public static final String PING_SUCCESS = "200";
 
     private static  JSONObject aiApiParam =getOptAiApiParam();
+    private static final boolean IS_ENV_SETUP =  !Tool.isEmpty(System.getenv(SYSPARAM_AI_API_PARAM));
     private static  int aiHistDepth = aiApiParam.optInt("hist_depth");
     private static  String aiChatBotName = getAIParam(BOT_NAME_KEY, "George");
     private static  String llm = getLLM();
@@ -84,9 +82,9 @@ public class AITools implements java.io.Serializable {
     private static  String aiProvider = getProvider();
     private static String apiKey = getAIParam(API_KEY);
     private static String completionUrl = getAIParam(COMPLETION_KEY);
+    
     private static JSONObject getOptAiApiParam(){
         String env = System.getenv(SYSPARAM_AI_API_PARAM);
-        AppLog.info("AI API param :"+env,Grant.getSystemAdmin());
         if(Tool.isEmpty(env)){
             return getOptAiApiParamByGrant();
         }
@@ -147,6 +145,9 @@ public class AITools implements java.io.Serializable {
         return true;
     }
     private static Boolean checkOldSysParam(String name,String paramKey,JSONObject param,Grant g){
+        if(IS_ENV_SETUP){
+            return false;
+        }
         if(g.hasParameter(name)){
             String tmpVal= g.getParameter(name);
             if(!param.has(paramKey)){
@@ -1061,6 +1062,9 @@ public class AITools implements java.io.Serializable {
         return res;
     }
     public static void setParameters(JSONObject setting){
+        if (IS_ENV_SETUP){
+            return;
+        }
         Grant g = Grant.getSystemAdmin();
         ObjectDB paramObj = g.getTmpObject("SystemParam");
 		BusinessObjectTool paramTool = paramObj.getTool();
@@ -1125,7 +1129,8 @@ public class AITools implements java.io.Serializable {
            ping = Message.formatInfo("AI_SUCCESS_PING",null,null);
         }
         newParam.put("ping",ping);
-                return newParam;
+        newParam.put("isConfigurable",isConfigurable());
+        return newParam;
     }
     public static String getAIParam(String key){
         return getAIParam(key,"");
@@ -1168,4 +1173,7 @@ public class AITools implements java.io.Serializable {
 		String label = fieldDefLabel.optString(lang);
 		return  (Tool.isEmpty(fieldDefLabel)?key.replaceAll("[_-]", " "):label);
 	}
+    public static boolean isConfigurable(){
+        return !IS_ENV_SETUP;
+    }
 }

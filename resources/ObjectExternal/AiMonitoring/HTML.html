@@ -1,6 +1,6 @@
 <template id="AiMonitoringTemplate">
     <div class="container">
-        <h1>AI parameters</h1>
+        <h1>{{#isConfigurable}}Local{{/isConfigurable}}{{^isConfigurable}}Global{{/isConfigurable}} AI parameters</h1>
         <div class="left_column">
             {{#left_column}}
             <div class="item">

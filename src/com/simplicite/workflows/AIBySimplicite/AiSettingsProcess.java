@@ -62,6 +62,10 @@ public class AiSettingsProcess extends Processus {
 		return (String)obj.invokeMethod("getConfigurationPage", null, null);
 
 	}
+	
+	public String isGlobal(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
+		return getGrant().T("AI_ENV_SETTING");
+	}
 	public String setParams(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g) throws MethodException{
 		ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);
 		String providerid = getContext(getActivity(PROVIDER_ACT)).getDataValue(FIELD_DATA, ROW_ID);
@@ -119,6 +123,10 @@ public class AiSettingsProcess extends Processus {
 	} 
 	@Override
 	public Message preValidate(ActivityFile context) {
+		if("ASP-0050".equals(context.getActivity().getStep())){
+			context.setDataFile("Return","Code", AITools.isConfigurable()?"0":"1");
+			return null;
+		}
 		Message m = checkRequiredFields(context);
 		if (m != null)
 			return m;

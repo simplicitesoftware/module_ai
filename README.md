@@ -157,6 +157,8 @@ Auomatic model generation process
 
 ### Activities
 
+* `isGlobalParam`: 
+* `Global`: 
 * `SelectProvider`: 
 * `Auth`: 
 * `OtherParam`: 

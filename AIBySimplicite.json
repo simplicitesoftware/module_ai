@@ -131,7 +131,7 @@
       "mod_doc": {
        "path": "files/Model/Model-AiSettingsProcess.svg",
        "mime": "image/svg+xml",
-       "name": "Model-AiSettingsProcess.svg"
+       "name": "model.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-AiSettingsProcess.png",
@@ -331,6 +331,19 @@
       "lov_code": "AI_DEFAULT_PROVIDER_NAME",
       "lov_lang": "ANY",
       "lov_value": "the AI provider",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_ENV_SETTING~ANY",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_ENV_SETTING",
+      "lov_lang": "ANY",
+      "lov_value": "Your assistant is currently configured globally. For any changes, please contact the system administrator responsible for deployment.",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -578,6 +591,19 @@
       "lov_code": "AI_DISCLAIMER_DATA",
       "lov_lang": "FRA",
       "lov_value": "En utilisant ce chatbot, vous acceptez que vos données soient envoyées à  [PROVIDER].",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_ENV_SETTING~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_ENV_SETTING",
+      "lov_lang": "FRA",
+      "lov_value": "Votre assistant est actuellement configuré globalement. Pour tout changement, merci de contacter l'administrateur système responsable du déploiement.",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -3482,6 +3508,44 @@
     },
     {
      "object": "BPMActivity",
+     "userkey": "AiSettingsProcess~ASP-0050",
+     "item": {
+      "acy_process_id__pcs_name": "AiSettingsProcess",
+      "acy_step": "ASP-0050",
+      "acy_name": "isGlobalParam",
+      "acy_comment": null,
+      "acy_type": "I",
+      "acy_posx": null,
+      "acy_posy": null,
+      "acy_reversible": "N",
+      "acy_max_duration": null,
+      "acy_duration_unit": null,
+      "acy_alert_id__alt_name": null,
+      "acy_user_dlg": false,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMActivity",
+     "userkey": "AiSettingsProcess~ASP-0075",
+     "item": {
+      "acy_process_id__pcs_name": "AiSettingsProcess",
+      "acy_step": "ASP-0075",
+      "acy_name": "Global",
+      "acy_comment": null,
+      "acy_type": "X",
+      "acy_posx": null,
+      "acy_posy": null,
+      "acy_reversible": "N",
+      "acy_max_duration": null,
+      "acy_duration_unit": null,
+      "acy_alert_id__alt_name": null,
+      "acy_user_dlg": true,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMActivity",
      "userkey": "AiSettingsProcess~ASP-0100",
      "item": {
       "acy_process_id__pcs_name": "AiSettingsProcess",
@@ -4079,6 +4143,63 @@
     },
     {
      "object": "BPMTransition",
+     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0050~AiSettingsProcess~ASP-0075",
+     "item": {
+      "trs_process_id__pcs_name": "AiSettingsProcess",
+      "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "trs_from_id__acy_step": "ASP-0050",
+      "trs_from_id__acy_name": "isGlobalParam",
+      "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "trs_to_id__acy_step": "ASP-0075",
+      "trs_to_id__acy_name": "Global",
+      "trs_name": null,
+      "trs_action_id__act_name": null,
+      "trs_condition": "1",
+      "trs_callback": null,
+      "trs_alert_id__alt_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMTransition",
+     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0050~AiSettingsProcess~ASP-0100",
+     "item": {
+      "trs_process_id__pcs_name": "AiSettingsProcess",
+      "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "trs_from_id__acy_step": "ASP-0050",
+      "trs_from_id__acy_name": "isGlobalParam",
+      "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "trs_to_id__acy_step": "ASP-0100",
+      "trs_to_id__acy_name": "SelectProvider",
+      "trs_name": null,
+      "trs_action_id__act_name": null,
+      "trs_condition": "0",
+      "trs_callback": null,
+      "trs_alert_id__alt_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMTransition",
+     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0075~AiSettingsProcess~ASP-END",
+     "item": {
+      "trs_process_id__pcs_name": "AiSettingsProcess",
+      "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "trs_from_id__acy_step": "ASP-0075",
+      "trs_from_id__acy_name": "Global",
+      "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "trs_to_id__acy_step": "ASP-END",
+      "trs_to_id__acy_name": "End",
+      "trs_name": null,
+      "trs_action_id__act_name": null,
+      "trs_condition": null,
+      "trs_callback": null,
+      "trs_alert_id__alt_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMTransition",
      "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0100~AiSettingsProcess~ASP-0200",
      "item": {
       "trs_process_id__pcs_name": "AiSettingsProcess",
@@ -4136,15 +4257,15 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-BEG~AiSettingsProcess~ASP-0100",
+     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-BEG~AiSettingsProcess~ASP-0050",
      "item": {
       "trs_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_step": "ASP-BEG",
       "trs_from_id__acy_name": "Begin",
       "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
-      "trs_to_id__acy_step": "ASP-0100",
-      "trs_to_id__acy_name": "SelectProvider",
+      "trs_to_id__acy_step": "ASP-0050",
+      "trs_to_id__acy_name": "isGlobalParam",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4838,6 +4959,36 @@
     },
     {
      "object": "BPMData",
+     "userkey": "AiSettingsProcess~ASP-0050~Return~Code",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "dta_activity_id__acy_step": "ASP-0050",
+      "dta_activity_id__acy_name": "isGlobalParam",
+      "dta_group": "Return",
+      "dta_name": "Code",
+      "dta_order": 1,
+      "dta_value": "0",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AiSettingsProcess~ASP-0075~Page~Method",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "dta_activity_id__acy_step": "ASP-0075",
+      "dta_activity_id__acy_name": "Global",
+      "dta_group": "Page",
+      "dta_name": "Method",
+      "dta_order": 1,
+      "dta_value": "isGlobal",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
      "userkey": "AiSettingsProcess~ASP-0100~Constraint~Mandatory",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
@@ -5270,6 +5421,70 @@
     },
     {
      "object": "BPMGrantActivity",
+     "userkey": "ADMIN~AiSettingsProcess~ASP-0050",
+     "item": {
+      "gta_group_id__grp_name": "ADMIN",
+      "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "gta_activity_id__acy_step": "ASP-0050",
+      "gta_activity_id__acy_name": "isGlobalParam",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "ADMIN~AiSettingsProcess~ASP-0075",
+     "item": {
+      "gta_group_id__grp_name": "ADMIN",
+      "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "gta_activity_id__acy_step": "ASP-0075",
+      "gta_activity_id__acy_name": "Global",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "AI_ADMIN~AiSettingsProcess~ASP-0050",
+     "item": {
+      "gta_group_id__grp_name": "AI_ADMIN",
+      "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "gta_activity_id__acy_step": "ASP-0050",
+      "gta_activity_id__acy_name": "isGlobalParam",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "AI_ADMIN~AiSettingsProcess~ASP-0075",
+     "item": {
+      "gta_group_id__grp_name": "AI_ADMIN",
+      "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "gta_activity_id__acy_step": "ASP-0075",
+      "gta_activity_id__acy_name": "Global",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
      "userkey": "AI_DESIGNER~AIGenData~GDD_END2",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
@@ -5531,6 +5746,38 @@
       "gta_grant": [
        "R",
        "W"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "AI_DESIGNER~AiSettingsProcess~ASP-0050",
+     "item": {
+      "gta_group_id__grp_name": "AI_DESIGNER",
+      "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "gta_activity_id__acy_step": "ASP-0050",
+      "gta_activity_id__acy_name": "isGlobalParam",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "AI_DESIGNER~AiSettingsProcess~ASP-0075",
+     "item": {
+      "gta_group_id__grp_name": "AI_DESIGNER",
+      "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
+      "gta_activity_id__acy_step": "ASP-0075",
+      "gta_activity_id__acy_name": "Global",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
       ],
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -8582,6 +8829,82 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "End home",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-0050)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-0050"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-0050",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Is global param",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-0050)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-0050"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-0050",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Is global param",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-0075)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-0075"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-0075",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Warning",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-0075)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-0075"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-0075",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Avertissement",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
