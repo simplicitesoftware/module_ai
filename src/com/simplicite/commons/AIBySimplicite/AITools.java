@@ -779,6 +779,7 @@ public class AITools implements java.io.Serializable {
                     json = removeComments(json);
                     res = new JSONObject(json);
                 } catch (Exception e3) {
+                    AppLog.error(e3, null);
                     return null;
                 }
             }
@@ -994,6 +995,7 @@ public class AITools implements java.io.Serializable {
         }
     }
     public static String parseJsonResponse(JSONObject res){
+        AppLog.info("AI response :"+res.toString(1),Grant.getSystemAdmin());
        return res.getJSONArray("choices").getJSONObject(0).getJSONObject(MESSAGE_KEY).getString(CONTENT_KEY);
     }
     public static JSONObject formatJsonOpenAIFormat(String result){

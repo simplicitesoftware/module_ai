@@ -9,6 +9,8 @@ import org.json.JSONObject;
 
 import com.simplicite.util.*;
 import com.simplicite.util.tools.BusinessObjectTool;
+
+
 import com.simplicite.util.exceptions.*;
 
 import org.json.JSONArray;
@@ -55,7 +57,9 @@ public class AiMetrics implements java.io.Serializable {
 		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
 		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
 		JSONObject res = AITools.aiCaller(null, "\n ```OpenAPI "+swagger+"```",arrayPrompts,false,true,true);
+		AppLog.info("AI response: "+res.toString(), null);
 		JSONObject resultJS = splitRes(AITools.parseJsonResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
+		
 		if (resultJS.has("error")) {
 			res = AITools.aiCaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
 			return new JSONObject().put("text",AITools.parseJsonResponse(res));
@@ -171,7 +175,14 @@ public class AiMetrics implements java.io.Serializable {
 			js = js.replaceAll(regexAppend,"");
 		}
 		
-		return js.replace(".createElement('canvas')",".getElementById('myChart')");
+		js = js.replace(".createElement('canvas')",".getElementById('myChart')");
+		regex = "function\\(\\) ?\\{[\\w\\W]*\\}";
+		pattern = Pattern.compile(regex);
+		matcher = pattern.matcher(js);
+		if (matcher.find()) {
+			js = "("+matcher.group(0)+")();";
+		}
+		return js;
 	}
 	private static boolean hasErrorOrDefaultCodeOrData(String js, String html, JSONObject schemas){
 		if(Tool.isEmpty(js)){
