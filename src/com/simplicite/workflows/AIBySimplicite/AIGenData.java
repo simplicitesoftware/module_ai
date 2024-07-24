@@ -11,7 +11,7 @@ import org.json.JSONObject;
  * Process AIGenData
  */
 public class AIGenData extends Processus {
-
+	private static final String AI_SETTING_NEED = "AI_SETTING_NEED";
 	private static final long serialVersionUID = 1L;
 	@Override
 	public Message preValidate(ActivityFile context) {
@@ -19,18 +19,18 @@ public class AIGenData extends Processus {
 
 		if("GGD_0050".equals(context.getActivity().getStep())){
 			context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
-			AppLog.info(context.getDataValue("Return","Code"), getGrant());
+			AppLog.info(context.getDataValue("Returnpriva","Code"), getGrant());
 		}
 
 		return super.preValidate(context);
 	}
 	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
-		return getGrant().T("AI_SETTING_NEED");
+		return getGrant().T(AI_SETTING_NEED);
 	}
 	public String genData(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)
 			return null;
-		if(!AITools.isAIParam(true)) return  g.T("AI_SETTING_NEED");
+		if(!AITools.isAIParam(true)) return  g.T(AI_SETTING_NEED);
 		String moduleId = getContext(getActivity("GGD_0100")).getDataValue("Field", "mdl_name");
 		JSONObject json = new JSONObject( getContext(getActivity("GGD_0150")).getDataValue("Data", "json_return"));
 		return AIData.createDataFromJSON(moduleId,json,getGrant());
@@ -48,7 +48,7 @@ public class AIGenData extends Processus {
 	public String callIA(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)
 			return null;
-		if(!AITools.isAIParam(true)) return  g.T("AI_SETTING_NEED");
+		if(!AITools.isAIParam(true)) return  g.T(AI_SETTING_NEED);
 		String moduleId = getContext(getActivity("GGD_0100")).getDataValue("Field", "mdl_name");
 		JSONObject response = AIData.genDataForModule(moduleId,getGrant());
 		if(response.has("error")) return response.getString("error");

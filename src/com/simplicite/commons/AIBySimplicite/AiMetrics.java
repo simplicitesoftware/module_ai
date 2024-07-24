@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import com.simplicite.util.*;
 import com.simplicite.util.tools.BusinessObjectTool;
 
-
 import com.simplicite.util.exceptions.*;
 
 import org.json.JSONArray;
@@ -334,6 +333,30 @@ public class AiMetrics implements java.io.Serializable {
 			}
 		}
 		return null;
+	}
+	public static String recallWithError(String prompt, String lang,JSONObject swagger, String script, String html, String error){
+		JSONArray hist = new JSONArray();
+		
+		JSONArray arrayPrompts = new JSONArray();
+		prompt = AITools.normalize(AITools.removeAcent(prompt),false);
+		prompt =  "give me Script js to display: "+prompt+("FRA".equals(lang)?" in french":"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?" in french":"")+". Do not create data use search";
+
+		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
+		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
+		AppLog.info(arrayPrompts.toString(1), null);
+		hist.put(new JSONObject().put("role","user").put(AITools.CONTENT_KEY,arrayPrompts));
+		String response = "```javascript\n"+script+"\n```"+"\n```html\n"+html+"\n```";
+		hist.put(new JSONObject().put("role","assistant").put(AITools.CONTENT_KEY,response));
+		String spe = " ```OpenAPI "+swagger+"```";
+		prompt = "this script is not valid, please correct it.I got this error: "+error+"\n correct only the script response in ```javascript```";
+		AppLog.info("spe: "+spe, null);
+		AppLog.info("prompt: "+prompt, null);
+		AppLog.info("hist: "+hist.toString(1), null);
+		JSONObject res = AITools.aiCaller(null, spe,prompt,hist,false);
+		JSONObject resultJS = splitRes(AITools.parseJsonResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
+		AppLog.info("res recall: "+resultJS.toString(1), null);
+		
+		return resultJS.toString();
 	}
 	
 }

@@ -40,7 +40,7 @@ public class AITools implements java.io.Serializable {
     private static final String AUTH_PREFIX = "Bearer ";
     private static final String AUTH_PROPERTY = "Authorization";
 
-    private static final String CONTENT_KEY = "content";
+    public static final String CONTENT_KEY = "content";
     private static final String MESSAGE_KEY = "message";
     private static final String MESSAGES_KEY = "messages";
     private static final String USAGE_KEY = "usage";

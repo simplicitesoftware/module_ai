@@ -6,9 +6,8 @@ import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
-
 import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONObject; 
 
 /**
  * External object AIRestAPI
@@ -32,17 +31,24 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			String type = params.getParameter(JSON_REQ_TYPE);
 			String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 			JSONObject req = params.getJSONObject();
+			String lang;
 			if (Tool.isEmpty(type)) type = "default";
 			JSONObject swagger = params.has("swagger")?new JSONObject(params.getParameter("swagger")):null;
 			switch (type) { //use switch for future extension
 				case "metrics":
-					String lang = params.getParameter("lang");
+					lang = params.getParameter("lang");
 					return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);
 				case "saveMetrics":
 					String mdlName = params.getParameter("moduleName");
 					String function = params.getParameter("function");
 					String ctx = params.getParameter("ctx");
 					return saveMetricsAsCrosstable(ctx,swagger,function,mdlName);	
+				case "errorMetricsSolver":
+					String error = params.getParameter("error");
+					lang = params.getParameter("lang");
+					String script = params.getParameter("script");
+					String html = params.getParameter("html");
+					return AiMetrics.recallWithError(prompt, lang, swagger,script,html, error);
 				case "BOT_NAME":
 					return new JSONObject().put("botName",AITools.getBotName());
 				default:

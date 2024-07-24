@@ -72,7 +72,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 				
 				return;
 			}
-			reOpenChat();
+			
 			if(botResponse.html == null && botResponse.js == null && botResponse.text != null){
 				$('#metrics_messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
 				return;
@@ -98,10 +98,57 @@ var AIMetricsChat = AIMetricsChat || (function() {
 					lastScript = botResponse.js;
 
 				}catch(e){
-					$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
+					console.log("AI Generated scritp error: "+e);
+					console.log("On script: \n"+botResponse.js);
+					/* String error = params.getParameter("error");
+					lang = params.getParameter("lang");
+					String script = params.getParameter("script");
+					String html = params.getParameter("html"); */
+					params = {prompt:input, reqType:"errorMetricsSolver",swagger:swagger,lang:app.grant.lang,error:e,script:botResponse.js,html:botResponse.html};
+					app._call(useAsync, url, params, function callback(botResponse){
+						console.log("retry: ");
+						//reOpenChat();
+						if(botResponse.html == null && botResponse.js == null && botResponse.text != null){
+							$('#metrics_messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
+							return;
+						}
+						if(botResponse.error !=null || ((botResponse.js == null && !botResponse?.html?.includes("script")))){
+							$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
+							
+							return;
+						}
+						if(botResponse.text == null){
+							botResponse.text = "";
+						}
+						$('#metrics_messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
+						$('#ia_html').html(botResponse.html);
+						if(botResponse.js != ""){
+							try {
+								eval(botResponse.js);
+								//check if function is auto call
+								if(botResponse.js.indexOf(botResponse.function) == -1) {
+									eval(botResponse.function);
+								}
+								lastScript = botResponse.js;
+			
+							}catch(e){
+								console.log("AI Generated scritp error: "+e);
+								console.log("On script: \n"+botResponse.js);
+								$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
+							}
+						}else{
+							lastScript = $("#ia_html script").text();
+							reOpenChat();
+						}
+					});
+
+					
+				}finally{
+					reOpenChat();
 				}
 			}else{
 				lastScript = $("#ia_html script").text();
+				reOpenChat();
 			}
 			// Définir les options globales pour Chart.js
 			Chart.defaults.responsive = true;
