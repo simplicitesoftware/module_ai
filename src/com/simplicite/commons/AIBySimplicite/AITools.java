@@ -73,6 +73,7 @@ public class AITools implements java.io.Serializable {
 	private static final String SYS_CODE = "sys_code";
 	private static final String SYS_VAL2 = "sys_value2";
     private static final String DEFAULT_MODULE = "Application";
+    private static final String ROW_MLD_ID = "row_module_id";
 
     public static final String PING_SUCCESS = "200";
 
@@ -91,7 +92,29 @@ public class AITools implements java.io.Serializable {
         if(Tool.isEmpty(env)){
             return getOptAiApiParamByGrant();
         }
+        //importDatasets(ModuleDB.getModuleId("AIBySimplicite"));
         return new JSONObject(env);
+    }
+    public static void importDatasets(String moduleID){
+        Grant g = Grant.getSystemAdmin();
+		g.addResponsibility("AI_ADMIN");
+		ObjectDB obj = g.getTmpObject("AIProvider");
+		obj.resetFilters();
+		if(obj.search().isEmpty()){
+			ObjectDB datasets = g.getTmpObject("Dataset");
+			synchronized(datasets.getLock()){
+				datasets.resetFilters();
+				datasets.setFieldFilter(ROW_MLD_ID, moduleID);
+				for(String[] row: datasets.search()){
+					datasets.select(row[datasets.getRowIdFieldIndex()]);
+					try {
+						datasets.invokeAction("Dataset-apply");
+					} catch (ActionException e) {
+						AppLog.error(e, g);
+					}
+				}
+			}
+		}
     }
     private static JSONObject getOptAiApiParamByGrant(){
         Grant g = Grant.getSystemAdmin();
@@ -827,7 +850,7 @@ public class AITools implements java.io.Serializable {
 		String[]ids;
 		synchronized(objI.getLock()){
 			objI.resetFilters();
-			objI.setFieldFilter("row_module_id", mdlId);
+			objI.setFieldFilter(ROW_MLD_ID, mdlId);
 			List<String[]> objIs = removeNotCreatable(objI.search(),nameIndex, g);
 			ids = new String[objIs.size()];
 			
@@ -1081,7 +1104,7 @@ public class AITools implements java.io.Serializable {
 					paramObj.setFieldValue(SYS_CODE, SYSPARAM_AI_API_PARAM);
 					paramObj.setFieldValue("sys_value", "{}");
                     paramObj.setFieldValue("sys_type", "PRV");
-					paramObj.setFieldValue("row_module_id",ModuleDB.getModuleId(DEFAULT_MODULE));
+					paramObj.setFieldValue(ROW_MLD_ID,ModuleDB.getModuleId(DEFAULT_MODULE));
 				}
                 if(!Tool.isEmpty(setting)) paramObj.setFieldValue(SYS_VAL2, setting.toString(1));
 				paramTool.validateAndSave();
@@ -1125,7 +1148,8 @@ public class AITools implements java.io.Serializable {
                     rightColumn.put(data);
                 }
             }else{
-                specificParam.put(new JSONObject().put("key", key).put("value", params.get(key)));
+
+                specificParam.put(new JSONObject().put("key", key).put("value", checkPrivate(params,key)));
             }
 		}
         newParam.put("columns", new JSONArray()
@@ -1142,6 +1166,23 @@ public class AITools implements java.io.Serializable {
         newParam.put("ping",ping);
         newParam.put("isConfigurable",isConfigurable());
         return newParam;
+    }
+    private static Object checkPrivate(JSONObject params, String key){
+        if(!params.has(PROVIDER_KEY)) return params.get(key);
+        Grant g = Grant.getSystemAdmin();
+		g.addResponsibility("AI_ADMIN");
+		ObjectDB obj = g.getTmpObject("AIProvider");
+        synchronized(obj.getLock()){
+            obj.setFieldFilter("aiPrvProvider",params.getString(PROVIDER_KEY));
+            List<String[]> res = obj.search();
+            if(!res.isEmpty()){
+                JSONObject defParams = new JSONObject(res.get(0)[obj.getFieldIndex("aiPrvDataModel")]);
+                if(defParams.has(key) && defParams.getJSONObject(key).optBoolean("private",false)){
+                    return "********";   
+                }
+            }
+        }
+        return params.has(key)?params.get(key):null;
     }
     public static String getAIParam(String key){
         return getAIParam(key,"");
@@ -1167,6 +1208,7 @@ public class AITools implements java.io.Serializable {
         return params;
     }
     private static String getDisplayField(String key, Object value,JSONObject defaultField){
+        if(defaultField.optBoolean("private",false)) return "********";
         switch(defaultField.optString("type")){
             case "boolean":
                 return (boolean)value?"Yes":"No";
