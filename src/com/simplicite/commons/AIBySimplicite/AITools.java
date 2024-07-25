@@ -30,6 +30,9 @@ import com.simplicite.util.tools.*;
  */
 public class AITools implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
+    
+    public static final  Boolean AI_DEBUG_LOGS ="true".equals(Grant.getSystemAdmin().getParameter("AI_DEBUG_LOGS"));
+    private static final String AI_PING_ERROR="AI_PING_ERROR";
     private static final String SYSPARAM_AI_API_PARAM="AI_API_PARAM";
     private static final String SYSPARAM_AI_CHAT_BOT_NAME="AI_CHAT_BOT_NAME";
     private static final String SYSPARAM_AI_API_KEY="AI_API_KEY";
@@ -47,7 +50,7 @@ public class AITools implements java.io.Serializable {
     private static final String PROVIDER_KEY = "provider";
     private static final String API_KEY = "api_key";
     private static final String MODEL_KEY = "model";
-    private static final String ERROR_KEY = "error";
+    public static final String ERROR_KEY = "error";
     private static final String LABEL_KEY = "label";
     private static final String BOT_NAME_KEY = "bot_name";
     private static final String COMPLETION_KEY = "completion_url";
@@ -262,7 +265,9 @@ public class AITools implements java.io.Serializable {
             if(isClaudeAPI){
                 postData = getClaudeFormatData(postData);
             }
-
+            if(Boolean.TRUE.equals(AI_DEBUG_LOGS)){
+                AppLog.info("post data :"+postData.toString(1),g);
+            }
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
                 outputStream.writeBytes(postData.toString());
                 outputStream.flush();
@@ -270,8 +275,8 @@ public class AITools implements java.io.Serializable {
             
             int responseCode = connection.getResponseCode();
             if(responseCode!=200){
-                
-                return readError(connection,responseCode,g).toString();
+                JSONObject error = readError(connection,responseCode,g);
+                return Tool.isEmpty(error)?"":error.toString();
                 
             }
            
@@ -366,16 +371,13 @@ public class AITools implements java.io.Serializable {
             String content = getContent(message.get(CONTENT_KEY));
             switch (role) {
                 case ASSISTANT_ROLE:
-                    AppLog.info("AI API assistant :"+content,Grant.getSystemAdmin());
                     dialogBuilder.append("bot: "+content+"\n");
                     break;
                 case SYSTEM_ROLE:
-                    AppLog.info("AI API system :"+content,Grant.getSystemAdmin());
                     if(Tool.isEmpty(content) || "\"\"".equals(content)) break;
                     dialogBuilder.append("context: "+ content+"\n");
                     break;
                 default:
-                    AppLog.info("AI API user :"+content,Grant.getSystemAdmin());
                     dialogBuilder.append(content+"\n");
                     break;
             }
@@ -779,7 +781,6 @@ public class AITools implements java.io.Serializable {
                     json = removeComments(json);
                     res = new JSONObject(json);
                 } catch (Exception e3) {
-                    AppLog.error(e3, null);
                     return null;
                 }
             }
@@ -995,8 +996,8 @@ public class AITools implements java.io.Serializable {
         }
     }
     public static String parseJsonResponse(JSONObject res){
-        AppLog.info("AI response :"+res.toString(1),Grant.getSystemAdmin());
-       return res.getJSONArray("choices").getJSONObject(0).getJSONObject(MESSAGE_KEY).getString(CONTENT_KEY);
+        if(Boolean.TRUE.equals(AI_DEBUG_LOGS))AppLog.info("AI response :"+res.toString(1),Grant.getSystemAdmin());
+        return res.optJSONArray("choices",new JSONArray()).optJSONObject(0,new JSONObject()).optJSONObject(MESSAGE_KEY,new JSONObject()).optString(CONTENT_KEY,"");
     }
     public static JSONObject formatJsonOpenAIFormat(String result){
         return new JSONObject().put("choices",new JSONArray().put(new JSONObject().put(MESSAGE_KEY,new JSONObject().put(CONTENT_KEY,result))));
@@ -1019,11 +1020,13 @@ public class AITools implements java.io.Serializable {
                 return PING_SUCCESS;
             }else{
                 JSONObject error = readError(connection,responseCode,g);
-                return Message.formatError("AI_PING_ERROR",error.getString("code")+": "+error.getString(ERROR_KEY),null);
+                if(Tool.isEmpty(error))
+                    return Message.formatError(AI_PING_ERROR,null,null);
+                return Message.formatError(AI_PING_ERROR,error.optString("code")+": "+error.optString(ERROR_KEY),null);
             }
         } catch (IOException | URISyntaxException e) {
             AppLog.error(e,g);
-            return Message.formatError("AI_PING_ERROR",e.getMessage(),null);
+            return Message.formatError(AI_PING_ERROR,e.getMessage(),null);
         }
        
 
@@ -1055,8 +1058,10 @@ public class AITools implements java.io.Serializable {
 
         } else {
             JSONObject error = readError(connection,responseCode,g);
+        
             res.add(ERROR_KEY);
-            res.add(error.getString("code")+": "+error.getString(ERROR_KEY));
+            if(Tool.isEmpty(error)) error = new JSONObject();
+            res.add(error.optString("code")+": "+error.optString(ERROR_KEY));
             
 
         }
@@ -1108,21 +1113,25 @@ public class AITools implements java.io.Serializable {
         JSONObject defaultParam = new JSONObject(Grant.getSystemAdmin().T("AI_DEFAULT_PARAM"));
         		JSONArray specificParam = new JSONArray();
         JSONObject newParam = new JSONObject();
-        newParam.put(HTML_LEFT_COLUMN_ID, new JSONArray());
-        newParam.put("right_column", new JSONArray());
+        JSONArray leftColumn = new JSONArray();
+        JSONArray rightColumn = new JSONArray();
 		for(String key: params.keySet()){
             if(API_KEY.equals(key)) continue;
             if(defaultParam.has(key)){
                 JSONObject data = new JSONObject().put("field", key).put("value", getDisplayField(key,params.get(key),defaultParam.optJSONObject(key))).put(LABEL_KEY, optLabel(key,defaultParam,lang));
                 if(defaultParam.optJSONObject(key).optBoolean(HTML_LEFT_COLUMN_ID)){
-                    newParam.getJSONArray(HTML_LEFT_COLUMN_ID).put(data);
+                    leftColumn.put(data);
                 }else{
-                    newParam.getJSONArray("right_column").put(data);
+                    rightColumn.put(data);
                 }
             }else{
                 specificParam.put(new JSONObject().put("key", key).put("value", params.get(key)));
             }
 		}
+        newParam.put("columns", new JSONArray()
+                                .put(new JSONObject().put("class",HTML_LEFT_COLUMN_ID).put("fields", leftColumn))
+                                .put(new JSONObject().put("class","right_column").put("fields", rightColumn))
+        );
         newParam.put(PROVIDER_KEY, aiProvider);
         newParam.put("providerFields", specificParam);
         String ping = pingAI();

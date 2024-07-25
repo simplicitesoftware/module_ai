@@ -125,6 +125,7 @@ public class AiSettingsProcess extends Processus {
 	public Message preValidate(ActivityFile context) {
 		if("ASP-0050".equals(context.getActivity().getStep())){
 			context.setDataFile("Return","Code", AITools.isConfigurable()?"0":"1");
+			if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(context.getDataValue("Return","Code"), getGrant());
 			return null;
 		}
 		Message m = checkRequiredFields(context);

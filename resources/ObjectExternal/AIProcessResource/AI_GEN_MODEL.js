@@ -84,8 +84,7 @@ var aiGenModel = aiGenModel || (function() {
 			}
 		});
 	}
-	function choiceModel(list){
-		console.log("choiceModel ",list);
+	function choiceModel(list){ 
 		$(".extern").append("<div id='modeler' class='modeler_picker'></div>");
 		$("#modeler").append("<div id='choice' class='items'></div>");
 		$("#choice").css("display","grid");

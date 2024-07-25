@@ -9,11 +9,14 @@ import org.json.JSONObject;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
+
 /**
  * Shared code AIData
  */
 public class AIData implements java.io.Serializable {
-	
+	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_EMAIL ="email@example.com";
+	private static final String DEFAULT_PHONE ="0601020304";
 	private static HashMap<Integer,String> typeTrad;
 	private static Random random = new Random();
 	String html = "";
@@ -211,16 +214,22 @@ public class AIData implements java.io.Serializable {
 				int type = field.getType();
 				switch (type) {
 					case ObjectField.TYPE_EMAIL:
-						json.put(key, "regex: ^\\w+(['\\.\\+-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,})+$");
+						json.put(key, "patterns: ^\\w+(['\\.\\+-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,})+$");
 						break;
 					case ObjectField.TYPE_REGEXP:
-						json.put(key, "regex: "+field.getRegExp());
+						json.put(key, "patterns: "+field.getRegExp());
 						break;
 					case ObjectField.TYPE_ENUM :
 						json.put(key, "Enumeration //("+String.join(", ", field.getList().getCodes(false))+")");
 						break;
 					case ObjectField.TYPE_ENUM_MULTI :
 						json.put(key, "Multiple enumeration //("+String.join(", ", field.getList().getCodes(true))+")");
+						break;
+					case ObjectField.TYPE_PHONENUM:
+						json.put(key, "Phone number french format");
+						break;
+					case ObjectField.TYPE_GEOCOORDS:
+						json.put(key, "Geographical coordinates: latitude;longitude");
 						break;
 					default:
 						json.put(key, typeTrad.getOrDefault(type, "String"));
@@ -259,6 +268,7 @@ public class AIData implements java.io.Serializable {
 	*/
 	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
+		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)) AppLog.info("module uml: "+data.toString(1), g);
 		JSONObject jsonResponse = AITools.aiCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least 2 entries per class",false,true);
 		String response = AITools.parseJsonResponse(jsonResponse);
 		JSONObject json = AITools.getValidJson(response);
@@ -350,29 +360,61 @@ public class AIData implements java.io.Serializable {
 	 * @throws CreateException If there is an error creating the object.
 	 * @throws ValidateException If there is an error validating the object.
 	 */
-	private static CreatedObject validateJsonAndCreate(String name, JSONObject json,JSONObject created,JSONArray arrayRes,Grant g) throws GetException, CreateException, ValidateException{
+	private static CreatedObject validateJsonAndCreate(String name, JSONObject json,JSONObject created,JSONArray arrayRes,Grant g) throws GetException, CreateException{
 		ObjectDB obj = g.getTmpObject(name);
 		CreatedObject objectToCreate = objectbyJSON(name, json,created,g);
 		synchronized(obj.getLock()){
 			BusinessObjectTool objT = obj.getTool();
 			if(checkFuncIdAndRequired(objectToCreate.objectCreate, obj)){
 				JSONObject filters = getFilter(objectToCreate.objectCreate, obj);
-				if(Tool.isEmpty(filters)){
-					objT.selectForCreate();
-					obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
-					objT.validateAndCreate();
-				}else if(!objT.selectForCreateOrUpdate(filters)){
-					obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
-					objT.validateAndCreate();
+				try{
+					if(Tool.isEmpty(filters)){
+						objT.selectForCreate();
+						obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
+						objT.validateAndCreate();
+					}else if(!objT.selectForCreateOrUpdate(filters)){
+						obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
+						if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("create object: "+obj.getName()+" with values: "+objectToCreate.objectCreate.toString(1), g);
+						objT.validateAndCreate();
+					}
+				}catch(ValidateException e){
+					AppLog.info(name+":" + e.getMessage(),g);
+					checkAndSetFields(obj,objT,g);
+					
 				}
 		
 				objectToCreate.rowId = obj.getRowId();
-				if(!Tool.isEmpty(objectToCreate.rowId)){
+				if(!Tool.isEmpty(objectToCreate.rowId) && !"0".equals(objectToCreate.rowId) ){
 					arrayRes.put(toDysplayJson(obj));
 				}
 			}
 		}
-		if(!Tool.isEmpty(objectToCreate.rowId)){
+		return checkUpdate(name, objectToCreate,json,created);
+		
+	}
+	private static void checkAndSetFields(ObjectDB obj,BusinessObjectTool objT,Grant g){
+		for(ObjectField fld : obj.getFields()){
+			List<String> err = fld.validate(obj);
+			if(!Tool.isEmpty(err)){
+				if(ObjectField.TYPE_EMAIL == fld.getType()){
+					fld.setValue(DEFAULT_EMAIL);
+				}else if(ObjectField.TYPE_PHONENUM == fld.getType()){
+					fld.setValue( DEFAULT_PHONE);
+				}else if(!fld.isRequired()){
+					fld.setValue("");
+				}else{
+					break;
+				}
+			}
+		}
+		try{
+			objT.validateAndCreate();
+		}catch(ValidateException | CreateException e1){
+			AppLog.info(e1.toString(), g);
+		}
+	}
+	private static CreatedObject checkUpdate(String name, CreatedObject objectToCreate,JSONObject json,JSONObject created){
+		if(!Tool.isEmpty(objectToCreate.rowId) && !"0".equals(objectToCreate.rowId)){
 			String objid = json.optString("id");
 
 			if (!Tool.isEmpty(objid)) {
@@ -386,9 +428,8 @@ public class AIData implements java.io.Serializable {
 			}
 		}
 		return null;
-		
-	}
 
+	}
 	/**
 	 * Creates a new object based on the provided parameters.
 	 * 
@@ -519,6 +560,7 @@ public class AIData implements java.io.Serializable {
 	 * @return a valid value based on the given parameters
 	 */
 	private static String getValidValue(Object val, int type, Object param, String fieldName, Grant g) {
+		
 		String value = "";
 		switch (type) {
 			case ObjectField.TYPE_PHONENUM:
@@ -543,11 +585,16 @@ public class AIData implements java.io.Serializable {
 			case ObjectField.TYPE_REGEXP:
 				value = getValidRegExpValue(val, param);
 				break;
+			case ObjectField.TYPE_IMAGE:
+			case ObjectField.TYPE_DOC:
+			case ObjectField.TYPE_EXTFILE:
+				value = "";
+				break;
 			default:
 				value = getValidDefaultValue(val, fieldName);
 				break;
 		}
-
+		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(typeTrad.get(type)+"| "+fieldName+": "+val+" -> "+value, g);
 		return value;
 	}
 
@@ -555,11 +602,11 @@ public class AIData implements java.io.Serializable {
 		String value = (val instanceof String) ? (String) val : "";
 		try {
 			if (!new PhoneNumTool().isValid(value)) {
-				value = "0000000000";
+				value = DEFAULT_PHONE;
 			}
 		} catch (ParamsException e) {
 			AppLog.error(e, g);
-			value = "0000000000";
+			value = DEFAULT_PHONE;
 		}
 		return value;
 	}
@@ -611,7 +658,7 @@ public class AIData implements java.io.Serializable {
 	private static String getValidEmailValue(Object val) {
 		String value = (val instanceof String) ? (String) val : "";
 		if (!Tool.checkEmail(value)) {
-			value = "email@example.com";
+			value = DEFAULT_EMAIL;
 		}
 		return value;
 	}

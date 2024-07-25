@@ -19,7 +19,7 @@ public class AIGenData extends Processus {
 
 		if("GGD_0050".equals(context.getActivity().getStep())){
 			context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
-			AppLog.info(context.getDataValue("Returnpriva","Code"), getGrant());
+			if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(context.getDataValue("Return","Code"), getGrant());
 		}
 
 		return super.preValidate(context);

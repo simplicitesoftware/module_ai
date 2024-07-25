@@ -1,22 +1,16 @@
 <template id="AiMonitoringTemplate">
     <div class="container">
         <h1>{{#isConfigurable}}Local{{/isConfigurable}}{{^isConfigurable}}Global{{/isConfigurable}} AI parameters</h1>
-        <div class="left_column">
-            {{#left_column}}
+        {{#columns}}
+        <div class="{{class}}">
+            {{#fields}}
             <div class="item">
                 <label for="{{field}}">{{label}}:</label>
                 <span id="field">{{{value}}}</span>
             </div>
-            {{/left_column}}
+            {{/fields}}
         </div>
-        <div class="right_column">
-            {{#right_column}}
-            <div class="item">
-                <label for="{{field}}">{{label}}:</label>
-                <span id="field">{{{value}}}</span>
-            </div>
-            {{/right_column}}
-        </div>
+        {{/columns}}
     </div>
     {{#providerFields.length}}
     <div class="provider-fields-container container">
@@ -34,8 +28,6 @@
     <div id="ping_banner" class="ping-banner ">
     </div>
     <script>
-        
-        console.log("test : {{ping}}");
         AiMonitoring.renderPingBannerAndChatBot("{{ping}}");
        
     </script>
