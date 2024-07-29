@@ -210,37 +210,107 @@ public class AIData implements java.io.Serializable {
 		while (keys.hasNext()) {
 			String key = keys.next();
 			ObjectField field = obj.hasField(key) ? obj.getField(key) : null;
-			if (field != null && !field.isForeignKey() && !field.isInternalForeignKey() ) {
+			if (field != null && !field.isForeignKey() && !field.isInternalForeignKey() && ObjectField.TYPE_ID != field.getType()) {
 				int type = field.getType();
-				switch (type) {
-					case ObjectField.TYPE_EMAIL:
-						json.put(key, "patterns: ^\\w+(['\\.\\+-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,})+$");
-						break;
-					case ObjectField.TYPE_REGEXP:
-						json.put(key, "patterns: "+field.getRegExp());
-						break;
-					case ObjectField.TYPE_ENUM :
-						json.put(key, "Enumeration //("+String.join(", ", field.getList().getCodes(false))+")");
-						break;
-					case ObjectField.TYPE_ENUM_MULTI :
-						json.put(key, "Multiple enumeration //("+String.join(", ", field.getList().getCodes(true))+")");
-						break;
-					case ObjectField.TYPE_PHONENUM:
-						json.put(key, "Phone number french format");
-						break;
-					case ObjectField.TYPE_GEOCOORDS:
-						json.put(key, "Geographical coordinates: latitude;longitude");
-						break;
-					default:
-						json.put(key, typeTrad.getOrDefault(type, "String"));
-						break;
-				}
-				
+				String pres = getFieldPrecition(field.getId());
+				json.put(key,getCommentForType(type,pres,field));
 			}
 		}
 	}
-
-	
+	private static String getCommentForType(int type,String pres, ObjectField field){
+		if(!Tool.isEmpty(pres) && !isInt(pres)) pres = "//"+pres;
+		String comment;
+		switch (type) {
+			case ObjectField.TYPE_DATETIME:
+				comment = "Date and time yyyy-MM-dd HH:mm:ss "+pres;
+				break;
+			case ObjectField.TYPE_DATE:
+				comment = "Date yyyy(-MM(-dd)?)? "+pres;
+				break;
+			case ObjectField.TYPE_TIME:
+				comment = "Time HH(:mm(:ss)?)? "+pres;
+				break;
+			case ObjectField.TYPE_EMAIL:
+				comment = "patterns: ^\\w+(['\\.\\+-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,})+$";
+				break;
+			case ObjectField.TYPE_REGEXP:
+				comment = "patterns: "+field.getRegExp();
+				break;
+			case ObjectField.TYPE_ENUM :
+				comment = "Enumeration //("+String.join(", ", field.getList().getCodes(false))+")";
+				break;
+			case ObjectField.TYPE_ENUM_MULTI :
+				comment = "Multiple enumeration //("+String.join(", ", field.getList().getCodes(true))+")";
+				break;
+			case ObjectField.TYPE_PHONENUM:
+				comment = "Phone number french format"+ pres;
+				break;
+			case ObjectField.TYPE_GEOCOORDS:
+				comment = "Geographical coordinates: //latitude;longitude "+pres;
+				break;
+			case ObjectField.TYPE_IMAGE:
+				if(!Tool.isEmpty(pres)){
+					pres = "thumbnail size in pixels: "+ pres;
+				}
+				comment = typeTrad.get(type)+pres;
+				break;
+			case ObjectField.TYPE_INT:
+				if("stars".equals(field.getRendering())){
+					pres = "";
+				}
+				comment = typeTrad.get(type)+pres;
+				break;
+			case ObjectField.TYPE_DOC:
+				comment = typeTrad.get(type);
+				break;
+			case ObjectField.TYPE_LONG_STRING:
+				switch (field.getRendering()) {
+					case "GRID":
+						pres = pres + " Rendering: grid Type: String[][]";
+						break;
+					case "JSON":
+						pres = pres + " JSON";
+						break;
+					case "MD":
+						pres = pres + " Marckdown";
+						break;
+					case "HTML":
+						pres = pres + " HTML";
+						break;
+					case "SQL":
+						pres = pres + " SQL";
+						break;
+					default:
+						break;
+				}
+				comment = typeTrad.get(type)+pres;
+				break;
+			default:
+				if(field.isNumeric() && Integer.parseInt(pres) == field.getFloatPrecision()){
+					pres = pres + " digits after the decimal poin";
+				}
+				comment = typeTrad.getOrDefault(type, "String")+pres;
+				break;
+		}
+		return comment;
+	}
+	private static boolean isInt(String str){
+		try{
+			Integer.parseInt(str);
+			return true;
+		}catch(NumberFormatException e){
+			return false;
+		}
+	}
+	private static String getFieldPrecition(String id){
+		if(Tool.isEmpty(id))return "";
+		ObjectDB obj = Grant.getSystemAdmin().getTmpObject("Field");
+		synchronized(obj.getLock()){
+			obj.select(id);
+			return obj.getFieldValue("fld_precision");
+		}
+		
+	}
 	
 
 	/**
@@ -396,6 +466,7 @@ public class AIData implements java.io.Serializable {
 		for(ObjectField fld : obj.getFields()){
 			List<String> err = fld.validate(obj);
 			if(!Tool.isEmpty(err)){
+				if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("error on field: "+fld.getName()+" with values: "+fld.getValue()+" | "+String.join(",",err), g);
 				if(ObjectField.TYPE_EMAIL == fld.getType()){
 					fld.setValue(DEFAULT_EMAIL);
 				}else if(ObjectField.TYPE_PHONENUM == fld.getType()){
@@ -514,10 +585,11 @@ public class AIData implements java.io.Serializable {
 	 */
 	private static void processJsonField(ObjectField field, Object val, CreatedObject res, Grant g) {
 		int type = field.getType();
+		
 		Object param = null;
 		if(type == ObjectField.TYPE_ENUM || type == ObjectField.TYPE_ENUM_MULTI ) param = field.getList().getCodes(true);
 		if(type == ObjectField.TYPE_REGEXP) param = field.getRegExp();
-		String value = field.isNumeric()?getValidNumericValue(val, field.getFloatPrecision(),field.getSize(), type):getValidValue(val,type,param,field.getDisplay(),g);
+		String value = field.isNumeric()?getValidNumericValue(val, field.getFloatPrecision(),field.getSize(), type):getValidValue(val,type,param,field.getDisplay(),field,g);
 		res.objectCreate.put(field.getName(), value);
 	}
 
@@ -530,7 +602,7 @@ public class AIData implements java.io.Serializable {
 	 * @param type the type of the value (ObjectField.TYPE_INT for integer, other values for non-integer)
 	 * @return a valid numeric value as a string
 	 */
-	private static String getValidNumericValue(Object val, int precision,int size, int type){
+	private static String getValidNumericValue(Object val, int precision,int size, int type) {
 		if (size > 6) size = 6;
 		if (!(val instanceof Number)) {
 			int max = (int) Math.pow(10, (size-precision)) - 1;
@@ -559,8 +631,7 @@ public class AIData implements java.io.Serializable {
 	 * @param g the Grant object
 	 * @return a valid value based on the given parameters
 	 */
-	private static String getValidValue(Object val, int type, Object param, String fieldName, Grant g) {
-		
+	private static String getValidValue(Object val, int type, Object param, String fieldName,ObjectField field,Grant g) {
 		String value = "";
 		switch (type) {
 			case ObjectField.TYPE_PHONENUM:
@@ -571,10 +642,13 @@ public class AIData implements java.io.Serializable {
 				value = getValidEnumValue(val, param);
 				break;
 			case ObjectField.TYPE_DATE:
-				value = getValidDateValue(val);
+				value = getValidDateValue(val,field.getRendering());
 				break;
 			case ObjectField.TYPE_DATETIME:
 				value = getValidDateTimeValue(val);
+				break;
+			case ObjectField.TYPE_TIME:
+				value = getValidTimeValue(val,field.getRendering());
 				break;
 			case ObjectField.TYPE_GEOCOORDS:
 				value = getValidGeoCoordsValue(val);
@@ -594,7 +668,6 @@ public class AIData implements java.io.Serializable {
 				value = getValidDefaultValue(val, fieldName);
 				break;
 		}
-		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(typeTrad.get(type)+"| "+fieldName+": "+val+" -> "+value, g);
 		return value;
 	}
 
@@ -628,12 +701,9 @@ public class AIData implements java.io.Serializable {
 		return value;
 	}
 
-	private static String getValidDateValue(Object val) {
+	private static String getValidDateValue(Object val,String rendering) {
 		String value = (val instanceof String) ? (String) val : "";
-		if (!Tool.isDate(value)) {
-			value = Tool.getCurrentDate();
-		}
-		return value;
+		return getValidDate(value,rendering);
 	}
 
 	private static String getValidDateTimeValue(Object val) {
@@ -643,7 +713,95 @@ public class AIData implements java.io.Serializable {
 		}
 		return value;
 	}
-
+	private static String getValidTimeValue(Object val,String rendering) {
+		String value = (val instanceof String) ? (String) val : "";
+		return getValideTime(value,rendering);
+	}
+	
+	private static String getValidDate(String value,String rendering){
+		//yyyy-MM-dd
+		switch (rendering) {
+			case "Y":
+				
+				if(isDateRendering(value, rendering)){
+					return value+"-01-01";
+				}else if(isDateRendering(value, "M") || isDateRendering(value, "")){
+					return value.substring(0,4)+"-01-01";
+				}
+				break;
+			case "M":
+				if(isDateRendering(value, rendering)){
+					return value+"-01";
+				}else if(isDateRendering(value, "")){
+					return value.substring(0, 7)+"-01";
+				}
+				break;
+			default:
+				if(isDateRendering(value, "")){
+					return value;
+				}
+				break;
+		}
+		
+		return Tool.getCurrentDate();
+	}
+	private static boolean isDateRendering(String value,String rendering){
+		//yyyy-MM-dd
+		String regex = "";
+		switch (rendering) {
+			case "Y":
+				regex = "^\\d{4}$";
+				break;
+			case "M":
+				regex = "^\\d{4}-(?:0?[1-9]|1[0-2])$";
+				break;
+			default:
+				regex = "^\\d{4}-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[12][0-9]|3[01])$";
+				break;
+		}
+		return value.matches(regex);
+	}
+	private static String getValideTime(String value,String rendering){
+		switch (rendering) {
+			case "H":
+				if(isTimeRendering(value, rendering)){
+					return value+":00:00";
+				}else if(isTimeRendering(value, "") || isTimeRendering(value, "I")){
+					return value.substring(0,2)+":00:00";
+				}
+				break;
+			case "I":
+				if(isTimeRendering(value, rendering)){
+					return value+":00";
+				}else if(isTimeRendering(value, "")){
+					return value.substring(0,5)+":00";
+				}
+				break;
+			default:
+				if(isTimeRendering(value, "")){
+					return value;
+				}
+				break;
+		}
+		return Tool.getCurrentTime();
+	}
+	private static boolean isTimeRendering(String value,String rendering){
+		//HH:mm:ss
+		String regex = "";
+		switch (rendering) {
+			case "H":
+				regex = "^(?:[01]?[0-9]|2[0-3])$";
+				break;
+			case "I":
+				regex = "^(?:[01]?[0-9]|2[0-3]):[0-5][0-9]$";
+				break;
+			default:
+				regex = "^(?:[01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$";
+				break;
+		}
+		return value.matches(regex);
+	}
+	
 	private static String getValidGeoCoordsValue(Object val) {
 		String value = (val instanceof String) ? (String) val : "";
 		double[] geo = Tool.parseCoordinates(value);
@@ -892,6 +1050,4 @@ public class AIData implements java.io.Serializable {
 	private static float randomFloat(float max){
 		return max * random.nextFloat();
 	}
-	
-
 }

@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.15",
+  "mdl_version": "0.16",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\",\n    \"branch\": \"6.1\"\n}",
@@ -26,7 +26,11 @@
       "viw_ui": "<div class=\"area\" data-area=\"1\"><\/div>",
       "viw_order": 1,
       "viw_icon": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
+      "viw_disp_id__dis_code": null,
+      "viw_scope": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "viw_theme_id__thm_name": null,
+      "viw_lang": null
      }
     },
     {
@@ -38,7 +42,11 @@
       "viw_ui": "<div>\n  <div class=\"area\" data-area=\"4\"><\/div>\n  <div class=\"area\" data-area=\"3\"><\/div>\n<\/div>",
       "viw_order": 1,
       "viw_icon": "monitoring",
-      "row_module_id__mdl_name": "AIBySimplicite"
+      "viw_disp_id__dis_code": null,
+      "viw_scope": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "viw_theme_id__thm_name": null,
+      "viw_lang": null
      }
     },
     {
@@ -50,7 +58,11 @@
       "viw_ui": "<div>\n  <div class=\"area\" data-area=\"2\"><\/div>\n  <div class=\"area\" data-area=\"1\"><\/div>\n<\/div>",
       "viw_order": 1,
       "viw_icon": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
+      "viw_disp_id__dis_code": null,
+      "viw_scope": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "viw_theme_id__thm_name": null,
+      "viw_lang": null
      }
     }
    ]
@@ -67,7 +79,6 @@
      "item": {
       "mod_name": "Model-AiChartToCrossTable",
       "mod_template_id__mtp_name": "ModelProcess",
-      "mod_template_id__mtp_type": "P",
       "mod_json": null,
       "mod_doc": {
        "path": "files/Model/Model-AiChartToCrossTable.svg",
@@ -84,7 +95,6 @@
      "item": {
       "mod_name": "Model-AIGenData",
       "mod_template_id__mtp_name": "ModelProcess",
-      "mod_template_id__mtp_type": "P",
       "mod_json": null,
       "mod_doc": {
        "path": "files/Model/Model-AIGenData.svg",
@@ -105,7 +115,6 @@
      "item": {
       "mod_name": "Model-AIModuleCreate",
       "mod_template_id__mtp_name": "ModelProcess",
-      "mod_template_id__mtp_type": "P",
       "mod_json": null,
       "mod_doc": {
        "path": "files/Model/Model-AIModuleCreate.svg",
@@ -126,7 +135,6 @@
      "item": {
       "mod_name": "Model-AiSettingsProcess",
       "mod_template_id__mtp_name": "ModelProcess",
-      "mod_template_id__mtp_type": "P",
       "mod_json": null,
       "mod_doc": {
        "path": "files/Model/Model-AiSettingsProcess.svg",
@@ -193,14 +201,11 @@
    "field": "row_module_id",
    "list": [{
     "object": "UserSysParam",
-    "userkey": "AIUserAPI~FORCE_CHANGE_PASSWORD",
+    "userkey": "AIUserAPI FORCE_CHANGE_PASSWORD",
     "item": {
      "usp_user_id__usr_login": "AIUserAPI",
      "usp_param_id__sys_code": "FORCE_CHANGE_PASSWORD",
      "usp_value": "yes",
-     "usp_param_id__sys_type": "PRV",
-     "usp_param_id__sys_value": "empty",
-     "usp_param_id__sys_desc": "Force password change (set at user level)",
      "row_module_id__mdl_name": "AIBySimplicite"
     }
    }]
@@ -266,7 +271,7 @@
    "list": [
     {
      "object": "Profile",
-     "userkey": "AI_DESIGNER~AI_BUSINESS",
+     "userkey": "AI_DESIGNER AI_BUSINESS",
      "item": {
       "prf_profile_id__grp_name": "AI_DESIGNER",
       "prf_group_id__grp_name": "AI_BUSINESS",
@@ -275,7 +280,7 @@
     },
     {
      "object": "Profile",
-     "userkey": "DESIGNER~AI_DESIGNER",
+     "userkey": "DESIGNER AI_DESIGNER",
      "item": {
       "prf_profile_id__grp_name": "DESIGNER",
       "prf_group_id__grp_name": "AI_DESIGNER",
@@ -312,7 +317,7 @@
    "list": [
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_DEFAULT_PARAM~ANY",
+     "userkey": "TEXT AI_DEFAULT_PARAM *",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_DEFAULT_PARAM",
@@ -325,7 +330,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_DEFAULT_PROVIDER_NAME~ANY",
+     "userkey": "TEXT AI_DEFAULT_PROVIDER_NAME *",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_DEFAULT_PROVIDER_NAME",
@@ -338,7 +343,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_ENV_SETTING~ANY",
+     "userkey": "TEXT AI_ENV_SETTING *",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_ENV_SETTING",
@@ -351,7 +356,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~ChatBot~ANY",
+     "userkey": "TEXT ChatBot *",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "ChatBot",
@@ -364,7 +369,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_BUTTON_CANCEL~ENU",
+     "userkey": "TEXT AI_BUTTON_CANCEL English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_BUTTON_CANCEL",
@@ -377,7 +382,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_BUTTON_SEND~ENU",
+     "userkey": "TEXT AI_BUTTON_SEND English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_BUTTON_SEND",
@@ -390,7 +395,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_COMPLETED~ENU",
+     "userkey": "TEXT AI_COMPLETED English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_COMPLETED",
@@ -403,7 +408,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_DISCLAIMER_DATA~ENU",
+     "userkey": "TEXT AI_DISCLAIMER_DATA English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_DISCLAIMER_DATA",
@@ -416,7 +421,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_ERROR_RETURN~ENU",
+     "userkey": "TEXT AI_ERROR_RETURN English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_ERROR_RETURN",
@@ -429,7 +434,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_FINISH_REASON~ENU",
+     "userkey": "TEXT AI_FINISH_REASON English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_FINISH_REASON",
@@ -442,7 +447,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_GRAPH_DISCLAIMER~ENU",
+     "userkey": "TEXT AI_GRAPH_DISCLAIMER English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_GRAPH_DISCLAIMER",
@@ -455,7 +460,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_JSON_ERROR~ENU",
+     "userkey": "TEXT AI_JSON_ERROR English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_JSON_ERROR",
@@ -468,7 +473,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_NO_PING_URL~ENU",
+     "userkey": "TEXT AI_NO_PING_URL English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_NO_PING_URL",
@@ -481,7 +486,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_PING_ERROR~ENU",
+     "userkey": "TEXT AI_PING_ERROR English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_PING_ERROR",
@@ -494,7 +499,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_SETTING_NEED~ENU",
+     "userkey": "TEXT AI_SETTING_NEED English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_SETTING_NEED",
@@ -507,7 +512,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_SUCCESS~ENU",
+     "userkey": "TEXT AI_SUCCESS English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_SUCCESS",
@@ -520,7 +525,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_SUCCESS_PING~ENU",
+     "userkey": "TEXT AI_SUCCESS_PING English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_SUCCESS_PING",
@@ -533,7 +538,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_WARN_PREFIX~ENU",
+     "userkey": "TEXT AI_WARN_PREFIX English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_WARN_PREFIX",
@@ -546,7 +551,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_BUTTON_CANCEL~FRA",
+     "userkey": "TEXT AI_BUTTON_CANCEL French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_BUTTON_CANCEL",
@@ -559,7 +564,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_BUTTON_SEND~FRA",
+     "userkey": "TEXT AI_BUTTON_SEND French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_BUTTON_SEND",
@@ -572,7 +577,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_COMPLETED~FRA",
+     "userkey": "TEXT AI_COMPLETED French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_COMPLETED",
@@ -585,7 +590,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_DISCLAIMER_DATA~FRA",
+     "userkey": "TEXT AI_DISCLAIMER_DATA French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_DISCLAIMER_DATA",
@@ -598,7 +603,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_ENV_SETTING~FRA",
+     "userkey": "TEXT AI_ENV_SETTING French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_ENV_SETTING",
@@ -611,7 +616,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_ERROR_RETURN~FRA",
+     "userkey": "TEXT AI_ERROR_RETURN French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_ERROR_RETURN",
@@ -624,7 +629,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_FINISH_REASON~FRA",
+     "userkey": "TEXT AI_FINISH_REASON French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_FINISH_REASON",
@@ -637,7 +642,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_GRAPH_DISCLAIMER~FRA",
+     "userkey": "TEXT AI_GRAPH_DISCLAIMER French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_GRAPH_DISCLAIMER",
@@ -650,7 +655,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_JSON_ERROR~FRA",
+     "userkey": "TEXT AI_JSON_ERROR French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_JSON_ERROR",
@@ -663,7 +668,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_MONITORING_CONFIG~FRA",
+     "userkey": "TEXT AI_MONITORING_CONFIG French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_MONITORING_CONFIG",
@@ -676,7 +681,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_MONITORING_TEST~FRA",
+     "userkey": "TEXT AI_MONITORING_TEST French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_MONITORING_TEST",
@@ -689,7 +694,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_NO_PING_URL~FRA",
+     "userkey": "TEXT AI_NO_PING_URL French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_NO_PING_URL",
@@ -702,7 +707,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_PING_ERROR~FRA",
+     "userkey": "TEXT AI_PING_ERROR French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_PING_ERROR",
@@ -715,7 +720,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_SETTING_NEED~FRA",
+     "userkey": "TEXT AI_SETTING_NEED French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_SETTING_NEED",
@@ -728,7 +733,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_SUCCESS~FRA",
+     "userkey": "TEXT AI_SUCCESS French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_SUCCESS",
@@ -741,7 +746,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_SUCCESS_PING~FRA",
+     "userkey": "TEXT AI_SUCCESS_PING French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_SUCCESS_PING",
@@ -754,7 +759,7 @@
     },
     {
      "object": "ListOfValue",
-     "userkey": "TEXT~AI_WARN_PREFIX~FRA",
+     "userkey": "TEXT AI_WARN_PREFIX French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_WARN_PREFIX",
@@ -781,8 +786,7 @@
       "lov_navbar": null,
       "lov_navbar_opt": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "lov_model_id__mod_name": null,
-      "lov_model_id__mod_image": null
+      "lov_model_id__mod_name": null
      }
     },
     {
@@ -793,8 +797,7 @@
       "lov_navbar": null,
       "lov_navbar_opt": null,
       "row_module_id__mdl_name": "AIBySimplicite",
-      "lov_model_id__mod_name": null,
-      "lov_model_id__mod_image": null
+      "lov_model_id__mod_name": null
      }
     }
    ]
@@ -807,7 +810,7 @@
    "list": [
     {
      "object": "FieldListCode",
-     "userkey": "AI_CONF_MODELE~MISTRAL",
+     "userkey": "AI_CONF_MODELE MISTRAL",
      "item": {
       "lov_list_id__lov_name": "AI_CONF_MODELE",
       "lov_code": "MISTRAL",
@@ -822,7 +825,7 @@
     },
     {
      "object": "FieldListCode",
-     "userkey": "AI_CONF_MODELE~OPENAI",
+     "userkey": "AI_CONF_MODELE OPENAI",
      "item": {
       "lov_list_id__lov_name": "AI_CONF_MODELE",
       "lov_code": "OPENAI",
@@ -837,7 +840,7 @@
     },
     {
      "object": "FieldListCode",
-     "userkey": "AI_EX_TYPE~CODE",
+     "userkey": "AI_EX_TYPE CODE",
      "item": {
       "lov_list_id__lov_name": "AI_EX_TYPE",
       "lov_code": "CODE",
@@ -852,7 +855,7 @@
     },
     {
      "object": "FieldListCode",
-     "userkey": "AI_EX_TYPE~OTHER",
+     "userkey": "AI_EX_TYPE OTHER",
      "item": {
       "lov_list_id__lov_name": "AI_EX_TYPE",
       "lov_code": "OTHER",
@@ -867,7 +870,7 @@
     },
     {
      "object": "FieldListCode",
-     "userkey": "FIELD_RENDERING_LONGSTRING~AI",
+     "userkey": "FIELD_RENDERING_LONGSTRING AI",
      "item": {
       "lov_list_id__lov_name": "FIELD_RENDERING_LONGSTRING",
       "lov_code": "AI",
@@ -882,7 +885,7 @@
     },
     {
      "object": "FieldListCode",
-     "userkey": "FIELD_RENDERING_NOTEPAD~AI",
+     "userkey": "FIELD_RENDERING_NOTEPAD AI",
      "item": {
       "lov_list_id__lov_name": "FIELD_RENDERING_NOTEPAD",
       "lov_code": "AI",
@@ -905,7 +908,7 @@
    "list": [
     {
      "object": "FieldListValue",
-     "userkey": "AI_CONF_MODELE~MISTRAL~ENU",
+     "userkey": "AI_CONF_MODELE MISTRAL English",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
       "lov_code_id__lov_code": "MISTRAL",
@@ -916,7 +919,7 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "AI_CONF_MODELE~OPENAI~ENU",
+     "userkey": "AI_CONF_MODELE OPENAI English",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
       "lov_code_id__lov_code": "OPENAI",
@@ -927,7 +930,7 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "AI_CONF_MODELE~MISTRAL~FRA",
+     "userkey": "AI_CONF_MODELE MISTRAL French",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
       "lov_code_id__lov_code": "MISTRAL",
@@ -938,7 +941,7 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "AI_CONF_MODELE~OPENAI~FRA",
+     "userkey": "AI_CONF_MODELE OPENAI French",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_CONF_MODELE",
       "lov_code_id__lov_code": "OPENAI",
@@ -949,7 +952,7 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "AI_EX_TYPE~CODE~ENU",
+     "userkey": "AI_EX_TYPE CODE English",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_EX_TYPE",
       "lov_code_id__lov_code": "CODE",
@@ -960,7 +963,7 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "AI_EX_TYPE~OTHER~ENU",
+     "userkey": "AI_EX_TYPE OTHER English",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_EX_TYPE",
       "lov_code_id__lov_code": "OTHER",
@@ -971,7 +974,7 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "AI_EX_TYPE~CODE~FRA",
+     "userkey": "AI_EX_TYPE CODE French",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_EX_TYPE",
       "lov_code_id__lov_code": "CODE",
@@ -982,7 +985,7 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "AI_EX_TYPE~OTHER~FRA",
+     "userkey": "AI_EX_TYPE OTHER French",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "AI_EX_TYPE",
       "lov_code_id__lov_code": "OTHER",
@@ -993,7 +996,7 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "FIELD_RENDERING_NOTEPAD~AI~ENU",
+     "userkey": "FIELD_RENDERING_NOTEPAD AI English",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "FIELD_RENDERING_NOTEPAD",
       "lov_code_id__lov_code": "AI",
@@ -1004,7 +1007,7 @@
     },
     {
      "object": "FieldListValue",
-     "userkey": "FIELD_RENDERING_NOTEPAD~AI~FRA",
+     "userkey": "FIELD_RENDERING_NOTEPAD AI French",
      "item": {
       "lov_code_id__lov_list_id__lov_name": "FIELD_RENDERING_NOTEPAD",
       "lov_code_id__lov_code": "AI",
@@ -1892,7 +1895,6 @@
      "obo_dfltref": null,
      "obo_template_id__tpl_name": "AIProvider",
      "obo_tpl_list_id__tpl_name": null,
-     "obo_tpl_list_id__tpl_context": null,
      "obo_copy": true,
      "obo_export": ["1"],
      "obo_pagine": true,
@@ -1960,13 +1962,10 @@
    "list": [
     {
      "object": "ObjectFieldSystem",
-     "userkey": "AIProvider~aiPrvProvider~10",
+     "userkey": "AIProvider aiPrvProvider 10",
      "item": {
       "obf_object_id__obo_name": "AIProvider",
-      "obf_object_id__obo_dbtable": "ai_provider",
       "obf_field_id__fld_name": "aiPrvProvider",
-      "obf_field_id__fld_dbname": "ai_prv_provider",
-      "obf_field_id__fld_type": "3",
       "obf_order": 10,
       "obf_group_by": null,
       "obf_dfault_order": 1,
@@ -1987,12 +1986,9 @@
       "obf_fld_listmore": null,
       "obf_fld_researchreq": null,
       "obf_fld_dfault": null,
-      "obf_field_id__fld_dfault": null,
       "obf_fld_exportable": null,
-      "obf_field_id__fld_exportable": true,
       "obf_fld_uk": null,
       "obf_area_id__ofa_name": "AIProvider-1",
-      "obf_area_id__ofa_position": 1,
       "row_module_id__mdl_name": "AIBySimplicite",
       "obf_joined_id__obf_object_id__obo_name": null,
       "obf_joined_id__obf_field_id__fld_name": null,
@@ -2001,13 +1997,10 @@
     },
     {
      "object": "ObjectFieldSystem",
-     "userkey": "AIProvider~aiPrvDefaultUrl~20",
+     "userkey": "AIProvider aiPrvDefaultUrl 20",
      "item": {
       "obf_object_id__obo_name": "AIProvider",
-      "obf_object_id__obo_dbtable": "ai_provider",
       "obf_field_id__fld_name": "aiPrvDefaultUrl",
-      "obf_field_id__fld_dbname": "ai_prv_default_url",
-      "obf_field_id__fld_type": "10",
       "obf_order": 20,
       "obf_group_by": null,
       "obf_dfault_order": null,
@@ -2028,12 +2021,9 @@
       "obf_fld_listmore": null,
       "obf_fld_researchreq": null,
       "obf_fld_dfault": null,
-      "obf_field_id__fld_dfault": null,
       "obf_fld_exportable": null,
-      "obf_field_id__fld_exportable": true,
       "obf_fld_uk": null,
       "obf_area_id__ofa_name": "AIProvider-1",
-      "obf_area_id__ofa_position": 1,
       "row_module_id__mdl_name": "AIBySimplicite",
       "obf_joined_id__obf_object_id__obo_name": null,
       "obf_joined_id__obf_field_id__fld_name": null,
@@ -2042,13 +2032,10 @@
     },
     {
      "object": "ObjectFieldSystem",
-     "userkey": "AIProvider~aiPrvDataModel~30",
+     "userkey": "AIProvider aiPrvDataModel 30",
      "item": {
       "obf_object_id__obo_name": "AIProvider",
-      "obf_object_id__obo_dbtable": "ai_provider",
       "obf_field_id__fld_name": "aiPrvDataModel",
-      "obf_field_id__fld_dbname": "ai_prv_data_model",
-      "obf_field_id__fld_type": "13",
       "obf_order": 30,
       "obf_group_by": null,
       "obf_dfault_order": null,
@@ -2069,12 +2056,9 @@
       "obf_fld_listmore": null,
       "obf_fld_researchreq": null,
       "obf_fld_dfault": null,
-      "obf_field_id__fld_dfault": "{}",
       "obf_fld_exportable": null,
-      "obf_field_id__fld_exportable": true,
       "obf_fld_uk": null,
       "obf_area_id__ofa_name": "AIProvider-1",
-      "obf_area_id__ofa_position": 1,
       "row_module_id__mdl_name": "AIBySimplicite",
       "obf_joined_id__obf_object_id__obo_name": null,
       "obf_joined_id__obf_field_id__fld_name": null,
@@ -2083,13 +2067,10 @@
     },
     {
      "object": "ObjectFieldSystem",
-     "userkey": "AIProvider~aiPrvModelsUrl~40",
+     "userkey": "AIProvider aiPrvModelsUrl 40",
      "item": {
       "obf_object_id__obo_name": "AIProvider",
-      "obf_object_id__obo_dbtable": "ai_provider",
       "obf_field_id__fld_name": "aiPrvModelsUrl",
-      "obf_field_id__fld_dbname": "ai_prv_models_url",
-      "obf_field_id__fld_type": "10",
       "obf_order": 40,
       "obf_group_by": null,
       "obf_dfault_order": null,
@@ -2110,12 +2091,9 @@
       "obf_fld_listmore": null,
       "obf_fld_researchreq": null,
       "obf_fld_dfault": null,
-      "obf_field_id__fld_dfault": "[VALUE:aiPrvDefaultUrl]+\"v1/models\"",
       "obf_fld_exportable": null,
-      "obf_field_id__fld_exportable": true,
       "obf_fld_uk": null,
       "obf_area_id__ofa_name": "AIProvider-2",
-      "obf_area_id__ofa_position": 2,
       "row_module_id__mdl_name": "AIBySimplicite",
       "obf_joined_id__obf_object_id__obo_name": null,
       "obf_joined_id__obf_field_id__fld_name": null,
@@ -2124,13 +2102,10 @@
     },
     {
      "object": "ObjectFieldSystem",
-     "userkey": "AIProvider~aiPrvHelp~50",
+     "userkey": "AIProvider aiPrvHelp 50",
      "item": {
       "obf_object_id__obo_name": "AIProvider",
-      "obf_object_id__obo_dbtable": "ai_provider",
       "obf_field_id__fld_name": "aiPrvHelp",
-      "obf_field_id__fld_dbname": "ai_prv_help",
-      "obf_field_id__fld_type": "13",
       "obf_order": 50,
       "obf_group_by": null,
       "obf_dfault_order": null,
@@ -2151,12 +2126,9 @@
       "obf_fld_listmore": null,
       "obf_fld_researchreq": null,
       "obf_fld_dfault": null,
-      "obf_field_id__fld_dfault": null,
       "obf_fld_exportable": null,
-      "obf_field_id__fld_exportable": true,
       "obf_fld_uk": null,
       "obf_area_id__ofa_name": "AIProvider-1",
-      "obf_area_id__ofa_position": 1,
       "row_module_id__mdl_name": "AIBySimplicite",
       "obf_joined_id__obf_object_id__obo_name": null,
       "obf_joined_id__obf_field_id__fld_name": null,
@@ -2165,13 +2137,10 @@
     },
     {
      "object": "ObjectFieldSystem",
-     "userkey": "AIProvider~aiPrvCompletionUrl~60",
+     "userkey": "AIProvider aiPrvCompletionUrl 60",
      "item": {
       "obf_object_id__obo_name": "AIProvider",
-      "obf_object_id__obo_dbtable": "ai_provider",
       "obf_field_id__fld_name": "aiPrvCompletionUrl",
-      "obf_field_id__fld_dbname": "ai_prv_completion_url",
-      "obf_field_id__fld_type": "10",
       "obf_order": 60,
       "obf_group_by": null,
       "obf_dfault_order": null,
@@ -2192,12 +2161,9 @@
       "obf_fld_listmore": null,
       "obf_fld_researchreq": null,
       "obf_fld_dfault": null,
-      "obf_field_id__fld_dfault": "[VALUE:aiPrvDefaultUrl]+\"v1/chat/completions\"",
       "obf_fld_exportable": null,
-      "obf_field_id__fld_exportable": true,
       "obf_fld_uk": null,
       "obf_area_id__ofa_name": "AIProvider-2",
-      "obf_area_id__ofa_position": 2,
       "row_module_id__mdl_name": "AIBySimplicite",
       "obf_joined_id__obf_object_id__obo_name": null,
       "obf_joined_id__obf_field_id__fld_name": null,
@@ -2206,13 +2172,10 @@
     },
     {
      "object": "ObjectFieldSystem",
-     "userkey": "AIProvider~aiPrvPingUrl~70",
+     "userkey": "AIProvider aiPrvPingUrl 70",
      "item": {
       "obf_object_id__obo_name": "AIProvider",
-      "obf_object_id__obo_dbtable": "ai_provider",
       "obf_field_id__fld_name": "aiPrvPingUrl",
-      "obf_field_id__fld_dbname": "ai_prv_ping_url",
-      "obf_field_id__fld_type": "10",
       "obf_order": 70,
       "obf_group_by": null,
       "obf_dfault_order": null,
@@ -2233,12 +2196,9 @@
       "obf_fld_listmore": null,
       "obf_fld_researchreq": null,
       "obf_fld_dfault": null,
-      "obf_field_id__fld_dfault": "[VALUE:aiPrvDefaultUrl]+\"v1/ping\"",
       "obf_fld_exportable": null,
-      "obf_field_id__fld_exportable": true,
       "obf_fld_uk": null,
       "obf_area_id__ofa_name": "AIProvider-2",
-      "obf_area_id__ofa_position": 2,
       "row_module_id__mdl_name": "AIBySimplicite",
       "obf_joined_id__obf_object_id__obo_name": null,
       "obf_joined_id__obf_field_id__fld_name": null,
@@ -2277,8 +2237,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2305,8 +2264,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2333,8 +2291,7 @@
       "act_color_bg": "#B6D7A8",
       "act_image": "AI",
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2361,8 +2318,7 @@
       "act_color_bg": null,
       "act_image": "img/color/data_backup",
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2389,8 +2345,7 @@
       "act_color_bg": null,
       "act_image": "AI",
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2417,8 +2372,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2445,8 +2399,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2473,8 +2426,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2501,8 +2453,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2529,8 +2480,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2557,8 +2507,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2585,8 +2534,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2613,8 +2561,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     },
     {
@@ -2641,8 +2588,7 @@
       "act_color_bg": null,
       "act_image": null,
       "act_group_id__acg_name": null,
-      "act_queue_id__acq_name": null,
-      "act_queue_id__acq_type": null
+      "act_queue_id__acq_name": null
      }
     }
    ]
@@ -2655,7 +2601,7 @@
    "list": [
     {
      "object": "ActionField",
-     "userkey": "AIButton~aiActPrompt~100",
+     "userkey": "AIButton aiActPrompt 100",
      "item": {
       "afd_action_id__act_name": "AIButton",
       "afd_field_id__fld_name": "aiActPrompt",
@@ -2667,7 +2613,7 @@
     },
     {
      "object": "ActionField",
-     "userkey": "AIButtonSkip~aiActPrompt~100",
+     "userkey": "AIButtonSkip aiActPrompt 100",
      "item": {
       "afd_action_id__act_name": "AIButtonSkip",
       "afd_field_id__fld_name": "aiActPrompt",
@@ -2690,7 +2636,6 @@
      "userkey": "AI_MODULE_AI_ADD_DATA_A",
      "item": {
       "fct_name": "AI_MODULE_AI_ADD_DATA_A",
-      "fct_object_id__obo_type": "O",
       "fct_object_id__obo_name": "Module",
       "fct_function": "A",
       "fct_action_id__act_name": "AIAddData",
@@ -2703,7 +2648,6 @@
      "userkey": "AI_MODULE_AI_AUTO_GEN_MODULE_A",
      "item": {
       "fct_name": "AI_MODULE_AI_AUTO_GEN_MODULE_A",
-      "fct_object_id__obo_type": "O",
       "fct_object_id__obo_name": "Module",
       "fct_function": "A",
       "fct_action_id__act_name": "AIAutoGenModule",
@@ -2716,7 +2660,6 @@
      "userkey": "AI_PRV_CRUD",
      "item": {
       "fct_name": "AI_PRV_CRUD",
-      "fct_object_id__obo_type": "O",
       "fct_object_id__obo_name": "AIProvider",
       "fct_function": "CMS",
       "fct_action_id__act_name": null,
@@ -2729,7 +2672,6 @@
      "userkey": "AI_PRV_R",
      "item": {
       "fct_name": "AI_PRV_R",
-      "fct_object_id__obo_type": "O",
       "fct_object_id__obo_name": "AIProvider",
       "fct_function": "L",
       "fct_action_id__act_name": null,
@@ -2747,84 +2689,72 @@
    "list": [
     {
      "object": "Grant",
-     "userkey": "ADMIN~AI_MODULE_AI_ADD_DATA_A~Module~AIAddData",
+     "userkey": "ADMIN AI_MODULE_AI_ADD_DATA_A Module AIAddData",
      "item": {
       "grt_group_id__grp_name": "ADMIN",
       "grt_function_id__fct_name": "AI_MODULE_AI_ADD_DATA_A",
-      "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "Module",
       "grt_function_id__fct_action_id__act_name": "AIAddData",
-      "grt_function_id__fct_function": "A",
       "grt_activ": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "Grant",
-     "userkey": "AI_ADMIN~AI_PRV_CRUD~AIProvider~",
+     "userkey": "AI_ADMIN AI_PRV_CRUD AIProvider",
      "item": {
       "grt_group_id__grp_name": "AI_ADMIN",
       "grt_function_id__fct_name": "AI_PRV_CRUD",
-      "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "AIProvider",
       "grt_function_id__fct_action_id__act_name": null,
-      "grt_function_id__fct_function": "CMS",
       "grt_activ": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "Grant",
-     "userkey": "AI_DESIGNER~AI_PRV_R~AIProvider~",
+     "userkey": "AI_DESIGNER AI_PRV_R AIProvider",
      "item": {
       "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_PRV_R",
-      "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "AIProvider",
       "grt_function_id__fct_action_id__act_name": null,
-      "grt_function_id__fct_function": "L",
       "grt_activ": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "Grant",
-     "userkey": "AI_DESIGNER~AI_MODULE_AI_ADD_DATA_A~Module~AIAddData",
+     "userkey": "AI_DESIGNER AI_MODULE_AI_ADD_DATA_A Module AIAddData",
      "item": {
       "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_MODULE_AI_ADD_DATA_A",
-      "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "Module",
       "grt_function_id__fct_action_id__act_name": "AIAddData",
-      "grt_function_id__fct_function": "A",
       "grt_activ": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "Grant",
-     "userkey": "AI_DESIGNER~AI_MODULE_AI_AUTO_GEN_MODULE_A~Module~AIAutoGenModule",
+     "userkey": "AI_DESIGNER AI_MODULE_AI_AUTO_GEN_MODULE_A Module AIAutoGenModule",
      "item": {
       "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "AI_MODULE_AI_AUTO_GEN_MODULE_A",
-      "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "Module",
       "grt_function_id__fct_action_id__act_name": "AIAutoGenModule",
-      "grt_function_id__fct_function": "A",
       "grt_activ": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "Grant",
-     "userkey": "AI_DESIGNER~MDL-CMS~Module~",
+     "userkey": "AI_DESIGNER MDL-CMS Module",
      "item": {
       "grt_group_id__grp_name": "AI_DESIGNER",
       "grt_function_id__fct_name": "MDL-CMS",
-      "grt_function_id__fct_object_id__obo_type": "O",
       "grt_function_id__fct_object_id__obo_name": "Module",
       "grt_function_id__fct_action_id__act_name": null,
-      "grt_function_id__fct_function": "CM",
       "grt_activ": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -2880,14 +2810,8 @@
       "pcs_alert_id__alt_name": null,
       "pcs_compensate_id__pcs_name": null,
       "pcs_model_id__mod_name": "Model-AIGenData",
-      "pcs_model_id__mod_image": {
-       "path": "files/Model/Model-AIGenData.png",
-       "mime": "image/png",
-       "name": "Model-AIGenData.png"
-      },
       "row_module_id__mdl_name": "AIBySimplicite",
       "pcs_mainact_id__acy_step": null,
-      "pcs_mainact_id__acy_name": null,
       "pcs_mainact_id__acy_process_id__pcs_name": null,
       "pcs_main_del": null
      }
@@ -2913,14 +2837,8 @@
       "pcs_alert_id__alt_name": null,
       "pcs_compensate_id__pcs_name": null,
       "pcs_model_id__mod_name": "Model-AIModuleCreate",
-      "pcs_model_id__mod_image": {
-       "path": "files/Model/Model-AIModuleCreate.png",
-       "mime": "image/png",
-       "name": "Model-AIModuleCreate.png"
-      },
       "row_module_id__mdl_name": "AIBySimplicite",
       "pcs_mainact_id__acy_step": null,
-      "pcs_mainact_id__acy_name": null,
       "pcs_mainact_id__acy_process_id__pcs_name": null,
       "pcs_main_del": null
      }
@@ -2946,14 +2864,8 @@
       "pcs_alert_id__alt_name": null,
       "pcs_compensate_id__pcs_name": null,
       "pcs_model_id__mod_name": "Model-AiSettingsProcess",
-      "pcs_model_id__mod_image": {
-       "path": "files/Model/Model-AiSettingsProcess.png",
-       "mime": "image/png",
-       "name": "Model-AiSettingsProcess.png"
-      },
       "row_module_id__mdl_name": "AIBySimplicite",
       "pcs_mainact_id__acy_step": null,
-      "pcs_mainact_id__acy_name": null,
       "pcs_mainact_id__acy_process_id__pcs_name": null,
       "pcs_main_del": null
      }
@@ -2968,7 +2880,7 @@
    "list": [
     {
      "object": "BPMActivity",
-     "userkey": "AIGenData~GDD_END2",
+     "userkey": "AIGenData GDD_END2",
      "item": {
       "acy_process_id__pcs_name": "AIGenData",
       "acy_step": "GDD_END2",
@@ -2987,7 +2899,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIGenData~GGD-BEG",
+     "userkey": "AIGenData GGD-BEG",
      "item": {
       "acy_process_id__pcs_name": "AIGenData",
       "acy_step": "GGD-BEG",
@@ -3006,7 +2918,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIGenData~GGD-END",
+     "userkey": "AIGenData GGD-END",
      "item": {
       "acy_process_id__pcs_name": "AIGenData",
       "acy_step": "GGD-END",
@@ -3025,7 +2937,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIGenData~GGD_0050",
+     "userkey": "AIGenData GGD_0050",
      "item": {
       "acy_process_id__pcs_name": "AIGenData",
       "acy_step": "GGD_0050",
@@ -3044,7 +2956,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIGenData~GGD_0075",
+     "userkey": "AIGenData GGD_0075",
      "item": {
       "acy_process_id__pcs_name": "AIGenData",
       "acy_step": "GGD_0075",
@@ -3063,7 +2975,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIGenData~GGD_0100",
+     "userkey": "AIGenData GGD_0100",
      "item": {
       "acy_process_id__pcs_name": "AIGenData",
       "acy_step": "GGD_0100",
@@ -3082,7 +2994,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIGenData~GGD_0150",
+     "userkey": "AIGenData GGD_0150",
      "item": {
       "acy_process_id__pcs_name": "AIGenData",
       "acy_step": "GGD_0150",
@@ -3101,7 +3013,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIGenData~GGD_0200",
+     "userkey": "AIGenData GGD_0200",
      "item": {
       "acy_process_id__pcs_name": "AIGenData",
       "acy_step": "GGD_0200",
@@ -3120,7 +3032,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC-BEG",
+     "userkey": "AIModuleCreate AIC-BEG",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC-BEG",
@@ -3139,7 +3051,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC-END",
+     "userkey": "AIModuleCreate AIC-END",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC-END",
@@ -3158,7 +3070,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC-END2",
+     "userkey": "AIModuleCreate AIC-END2",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC-END2",
@@ -3177,7 +3089,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0005",
+     "userkey": "AIModuleCreate AIC_0005",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0005",
@@ -3196,7 +3108,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0010",
+     "userkey": "AIModuleCreate AIC_0010",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0010",
@@ -3215,7 +3127,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0015",
+     "userkey": "AIModuleCreate AIC_0015",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0015",
@@ -3234,7 +3146,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0017",
+     "userkey": "AIModuleCreate AIC_0017",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0017",
@@ -3253,7 +3165,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0020",
+     "userkey": "AIModuleCreate AIC_0020",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0020",
@@ -3272,7 +3184,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0050",
+     "userkey": "AIModuleCreate AIC_0050",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0050",
@@ -3291,7 +3203,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0075",
+     "userkey": "AIModuleCreate AIC_0075",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0075",
@@ -3310,7 +3222,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0100",
+     "userkey": "AIModuleCreate AIC_0100",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0100",
@@ -3329,7 +3241,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0200",
+     "userkey": "AIModuleCreate AIC_0200",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0200",
@@ -3348,7 +3260,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0300",
+     "userkey": "AIModuleCreate AIC_0300",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0300",
@@ -3367,7 +3279,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0350",
+     "userkey": "AIModuleCreate AIC_0350",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0350",
@@ -3386,7 +3298,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0400",
+     "userkey": "AIModuleCreate AIC_0400",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0400",
@@ -3405,7 +3317,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0500",
+     "userkey": "AIModuleCreate AIC_0500",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0500",
@@ -3424,7 +3336,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0600",
+     "userkey": "AIModuleCreate AIC_0600",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0600",
@@ -3443,7 +3355,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AIModuleCreate~AIC_0700",
+     "userkey": "AIModuleCreate AIC_0700",
      "item": {
       "acy_process_id__pcs_name": "AIModuleCreate",
       "acy_step": "AIC_0700",
@@ -3462,7 +3374,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AiSettingsProcess~ASP-0050",
+     "userkey": "AiSettingsProcess ASP-0050",
      "item": {
       "acy_process_id__pcs_name": "AiSettingsProcess",
       "acy_step": "ASP-0050",
@@ -3481,7 +3393,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AiSettingsProcess~ASP-0075",
+     "userkey": "AiSettingsProcess ASP-0075",
      "item": {
       "acy_process_id__pcs_name": "AiSettingsProcess",
       "acy_step": "ASP-0075",
@@ -3500,7 +3412,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AiSettingsProcess~ASP-0100",
+     "userkey": "AiSettingsProcess ASP-0100",
      "item": {
       "acy_process_id__pcs_name": "AiSettingsProcess",
       "acy_step": "ASP-0100",
@@ -3519,7 +3431,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AiSettingsProcess~ASP-0200",
+     "userkey": "AiSettingsProcess ASP-0200",
      "item": {
       "acy_process_id__pcs_name": "AiSettingsProcess",
       "acy_step": "ASP-0200",
@@ -3538,7 +3450,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AiSettingsProcess~ASP-0400",
+     "userkey": "AiSettingsProcess ASP-0400",
      "item": {
       "acy_process_id__pcs_name": "AiSettingsProcess",
       "acy_step": "ASP-0400",
@@ -3557,7 +3469,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AiSettingsProcess~ASP-BEG",
+     "userkey": "AiSettingsProcess ASP-BEG",
      "item": {
       "acy_process_id__pcs_name": "AiSettingsProcess",
       "acy_step": "ASP-BEG",
@@ -3576,7 +3488,7 @@
     },
     {
      "object": "BPMActivity",
-     "userkey": "AiSettingsProcess~ASP-END",
+     "userkey": "AiSettingsProcess ASP-END",
      "item": {
       "acy_process_id__pcs_name": "AiSettingsProcess",
       "acy_step": "ASP-END",
@@ -3603,15 +3515,13 @@
    "list": [
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD-BEG~AIGenData~GGD_0050",
+     "userkey": "AIGenData AIGenData GGD-BEG AIGenData GGD_0050",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_step": "GGD-BEG",
-      "trs_from_id__acy_name": "Begin",
       "trs_to_id__acy_process_id__pcs_name": "AIGenData",
       "trs_to_id__acy_step": "GGD_0050",
-      "trs_to_id__acy_name": "IsParam",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3622,15 +3532,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD_0050~AIGenData~GGD_0075",
+     "userkey": "AIGenData AIGenData GGD_0050 AIGenData GGD_0075",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_step": "GGD_0050",
-      "trs_from_id__acy_name": "IsParam",
       "trs_to_id__acy_process_id__pcs_name": "AIGenData",
       "trs_to_id__acy_step": "GGD_0075",
-      "trs_to_id__acy_name": "NoParam",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": "0",
@@ -3641,15 +3549,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD_0050~AIGenData~GGD_0100",
+     "userkey": "AIGenData AIGenData GGD_0050 AIGenData GGD_0100",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_step": "GGD_0050",
-      "trs_from_id__acy_name": "IsParam",
       "trs_to_id__acy_process_id__pcs_name": "AIGenData",
       "trs_to_id__acy_step": "GGD_0100",
-      "trs_to_id__acy_name": "SelectModule",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": "1",
@@ -3660,15 +3566,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD_0075~AIGenData~GDD_END2",
+     "userkey": "AIGenData AIGenData GGD_0075 AIGenData GDD_END2",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_step": "GGD_0075",
-      "trs_from_id__acy_name": "NoParam",
       "trs_to_id__acy_process_id__pcs_name": "AIGenData",
       "trs_to_id__acy_step": "GDD_END2",
-      "trs_to_id__acy_name": "EndHome",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3679,15 +3583,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD_0100~AIGenData~GGD_0150",
+     "userkey": "AIGenData AIGenData GGD_0100 AIGenData GGD_0150",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_step": "GGD_0100",
-      "trs_from_id__acy_name": "SelectModule",
       "trs_to_id__acy_process_id__pcs_name": "AIGenData",
       "trs_to_id__acy_step": "GGD_0150",
-      "trs_to_id__acy_name": "Confirm",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3698,15 +3600,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD_0150~AIGenData~GGD_0200",
+     "userkey": "AIGenData AIGenData GGD_0150 AIGenData GGD_0200",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_step": "GGD_0150",
-      "trs_from_id__acy_name": "Confirm",
       "trs_to_id__acy_process_id__pcs_name": "AIGenData",
       "trs_to_id__acy_step": "GGD_0200",
-      "trs_to_id__acy_name": "GenData",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3717,15 +3617,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD_0200~AIGenData~GGD-END",
+     "userkey": "AIGenData AIGenData GGD_0200 AIGenData GGD-END",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_step": "GGD_0200",
-      "trs_from_id__acy_name": "GenData",
       "trs_to_id__acy_process_id__pcs_name": "AIGenData",
       "trs_to_id__acy_step": "GGD-END",
-      "trs_to_id__acy_name": "End",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3736,15 +3634,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIGenData~AIGenData~GGD_0200~AIGenData~GGD_0150",
+     "userkey": "AIGenData AIGenData GGD_0200 AIGenData GGD_0150",
      "item": {
       "trs_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_process_id__pcs_name": "AIGenData",
       "trs_from_id__acy_step": "GGD_0200",
-      "trs_from_id__acy_name": "GenData",
       "trs_to_id__acy_process_id__pcs_name": "AIGenData",
       "trs_to_id__acy_step": "GGD_0150",
-      "trs_to_id__acy_name": "Confirm",
       "trs_name": "Retry",
       "trs_action_id__act_name": "AI_GENDATA_RETRY",
       "trs_condition": null,
@@ -3755,15 +3651,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC-BEG~AIModuleCreate~AIC_0050",
+     "userkey": "AIModuleCreate AIModuleCreate AIC-BEG AIModuleCreate AIC_0050",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC-BEG",
-      "trs_from_id__acy_name": "Begin",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0050",
-      "trs_to_id__acy_name": "isParam",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3774,15 +3668,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0005~AIModuleCreate~AIC_0010",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0005 AIModuleCreate AIC_0010",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0005",
-      "trs_from_id__acy_name": "Choice",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0010",
-      "trs_to_id__acy_name": "CreateModule",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": "1",
@@ -3793,15 +3685,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0005~AIModuleCreate~AIC_0100",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0005 AIModuleCreate AIC_0100",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0005",
-      "trs_from_id__acy_name": "Choice",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0100",
-      "trs_to_id__acy_name": "SelectModule",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": "0",
@@ -3812,15 +3702,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0010~AIModuleCreate~AIC_0015",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0010 AIModuleCreate AIC_0015",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0010",
-      "trs_from_id__acy_name": "CreateModule",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0015",
-      "trs_to_id__acy_name": "TranslateDomain",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3831,15 +3719,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0015~AIModuleCreate~AIC_0017",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0015 AIModuleCreate AIC_0017",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0015",
-      "trs_from_id__acy_name": "TranslateDomain",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0017",
-      "trs_to_id__acy_name": "NewScope",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3850,15 +3736,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0017~AIModuleCreate~AIC_0020",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0017 AIModuleCreate AIC_0020",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0017",
-      "trs_from_id__acy_name": "NewScope",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0020",
-      "trs_to_id__acy_name": "GrantUser",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3869,15 +3753,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0020~AIModuleCreate~AIC_0350",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0020 AIModuleCreate AIC_0350",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0020",
-      "trs_from_id__acy_name": "GrantUser",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0350",
-      "trs_to_id__acy_name": "interaction",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3888,15 +3770,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0050~AIModuleCreate~AIC_0005",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0050 AIModuleCreate AIC_0005",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0050",
-      "trs_from_id__acy_name": "isParam",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0005",
-      "trs_to_id__acy_name": "Choice",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": "1",
@@ -3907,15 +3787,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0050~AIModuleCreate~AIC_0075",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0050 AIModuleCreate AIC_0075",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0050",
-      "trs_from_id__acy_name": "isParam",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0075",
-      "trs_to_id__acy_name": "NoParam",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": "0",
@@ -3926,15 +3804,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0075~AIModuleCreate~AIC-END2",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0075 AIModuleCreate AIC-END2",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0075",
-      "trs_from_id__acy_name": "NoParam",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC-END2",
-      "trs_to_id__acy_name": "EndHome",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3945,15 +3821,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0100~AIModuleCreate~AIC_0200",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0100 AIModuleCreate AIC_0200",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0100",
-      "trs_from_id__acy_name": "SelectModule",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0200",
-      "trs_to_id__acy_name": "SelectGroup",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3964,15 +3838,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0200~AIModuleCreate~AIC_0300",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0200 AIModuleCreate AIC_0300",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0200",
-      "trs_from_id__acy_name": "SelectGroup",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0300",
-      "trs_to_id__acy_name": "SelectDomain",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -3983,15 +3855,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0300~AIModuleCreate~AIC_0350",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0300 AIModuleCreate AIC_0350",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0300",
-      "trs_from_id__acy_name": "SelectDomain",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0350",
-      "trs_to_id__acy_name": "interaction",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4002,15 +3872,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0350~AIModuleCreate~AIC_0500",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0350 AIModuleCreate AIC_0500",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0350",
-      "trs_from_id__acy_name": "interaction",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0500",
-      "trs_to_id__acy_name": "AI",
       "trs_name": "Generate",
       "trs_action_id__act_name": "AIGenerate",
       "trs_condition": null,
@@ -4021,15 +3889,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0400~AIModuleCreate~AIC_0500",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0400 AIModuleCreate AIC_0500",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0400",
-      "trs_from_id__acy_name": "Prompt",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0500",
-      "trs_to_id__acy_name": "AI",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4040,15 +3906,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0500~AIModuleCreate~AIC_0600",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0500 AIModuleCreate AIC_0600",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0500",
-      "trs_from_id__acy_name": "AI",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0600",
-      "trs_to_id__acy_name": "Generation",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4059,15 +3923,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0600~AIModuleCreate~AIC-END",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0600 AIModuleCreate AIC-END",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0600",
-      "trs_from_id__acy_name": "Generation",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC-END",
-      "trs_to_id__acy_name": "End",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4078,15 +3940,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0600~AIModuleCreate~AIC_0700",
+     "userkey": "AIModuleCreate AIModuleCreate AIC_0600 AIModuleCreate AIC_0700",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0600",
-      "trs_from_id__acy_name": "Generation",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_to_id__acy_step": "AIC_0700",
-      "trs_to_id__acy_name": "RemoveModule",
       "trs_name": "Delete Module",
       "trs_action_id__act_name": "AIDeleteModule",
       "trs_condition": null,
@@ -4097,15 +3957,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0050~AiSettingsProcess~ASP-0075",
+     "userkey": "AiSettingsProcess AiSettingsProcess ASP-0050 AiSettingsProcess ASP-0075",
      "item": {
       "trs_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_step": "ASP-0050",
-      "trs_from_id__acy_name": "isGlobalParam",
       "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_to_id__acy_step": "ASP-0075",
-      "trs_to_id__acy_name": "Global",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": "1",
@@ -4116,15 +3974,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0050~AiSettingsProcess~ASP-0100",
+     "userkey": "AiSettingsProcess AiSettingsProcess ASP-0050 AiSettingsProcess ASP-0100",
      "item": {
       "trs_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_step": "ASP-0050",
-      "trs_from_id__acy_name": "isGlobalParam",
       "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_to_id__acy_step": "ASP-0100",
-      "trs_to_id__acy_name": "SelectProvider",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": "0",
@@ -4135,15 +3991,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0075~AiSettingsProcess~ASP-END",
+     "userkey": "AiSettingsProcess AiSettingsProcess ASP-0075 AiSettingsProcess ASP-END",
      "item": {
       "trs_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_step": "ASP-0075",
-      "trs_from_id__acy_name": "Global",
       "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_to_id__acy_step": "ASP-END",
-      "trs_to_id__acy_name": "End",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4154,15 +4008,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0100~AiSettingsProcess~ASP-0200",
+     "userkey": "AiSettingsProcess AiSettingsProcess ASP-0100 AiSettingsProcess ASP-0200",
      "item": {
       "trs_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_step": "ASP-0100",
-      "trs_from_id__acy_name": "SelectProvider",
       "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_to_id__acy_step": "ASP-0200",
-      "trs_to_id__acy_name": "Auth",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4173,15 +4025,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0200~AiSettingsProcess~ASP-0400",
+     "userkey": "AiSettingsProcess AiSettingsProcess ASP-0200 AiSettingsProcess ASP-0400",
      "item": {
       "trs_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_step": "ASP-0200",
-      "trs_from_id__acy_name": "Auth",
       "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_to_id__acy_step": "ASP-0400",
-      "trs_to_id__acy_name": "OtherParam",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4192,15 +4042,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-0400~AiSettingsProcess~ASP-END",
+     "userkey": "AiSettingsProcess AiSettingsProcess ASP-0400 AiSettingsProcess ASP-END",
      "item": {
       "trs_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_step": "ASP-0400",
-      "trs_from_id__acy_name": "OtherParam",
       "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_to_id__acy_step": "ASP-END",
-      "trs_to_id__acy_name": "End",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4211,15 +4059,13 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AiSettingsProcess~AiSettingsProcess~ASP-BEG~AiSettingsProcess~ASP-0050",
+     "userkey": "AiSettingsProcess AiSettingsProcess ASP-BEG AiSettingsProcess ASP-0050",
      "item": {
       "trs_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_from_id__acy_step": "ASP-BEG",
-      "trs_from_id__acy_name": "Begin",
       "trs_to_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "trs_to_id__acy_step": "ASP-0050",
-      "trs_to_id__acy_name": "isGlobalParam",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -4238,11 +4084,10 @@
    "list": [
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GDD_END2~Forward~Page",
+     "userkey": "AIGenData GDD_END2 Forward Page",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GDD_END2",
-      "dta_activity_id__acy_name": "EndHome",
       "dta_group": "Forward",
       "dta_name": "Page",
       "dta_order": 1,
@@ -4253,11 +4098,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD-END~Forward~PARAM=1",
+     "userkey": "AIGenData GGD-END Forward PARAM:1",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD-END",
-      "dta_activity_id__acy_name": "End",
       "dta_group": "Forward",
       "dta_name": "PARAM:1",
       "dta_order": 1,
@@ -4268,11 +4112,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD-END~Forward~Page",
+     "userkey": "AIGenData GGD-END Forward Page",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD-END",
-      "dta_activity_id__acy_name": "End",
       "dta_group": "Forward",
       "dta_name": "Page",
       "dta_order": 1,
@@ -4283,11 +4126,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD_0050~Return~Code",
+     "userkey": "AIGenData GGD_0050 Return Code",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD_0050",
-      "dta_activity_id__acy_name": "IsParam",
       "dta_group": "Return",
       "dta_name": "Code",
       "dta_order": 1,
@@ -4298,11 +4140,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD_0075~Page~Method",
+     "userkey": "AIGenData GGD_0075 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD_0075",
-      "dta_activity_id__acy_name": "NoParam",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4313,11 +4154,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD_0100~Constraint~Mandatory",
+     "userkey": "AIGenData GGD_0100 Constraint Mandatory",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD_0100",
-      "dta_activity_id__acy_name": "SelectModule",
       "dta_group": "Constraint",
       "dta_name": "Mandatory",
       "dta_order": 1,
@@ -4328,11 +4168,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD_0100~Filter~mdl_type",
+     "userkey": "AIGenData GGD_0100 Filter mdl_type",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD_0100",
-      "dta_activity_id__acy_name": "SelectModule",
       "dta_group": "Filter",
       "dta_name": "mdl_type",
       "dta_order": 1,
@@ -4343,11 +4182,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD_0100~Object~Name",
+     "userkey": "AIGenData GGD_0100 Object Name",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD_0100",
-      "dta_activity_id__acy_name": "SelectModule",
       "dta_group": "Object",
       "dta_name": "Name",
       "dta_order": 1,
@@ -4358,11 +4196,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD_0150~Data~json_return",
+     "userkey": "AIGenData GGD_0150 Data json_return",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD_0150",
-      "dta_activity_id__acy_name": "Confirm",
       "dta_group": "Data",
       "dta_name": "json_return",
       "dta_order": 1,
@@ -4373,11 +4210,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD_0150~Page~Method",
+     "userkey": "AIGenData GGD_0150 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD_0150",
-      "dta_activity_id__acy_name": "Confirm",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4388,11 +4224,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIGenData~GGD_0200~Page~Method",
+     "userkey": "AIGenData GGD_0200 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "dta_activity_id__acy_step": "GGD_0200",
-      "dta_activity_id__acy_name": "GenData",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4403,11 +4238,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC-BEG~Data~AI_prompt",
+     "userkey": "AIModuleCreate AIC-BEG Data AI_prompt",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC-BEG",
-      "dta_activity_id__acy_name": "Begin",
       "dta_group": "Data",
       "dta_name": "AI_prompt",
       "dta_order": 1,
@@ -4418,11 +4252,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC-END~Forward~Page",
+     "userkey": "AIModuleCreate AIC-END Forward Page",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC-END",
-      "dta_activity_id__acy_name": "End",
       "dta_group": "Forward",
       "dta_name": "Page",
       "dta_order": 1,
@@ -4433,11 +4266,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC-END2~Forward~Page",
+     "userkey": "AIModuleCreate AIC-END2 Forward Page",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC-END2",
-      "dta_activity_id__acy_name": "EndHome",
       "dta_group": "Forward",
       "dta_name": "Page",
       "dta_order": 1,
@@ -4448,11 +4280,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0005~Data~Template",
+     "userkey": "AIModuleCreate AIC_0005 Data Template",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0005",
-      "dta_activity_id__acy_name": "Choice",
       "dta_group": "Data",
       "dta_name": "Template",
       "dta_order": 1,
@@ -4463,11 +4294,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0005~Data~AREA=1",
+     "userkey": "AIModuleCreate AIC_0005 Data AREA:1",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0005",
-      "dta_activity_id__acy_name": "Choice",
       "dta_group": "Data",
       "dta_name": "AREA:1",
       "dta_order": 1,
@@ -4478,11 +4308,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0005~Question~Return",
+     "userkey": "AIModuleCreate AIC_0005 Question Return",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0005",
-      "dta_activity_id__acy_name": "Choice",
       "dta_group": "Question",
       "dta_name": "Return",
       "dta_order": 1,
@@ -4493,11 +4322,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0010~Object~Name",
+     "userkey": "AIModuleCreate AIC_0010 Object Name",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0010",
-      "dta_activity_id__acy_name": "CreateModule",
       "dta_group": "Object",
       "dta_name": "Name",
       "dta_order": 1,
@@ -4508,11 +4336,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0015~Page~Method",
+     "userkey": "AIModuleCreate AIC_0015 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0015",
-      "dta_activity_id__acy_name": "TranslateDomain",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4523,11 +4350,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0017~Field~row_module_id",
+     "userkey": "AIModuleCreate AIC_0017 Field row_module_id",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0017",
-      "dta_activity_id__acy_name": "NewScope",
       "dta_group": "Field",
       "dta_name": "row_module_id",
       "dta_order": 1,
@@ -4538,11 +4364,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0017~Field~row_module_id.mdl_name",
+     "userkey": "AIModuleCreate AIC_0017 Field row_module_id.mdl_name",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0017",
-      "dta_activity_id__acy_name": "NewScope",
       "dta_group": "Field",
       "dta_name": "row_module_id.mdl_name",
       "dta_order": 1,
@@ -4553,11 +4378,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0017~Field~viw_icon",
+     "userkey": "AIModuleCreate AIC_0017 Field viw_icon",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0017",
-      "dta_activity_id__acy_name": "NewScope",
       "dta_group": "Field",
       "dta_name": "viw_icon",
       "dta_order": 1,
@@ -4568,11 +4392,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0017~Field~viw_type",
+     "userkey": "AIModuleCreate AIC_0017 Field viw_type",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0017",
-      "dta_activity_id__acy_name": "NewScope",
       "dta_group": "Field",
       "dta_name": "viw_type",
       "dta_order": 1,
@@ -4583,11 +4406,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0017~Object~Name",
+     "userkey": "AIModuleCreate AIC_0017 Object Name",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0017",
-      "dta_activity_id__acy_name": "NewScope",
       "dta_group": "Object",
       "dta_name": "Name",
       "dta_order": 1,
@@ -4598,11 +4420,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0020~Data~AREA=1",
+     "userkey": "AIModuleCreate AIC_0020 Data AREA:1",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0020",
-      "dta_activity_id__acy_name": "GrantUser",
       "dta_group": "Data",
       "dta_name": "AREA:1",
       "dta_order": 1,
@@ -4613,11 +4434,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0020~Data~Template",
+     "userkey": "AIModuleCreate AIC_0020 Data Template",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0020",
-      "dta_activity_id__acy_name": "GrantUser",
       "dta_group": "Data",
       "dta_name": "Template",
       "dta_order": 1,
@@ -4628,11 +4448,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0050~Return~Code",
+     "userkey": "AIModuleCreate AIC_0050 Return Code",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0050",
-      "dta_activity_id__acy_name": "isParam",
       "dta_group": "Return",
       "dta_name": "Code",
       "dta_order": 1,
@@ -4643,11 +4462,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0075~Page~Method",
+     "userkey": "AIModuleCreate AIC_0075 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0075",
-      "dta_activity_id__acy_name": "NoParam",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4658,11 +4476,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0100~Constraint~Mandatory",
+     "userkey": "AIModuleCreate AIC_0100 Constraint Mandatory",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0100",
-      "dta_activity_id__acy_name": "SelectModule",
       "dta_group": "Constraint",
       "dta_name": "Mandatory",
       "dta_order": 1,
@@ -4673,11 +4490,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0100~Filter~mdl_type",
+     "userkey": "AIModuleCreate AIC_0100 Filter mdl_type",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0100",
-      "dta_activity_id__acy_name": "SelectModule",
       "dta_group": "Filter",
       "dta_name": "mdl_type",
       "dta_order": 1,
@@ -4688,11 +4504,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0100~Object~Name",
+     "userkey": "AIModuleCreate AIC_0100 Object Name",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0100",
-      "dta_activity_id__acy_name": "SelectModule",
       "dta_group": "Object",
       "dta_name": "Name",
       "dta_order": 1,
@@ -4703,11 +4518,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0200~Constraint~Mandatory",
+     "userkey": "AIModuleCreate AIC_0200 Constraint Mandatory",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0200",
-      "dta_activity_id__acy_name": "SelectGroup",
       "dta_group": "Constraint",
       "dta_name": "Mandatory",
       "dta_order": 1,
@@ -4718,11 +4532,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0200~Filter~row_module_id",
+     "userkey": "AIModuleCreate AIC_0200 Filter row_module_id",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0200",
-      "dta_activity_id__acy_name": "SelectGroup",
       "dta_group": "Filter",
       "dta_name": "row_module_id",
       "dta_order": 1,
@@ -4733,11 +4546,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0200~Object~Name",
+     "userkey": "AIModuleCreate AIC_0200 Object Name",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0200",
-      "dta_activity_id__acy_name": "SelectGroup",
       "dta_group": "Object",
       "dta_name": "Name",
       "dta_order": 1,
@@ -4748,11 +4560,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0300~Constraint~Mandatory",
+     "userkey": "AIModuleCreate AIC_0300 Constraint Mandatory",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0300",
-      "dta_activity_id__acy_name": "SelectDomain",
       "dta_group": "Constraint",
       "dta_name": "Mandatory",
       "dta_order": 1,
@@ -4763,11 +4574,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0300~Filter~row_module_id",
+     "userkey": "AIModuleCreate AIC_0300 Filter row_module_id",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0300",
-      "dta_activity_id__acy_name": "SelectDomain",
       "dta_group": "Filter",
       "dta_name": "row_module_id",
       "dta_order": 1,
@@ -4778,11 +4588,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0300~Object~Name",
+     "userkey": "AIModuleCreate AIC_0300 Object Name",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0300",
-      "dta_activity_id__acy_name": "SelectDomain",
       "dta_group": "Object",
       "dta_name": "Name",
       "dta_order": 1,
@@ -4793,11 +4602,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0350~Data~AI_data",
+     "userkey": "AIModuleCreate AIC_0350 Data AI_data",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0350",
-      "dta_activity_id__acy_name": "interaction",
       "dta_group": "Data",
       "dta_name": "AI_data",
       "dta_order": 1,
@@ -4808,11 +4616,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0350~Page~Method",
+     "userkey": "AIModuleCreate AIC_0350 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0350",
-      "dta_activity_id__acy_name": "interaction",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4823,11 +4630,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0400~Data~AI_prompt",
+     "userkey": "AIModuleCreate AIC_0400 Data AI_prompt",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0400",
-      "dta_activity_id__acy_name": "Prompt",
       "dta_group": "Data",
       "dta_name": "AI_prompt",
       "dta_order": 1,
@@ -4838,11 +4644,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0400~Page~Method",
+     "userkey": "AIModuleCreate AIC_0400 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0400",
-      "dta_activity_id__acy_name": "Prompt",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4853,11 +4658,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0500~Data~json_return",
+     "userkey": "AIModuleCreate AIC_0500 Data json_return",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0500",
-      "dta_activity_id__acy_name": "AI",
       "dta_group": "Data",
       "dta_name": "json_return",
       "dta_order": 1,
@@ -4868,11 +4672,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0500~Page~Method",
+     "userkey": "AIModuleCreate AIC_0500 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0500",
-      "dta_activity_id__acy_name": "AI",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4883,11 +4686,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0600~Page~Method",
+     "userkey": "AIModuleCreate AIC_0600 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0600",
-      "dta_activity_id__acy_name": "Generation",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4898,11 +4700,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AIModuleCreate~AIC_0700~Page~Method",
+     "userkey": "AIModuleCreate AIC_0700 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "dta_activity_id__acy_step": "AIC_0700",
-      "dta_activity_id__acy_name": "RemoveModule",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4913,11 +4714,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0050~Return~Code",
+     "userkey": "AiSettingsProcess ASP-0050 Return Code",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0050",
-      "dta_activity_id__acy_name": "isGlobalParam",
       "dta_group": "Return",
       "dta_name": "Code",
       "dta_order": 1,
@@ -4928,11 +4728,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0075~Page~Method",
+     "userkey": "AiSettingsProcess ASP-0075 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0075",
-      "dta_activity_id__acy_name": "Global",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -4943,11 +4742,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0100~Constraint~Mandatory",
+     "userkey": "AiSettingsProcess ASP-0100 Constraint Mandatory",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0100",
-      "dta_activity_id__acy_name": "SelectProvider",
       "dta_group": "Constraint",
       "dta_name": "Mandatory",
       "dta_order": 1,
@@ -4958,11 +4756,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0100~Object~Name",
+     "userkey": "AiSettingsProcess ASP-0100 Object Name",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0100",
-      "dta_activity_id__acy_name": "SelectProvider",
       "dta_group": "Object",
       "dta_name": "Name",
       "dta_order": 1,
@@ -4973,11 +4770,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0200~Data~aiPrvDefaultUrl",
+     "userkey": "AiSettingsProcess ASP-0200 Data aiPrvDefaultUrl",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0200",
-      "dta_activity_id__acy_name": "Auth",
       "dta_group": "Data",
       "dta_name": "aiPrvDefaultUrl",
       "dta_order": 1,
@@ -4988,11 +4784,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0200~Data~key",
+     "userkey": "AiSettingsProcess ASP-0200 Data key",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0200",
-      "dta_activity_id__acy_name": "Auth",
       "dta_group": "Data",
       "dta_name": "key",
       "dta_order": 1,
@@ -5003,11 +4798,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0200~Data~aiPrvModelsUrl",
+     "userkey": "AiSettingsProcess ASP-0200 Data aiPrvModelsUrl",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0200",
-      "dta_activity_id__acy_name": "Auth",
       "dta_group": "Data",
       "dta_name": "aiPrvModelsUrl",
       "dta_order": 1,
@@ -5018,11 +4812,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0200~Data~aiPrvCompletionUrl",
+     "userkey": "AiSettingsProcess ASP-0200 Data aiPrvCompletionUrl",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0200",
-      "dta_activity_id__acy_name": "Auth",
       "dta_group": "Data",
       "dta_name": "aiPrvCompletionUrl",
       "dta_order": 1,
@@ -5033,11 +4826,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0200~Page~Method",
+     "userkey": "AiSettingsProcess ASP-0200 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0200",
-      "dta_activity_id__acy_name": "Auth",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -5048,11 +4840,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0400~GDataestion~aiPrvModels",
+     "userkey": "AiSettingsProcess ASP-0400 GDataestion aiPrvModels",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0400",
-      "dta_activity_id__acy_name": "OtherParam",
       "dta_group": "GDataestion",
       "dta_name": "aiPrvModels",
       "dta_order": 1,
@@ -5063,11 +4854,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-0400~Page~Method",
+     "userkey": "AiSettingsProcess ASP-0400 Page Method",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-0400",
-      "dta_activity_id__acy_name": "OtherParam",
       "dta_group": "Page",
       "dta_name": "Method",
       "dta_order": 1,
@@ -5078,11 +4868,10 @@
     },
     {
      "object": "BPMData",
-     "userkey": "AiSettingsProcess~ASP-END~Forward~Page",
+     "userkey": "AiSettingsProcess ASP-END Forward Page",
      "item": {
       "dta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "dta_activity_id__acy_step": "ASP-END",
-      "dta_activity_id__acy_name": "End",
       "dta_group": "Forward",
       "dta_name": "Page",
       "dta_order": 1,
@@ -5101,11 +4890,10 @@
    "list": [
     {
      "object": "BPMHelp",
-     "userkey": "AIModuleCreate~AIC_0400~ENU",
+     "userkey": "AIModuleCreate AIC_0400 English",
      "item": {
       "hlp_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "hlp_activity_id__acy_step": "AIC_0400",
-      "hlp_activity_id__acy_name": "Prompt",
       "hlp_lang": "ENU",
       "hlp_abstract": null,
       "hlp_content": "<p>Express your need as concisely as possible<\/p>",
@@ -5114,11 +4902,10 @@
     },
     {
      "object": "BPMHelp",
-     "userkey": "AIModuleCreate~AIC_0400~FRA",
+     "userkey": "AIModuleCreate AIC_0400 French",
      "item": {
       "hlp_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "hlp_activity_id__acy_step": "AIC_0400",
-      "hlp_activity_id__acy_name": "Prompt",
       "hlp_lang": "FRA",
       "hlp_abstract": null,
       "hlp_content": "<p>Exprimez votre besoin de la mani&egrave;re la plus concise possible<\/p>",
@@ -5135,12 +4922,11 @@
    "list": [
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIGenData~GDD_END2",
+     "userkey": "ADMIN AIGenData GDD_END2",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GDD_END2",
-      "gta_activity_id__acy_name": "EndHome",
       "gta_grant": [
        "R",
        "W",
@@ -5151,12 +4937,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIGenData~GGD_0050",
+     "userkey": "ADMIN AIGenData GGD_0050",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0050",
-      "gta_activity_id__acy_name": "IsParam",
       "gta_grant": [
        "R",
        "W",
@@ -5167,12 +4952,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIGenData~GGD_0075",
+     "userkey": "ADMIN AIGenData GGD_0075",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0075",
-      "gta_activity_id__acy_name": "NoParam",
       "gta_grant": [
        "R",
        "W",
@@ -5183,12 +4967,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIGenData~GGD_0150",
+     "userkey": "ADMIN AIGenData GGD_0150",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0150",
-      "gta_activity_id__acy_name": "Confirm",
       "gta_grant": [
        "R",
        "W",
@@ -5199,12 +4982,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0005",
+     "userkey": "ADMIN AIModuleCreate AIC_0005",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0005",
-      "gta_activity_id__acy_name": "Choice",
       "gta_grant": [
        "R",
        "W",
@@ -5215,12 +4997,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0010",
+     "userkey": "ADMIN AIModuleCreate AIC_0010",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0010",
-      "gta_activity_id__acy_name": "CreateModule",
       "gta_grant": [
        "R",
        "W",
@@ -5231,12 +5012,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0015",
+     "userkey": "ADMIN AIModuleCreate AIC_0015",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0015",
-      "gta_activity_id__acy_name": "TranslateDomain",
       "gta_grant": [
        "R",
        "W",
@@ -5247,12 +5027,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0017",
+     "userkey": "ADMIN AIModuleCreate AIC_0017",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0017",
-      "gta_activity_id__acy_name": "NewScope",
       "gta_grant": [
        "R",
        "W",
@@ -5263,12 +5042,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0020",
+     "userkey": "ADMIN AIModuleCreate AIC_0020",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0020",
-      "gta_activity_id__acy_name": "GrantUser",
       "gta_grant": [
        "R",
        "W",
@@ -5279,12 +5057,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0050",
+     "userkey": "ADMIN AIModuleCreate AIC_0050",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0050",
-      "gta_activity_id__acy_name": "isParam",
       "gta_grant": [
        "R",
        "W",
@@ -5295,12 +5072,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0075",
+     "userkey": "ADMIN AIModuleCreate AIC_0075",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0075",
-      "gta_activity_id__acy_name": "NoParam",
       "gta_grant": [
        "R",
        "W",
@@ -5311,12 +5087,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0100",
+     "userkey": "ADMIN AIModuleCreate AIC_0100",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0100",
-      "gta_activity_id__acy_name": "SelectModule",
       "gta_grant": [
        "R",
        "W",
@@ -5327,12 +5102,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0200",
+     "userkey": "ADMIN AIModuleCreate AIC_0200",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0200",
-      "gta_activity_id__acy_name": "SelectGroup",
       "gta_grant": [
        "R",
        "W",
@@ -5343,12 +5117,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0300",
+     "userkey": "ADMIN AIModuleCreate AIC_0300",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0300",
-      "gta_activity_id__acy_name": "SelectDomain",
       "gta_grant": [
        "R",
        "W",
@@ -5359,12 +5132,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AIModuleCreate~AIC_0400",
+     "userkey": "ADMIN AIModuleCreate AIC_0400",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0400",
-      "gta_activity_id__acy_name": "Prompt",
       "gta_grant": [
        "R",
        "W",
@@ -5375,12 +5147,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AiSettingsProcess~ASP-0050",
+     "userkey": "ADMIN AiSettingsProcess ASP-0050",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "gta_activity_id__acy_step": "ASP-0050",
-      "gta_activity_id__acy_name": "isGlobalParam",
       "gta_grant": [
        "R",
        "W",
@@ -5391,12 +5162,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "ADMIN~AiSettingsProcess~ASP-0075",
+     "userkey": "ADMIN AiSettingsProcess ASP-0075",
      "item": {
       "gta_group_id__grp_name": "ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "gta_activity_id__acy_step": "ASP-0075",
-      "gta_activity_id__acy_name": "Global",
       "gta_grant": [
        "R",
        "W",
@@ -5407,12 +5177,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_ADMIN~AiSettingsProcess~ASP-0050",
+     "userkey": "AI_ADMIN AiSettingsProcess ASP-0050",
      "item": {
       "gta_group_id__grp_name": "AI_ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "gta_activity_id__acy_step": "ASP-0050",
-      "gta_activity_id__acy_name": "isGlobalParam",
       "gta_grant": [
        "R",
        "W",
@@ -5423,12 +5192,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_ADMIN~AiSettingsProcess~ASP-0075",
+     "userkey": "AI_ADMIN AiSettingsProcess ASP-0075",
      "item": {
       "gta_group_id__grp_name": "AI_ADMIN",
       "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "gta_activity_id__acy_step": "ASP-0075",
-      "gta_activity_id__acy_name": "Global",
       "gta_grant": [
        "R",
        "W",
@@ -5439,12 +5207,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIGenData~GDD_END2",
+     "userkey": "AI_DESIGNER AIGenData GDD_END2",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GDD_END2",
-      "gta_activity_id__acy_name": "EndHome",
       "gta_grant": [
        "R",
        "W",
@@ -5455,12 +5222,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIGenData~GGD_0050",
+     "userkey": "AI_DESIGNER AIGenData GGD_0050",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0050",
-      "gta_activity_id__acy_name": "IsParam",
       "gta_grant": [
        "R",
        "W",
@@ -5471,12 +5237,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIGenData~GGD_0075",
+     "userkey": "AI_DESIGNER AIGenData GGD_0075",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0075",
-      "gta_activity_id__acy_name": "NoParam",
       "gta_grant": [
        "R",
        "W",
@@ -5487,12 +5252,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIGenData~GGD_0100",
+     "userkey": "AI_DESIGNER AIGenData GGD_0100",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0100",
-      "gta_activity_id__acy_name": "SelectModule",
       "gta_grant": [
        "R",
        "W",
@@ -5503,12 +5267,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIGenData~GGD_0150",
+     "userkey": "AI_DESIGNER AIGenData GGD_0150",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0150",
-      "gta_activity_id__acy_name": "Confirm",
       "gta_grant": [
        "R",
        "W",
@@ -5519,12 +5282,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIGenData~GGD_0200",
+     "userkey": "AI_DESIGNER AIGenData GGD_0200",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIGenData",
       "gta_activity_id__acy_step": "GGD_0200",
-      "gta_activity_id__acy_name": "GenData",
       "gta_grant": [
        "R",
        "W",
@@ -5535,12 +5297,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0005",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0005",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0005",
-      "gta_activity_id__acy_name": "Choice",
       "gta_grant": [
        "R",
        "W",
@@ -5551,12 +5312,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0010",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0010",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0010",
-      "gta_activity_id__acy_name": "CreateModule",
       "gta_grant": [
        "R",
        "W",
@@ -5567,12 +5327,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0015",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0015",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0015",
-      "gta_activity_id__acy_name": "TranslateDomain",
       "gta_grant": [
        "R",
        "W",
@@ -5583,12 +5342,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0017",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0017",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0017",
-      "gta_activity_id__acy_name": "NewScope",
       "gta_grant": [
        "R",
        "W",
@@ -5599,12 +5357,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0020",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0020",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0020",
-      "gta_activity_id__acy_name": "GrantUser",
       "gta_grant": [
        "R",
        "W",
@@ -5615,12 +5372,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0050",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0050",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0050",
-      "gta_activity_id__acy_name": "isParam",
       "gta_grant": [
        "R",
        "W",
@@ -5631,12 +5387,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0075",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0075",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0075",
-      "gta_activity_id__acy_name": "NoParam",
       "gta_grant": [
        "R",
        "W",
@@ -5647,12 +5402,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0350",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0350",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0350",
-      "gta_activity_id__acy_name": "interaction",
       "gta_grant": [
        "R",
        "W",
@@ -5663,24 +5417,22 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0500",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0500",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0500",
-      "gta_activity_id__acy_name": "AI",
       "gta_grant": ["W"],
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0600",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0600",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0600",
-      "gta_activity_id__acy_name": "Generation",
       "gta_grant": [
        "R",
        "W",
@@ -5691,12 +5443,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0700",
+     "userkey": "AI_DESIGNER AIModuleCreate AIC_0700",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0700",
-      "gta_activity_id__acy_name": "RemoveModule",
       "gta_grant": [
        "R",
        "W"
@@ -5706,12 +5457,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AiSettingsProcess~ASP-0050",
+     "userkey": "AI_DESIGNER AiSettingsProcess ASP-0050",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "gta_activity_id__acy_step": "ASP-0050",
-      "gta_activity_id__acy_name": "isGlobalParam",
       "gta_grant": [
        "R",
        "W",
@@ -5722,12 +5472,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AiSettingsProcess~ASP-0075",
+     "userkey": "AI_DESIGNER AiSettingsProcess ASP-0075",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "gta_activity_id__acy_step": "ASP-0075",
-      "gta_activity_id__acy_name": "Global",
       "gta_grant": [
        "R",
        "W",
@@ -5738,12 +5487,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AiSettingsProcess~ASP-0100",
+     "userkey": "AI_DESIGNER AiSettingsProcess ASP-0100",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "gta_activity_id__acy_step": "ASP-0100",
-      "gta_activity_id__acy_name": "SelectProvider",
       "gta_grant": [
        "R",
        "W",
@@ -5754,12 +5502,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AiSettingsProcess~ASP-0200",
+     "userkey": "AI_DESIGNER AiSettingsProcess ASP-0200",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "gta_activity_id__acy_step": "ASP-0200",
-      "gta_activity_id__acy_name": "Auth",
       "gta_grant": [
        "R",
        "W",
@@ -5770,12 +5517,11 @@
     },
     {
      "object": "BPMGrantActivity",
-     "userkey": "AI_DESIGNER~AiSettingsProcess~ASP-0400",
+     "userkey": "AI_DESIGNER AiSettingsProcess ASP-0400",
      "item": {
       "gta_group_id__grp_name": "AI_DESIGNER",
       "gta_activity_id__acy_process_id__pcs_name": "AiSettingsProcess",
       "gta_activity_id__acy_step": "ASP-0400",
-      "gta_activity_id__acy_name": "OtherParam",
       "gta_grant": [
        "R",
        "W",
@@ -5794,7 +5540,7 @@
    "list": [
     {
      "object": "BPMGrantProcess",
-     "userkey": "ADMIN~AIModuleCreate",
+     "userkey": "ADMIN AIModuleCreate",
      "item": {
       "gtp_group_id__grp_name": "ADMIN",
       "gtp_process_id__pcs_name": "AIModuleCreate",
@@ -5808,7 +5554,7 @@
     },
     {
      "object": "BPMGrantProcess",
-     "userkey": "AI_DESIGNER~AIGenData",
+     "userkey": "AI_DESIGNER AIGenData",
      "item": {
       "gtp_group_id__grp_name": "AI_DESIGNER",
       "gtp_process_id__pcs_name": "AIGenData",
@@ -5821,7 +5567,7 @@
     },
     {
      "object": "BPMGrantProcess",
-     "userkey": "AI_DESIGNER~AIModuleCreate",
+     "userkey": "AI_DESIGNER AIModuleCreate",
      "item": {
       "gtp_group_id__grp_name": "AI_DESIGNER",
       "gtp_process_id__pcs_name": "AIModuleCreate",
@@ -5831,7 +5577,7 @@
     },
     {
      "object": "BPMGrantProcess",
-     "userkey": "AI_DESIGNER~AiSettingsProcess",
+     "userkey": "AI_DESIGNER AiSettingsProcess",
      "item": {
       "gtp_group_id__grp_name": "AI_DESIGNER",
       "gtp_process_id__pcs_name": "AiSettingsProcess",
@@ -5844,7 +5590,7 @@
     },
     {
      "object": "BPMGrantProcess",
-     "userkey": "DESIGNER~AIModuleCreate",
+     "userkey": "DESIGNER AIModuleCreate",
      "item": {
       "gtp_group_id__grp_name": "DESIGNER",
       "gtp_process_id__pcs_name": "AIModuleCreate",
@@ -5866,7 +5612,7 @@
    "list": [
     {
      "object": "Map",
-     "userkey": "AIDomain~BPMProcess(AIModuleCreate)~150",
+     "userkey": "AIDomain AIModuleCreate 150",
      "item": {
       "map_domain_id__obd_name": "AIDomain",
       "map_object": {
@@ -5883,7 +5629,7 @@
     },
     {
      "object": "Map",
-     "userkey": "AIDomain~BPMProcess(AIGenData)~200",
+     "userkey": "AIDomain AIGenData 200",
      "item": {
       "map_domain_id__obd_name": "AIDomain",
       "map_object": {
@@ -5900,7 +5646,7 @@
     },
     {
      "object": "Map",
-     "userkey": "AIDomain~ObjectExternal(AIChatBot)~300",
+     "userkey": "AIDomain AIChatBot 300",
      "item": {
       "map_domain_id__obd_name": "AIDomain",
       "map_object": {
@@ -5917,7 +5663,7 @@
     },
     {
      "object": "Map",
-     "userkey": "AIDomain~BPMProcess(AiSettingsProcess)~300",
+     "userkey": "AIDomain AiSettingsProcess 300",
      "item": {
       "map_domain_id__obd_name": "AIDomain",
       "map_object": {
@@ -5934,7 +5680,7 @@
     },
     {
      "object": "Map",
-     "userkey": "AIDomain~ObjectInternal(AIProvider)~400",
+     "userkey": "AIDomain AIProvider 400",
      "item": {
       "map_domain_id__obd_name": "AIDomain",
       "map_object": {
@@ -5959,7 +5705,7 @@
    "list": [
     {
      "object": "ViewItem",
-     "userkey": "AIChatVue~1",
+     "userkey": "AIChatVue 1",
      "item": {
       "vwi_view_id__viw_name": "AIChatVue",
       "vwi_position": 1,
@@ -5983,7 +5729,7 @@
     },
     {
      "object": "ViewItem",
-     "userkey": "AIMonitoring~3",
+     "userkey": "AIMonitoring 3",
      "item": {
       "vwi_view_id__viw_name": "AIMonitoring",
       "vwi_position": 3,
@@ -6007,7 +5753,7 @@
     },
     {
      "object": "ViewItem",
-     "userkey": "AIMonitoring~4",
+     "userkey": "AIMonitoring 4",
      "item": {
       "vwi_view_id__viw_name": "AIMonitoring",
       "vwi_position": 4,
@@ -6031,7 +5777,7 @@
     },
     {
      "object": "ViewItem",
-     "userkey": "AIViewExpTool~1",
+     "userkey": "AIViewExpTool 1",
      "item": {
       "vwi_view_id__viw_name": "AIViewExpTool",
       "vwi_position": 1,
@@ -6055,7 +5801,7 @@
     },
     {
      "object": "ViewItem",
-     "userkey": "AIViewExpTool~2",
+     "userkey": "AIViewExpTool 2",
      "item": {
       "vwi_view_id__viw_name": "AIViewExpTool",
       "vwi_position": 2,
@@ -6087,7 +5833,7 @@
    "list": [
     {
      "object": "Resource",
-     "userkey": "Disposition(responsive5)~ANY~CHATBOT",
+     "userkey": "responsive5 * CHATBOT",
      "item": {
       "res_object": {
        "item": {"dis_code": "responsive5"},
@@ -6111,7 +5857,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "Disposition(responsive5)~ANY~CHATBOT_SCRIPT",
+     "userkey": "responsive5 * CHATBOT_SCRIPT",
      "item": {
       "res_object": {
        "item": {"dis_code": "responsive5"},
@@ -6135,7 +5881,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "Disposition(default)~ANY~AI_STYLE",
+     "userkey": "default * AI_STYLE",
      "item": {
       "res_object": {
        "item": {"dis_code": "default"},
@@ -6159,7 +5905,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "Disposition(default)~ANY~AI",
+     "userkey": "default * AI",
      "item": {
       "res_object": {
        "item": {"dis_code": "default"},
@@ -6183,7 +5929,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "Disposition(default)~ANY~ai_module",
+     "userkey": "default * ai_module",
      "item": {
       "res_object": {
        "item": {"dis_code": "default"},
@@ -6207,7 +5953,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIChatBot)~ANY~STYLES",
+     "userkey": "AIChatBot * STYLES",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIChatBot"},
@@ -6231,7 +5977,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIChatBot)~ANY~HTML",
+     "userkey": "AIChatBot * HTML",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIChatBot"},
@@ -6255,7 +6001,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIChatBot)~ANY~SCRIPT",
+     "userkey": "AIChatBot * SCRIPT",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIChatBot"},
@@ -6279,7 +6025,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIProcessResource)~ANY~CHAT_BOT_CSS",
+     "userkey": "AIProcessResource * CHAT_BOT_CSS",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -6303,7 +6049,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIProcessResource)~ANY~CHAT_BOT_MODEL",
+     "userkey": "AIProcessResource * CHAT_BOT_MODEL",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -6327,7 +6073,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIProcessResource)~ANY~AI_GEN_MODEL",
+     "userkey": "AIProcessResource * AI_GEN_MODEL",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -6351,7 +6097,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIProcessResource)~ANY~CHAT_BOT_SCRIPT",
+     "userkey": "AIProcessResource * CHAT_BOT_SCRIPT",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -6375,7 +6121,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIProcessResource)~ANY~CONTEXT_DIRECT_PROMPT",
+     "userkey": "AIProcessResource * CONTEXT_DIRECT_PROMPT",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -6399,7 +6145,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIProcessResource)~ANY~CONTEXT_INTERACTION_PROMPT",
+     "userkey": "AIProcessResource * CONTEXT_INTERACTION_PROMPT",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -6423,7 +6169,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIProcessResource)~ANY~CROSSTABLE_PROMPT",
+     "userkey": "AIProcessResource * CROSSTABLE_PROMPT",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -6447,7 +6193,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIProcessResource)~ANY~MODELE_CLASSE",
+     "userkey": "AIProcessResource * MODELE_CLASSE",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -6471,7 +6217,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIPromptTool)~ANY~STYLES",
+     "userkey": "AIPromptTool * STYLES",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIPromptTool"},
@@ -6495,7 +6241,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIPromptTool)~ANY~HTML",
+     "userkey": "AIPromptTool * HTML",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIPromptTool"},
@@ -6519,7 +6265,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIPromptTool)~ANY~SCRIPT",
+     "userkey": "AIPromptTool * SCRIPT",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIPromptTool"},
@@ -6543,7 +6289,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIExpTool)~ANY~STYLES",
+     "userkey": "AIExpTool * STYLES",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIExpTool"},
@@ -6567,7 +6313,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIExpTool)~ANY~HTML",
+     "userkey": "AIExpTool * HTML",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIExpTool"},
@@ -6591,7 +6337,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIExpTool)~ANY~SCRIPT",
+     "userkey": "AIExpTool * SCRIPT",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIExpTool"},
@@ -6615,7 +6361,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIMetricsChat)~ANY~STYLES",
+     "userkey": "AIMetricsChat * STYLES",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIMetricsChat"},
@@ -6639,7 +6385,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIMetricsChat)~ANY~HTML",
+     "userkey": "AIMetricsChat * HTML",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIMetricsChat"},
@@ -6663,7 +6409,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AIMetricsChat)~ANY~SCRIPT",
+     "userkey": "AIMetricsChat * SCRIPT",
      "item": {
       "res_object": {
        "item": {"obe_name": "AIMetricsChat"},
@@ -6687,7 +6433,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AiMonitoring)~ANY~STYLES",
+     "userkey": "AiMonitoring * STYLES",
      "item": {
       "res_object": {
        "item": {"obe_name": "AiMonitoring"},
@@ -6711,7 +6457,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AiMonitoring)~ANY~HTML",
+     "userkey": "AiMonitoring * HTML",
      "item": {
       "res_object": {
        "item": {"obe_name": "AiMonitoring"},
@@ -6735,7 +6481,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AiMonitoring)~FRA~HTML",
+     "userkey": "AiMonitoring French HTML",
      "item": {
       "res_object": {
        "item": {"obe_name": "AiMonitoring"},
@@ -6759,7 +6505,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectExternal(AiMonitoring)~ANY~SCRIPT",
+     "userkey": "AiMonitoring * SCRIPT",
      "item": {
       "res_object": {
        "item": {"obe_name": "AiMonitoring"},
@@ -6783,7 +6529,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectInternal(AIProvider)~ANY~AISettingsFieldsTemplate",
+     "userkey": "AIProvider * AISettingsFieldsTemplate",
      "item": {
       "res_object": {
        "item": {"obo_name": "AIProvider"},
@@ -6807,7 +6553,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectInternal(AIProvider)~ANY~AISettingsKeyAndEPTemplate",
+     "userkey": "AIProvider * AISettingsKeyAndEPTemplate",
      "item": {
       "res_object": {
        "item": {"obo_name": "AIProvider"},
@@ -6831,7 +6577,7 @@
     },
     {
      "object": "Resource",
-     "userkey": "ObjectInternal(AIProvider)~ANY~AISettingsParamTemplate",
+     "userkey": "AIProvider * AISettingsParamTemplate",
      "item": {
       "res_object": {
        "item": {"obo_name": "AIProvider"},
@@ -6941,7 +6687,7 @@
    "list": [
     {
      "object": "TranslateAction",
-     "userkey": "Action(AI_SENT)~ENU",
+     "userkey": "AI_SENT English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AI_SENT"},
@@ -6958,7 +6704,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AI_SENT)~FRA",
+     "userkey": "AI_SENT French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AI_SENT"},
@@ -6975,7 +6721,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AI_GENDATA_RETRY)~ENU",
+     "userkey": "AI_GENDATA_RETRY English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AI_GENDATA_RETRY"},
@@ -6992,7 +6738,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AI_GENDATA_RETRY)~FRA",
+     "userkey": "AI_GENDATA_RETRY French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AI_GENDATA_RETRY"},
@@ -7009,7 +6755,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AI_CLEAR_HIST)~ENU",
+     "userkey": "AI_CLEAR_HIST English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AI_CLEAR_HIST"},
@@ -7026,7 +6772,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AI_CLEAR_HIST)~FRA",
+     "userkey": "AI_CLEAR_HIST French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AI_CLEAR_HIST"},
@@ -7043,7 +6789,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AICalculateFieldJs)~ENU",
+     "userkey": "AICalculateFieldJs English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AICalculateFieldJs"},
@@ -7060,7 +6806,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AICalculateFieldJs)~FRA",
+     "userkey": "AICalculateFieldJs French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AICalculateFieldJs"},
@@ -7077,7 +6823,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIDirectPrompt)~ENU",
+     "userkey": "AIDirectPrompt English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIDirectPrompt"},
@@ -7094,7 +6840,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIDirectPrompt)~FRA",
+     "userkey": "AIDirectPrompt French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIDirectPrompt"},
@@ -7111,7 +6857,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIAddData)~ENU",
+     "userkey": "AIAddData English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIAddData"},
@@ -7128,7 +6874,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIAddData)~FRA",
+     "userkey": "AIAddData French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIAddData"},
@@ -7145,7 +6891,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIButtonSkip)~ENU",
+     "userkey": "AIButtonSkip English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIButtonSkip"},
@@ -7162,7 +6908,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIButtonSkip)~FRA",
+     "userkey": "AIButtonSkip French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIButtonSkip"},
@@ -7179,7 +6925,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIDeleteModule)~ENU",
+     "userkey": "AIDeleteModule English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIDeleteModule"},
@@ -7196,7 +6942,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIDeleteModule)~FRA",
+     "userkey": "AIDeleteModule French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIDeleteModule"},
@@ -7213,7 +6959,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIAutoGenModule)~ENU",
+     "userkey": "AIAutoGenModule English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIAutoGenModule"},
@@ -7230,7 +6976,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIAutoGenModule)~FRA",
+     "userkey": "AIAutoGenModule French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIAutoGenModule"},
@@ -7247,7 +6993,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(CompleteModule)~ENU",
+     "userkey": "CompleteModule English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "CompleteModule"},
@@ -7264,7 +7010,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(CompleteModule)~FRA",
+     "userkey": "CompleteModule French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "CompleteModule"},
@@ -7281,7 +7027,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIGenerate)~ENU",
+     "userkey": "AIGenerate English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIGenerate"},
@@ -7298,7 +7044,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AIGenerate)~FRA",
+     "userkey": "AIGenerate French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AIGenerate"},
@@ -7315,7 +7061,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AiSaveAsCrosstable)~ENU",
+     "userkey": "AiSaveAsCrosstable English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AiSaveAsCrosstable"},
@@ -7332,7 +7078,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AiSaveAsCrosstable)~FRA",
+     "userkey": "AiSaveAsCrosstable French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AiSaveAsCrosstable"},
@@ -7349,7 +7095,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AISetSettings)~ENU",
+     "userkey": "AISetSettings English",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AISetSettings"},
@@ -7366,7 +7112,7 @@
     },
     {
      "object": "TranslateAction",
-     "userkey": "Action(AISetSettings)~FRA",
+     "userkey": "AISetSettings French",
      "item": {
       "tsl_object": {
        "item": {"act_name": "AISetSettings"},
@@ -7391,7 +7137,7 @@
    "list": [
     {
      "object": "TranslateField",
-     "userkey": "Field(aiActPrompt)~ENU",
+     "userkey": "aiActPrompt English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiActPrompt"},
@@ -7413,7 +7159,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiActPrompt)~FRA",
+     "userkey": "aiActPrompt French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiActPrompt"},
@@ -7435,7 +7181,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiGrantUser)~ENU",
+     "userkey": "aiGrantUser English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiGrantUser"},
@@ -7457,7 +7203,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiGrantUser)~FRA",
+     "userkey": "aiGrantUser French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiGrantUser"},
@@ -7479,7 +7225,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiSelectProcess)~ENU",
+     "userkey": "aiSelectProcess English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiSelectProcess"},
@@ -7501,7 +7247,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiSelectProcess)~FRA",
+     "userkey": "aiSelectProcess French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiSelectProcess"},
@@ -7523,7 +7269,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvDefaultUrl)~ENU",
+     "userkey": "aiPrvDefaultUrl English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvDefaultUrl"},
@@ -7545,7 +7291,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvDefaultUrl)~FRA",
+     "userkey": "aiPrvDefaultUrl French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvDefaultUrl"},
@@ -7567,7 +7313,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvCompletionUrl)~ENU",
+     "userkey": "aiPrvCompletionUrl English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvCompletionUrl"},
@@ -7589,7 +7335,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvCompletionUrl)~FRA",
+     "userkey": "aiPrvCompletionUrl French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvCompletionUrl"},
@@ -7611,7 +7357,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvHelp)~ENU",
+     "userkey": "aiPrvHelp English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvHelp"},
@@ -7633,7 +7379,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvHelp)~FRA",
+     "userkey": "aiPrvHelp French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvHelp"},
@@ -7655,7 +7401,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvProvider)~ENU",
+     "userkey": "aiPrvProvider English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvProvider"},
@@ -7677,7 +7423,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvProvider)~FRA",
+     "userkey": "aiPrvProvider French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvProvider"},
@@ -7699,7 +7445,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvPingUrl)~ENU",
+     "userkey": "aiPrvPingUrl English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvPingUrl"},
@@ -7721,7 +7467,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvPingUrl)~FRA",
+     "userkey": "aiPrvPingUrl French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvPingUrl"},
@@ -7743,7 +7489,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvModelsUrl)~ENU",
+     "userkey": "aiPrvModelsUrl English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvModelsUrl"},
@@ -7765,7 +7511,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvModelsUrl)~FRA",
+     "userkey": "aiPrvModelsUrl French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvModelsUrl"},
@@ -7787,7 +7533,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvDataModel)~ENU",
+     "userkey": "aiPrvDataModel English",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvDataModel"},
@@ -7809,7 +7555,7 @@
     },
     {
      "object": "TranslateField",
-     "userkey": "Field(aiPrvDataModel)~FRA",
+     "userkey": "aiPrvDataModel French",
      "item": {
       "tsl_object": {
        "item": {"fld_name": "aiPrvDataModel"},
@@ -7839,7 +7585,7 @@
    "list": [
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AIExemple-1)~ENU",
+     "userkey": "AIExemple-1 English",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AIExemple-1"},
@@ -7855,7 +7601,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AIExemple-1)~FRA",
+     "userkey": "AIExemple-1 French",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AIExemple-1"},
@@ -7871,7 +7617,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AiSettings-1)~ENU",
+     "userkey": "AiSettings-1 English",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AiSettings-1"},
@@ -7887,7 +7633,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AiSettings-1)~FRA",
+     "userkey": "AiSettings-1 French",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AiSettings-1"},
@@ -7903,7 +7649,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AiSettings-2)~ENU",
+     "userkey": "AiSettings-2 English",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AiSettings-2"},
@@ -7919,7 +7665,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AiSettings-2)~FRA",
+     "userkey": "AiSettings-2 French",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AiSettings-2"},
@@ -7935,7 +7681,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AITest-1)~ENU",
+     "userkey": "AITest-1 English",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AITest-1"},
@@ -7951,7 +7697,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AITest-1)~FRA",
+     "userkey": "AITest-1 French",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AITest-1"},
@@ -7967,7 +7713,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AIProvider-1)~ENU",
+     "userkey": "AIProvider-1 English",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AIProvider-1"},
@@ -7983,7 +7729,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AIProvider-1)~FRA",
+     "userkey": "AIProvider-1 French",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AIProvider-1"},
@@ -7999,7 +7745,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AIProvider-2)~ENU",
+     "userkey": "AIProvider-2 English",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AIProvider-2"},
@@ -8015,7 +7761,7 @@
     },
     {
      "object": "TranslateFieldArea",
-     "userkey": "ObjectFieldArea(AIProvider-2)~FRA",
+     "userkey": "AIProvider-2 French",
      "item": {
       "tsl_object": {
        "item": {"ofa_name": "AIProvider-2"},
@@ -8039,7 +7785,7 @@
    "list": [
     {
      "object": "TranslateDomain",
-     "userkey": "Domain(AIDomain)~ENU",
+     "userkey": "AIDomain English",
      "item": {
       "tsl_object": {
        "item": {"obd_name": "AIDomain"},
@@ -8056,7 +7802,7 @@
     },
     {
      "object": "TranslateDomain",
-     "userkey": "Domain(AIDomain)~FRA",
+     "userkey": "AIDomain French",
      "item": {
       "tsl_object": {
        "item": {"obd_name": "AIDomain"},
@@ -8081,7 +7827,7 @@
    "list": [
     {
      "object": "TranslateObject",
-     "userkey": "ObjectInternal(AIProvider)~ENU",
+     "userkey": "AIProvider English",
      "item": {
       "tsl_object": {
        "item": {"obo_name": "AIProvider"},
@@ -8099,7 +7845,7 @@
     },
     {
      "object": "TranslateObject",
-     "userkey": "ObjectInternal(AIProvider)~FRA",
+     "userkey": "AIProvider French",
      "item": {
       "tsl_object": {
        "item": {"obo_name": "AIProvider"},
@@ -8125,7 +7871,7 @@
    "list": [
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIShortcut)~ENU",
+     "userkey": "AIShortcut English",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIShortcut"},
@@ -8143,7 +7889,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIShortcut)~FRA",
+     "userkey": "AIShortcut French",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIShortcut"},
@@ -8161,7 +7907,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIChatBot)~ENU",
+     "userkey": "AIChatBot English",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIChatBot"},
@@ -8179,7 +7925,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIChatBot)~FRA",
+     "userkey": "AIChatBot French",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIChatBot"},
@@ -8197,7 +7943,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIRestAPI)~ENU",
+     "userkey": "AIRestAPI English",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIRestAPI"},
@@ -8215,7 +7961,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIRestAPI)~FRA",
+     "userkey": "AIRestAPI French",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIRestAPI"},
@@ -8233,7 +7979,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIProcessResource)~ENU",
+     "userkey": "AIProcessResource English",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -8251,7 +7997,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIProcessResource)~FRA",
+     "userkey": "AIProcessResource French",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIProcessResource"},
@@ -8269,7 +8015,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIPromptTool)~ENU",
+     "userkey": "AIPromptTool English",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIPromptTool"},
@@ -8287,7 +8033,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIPromptTool)~FRA",
+     "userkey": "AIPromptTool French",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIPromptTool"},
@@ -8305,7 +8051,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIExpTool)~ENU",
+     "userkey": "AIExpTool English",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIExpTool"},
@@ -8323,7 +8069,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIExpTool)~FRA",
+     "userkey": "AIExpTool French",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIExpTool"},
@@ -8341,7 +8087,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIMetricsChat)~ENU",
+     "userkey": "AIMetricsChat English",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIMetricsChat"},
@@ -8359,7 +8105,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AIMetricsChat)~FRA",
+     "userkey": "AIMetricsChat French",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AIMetricsChat"},
@@ -8377,7 +8123,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AiMonitoring)~ENU",
+     "userkey": "AiMonitoring English",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AiMonitoring"},
@@ -8395,7 +8141,7 @@
     },
     {
      "object": "TranslateExternal",
-     "userkey": "ObjectExternal(AiMonitoring)~FRA",
+     "userkey": "AiMonitoring French",
      "item": {
       "tsl_object": {
        "item": {"obe_name": "AiMonitoring"},
@@ -8420,7 +8166,7 @@
    "field": "row_module_id",
    "list": [{
     "object": "TranslateShortcut",
-    "userkey": "ShortCut(AIBot)~ANY",
+    "userkey": "AIBot *",
     "item": {
      "tsl_object": {
       "item": {"shc_name": "AIBot"},
@@ -8444,7 +8190,7 @@
    "list": [
     {
      "object": "TranslateView",
-     "userkey": "View(AIViewExpTool)~ENU",
+     "userkey": "AIViewExpTool English",
      "item": {
       "tsl_object": {
        "item": {"viw_name": "AIViewExpTool"},
@@ -8461,7 +8207,7 @@
     },
     {
      "object": "TranslateView",
-     "userkey": "View(AIViewExpTool)~FRA",
+     "userkey": "AIViewExpTool French",
      "item": {
       "tsl_object": {
        "item": {"viw_name": "AIViewExpTool"},
@@ -8478,7 +8224,7 @@
     },
     {
      "object": "TranslateView",
-     "userkey": "View(AIChatVue)~ENU",
+     "userkey": "AIChatVue English",
      "item": {
       "tsl_object": {
        "item": {"viw_name": "AIChatVue"},
@@ -8495,7 +8241,7 @@
     },
     {
      "object": "TranslateView",
-     "userkey": "View(AIChatVue)~FRA",
+     "userkey": "AIChatVue French",
      "item": {
       "tsl_object": {
        "item": {"viw_name": "AIChatVue"},
@@ -8512,7 +8258,7 @@
     },
     {
      "object": "TranslateView",
-     "userkey": "View(AIMonitoring)~ENU",
+     "userkey": "AIMonitoring English",
      "item": {
       "tsl_object": {
        "item": {"viw_name": "AIMonitoring"},
@@ -8529,7 +8275,7 @@
     },
     {
      "object": "TranslateView",
-     "userkey": "View(AIMonitoring)~FRA",
+     "userkey": "AIMonitoring French",
      "item": {
       "tsl_object": {
        "item": {"viw_name": "AIMonitoring"},
@@ -8554,7 +8300,7 @@
    "list": [
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0075)~ENU",
+     "userkey": "AIModuleCreate AIC_0075 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8573,7 +8319,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0075)~FRA",
+     "userkey": "AIModuleCreate AIC_0075 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8592,7 +8338,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC-END2)~ENU",
+     "userkey": "AIModuleCreate AIC-END2 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8611,7 +8357,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC-END2)~FRA",
+     "userkey": "AIModuleCreate AIC-END2 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8630,7 +8376,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0050)~ENU",
+     "userkey": "AIGenData GGD_0050 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8649,7 +8395,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0050)~FRA",
+     "userkey": "AIGenData GGD_0050 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8668,7 +8414,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0075)~ENU",
+     "userkey": "AIGenData GGD_0075 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8687,7 +8433,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0075)~FRA",
+     "userkey": "AIGenData GGD_0075 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8706,7 +8452,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GDD_END2)~ENU",
+     "userkey": "AIGenData GDD_END2 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8725,7 +8471,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GDD_END2)~FRA",
+     "userkey": "AIGenData GDD_END2 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8744,7 +8490,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0050)~ENU",
+     "userkey": "AiSettingsProcess ASP-0050 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8763,7 +8509,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0050)~FRA",
+     "userkey": "AiSettingsProcess ASP-0050 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8782,7 +8528,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0075)~ENU",
+     "userkey": "AiSettingsProcess ASP-0075 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8801,7 +8547,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0075)~FRA",
+     "userkey": "AiSettingsProcess ASP-0075 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8820,7 +8566,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD-BEG)~ENU",
+     "userkey": "AIGenData GGD-BEG English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8839,7 +8585,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD-BEG)~FRA",
+     "userkey": "AIGenData GGD-BEG French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8858,7 +8604,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD-END)~ENU",
+     "userkey": "AIGenData GGD-END English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8877,7 +8623,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD-END)~FRA",
+     "userkey": "AIGenData GGD-END French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8896,7 +8642,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0100)~ENU",
+     "userkey": "AIGenData GGD_0100 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8915,7 +8661,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0100)~FRA",
+     "userkey": "AIGenData GGD_0100 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8934,7 +8680,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0150)~ENU",
+     "userkey": "AIGenData GGD_0150 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8953,7 +8699,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0150)~FRA",
+     "userkey": "AIGenData GGD_0150 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -8972,7 +8718,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0200)~ENU",
+     "userkey": "AIGenData GGD_0200 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -8991,7 +8737,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIGenData GGD_0200)~FRA",
+     "userkey": "AIGenData GGD_0200 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9010,7 +8756,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC-BEG)~ENU",
+     "userkey": "AIModuleCreate AIC-BEG English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9029,7 +8775,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC-BEG)~FRA",
+     "userkey": "AIModuleCreate AIC-BEG French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9048,7 +8794,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC-END)~ENU",
+     "userkey": "AIModuleCreate AIC-END English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9067,7 +8813,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC-END)~FRA",
+     "userkey": "AIModuleCreate AIC-END French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9086,7 +8832,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0005)~ENU",
+     "userkey": "AIModuleCreate AIC_0005 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9105,7 +8851,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0005)~FRA",
+     "userkey": "AIModuleCreate AIC_0005 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9124,7 +8870,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0010)~ENU",
+     "userkey": "AIModuleCreate AIC_0010 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9143,7 +8889,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0010)~FRA",
+     "userkey": "AIModuleCreate AIC_0010 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9162,7 +8908,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0015)~ENU",
+     "userkey": "AIModuleCreate AIC_0015 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9181,7 +8927,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0015)~FRA",
+     "userkey": "AIModuleCreate AIC_0015 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9200,7 +8946,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0017)~ENU",
+     "userkey": "AIModuleCreate AIC_0017 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9219,7 +8965,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0017)~FRA",
+     "userkey": "AIModuleCreate AIC_0017 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9238,7 +8984,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0020)~ENU",
+     "userkey": "AIModuleCreate AIC_0020 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9257,7 +9003,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0020)~FRA",
+     "userkey": "AIModuleCreate AIC_0020 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9276,7 +9022,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0200)~ENU",
+     "userkey": "AIModuleCreate AIC_0200 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9295,7 +9041,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0200)~FRA",
+     "userkey": "AIModuleCreate AIC_0200 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9314,7 +9060,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0300)~ENU",
+     "userkey": "AIModuleCreate AIC_0300 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9333,7 +9079,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0300)~FRA",
+     "userkey": "AIModuleCreate AIC_0300 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9352,7 +9098,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0100)~ENU",
+     "userkey": "AIModuleCreate AIC_0100 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9371,7 +9117,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0100)~FRA",
+     "userkey": "AIModuleCreate AIC_0100 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9390,7 +9136,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0700)~ENU",
+     "userkey": "AIModuleCreate AIC_0700 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9409,7 +9155,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0700)~FRA",
+     "userkey": "AIModuleCreate AIC_0700 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9428,7 +9174,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0600)~ENU",
+     "userkey": "AIModuleCreate AIC_0600 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9447,7 +9193,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0600)~FRA",
+     "userkey": "AIModuleCreate AIC_0600 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9466,7 +9212,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0350)~ENU",
+     "userkey": "AIModuleCreate AIC_0350 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9485,7 +9231,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0350)~FRA",
+     "userkey": "AIModuleCreate AIC_0350 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9504,7 +9250,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0400)~ENU",
+     "userkey": "AIModuleCreate AIC_0400 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9523,7 +9269,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0400)~FRA",
+     "userkey": "AIModuleCreate AIC_0400 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9542,7 +9288,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0200)~ENU",
+     "userkey": "AiSettingsProcess ASP-0200 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9561,7 +9307,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0200)~FRA",
+     "userkey": "AiSettingsProcess ASP-0200 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9580,7 +9326,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0400)~ENU",
+     "userkey": "AiSettingsProcess ASP-0400 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9599,7 +9345,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0400)~FRA",
+     "userkey": "AiSettingsProcess ASP-0400 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9618,7 +9364,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0100)~ENU",
+     "userkey": "AiSettingsProcess ASP-0100 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9637,7 +9383,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0100)~FRA",
+     "userkey": "AiSettingsProcess ASP-0100 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9656,7 +9402,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-BEG)~ENU",
+     "userkey": "AiSettingsProcess ASP-BEG English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9675,7 +9421,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-BEG)~FRA",
+     "userkey": "AiSettingsProcess ASP-BEG French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9694,7 +9440,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-END)~ENU",
+     "userkey": "AiSettingsProcess ASP-END English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9713,7 +9459,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-END)~FRA",
+     "userkey": "AiSettingsProcess ASP-END French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9732,7 +9478,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0050)~ENU",
+     "userkey": "AIModuleCreate AIC_0050 English",
      "item": {
       "tsl_object": {
        "item": {
@@ -9751,7 +9497,7 @@
     },
     {
      "object": "TranslateActivity",
-     "userkey": "BPMActivity(AIModuleCreate AIC_0050)~FRA",
+     "userkey": "AIModuleCreate AIC_0050 French",
      "item": {
       "tsl_object": {
        "item": {
@@ -9778,7 +9524,7 @@
    "list": [
     {
      "object": "TranslateProcess",
-     "userkey": "BPMProcess(AiSettingsProcess)~ENU",
+     "userkey": "AiSettingsProcess English",
      "item": {
       "tsl_object": {
        "item": {"pcs_name": "AiSettingsProcess"},
@@ -9794,7 +9540,7 @@
     },
     {
      "object": "TranslateProcess",
-     "userkey": "BPMProcess(AiSettingsProcess)~FRA",
+     "userkey": "AiSettingsProcess French",
      "item": {
       "tsl_object": {
        "item": {"pcs_name": "AiSettingsProcess"},
@@ -9810,7 +9556,7 @@
     },
     {
      "object": "TranslateProcess",
-     "userkey": "BPMProcess(AIGenData)~ENU",
+     "userkey": "AIGenData English",
      "item": {
       "tsl_object": {
        "item": {"pcs_name": "AIGenData"},
@@ -9826,7 +9572,7 @@
     },
     {
      "object": "TranslateProcess",
-     "userkey": "BPMProcess(AIGenData)~FRA",
+     "userkey": "AIGenData French",
      "item": {
       "tsl_object": {
        "item": {"pcs_name": "AIGenData"},
@@ -9842,7 +9588,7 @@
     },
     {
      "object": "TranslateProcess",
-     "userkey": "BPMProcess(AIModuleCreate)~ENU",
+     "userkey": "AIModuleCreate English",
      "item": {
       "tsl_object": {
        "item": {"pcs_name": "AIModuleCreate"},
@@ -9858,7 +9604,7 @@
     },
     {
      "object": "TranslateProcess",
-     "userkey": "BPMProcess(AIModuleCreate)~FRA",
+     "userkey": "AIModuleCreate French",
      "item": {
       "tsl_object": {
        "item": {"pcs_name": "AIModuleCreate"},
@@ -9882,7 +9628,7 @@
    "list": [
     {
      "object": "Dataset",
-     "userkey": "AIBySimplicite~MistralAI_Povider",
+     "userkey": "AIBySimplicite MistralAI_Povider",
      "item": {
       "row_module_id__mdl_name": "AIBySimplicite",
       "dt_name": "MistralAI_Povider",
@@ -9896,7 +9642,7 @@
     },
     {
      "object": "Dataset",
-     "userkey": "AIBySimplicite~OpenAI_Provider",
+     "userkey": "AIBySimplicite OpenAI_Provider",
      "item": {
       "row_module_id__mdl_name": "AIBySimplicite",
       "dt_name": "OpenAI_Provider",
@@ -9918,7 +9664,7 @@
    "list": [
     {
      "object": "Permission",
-     "userkey": "ADMIN~ObjectExternal(AIProcessResource)~",
+     "userkey": "ADMIN AIProcessResource",
      "item": {
       "prm_group_id__grp_name": "ADMIN",
       "prm_object": {
@@ -9938,7 +9684,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_ADMIN~ObjectExternal(AiMonitoring)~",
+     "userkey": "AI_ADMIN AiMonitoring",
      "item": {
       "prm_group_id__grp_name": "AI_ADMIN",
       "prm_object": {
@@ -9958,7 +9704,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_ADMIN~ViewSimple(AIChatVue)~",
+     "userkey": "AI_ADMIN AIChatVue",
      "item": {
       "prm_group_id__grp_name": "AI_ADMIN",
       "prm_object": {
@@ -9978,7 +9724,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_BUSINESS~ObjectExternal(AIChatBot)~",
+     "userkey": "AI_BUSINESS AIChatBot",
      "item": {
       "prm_group_id__grp_name": "AI_BUSINESS",
       "prm_object": {
@@ -9998,7 +9744,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_BUSINESS~ObjectExternal(AIMetricsChat)~",
+     "userkey": "AI_BUSINESS AIMetricsChat",
      "item": {
       "prm_group_id__grp_name": "AI_BUSINESS",
       "prm_object": {
@@ -10018,7 +9764,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_BUSINESS~ShortCut(AIBot)~",
+     "userkey": "AI_BUSINESS AIBot",
      "item": {
       "prm_group_id__grp_name": "AI_BUSINESS",
       "prm_object": {
@@ -10038,7 +9784,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_DESIGNER~Domain(AIDomain)~",
+     "userkey": "AI_DESIGNER AIDomain",
      "item": {
       "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
@@ -10058,7 +9804,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_DESIGNER~ObjectExternal(AIShortcut)~",
+     "userkey": "AI_DESIGNER AIShortcut",
      "item": {
       "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
@@ -10078,7 +9824,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_DESIGNER~ObjectExternal(AIRestAPI)~",
+     "userkey": "AI_DESIGNER AIRestAPI",
      "item": {
       "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
@@ -10098,7 +9844,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_DESIGNER~ObjectExternal(AIPromptTool)~",
+     "userkey": "AI_DESIGNER AIPromptTool",
      "item": {
       "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
@@ -10118,7 +9864,7 @@
     },
     {
      "object": "Permission",
-     "userkey": "AI_DESIGNER~ObjectExternal(AIExpTool)~",
+     "userkey": "AI_DESIGNER AIExpTool",
      "item": {
       "prm_group_id__grp_name": "AI_DESIGNER",
       "prm_object": {
@@ -10146,7 +9892,7 @@
    "list": [
     {
      "object": "PermGroup",
-     "userkey": "AI_DESIGNER~ADMIN~ObjectExternal(AIProcessResource)~",
+     "userkey": "AI_DESIGNER ADMIN AIProcessResource",
      "item": {
       "pmg_group_id__grp_name": "AI_DESIGNER",
       "pmg_perm_id__prm_group_id__grp_name": "ADMIN",
@@ -10157,17 +9903,13 @@
        "userkeylabel": "AIProcessResource",
        "object": "ObjectExternal"
       },
-      "pmg_perm_id__prm_perm": true,
-      "pmg_perm_id__prm_upd": false,
-      "pmg_perm_id__prm_req": false,
       "pmg_perm_id__prm_prop": null,
-      "pmg_perm_id__prm_value": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "PermGroup",
-     "userkey": "AI_DESIGNER~AI_BUSINESS~ShortCut(AIBot)~",
+     "userkey": "AI_DESIGNER AI_BUSINESS AIBot",
      "item": {
       "pmg_group_id__grp_name": "AI_DESIGNER",
       "pmg_perm_id__prm_group_id__grp_name": "AI_BUSINESS",
@@ -10178,17 +9920,13 @@
        "userkeylabel": "AIBot",
        "object": "ShortCut"
       },
-      "pmg_perm_id__prm_perm": true,
-      "pmg_perm_id__prm_upd": false,
-      "pmg_perm_id__prm_req": false,
       "pmg_perm_id__prm_prop": null,
-      "pmg_perm_id__prm_value": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "PermGroup",
-     "userkey": "AI_DESIGNER~AI_BUSINESS~ObjectExternal(AIChatBot)~",
+     "userkey": "AI_DESIGNER AI_BUSINESS AIChatBot",
      "item": {
       "pmg_group_id__grp_name": "AI_DESIGNER",
       "pmg_perm_id__prm_group_id__grp_name": "AI_BUSINESS",
@@ -10199,17 +9937,13 @@
        "userkeylabel": "AIChatBot",
        "object": "ObjectExternal"
       },
-      "pmg_perm_id__prm_perm": true,
-      "pmg_perm_id__prm_upd": false,
-      "pmg_perm_id__prm_req": false,
       "pmg_perm_id__prm_prop": null,
-      "pmg_perm_id__prm_value": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "PermGroup",
-     "userkey": "PUBLIC~AI_BUSINESS~ObjectExternal(AIChatBot)~",
+     "userkey": "PUBLIC AI_BUSINESS AIChatBot",
      "item": {
       "pmg_group_id__grp_name": "PUBLIC",
       "pmg_perm_id__prm_group_id__grp_name": "AI_BUSINESS",
@@ -10220,17 +9954,13 @@
        "userkeylabel": "AIChatBot",
        "object": "ObjectExternal"
       },
-      "pmg_perm_id__prm_perm": true,
-      "pmg_perm_id__prm_upd": false,
-      "pmg_perm_id__prm_req": false,
       "pmg_perm_id__prm_prop": null,
-      "pmg_perm_id__prm_value": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "PermGroup",
-     "userkey": "PUBLIC~AI_DESIGNER~ObjectExternal(AIRestAPI)~",
+     "userkey": "PUBLIC AI_DESIGNER AIRestAPI",
      "item": {
       "pmg_group_id__grp_name": "PUBLIC",
       "pmg_perm_id__prm_group_id__grp_name": "AI_DESIGNER",
@@ -10241,17 +9971,13 @@
        "userkeylabel": "AIRestAPI",
        "object": "ObjectExternal"
       },
-      "pmg_perm_id__prm_perm": true,
-      "pmg_perm_id__prm_upd": false,
-      "pmg_perm_id__prm_req": false,
       "pmg_perm_id__prm_prop": null,
-      "pmg_perm_id__prm_value": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "PermGroup",
-     "userkey": "AI_DESIGNER~AI_ADMIN~ObjectExternal(AiMonitoring)~",
+     "userkey": "AI_DESIGNER AI_ADMIN AiMonitoring",
      "item": {
       "pmg_group_id__grp_name": "AI_DESIGNER",
       "pmg_perm_id__prm_group_id__grp_name": "AI_ADMIN",
@@ -10262,17 +9988,13 @@
        "userkeylabel": "AiMonitoring",
        "object": "ObjectExternal"
       },
-      "pmg_perm_id__prm_perm": true,
-      "pmg_perm_id__prm_upd": false,
-      "pmg_perm_id__prm_req": false,
       "pmg_perm_id__prm_prop": null,
-      "pmg_perm_id__prm_value": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
     {
      "object": "PermGroup",
-     "userkey": "AI_DESIGNER~AI_ADMIN~ViewSimple(AIChatVue)~",
+     "userkey": "AI_DESIGNER AI_ADMIN AIChatVue",
      "item": {
       "pmg_group_id__grp_name": "AI_DESIGNER",
       "pmg_perm_id__prm_group_id__grp_name": "AI_ADMIN",
@@ -10283,11 +10005,7 @@
        "userkeylabel": "AIChatVue",
        "object": "ViewSimple"
       },
-      "pmg_perm_id__prm_perm": true,
-      "pmg_perm_id__prm_upd": false,
-      "pmg_perm_id__prm_req": false,
       "pmg_perm_id__prm_prop": null,
-      "pmg_perm_id__prm_value": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
