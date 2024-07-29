@@ -441,10 +441,12 @@ public class AIData implements java.io.Serializable {
 					if(Tool.isEmpty(filters)){
 						objT.selectForCreate();
 						obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
+						obj.populate(true);
 						objT.validateAndCreate();
 					}else if(!objT.selectForCreateOrUpdate(filters)){
 						obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
 						if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("create object: "+obj.getName()+" with values: "+objectToCreate.objectCreate.toString(1), g);
+						obj.populate(true);
 						objT.validateAndCreate();
 					}
 				}catch(ValidateException e){
