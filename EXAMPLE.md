@@ -85,7 +85,19 @@ A shortcut to a chatbot contextualized according to the form on which it is open
 </details>
 
 <details>
-  <summary>Example 2: Product</summary>
+  <summary>Example 2: Supplier</summary>
+
+  **Prompt:**
+
+  `Quelle est l'adresse de ce fournisseur ?`
+
+  **Explanation:**
+
+  This prompt requests the chatbot to provide the address of a particular supplier.
+</details>
+
+<details>
+  <summary>Example 3: Product</summary>
   
   **Prompt:**
 
@@ -98,7 +110,31 @@ A shortcut to a chatbot contextualized according to the form on which it is open
 </details>
 
 <details>
-  <summary>Example 3: Customers</summary>
+  <summary>Example 4: Product</summary>
+
+  **Prompt:**
+
+  `Résumé moi la description de ce produit.`
+
+  **Explanation:**
+
+  This prompt asks the chatbot to provide a summary of the product description.
+</details>
+
+<details>
+  <summary>Example 5: Product</summary>
+
+  **Prompt:**
+
+  `Quelle promotion pourrait être pertinente à mettre en place sur ce produit ?`
+
+  **Explanation:**
+
+  This prompt asks the chatbot to suggest relevant promotions that could be applied to a specific product.
+</details>
+
+<details>
+  <summary>Example 6: Customers</summary>
   
   **Prompt:**
 
@@ -111,7 +147,7 @@ A shortcut to a chatbot contextualized according to the form on which it is open
 </details>
 
 <details>
-  <summary>Example 4: Order</summary>
+  <summary>Example 7: Order</summary>
   
   **Prompt:**
 
@@ -124,7 +160,7 @@ A shortcut to a chatbot contextualized according to the form on which it is open
 </details>
 
 <details>
-  <summary>Example 5: Order</summary>
+  <summary>Example 8: Order</summary>
   
   **Prompt:**
 
@@ -133,9 +169,18 @@ A shortcut to a chatbot contextualized according to the form on which it is open
   **Explanation:**  
   
   This prompt asks the chatbot to give a brief overview of the details related to a specific order.
+</details>
 
+<details>
+  <summary>Example 9: Order</summary>
 
+  **Prompt:**
 
+  `Que peux-tu me dire du produit de cette commande ?`
+
+  **Explanation:**
+
+  This prompt requests the chatbot to provide details or information about the product associated with a specific order.
 </details>
 
 ---
@@ -204,5 +249,122 @@ Generate AI graphs on a module's data. In a `view`, add an `external page` with 
   This prompt asks for a graph that displays the number of orders for each status (Completed, Pending, Shipped) for the current quarter, providing insight into the current order processing state.
 
 </details>
+<details>
+  <summary>Example 5: Number of Orders per Product</summary>
+  
+  **Prompt:**
+
+  `Crée un graphique à barres montrant le nombre total de commandes pour chaque produit.`
+
+  **Summary:**
+
+  This request asks for a bar chart illustrating the total number of orders placed for each product, providing an overview of the popularity of different products.
+
+</details>
+
+<details>
+  <summary>Example 6: Sales per Product</summary>
+  
+  **Prompt:**
+
+  `Montre-moi un graphique des ventes pour chaque produit.`
+
+  **Summary:**
+
+  This request asks for a chart showing the sales for each product, allowing visualization of the performance of different products in terms of sales.
+
+</details>
+
+<details>
+  <summary>Example 7: Monthly Sales</summary>
+  
+  **Prompt:**
+
+  `Affiche les ventes totales par mois pour cette année.`
+
+  **Summary:**
+
+  This request asks for a chart of the total sales per month for the current year, providing an overview of the monthly sales trends.
+
+</details>
+
+<details>
+  <summary>Example 8: Customer Distribution by Country</summary>
+  
+  **Prompt:**
+
+  `Quels sont les pays où nous avons le plus de clients ?`
+
+  **Summary:**
+
+  This request asks for a chart showing the distribution of customers by country, highlighting the countries with the highest number of customers.
+
+</details>
+
+<details>
+  <summary>Example 9: Order Status</summary>
+  
+  **Prompt:**
+
+  `Quel est le statut de nos commandes ?`
+
+  **Summary:**
+
+  This request asks for a chart showing the current status of orders (e.g., Completed, Pending, Shipped), providing an overview of the current state of orders.
+
+</details>
+
+<details>
+  <summary>Example 10: Products in Stock</summary>
+  
+  **Prompt:**
+
+  `Quels produits avons-nous en stock et en quelles quantités ?`
+
+  **Summary:**
+
+  This request asks for a chart illustrating the products currently in stock and their quantities, allowing for effective inventory management.
+
+</details>
+
+<details>
+  <summary>Example 11: Products by Supplier</summary>
+  
+  **Prompt:**
+
+  `Quels produits proviennent de chaque fournisseur ?`
+
+  **Summary:**
+
+  This request asks for a chart showing the products provided by each supplier, highlighting each supplier's contribution to the total inventory.
+
+</details>
+
+<details>
+  <summary>Example 12: Average Prices per Product</summary>
+  
+  **Prompt:**
+
+  `Quel est le prix moyen de nos produits vendus par client ?`
+
+  **Summary:**
+
+  This request asks for a chart showing the average price of products sold per customer, providing insight into customers' spending habits.
+
+</details>
+
+<details>
+  <summary>Example 13: Evolution of Orders per Customer</summary>
+  
+  **Prompt:**
+
+  `Comment le nombre de commandes par client a-t-il évolué au fil du temps ?`
+
+  **Summary:**
+
+  This request asks for a chart illustrating the evolution of the number of orders per customer over time, allowing for tracking of individual customer purchasing trends.
+
+</details>
+
 
 ---
