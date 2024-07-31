@@ -36,6 +36,7 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			}else{
 				specialisation = params.getParameter("specialisation");
 			}
+			specialisation = specialisation.replace("'","\\'");
 			if(!Tool.isEmpty(specialisation)) return javascript(getName() + ".render(ctn,'"+specialisation+"',\""+AITools.getDataDisclaimer(g)+"\");");
 			
 			return javascript(getName() + ".render(ctn,\"\",\""+AITools.getDataDisclaimer(g)+"\");");
