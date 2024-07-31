@@ -52,7 +52,8 @@ Use AI to co-create or update a module based on your business needs. This featur
   - **Attributes**:
     - `cartID` (String)
     - `creationDate` (Date)
-    - `items` (List of Item)
+  - **links**:
+    - `Products` (List of products)
 ```
 
 </details>
