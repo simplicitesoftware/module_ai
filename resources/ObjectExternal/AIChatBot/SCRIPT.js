@@ -66,7 +66,6 @@ var AIChatBot = AIChatBot || (function() {
 				result = escapeHtml(result);
 				result = $view.markdownToHTML(result).html();
 				result = result.replaceAll("\n","<br>");
-				
 				$(".bot-messages:last-child span").html(result);	
 				
 			}else{

@@ -380,13 +380,13 @@ public class AIModuleCreate extends Processus {
 		return super.preAbandon();
 	}
 	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
-		return getGrant().T("AI_SETTING_NEED");
+		return getGrant().T(AI_SETTING_NEED);
 	}
 	@Override
 	public Message preValidate(ActivityFile context) {
 		if("AIC_0050".equals(context.getActivity().getStep())){
 			context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
-			AppLog.info(context.getDataValue("Return","Code"), getGrant());
+			if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(context.getDataValue("Return","Code"), getGrant());
 		}
 		if(ACTIVITY_CREATE_MODULE.equals(context.getActivity().getStep()) && !displayPrefixWarning){
 			Object prefix = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD); 

@@ -32,12 +32,19 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			String type = params.getParameter(JSON_REQ_TYPE);
 			String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 			JSONObject req = params.getJSONObject();
+			String lang;
 			if (Tool.isEmpty(type)) type = "default";
 			JSONObject swagger = params.has("swagger")?new JSONObject(params.getParameter("swagger")):null;
 			switch (type) { //use switch for future extension
 				case "metrics":
-					String lang = params.getParameter("lang");
+					lang = params.getParameter("lang");
 					return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);
+				case "errorMetricsSolver":
+					String error = params.getParameter("error");
+					lang = params.getParameter("lang");
+					String script = params.getParameter("script");
+					String html = params.getParameter("html");
+					return AiMetrics.recallWithError(prompt, lang, swagger,script,html, error);
 				case "saveMetrics":
 					String mdlName = params.getParameter("moduleName");
 					String function = params.getParameter("function");

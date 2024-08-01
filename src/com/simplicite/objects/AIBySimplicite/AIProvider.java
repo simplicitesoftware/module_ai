@@ -89,7 +89,13 @@ public class AIProvider extends ObjectDB {
 				break;
 			default:
 				fieldJSON.put("ClasicField", true);
-				fieldJSON.put("Type", "text");
+				AppLog.info(fieldsParam.optJSONObject(field,new JSONObject()).toString(1),null);
+				if(fieldsParam.optJSONObject(field,new JSONObject()).optBoolean("private")){
+					fieldJSON.put("Type", "password");
+				}else{
+					fieldJSON.put("Type", "text");
+				}
+				
 				break;
 		}
 		return fieldJSON;

@@ -91,6 +91,10 @@ The `Personal data`, `Confidential data` and `Intimate` fields are not sent to t
 Generating AI graphs on a module's data
 In a `view` add an `external page` of source `External object`: `AIMetricsChat?module=<you_module_name>`
 
+
+For detailed examples on how to generate modules, interact with business chatbots, and visualize metrics, please refer to the example available at the following link:
+[Explore AI Assistant Prompt Examples](https://github.com/simplicitesoftware/module_ai/blob/51425242c08e8f224ecc8d15ebcd80ca8b205d4c/EXAMPLE.md)
+
 `AIProvider` business object definition
 ---------------------------------------
 
@@ -157,6 +161,8 @@ Auomatic model generation process
 
 ### Activities
 
+* `isGlobalParam`: 
+* `Global`: 
 * `SelectProvider`: 
 * `Auth`: 
 * `OtherParam`: 

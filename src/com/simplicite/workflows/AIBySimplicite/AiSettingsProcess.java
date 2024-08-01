@@ -31,25 +31,7 @@ public class AiSettingsProcess extends Processus {
 	@Override
 	public void postActivate() {
 		// If no provider defined automatic import of datasets
-		Grant g = Grant.getSystemAdmin();
-		g.addResponsibility("AI_ADMIN");
-		ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);
-		obj.resetFilters();
-		if(obj.search().isEmpty()){
-			ObjectDB datasets = g.getTmpObject("Dataset");
-			synchronized(datasets.getLock()){
-				datasets.resetFilters();
-				datasets.setFieldFilter("row_module_id", getModuleId());
-				for(String[] row: datasets.search()){
-					datasets.select(row[datasets.getRowIdFieldIndex()]);
-					try {
-						datasets.invokeAction("Dataset-apply");
-					} catch (ActionException e) {
-						AppLog.error(e, g);
-					}
-				}
-			}
-		}
+		AITools.importDatasets(getModuleId());
 		super.postActivate();
 	}
 	public String setAuth(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g) throws MethodException{
@@ -61,6 +43,10 @@ public class AiSettingsProcess extends Processus {
 		context.addDataFile("Data", MODEL_URL_FLD);
 		return (String)obj.invokeMethod("getConfigurationPage", null, null);
 
+	}
+	
+	public String isGlobal(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
+		return getGrant().T("AI_ENV_SETTING");
 	}
 	public String setParams(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g) throws MethodException{
 		ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);
@@ -119,6 +105,11 @@ public class AiSettingsProcess extends Processus {
 	} 
 	@Override
 	public Message preValidate(ActivityFile context) {
+		if("ASP-0050".equals(context.getActivity().getStep())){
+			context.setDataFile("Return","Code", AITools.isConfigurable()?"0":"1");
+			if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(context.getDataValue("Return","Code"), getGrant());
+			return null;
+		}
 		Message m = checkRequiredFields(context);
 		if (m != null)
 			return m;

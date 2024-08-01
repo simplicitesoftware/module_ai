@@ -6,9 +6,10 @@ import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
-
 import com.simplicite.util.*;
 import com.simplicite.util.tools.BusinessObjectTool;
+
+
 import com.simplicite.util.exceptions.*;
 
 import org.json.JSONArray;
@@ -20,6 +21,9 @@ import org.json.JSONArray;
  * Shared code AiMetrics
  */
 public class AiMetrics implements java.io.Serializable {
+	private static final String FR = " in french";
+	private static final String MD_BALISE = "\n```";
+	
 	private static final JSONObject FUNCTIONS = new JSONObject("{" + //
 				"  \"text\": \"T\"," + //
 				"  \"sum\": \"S\"," + //
@@ -50,13 +54,15 @@ public class AiMetrics implements java.io.Serializable {
 	public static JSONObject getJavaScriptMetrics(String prompt, JSONObject swagger , String lang){
 		JSONArray arrayPrompts = new JSONArray();
 		prompt = AITools.normalize(AITools.removeAcent(prompt),false);
-		prompt =  "give me Script js to display: "+prompt+("FRA".equals(lang)?" in french":"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?" in french":"")+". Do not create data use search";
+		prompt =  "give me Script js to display: "+prompt+("FRA".equals(lang)?FR:"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?FR:"")+". Do not create data use search";
 
 		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
 		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
 		JSONObject res = AITools.aiCaller(null, "\n ```OpenAPI "+swagger+"```",arrayPrompts,false,true,true);
+		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("AI response: "+res.toString(), null);
 		JSONObject resultJS = splitRes(AITools.parseJsonResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
-		if (resultJS.has("error")) {
+		
+		if (resultJS.has(AITools.ERROR_KEY)) {
 			res = AITools.aiCaller(null, "You help formulate a prompt for an graph-generating AI. You're called if the ia doesn't understand. ",prompt,false,true);
 			return new JSONObject().put("text",AITools.parseJsonResponse(res));
 		}
@@ -106,7 +112,7 @@ public class AiMetrics implements java.io.Serializable {
 		JSONObject result = new JSONObject();
 		regexJSResult = cleanJs(regexJSResult);
 		if (hasErrorOrDefaultCodeOrData(regexJSResult, regexHTMLResult, schemas)) {
-			result.put("error", "No code or bad data call found in the response.");
+			result.put(AITools.ERROR_KEY, "No code or bad data call found in the response.");
 		}
 		result.put("js", regexJSResult);
 		result.put("html", regexHTMLResult);
@@ -171,7 +177,14 @@ public class AiMetrics implements java.io.Serializable {
 			js = js.replaceAll(regexAppend,"");
 		}
 		
-		return js.replace(".createElement('canvas')",".getElementById('myChart')");
+		js = js.replace(".createElement('canvas')",".getElementById('myChart')");
+		regex = "function\\(\\) ?\\{[\\w\\W]*\\}";
+		pattern = Pattern.compile(regex);
+		matcher = pattern.matcher(js);
+		if (matcher.find()) {
+			js = "("+matcher.group(0)+")();";
+		}
+		return js;
 	}
 	private static boolean hasErrorOrDefaultCodeOrData(String js, String html, JSONObject schemas){
 		if(Tool.isEmpty(js)){
@@ -214,10 +227,10 @@ public class AiMetrics implements java.io.Serializable {
 		StringBuilder spec = new StringBuilder();
 		spec.append("Objects: ```openAPI\n");
 		spec.append(swagger);
-		spec.append("\n```");
+		spec.append(MD_BALISE);
 		spec.append("\n\nchart.js script ```javascript\n");
 		spec.append(js);
-		spec.append("\n```");
+		spec.append(MD_BALISE);
 		JSONObject res = AITools.aiCaller(g, spec.toString(), promptArray, false, true, true);
 		String result = AITools.parseJsonResponse(res);
 		JSONObject jsonRes = AITools.getValidJson(result);
@@ -323,6 +336,39 @@ public class AiMetrics implements java.io.Serializable {
 			}
 		}
 		return null;
+	}
+	public static String recallWithError(String prompt, String lang,JSONObject swagger, String script, String html, String error){
+		JSONArray hist = new JSONArray();
+		
+		JSONArray arrayPrompts = new JSONArray();
+		prompt = AITools.normalize(AITools.removeAcent(prompt),false);
+		prompt =  "give me Script js to display: "+prompt+("FRA".equals(lang)?FR:"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?FR:"")+". Do not create data use search";
+		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
+		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
+		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(arrayPrompts.toString(1), null);
+		hist.put(new JSONObject().put("role","user").put(AITools.CONTENT_KEY,arrayPrompts));
+		String response = "```javascript\n"+script+MD_BALISE+"\n```html\n"+html+MD_BALISE;
+		response = AITools.normalize(response,true);
+		AppLog.info("response: "+response, null);
+		response = response.replace("\\", "\\\\").replace("\n", "\\n");
+		AppLog.info(response, null);
+
+		
+		
+		hist.put(new JSONObject().put("role","assistant").put(AITools.CONTENT_KEY,response));
+		String spe = " ```OpenAPI "+swagger+"```";
+		prompt = "this script is not valid, please correct it.I got this error: "+error+"\n correct only the script response in ```javascript```";
+		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)){
+			AppLog.info("spe: "+spe, null);
+			AppLog.info("prompt: "+prompt, null);
+			AppLog.info("hist: "+hist.toString(1), null);
+		}
+		JSONObject res = AITools.aiCaller(null, spe,prompt,hist,false);
+		if(res.has(AITools.ERROR_KEY)) return res.toString();
+		JSONObject resultJS = splitRes(AITools.parseJsonResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
+		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("res recall: "+resultJS.toString(1), null);
+		
+		return resultJS.toString();
 	}
 	
 }
