@@ -65,7 +65,7 @@ var AIChatBot = AIChatBot || (function() {
 				let result = botResponse.response.choices[0].message.content;
 				result = escapeHtml(result);
 				result = $view.markdownToHTML(result).html();
-				result = result.replaceAll("\n","<br>");
+				//result = result.replaceAll("\n","<br>");
 				
 				$(".bot-messages:last-child span").html(result);	
 				
