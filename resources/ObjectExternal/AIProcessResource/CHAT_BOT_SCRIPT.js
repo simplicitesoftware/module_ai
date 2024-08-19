@@ -32,7 +32,10 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			resizeUp();
 		});
 		// add url to img bootstrap $ui.getApp().getIconURL("icon/color/camera");
-		$("#add-img-icon").attr("src", $ui.getApp().getIconURL("icon/color/camera"));
+		$("#add-img").addClass("fas fa-upload");
+		$("#take-img").addClass("fas fa-camera");
+		/* $("#add-img-icon").attr("src", $ui.getApp().getIconURL("fas/upload"));
+		$("#take-img-icon").attr("src", $ui.getApp().getIconURL("fas/camera")); */
 		botTemplate = $("#botTemplate").html();
 		userTemplate = $("#userTemplate").html();
 		setBotName();
@@ -154,6 +157,12 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		};
 		input.click();
 	}
+	async function takeImage(){
+		let input =await $view.widget.takePicture({title: $T('TAKE_PICT'),facingMode: "environment"});
+		$("#input-img img").attr("src", input);
+		$("#input-img").show();
+		resizeUp();
+	}
 	function setBotName(){
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"BOT_NAME"};
@@ -168,6 +177,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 	return {
 		sendModuleMessage: sendModuleMessage,
 		addImage: addImage,
+		takeImage: takeImage,
 		render: render,
 		resizeUp: resizeUp
 	};
