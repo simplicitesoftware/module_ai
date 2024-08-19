@@ -52,6 +52,13 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 					return saveMetricsAsCrosstable(ctx,swagger,function,mdlName);	
 				case "BOT_NAME":
 					return new JSONObject().put("botName",AITools.getBotName());
+				case "ping":
+					String ping = AITools.pingAI();
+					boolean isSuccess = AITools.PING_SUCCESS.equals(ping);
+					if(isSuccess){
+						ping = Message.formatInfo("AI_SUCCESS_PING",null,null);
+					}
+					return new JSONObject().put("msg",ping);
 				default:
 					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
 						return updateFieldByRequest(req);

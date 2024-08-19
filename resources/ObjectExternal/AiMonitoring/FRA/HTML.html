@@ -25,11 +25,11 @@
         </div>
     </div>
     {{/providerFields.length}}    
-    <div id="ping_banner" class="ping-banner ">
+    <div id="ping_banner" class="ping-banner loading_ping_banner">
+        Ping ...
     </div>
     <script>
-        AiMonitoring.renderPingBannerAndChatBot("{{ping}}");
-
+        AiMonitoring.ping();
     </script>
 </template>    
 

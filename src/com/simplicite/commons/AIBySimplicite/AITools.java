@@ -1120,7 +1120,8 @@ public class AITools implements java.io.Serializable {
         return isAIParam(true);
     }
     public static boolean isAIParam(boolean checkPing){
-        String ping = pingAI();
+        String ping = "";
+        if(checkPing) ping = pingAI();
         return !(Tool.isEmpty(aiApiParam)|| Tool.isEmpty(completionUrl) || (checkPing && (!"/".equals(aiApiParam.optString("ping_url","/")) && !PING_SUCCESS.equals(ping))));
     }
     public static String getBotName(){
@@ -1158,12 +1159,6 @@ public class AITools implements java.io.Serializable {
         );
         newParam.put(PROVIDER_KEY, aiProvider);
         newParam.put("providerFields", specificParam);
-        String ping = pingAI();
-        boolean isSuccess = PING_SUCCESS.equals(ping);
-        if(isSuccess){
-           ping = Message.formatInfo("AI_SUCCESS_PING",null,null);
-        }
-        newParam.put("ping",ping);
         newParam.put("isConfigurable",isConfigurable());
         return newParam;
     }
