@@ -4,9 +4,8 @@ var AIChatBot = AIChatBot || (function() {
 	let botTemplate;
 	let userTemplate;
 	let userName ="user";
-	let ctn;
 	function render(params,spe,dataDisclaimer) {
-		ctn = params[0];
+		let ctn = params[0];
 		botTemplate = $("#botTemplate").html();
 		setBotName();
 		if(app.getGrant().firstname ){
@@ -22,15 +21,19 @@ var AIChatBot = AIChatBot || (function() {
 		specialisation = spe;
 		ctn.querySelector('#chatbot_input_message').addEventListener('keyup', function(event) {
 			if (event.key === 'Enter' && event.target.matches('#chatbot_input_message')) {
-				chatbotSendMessage();
+				chatbotSendMessage(ctn);
 			}
 		});
+		ctn.querySelector('#chatbot_send_button').onclick = function() {
+			AIChatBot.chatbotSendMessage(ctn);
+		};
 
 		
 	}
-	function chatbotSendMessage() {
+	function chatbotSendMessage(ctn) {
 		let userMessage = ctn.querySelector('#chatbot_input_message').value;
 		let chatMessages = ctn.querySelector('#chatbot_messages');
+		desableChatbot(ctn);
 		// Ajoutez ici la logique de votre chatbot pour générer une réponse en fonction de userMessage
 		let historic =[];
 		$(ctn).find(".user-messages").each(function() {
@@ -73,7 +76,7 @@ var AIChatBot = AIChatBot || (function() {
 			}else{
 				$(ctn).find(".bot-messages:last-child span").text("Sorry, an error occurred");
 			}
-				
+			enableChatbot(ctn);
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		 });
 	
@@ -98,6 +101,14 @@ var AIChatBot = AIChatBot || (function() {
 			return true;
 		});
 		return false;
+	}
+	function desableChatbot(ctn){
+		$(ctn).find("#chatbot_send_button").prop("disabled", true);
+		$(ctn).find("#chatbot_input_message").prop("disabled", true);
+	}
+	function enableChatbot(ctn){
+		$(ctn).find("#chatbot_send_button").prop("disabled", false);
+		$(ctn).find("#chatbot_input_message").prop("disabled", false);
 	}
 	return { render: render, chatbotSendMessage: chatbotSendMessage};
 
