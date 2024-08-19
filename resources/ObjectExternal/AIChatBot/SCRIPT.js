@@ -4,8 +4,9 @@ var AIChatBot = AIChatBot || (function() {
 	let botTemplate;
 	let userTemplate;
 	let userName ="user";
-	
+	let ctn;
 	function render(params,spe,dataDisclaimer) {
+		ctn = params[0];
 		botTemplate = $("#botTemplate").html();
 		setBotName();
 		if(app.getGrant().firstname ){
@@ -14,12 +15,12 @@ var AIChatBot = AIChatBot || (function() {
 			userName =app.getGrant().login;
 		}
 		if(dataDisclaimer){
-			$('#data_warn').html(dataDisclaimer);
-			$('#data_warn').show();
+			$(ctn).find('#data_warn').html(dataDisclaimer);
+			$(ctn).find('#data_warn').show();
 		}
 		userTemplate = $("#userTemplate").html();
 		specialisation = spe;
-		document.getElementById('chatbot_input_message').addEventListener('keyup', function(event) {
+		ctn.querySelector('#chatbot_input_message').addEventListener('keyup', function(event) {
 			if (event.key === 'Enter' && event.target.matches('#chatbot_input_message')) {
 				chatbotSendMessage();
 			}
@@ -28,11 +29,11 @@ var AIChatBot = AIChatBot || (function() {
 		
 	}
 	function chatbotSendMessage() {
-		let userMessage = document.getElementById('chatbot_input_message').value;
-		let chatMessages = document.getElementById('chatbot_messages');
+		let userMessage = ctn.querySelector('#chatbot_input_message').value;
+		let chatMessages = ctn.querySelector('#chatbot_messages');
 		// Ajoutez ici la logique de votre chatbot pour générer une réponse en fonction de userMessage
 		let historic =[];
-		$(".user-messages").each(function() {
+		$(ctn).find(".user-messages").each(function() {
 			let text ={};
 			text.role = "user";
 			text.content = $(this).find(".msg").text();
@@ -54,7 +55,7 @@ var AIChatBot = AIChatBot || (function() {
 		let postParams = {prompt:userMessage, specialisation: specialisation, historic: JSON.stringify(historic)}; // post params
 		
 		// Efface le champ de saisie utilisateur
-		document.getElementById('chatbot_input_message').value = '';
+		ctn.querySelector('#chatbot_input_message').value = '';
 	
 		// Faites défiler vers le bas pour afficher les messages les plus récents
 		chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -67,10 +68,10 @@ var AIChatBot = AIChatBot || (function() {
 				result = $view.markdownToHTML(result).html();
 				//result = result.replaceAll("\n","<br>");
 				
-				$(".bot-messages:last-child span").html(result);	
+				$(ctn).find(".bot-messages:last-child span").html(result);	
 				
 			}else{
-				$(".bot-messages:last-child span").text("Sorry, an error occurred");
+				$(ctn).find(".bot-messages:last-child span").text("Sorry, an error occurred");
 			}
 				
 			chatMessages.scrollTop = chatMessages.scrollHeight;
