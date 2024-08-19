@@ -16,7 +16,8 @@
         <div class="input-area">
             <div id="input-img" style="display: none;"><img class="minified-img-chat" alt="" /></div>
             <div id="user-input">
-                <button id="add-img" class="chat-button" onclick="AIWfChatBot.addImage()"><img id="add-img-icon" src="" alt="Add"></button>
+                <button id="add-img" class="chat-button" onclick="AIWfChatBot.addImage()"></button>
+                <button id="take-img" class="chat-button" onclick="AIWfChatBot.takeImage()"></button>
                 <textarea id="module_user_message" class="user-message" placeholder="Type your message..." onkeypress="AIWfChatBot.resizeUp()"></textarea>
                 <button id="send-button" class="chat-button" onclick="AIWfChatBot.sendModuleMessage()" >Send</button>
             </div>
