@@ -131,6 +131,10 @@ public class AiMetrics implements java.io.Serializable {
 		}
 		return Tool.isEmpty(functionName)?"":functionName+"();";
 	}
+	public static JSONObject getReformulatePrompt(String prompt){
+		JSONObject res = AITools.aiCaller(null, "You help formulate a prompt for an graph-generating AI. Responce in language of prompt. With an introductory sentence ",prompt,true,false);
+		return new JSONObject().put("text",AITools.parseJsonResponse(res));
+	}
 	private static String getCanvasHTML(String js) {
 		String regex = "getElementById\\(['\"]([a-zA-Z_$][a-zA-Z\\d_-]*)['\"]\\)\\.getContext\\(['\"].*['\"]\\)";
 		Pattern pattern = Pattern.compile(regex);

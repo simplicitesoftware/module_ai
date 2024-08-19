@@ -1,4 +1,6 @@
 var AiMonitoring = (function() {
+	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+	let useAsync = true; // use async callback pattern
 	function render(params,aiParams) {
 		let templateContent = $('#AiMonitoringTemplate').html();
 		
@@ -15,8 +17,14 @@ var AiMonitoring = (function() {
 		
 		
 	}
+	function ping(){
+		let postParams = {"reqType":"ping"};
+		$ui.getApp()._call(useAsync, url, postParams, function callback(response){
+			renderPingBannerAndChatBot(response.msg);
+		});
+	}
 	function renderPingBannerAndChatBot(msg){
-		
+		console.log(msg);
 		msg = msg.replaceAll("&#x2F;", "/");
 		msg = msg.replaceAll("&#39;", "'");
 		msg = msg.replaceAll("&lt;", "<");
@@ -24,7 +32,8 @@ var AiMonitoring = (function() {
 		let jsonMsg = $ui.getApp().messageToJson(msg);
 		
         let ctn = $("#ping_banner");
-        if(jsonMsg?.level == "I"){
+        ctn.removeClass("loading_ping_banner");
+		if(jsonMsg?.level == "I"){
             ctn.addClass("alert-success");
 			displayChatbot(true);
         }else if(jsonMsg?.level == "W"){
@@ -59,6 +68,6 @@ var AiMonitoring = (function() {
 			$("#panel_AIMonitoring_3").hide();
 		}
 	}
-	return { render: render,renderAINotParam:renderAINotParam,renderPingBannerAndChatBot:renderPingBannerAndChatBot};
+	return { render: render,renderAINotParam:renderAINotParam,ping:ping};
 	
 })();
