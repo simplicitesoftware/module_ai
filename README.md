@@ -46,7 +46,14 @@ To import this module, you have two options:
 ### Configure
 To configure the AI connection, utilize the `configuring the wizard` process in the `AI assistant` domain in extended mode.
 
-Select the model (LLM) you wish to use, configure the API key, and the URL of your API.
+Select the model (LLM) you wish to use, configure the API key, and the URL of your API:
+|Process steps||
+|---|---|
+|![Step 1, Select LLM](resources\Tutorial\Configuring_LMM_API_1_select.png)|1. Domain AI<br>2. Configuration process<br>3. Select the LLM you will use|
+|![Step 2, Set authent](resources\Tutorial\Configuring_LMM_API_2_authentication.png)|4. Set your API key<br>5. If you use a dedied api set the endpoint of your API|
+|![Step 3, Other parameters](resources\Tutorial\Configuring_LMM_API_3_parameters.png)|See help for details<br>6. parametres<br>7. Depends of your LLM |
+|![Step 4, Monitoring of setup](resources\Tutorial\Configuring_LMM_API_4_monitoring.png)|8. recap of setup and ping result<br>9. you can test the chatbot|
+
 
 **Follow the process:**
 
@@ -73,6 +80,16 @@ Maximum number of tokens for technical calls.
 ---
 
 ### wizzard
+
+![UI](resources\Tutorial\AI_utils.png)
+
+1. AI domain
+2. [LLM and API configuration](#configure)
+3. [AI-assisted module creation or completion process](#module-generation)
+4. [Data generation process](#data-generation)
+5. [Chatbot for Business with context](#business-chatbot)
+6. List of LLMs currently configurable. 
+
 #### Module generation
 Use AI to co-create or update a module based on your business needs
 `Module generation` in `AI assistant` domain.
@@ -86,6 +103,20 @@ A shortcut to a chatbot contextualized according to the form on which it is open
 The user must have `AI_BUSINESS` rights.
 The `Personal data`, `Confidential data` and `Intimate` fields are not sent to the AI.
 
+##### Add ui context to chatbot
+The chatbot can be contextualized to the current user's scope, including knowledge of the UI and business rules. To achieve you have to pregenerate the ui and rules description:
+* Open the settings of the scope to which you want to add a context (in the User interface => views => Home page submenu).
+* Go to the tab of the link with `Group gui description`.
+* Create a new `Group gui description` by choosing the desired language.
+* You can refine the description by selecting the groups to be considered for this description (by default, the groups of rights in the scope are taken into account).
+
+![Group gui parameters](resources\Tutorial\ChatBot_configuring_context.png)
+1. The chatbot open in this scope will have UI context
+2. The lang (to get context in the user language)
+3. Auto generated Description of the ui and the rules
+4. The descritpion will contaigne all visible domaine and object for the listed groupe with GUIDescription has yes
+
+**Important: remember to regenerate this description when there are changes to the rights and rules of your objects**
 
 #### Metrics
 Generating AI graphs on a module's data

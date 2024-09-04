@@ -11,7 +11,7 @@ Use AI to co-create or update a module based on your business needs. This featur
 <details>
   <summary>Scenario 1: Hand-Drawn UML of the Training Module</summary>
   
-  ![Hand-Drawn UML](./resources/ReadmeResource/Hand-written_training_module.jpg)
+  ![Hand-Drawn UML](./resources/Example/Hand-written_training_module.jpg)
   
   This example shows a hand-drawn UML diagram representing a training module. It includes basic elements such as classes and relationships.
 
@@ -20,7 +20,7 @@ Use AI to co-create or update a module based on your business needs. This featur
 <details>
   <summary>Scenario 2: Complex UML for an Order Management Application</summary>
   
-  ![Complex UML](./resources/ReadmeResource/Complex_order_application.jpg)
+  ![Complex UML](./resources/Example/Complex_order_application.jpg)
   
   This UML diagram illustrates a more complex application, specifically an order management system.
 
