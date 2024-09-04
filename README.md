@@ -49,10 +49,10 @@ To configure the AI connection, utilize the `configuring the wizard` process in 
 Select the model (LLM) you wish to use, configure the API key, and the URL of your API:
 |Process steps||
 |---|---|
-|![Step 1, Select LLM](resources\Tutorial\Configuring_LMM_API_1_select.png)|1. Domain AI<br>2. Configuration process<br>3. Select the LLM you will use|
-|![Step 2, Set authent](resources\Tutorial\Configuring_LMM_API_2_authentication.png)|4. Set your API key<br>5. If you use a dedied api set the endpoint of your API|
-|![Step 3, Other parameters](resources\Tutorial\Configuring_LMM_API_3_parameters.png)|See help for details<br>6. parametres<br>7. Depends of your LLM |
-|![Step 4, Monitoring of setup](resources\Tutorial\Configuring_LMM_API_4_monitoring.png)|8. recap of setup and ping result<br>9. you can test the chatbot|
+|![Step 1, Select LLM](resources/Tutorial/Configuring_LMM_API_1_select.png)|1. Domain AI<br>2. Configuration process<br>3. Select the LLM you will use|
+|![Step 2, Set authent](resources/Tutorial/Configuring_LMM_API_2_authentication.png)|4. Set your API key<br>5. If you use a dedied api set the endpoint of your API|
+|![Step 3, Other parameters](resources/Tutorial/Configuring_LMM_API_3_parameters.png)|See help for details<br>6. parametres<br>7. Depends of your LLM |
+|![Step 4, Monitoring of setup](resources/Tutorial/Configuring_LMM_API_4_monitoring.png)|8. recap of setup and ping result<br>9. you can test the chatbot|
 
 
 **Follow the process:**
@@ -81,7 +81,7 @@ Maximum number of tokens for technical calls.
 
 ### wizzard
 
-![UI](resources\Tutorial\AI_utils.png)
+![UI](resources/Tutorial/AI_utils.png)
 
 1. AI domain
 2. [LLM and API configuration](#configure)
@@ -110,7 +110,7 @@ The chatbot can be contextualized to the current user's scope, including knowled
 * Create a new `Group gui description` by choosing the desired language.
 * You can refine the description by selecting the groups to be considered for this description (by default, the groups of rights in the scope are taken into account).
 
-![Group gui parameters](resources\Tutorial\ChatBot_configuring_context.png)
+![Group gui parameters](resources/Tutorial/ChatBot_configuring_context.png)
 1. The chatbot open in this scope will have UI context
 2. The lang (to get context in the user language)
 3. Auto generated Description of the ui and the rules
