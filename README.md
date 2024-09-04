@@ -94,6 +94,72 @@ In a `view` add an `external page` of source `External object`: `AIMetricsChat?m
 For detailed examples on how to generate modules, interact with business chatbots, and visualize metrics, please refer to the example available at the following link:
 [Explore AI Assistant Prompt Examples](https://github.com/simplicitesoftware/module_ai/blob/51425242c08e8f224ecc8d15ebcd80ca8b205d4c/EXAMPLE.md)
 
+`AiGroupGuiDesc` business object definition
+-------------------------------------------
+
+
+
+### Fields
+
+| Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
+|--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
+| `aiGgdDescription`                                           | text(50000)                              | yes      |           |          | -                                                                                |
+| `aiGgdViewhomeId` link to **`ViewHome`**                     | id                                       | yes*     | yes       |          | -                                                                                |
+| _Ref. `aiGgdViewhomeId.viw_name`_                            | _char(100)_                              |          |           |          | -                                                                                |
+| `aiGgdLang`                                                  | enum(100) using `LANG` list              | yes*     |           |          | -                                                                                |
+
+### Lists
+
+* `LANG`
+    - `ENU` English language
+    - `FRA` French language
+
+### Custom actions
+
+* `AI_UPDATE_DESC`: 
+* `AI_UPDATE_DESC_GLOBAL`: 
+
+`AiGroupView` business object definition
+----------------------------------------
+
+
+
+### Fields
+
+| Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
+|--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
+| `aiGroupGuiDescId` link to **`AiGroupGuiDesc`**              | id                                       | yes*     | yes       |          | -                                                                                |
+| _Ref. `aiGroupGuiDescId.aiGgdViewhomeId`_                    | _id_                                     |          |           |          | -                                                                                |
+| _Ref. `aiGgdViewhomeId.viw_name`_                            | _char(100)_                              |          |           |          | -                                                                                |
+| _Ref. `aiGroupGuiDescId.aiGgdLang`_                          | _enum(100) using `LANG` list_            |          |           |          | -                                                                                |
+| `aiGroupId` link to **`Group`**                              | id                                       | yes*     | yes       |          | -                                                                                |
+| _Ref. `aiGroupId.grp_name`_                                  | _regexp(100)_                            |          |           |          | -                                                                                |
+| `aiAigroupviewUsed`                                          | boolean                                  | yes      | yes       |          | -                                                                                |
+
+### Lists
+
+* `LANG`
+    - `ENU` English language
+    - `FRA` French language
+
+`AiMetricsHist` business object definition
+------------------------------------------
+
+
+
+### Fields
+
+| Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
+|--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
+| `aiMhSimpleuserId` link to **`User`**                        | id                                       | yes*     | yes       |          | -                                                                                |
+| _Ref. `aiMhSimpleuserId.usr_login`_                          | _regexp(100)_                            |          |           | yes      | _Login_                                                                          |
+| `aiMhCreateOn`                                               | datetime                                 | yes*     | yes       |          | -                                                                                |
+| `aiMhModuleId` link to **`Module`**                          | id                                       | yes*     | yes       |          | -                                                                                |
+| _Ref. `aiMhModuleId.mdl_name`_                               | _regexp(100)_                            |          |           |          | _Module name_                                                                    |
+| `aiMhMetrics`                                                | text(10000)                              |          | yes       |          | -                                                                                |
+| `aiMhPreview`                                                | html(10000)                              |          |           |          | -                                                                                |
+| `aiMhPrompt`                                                 | char(1000)                               |          | yes       |          | -                                                                                |
+
 `AIProvider` business object definition
 ---------------------------------------
 

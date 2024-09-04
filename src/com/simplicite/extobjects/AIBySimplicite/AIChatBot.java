@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
+import com.simplicite.util.exceptions.GetException;
 import com.simplicite.util.tools.*;
 
 import org.json.JSONArray;
@@ -27,17 +28,32 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			addMarkdown();
 			appendCSSInclude(HTMLTool.getResourceCSSURL(g, "AI_STYLE"));
 			setTitle(false);
+			String currentPage = "";
+			AppLog.info("Scope "+getGrant().getHome(), g);
+			String scopeDesc = getScopeDesc(getGrant().getHome());
+			AppLog.info(scopeDesc, g);
+			String specialisation = "";
 			String object  = params.getParameter("object");
 			String rowId = params.getParameter("row_id"); //undefine or null with object context = list
-
-			String specialisation;
-			if(!Tool.isEmpty(object) &&!Tool.isEmpty(rowId) && !"undefined".equals(rowId)){
-				specialisation = getContextFromObject(object,rowId,g).replace("\\\\\"","\\\\\\\\\"").replace("\"","\\\\\"");
+			String context = "";
+			String objectDys=Tool.isEmpty(object)?"":ObjectCore.getDisplay(object, g.getLang());
+			if(!Tool.isEmpty(object) &&!Tool.isEmpty(rowId) && !"undefined".equals(rowId) && !"0".equals(rowId)){
+				
+				currentPage = objectDys+" form\n";
+				context = getContextFromObject(object,rowId,g).replace("\\\\\"","\\\\\\\\\"").replace("\"","\\\\\"");
+				
 			}else{
-				specialisation = params.getParameter("specialisation");
+				if("0".equals(rowId)) currentPage = objectDys+" creation form\n";
+				else if("undefined".equals(rowId)) currentPage = objectDys+" list\n";
+				context = params.getParameter("specialisation");
 			}
-			if(!Tool.isEmpty(specialisation)) specialisation = specialisation.replace("'","\\'");
-			if(!Tool.isEmpty(specialisation)) return javascript(getName() + ".render(ctn,'"+specialisation+"',\""+AITools.getDataDisclaimer(g)+"\");");
+			if(!Tool.isEmpty(currentPage)) currentPage = "\ncurrent page: "+currentPage;
+			if(!Tool.isEmpty(scopeDesc)) specialisation = scopeDesc+currentPage;
+			if(!Tool.isEmpty(context)) specialisation = specialisation+currentPage+"\nDatas:\n" + context;
+			if(!Tool.isEmpty(specialisation)) {
+				specialisation = specialisation.replace("'","\\'").replace("\n", "\\n");
+			 	return javascript(getName() + ".render(ctn,'"+specialisation+"',\""+AITools.getDataDisclaimer(g)+"\");");
+			}
 			
 			return javascript(getName() + ".render(ctn,\"\",\""+AITools.getDataDisclaimer(g)+"\");");
 		}
@@ -46,7 +62,23 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			return e.getMessage();
 		}
 	}
-	
+	private String getScopeDesc(View home){
+		if(home!=null){
+			ObjectDB scopeDesc = getGrant().getTmpObject("AiGroupGuiDesc");
+			synchronized(scopeDesc.getLock()){
+				BusinessObjectTool tool = scopeDesc.getTool();
+				try{
+					tool.select(new JSONObject().put("aiGgdViewhomeId",home.getId()).put("aiGgdLang",getGrant().getLang()));
+					return scopeDesc.getFieldValue("aiGgdDescription");
+				}catch(GetException e){
+					return "";
+				}
+				
+				
+			}
+		}
+		return "";
+	}
 	private String getContextFromObject(String object,String rowId,Grant g){
 		if(Tool.isEmpty(object) || Tool.isEmpty(rowId) || "0".equals(rowId)) return "";
 		ArrayList<String> done = new ArrayList<>();

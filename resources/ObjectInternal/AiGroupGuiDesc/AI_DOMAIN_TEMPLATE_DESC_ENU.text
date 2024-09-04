@@ -1,0 +1,42 @@
+My interface consists of a menu on the left with sections: 
+# Menu
+{{#domains}}
+* `{{name}}` which contains:
+    {{#items}}
+    * {{#isExtended}}Extended {{/isExtended}} {{name}} a {{type}} {{#comment}}
+    	{{{comment}}}{{/comment}}
+    {{/items}}
+{{/domains}}
+Each form has a tabbed area containing a list of linked objects (n-1) at the bottom of the screen. Clicking on a line in the list opens the linked form. This area is hidden in creation.  
+A form is made up of zones containing fields, panel type zones, here write as a table, are tabs. 
+Mandatory fields are **attribute** and optional fields are *attribute*.  
+Special case: for the fields of a linked object brought back into a form zone (a brought-back field is formalised as an object:field), the first field of this object has on the right:
+* A magnifying glass to select the object from the list of existing objects.
+* An arrow to open the linked object form.
+Lists of objects can be searched by field, with push search options:
+* in (‘A’, ‘B’,...)
+* >= == != etc 
+...
+
+# object forms Description:
+
+{{#forms}}
+## {{name}}
+{{#hist}}historic of {{hist}}{{/hist}}
+{{^hist}}
+### Zones
+{{#zones}}
+{{.}}
+{{/zones}}
+
+### linked Objects
+{{#linkedObjects}}
+* Tabs: {{linkedObjects}}
+{{/linkedObjects}}
+{{#rules}}
+### Constraints and rules
+{{rules}}
+{{/rules}}
+{{/hist}}
+{{/forms}}  
+

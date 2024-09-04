@@ -876,20 +876,25 @@ public class AITools implements java.io.Serializable {
     public static JSONObject getSimplifyedSwagger(String moduleName,Grant g) throws PlatformException {
         String[] ids = getObjectIdsModule(moduleName, Grant.getSystemAdmin());
 		String mdlId = ModuleDB.getModuleId(moduleName);
+
 		ObjectDB obj = g.getTmpObject("Module");
-		obj.select(mdlId);
-		ModuleDB module = new ModuleDB(obj);
-		JSONObject swagger = new JSONObject(module.openAPI(JSONTool.OPENAPI_OAS3,true));
-		JSONObject newSchemas = new JSONObject();
-		JSONObject schemas = swagger.getJSONObject(SWAGGER_COMPONENTS).getJSONObject(SWAGGER_SHEMAS);
-		for(String id : ids){
-			String name = ObjectCore.getObjectName(id);
-			newSchemas.put(name, checkFields(schemas.getJSONObject(name), name,g));
-		}
-        return new JSONObject().put(SWAGGER_COMPONENTS,new JSONObject().put(SWAGGER_SHEMAS,newSchemas)); 
+        synchronized(obj.getLock()){
+            obj.resetFilters();
+            obj.select(mdlId);
+            ModuleDB module = new ModuleDB(obj);
+            JSONObject swagger = new JSONObject(module.openAPI(JSONTool.OPENAPI_OAS3,true));
+            JSONObject newSchemas = new JSONObject();
+            JSONObject schemas = swagger.getJSONObject(SWAGGER_COMPONENTS).getJSONObject(SWAGGER_SHEMAS);
+            for(String id : ids){
+                String name = ObjectCore.getObjectName(id);
+                newSchemas.put(name, checkFields(schemas.optJSONObject(name), name,g));
+            }
+            return new JSONObject().put(SWAGGER_COMPONENTS,new JSONObject().put(SWAGGER_SHEMAS,newSchemas)); 
+        }
     }
 
     public static JSONObject checkFields(JSONObject obj, String name, Grant g) {
+        if(Tool.isEmpty(obj)) return obj;
         ObjectDB objDB = g.getTmpObject(name);
         JSONObject properties = obj.getJSONObject("properties");
         for (String key : properties.keySet()) {

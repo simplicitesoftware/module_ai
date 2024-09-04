@@ -1,0 +1,47 @@
+Mon interface consiste en un menu sur la gauche avec des sections : 
+# Menu
+{{#domains}}
+* `{{name}}` qui contient :
+    {{#items}}
+    * {{#isExtended}}Étendu {{/isExtended}} {{name}} un {{type}}{{#comment}}
+    	{{{comment}}}{{/comment}}
+    {{/items}}
+{{/domains}}
+Chaque formulaire a une zonne  avec des onglets contenant des liste d'objets liés (n-1) au bas de l'écran, un clique sur une ligne de la liste ouvre le formulaire lié. Cette zonne est cachée en creation
+Un formulaire est composé de zones contenant des champs
+les zones de type panel, ici écrites comme un tableau, sont des onglets.  
+On note **attribut** les champs obligatoire et *attribut* les champs facultatif. 
+
+
+Cas particulier : pour les champs d'un objet lié rammené dans une zonnes du formulaire (un champ ramené est formalisé comme object:field , l'utilisateur ne vois que field), le premier champ de cet objet a à droite:
+* Une loupe pour selectionner l'objet dans la liste des existants.
+* Une flêche pour ouvrir le formulaire de l'objet lié.
+* si un des champs rammené est clé ils le sont tous.
+
+Les listes d'objets ont une recherche par champs avec des options de recherche pousser :
+* in ('A','B',...)
+* >= == != etc 
+...
+
+# Description des formulaire d'objet:
+
+{{#forms}}
+## {{name}}
+{{#hist}}historique de {{hist}}{{/hist}}
+{{^hist}}
+### Zones
+{{#zones}}
+{{.}}
+{{/zones}}
+
+### Objets liés
+{{#linkedObjects}}
+* Onglets: {{linkedObjects}}
+{{/linkedObjects}}
+{{#rules}}
+### Contraintes et règles
+{{rules}}
+{{/rules}}
+{{/hist}}
+{{/forms}}  
+

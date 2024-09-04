@@ -1,0 +1,17 @@
+{{#isZone}}
+{{tabulation}}* Zone `{{#title}}{{title}}{{/title}}`:
+                {{#visible}}
+{{tabulation}}    *  Visible: {{visible}}
+                {{/visible}}
+                {{#more}}
+{{tabulation}}    *  More: {{more}}
+                {{/more}}
+{{/isZone}}
+{{#isPanel}}
+{{tabulation}}* Panels:
+| Title | Visible | More |
+|---|---|---|
+{{#panels}}
+| **{{#title}}{{title}}{{/title}}** | {{#visible}}{{visible}}{{/visible}} | {{#more}}{{more}}{{/more}} |
+{{/panels}}
+{{/isPanel}}

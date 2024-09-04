@@ -26,6 +26,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	@Override
 	public Object post(Parameters params) throws HTTPException {
 		try {
+			
 			String prompt =params.getParameter(PARAMS_PROMPT_KEY);
 			String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 			String type = params.getParameter(JSON_REQ_TYPE);
@@ -76,7 +77,10 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			AppLog.error(null, e, getGrant());
 			return error(e);
 		}
+		
 	}
+
+
 	private Object frontAiCaller(String objectName, String objectID){
 		ObjectDB obj = Grant.getSystemAdmin().getTmpObject(objectName);
 		JSONArray res = new JSONArray();

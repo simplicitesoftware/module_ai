@@ -8,7 +8,6 @@ import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AIModel;
 import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
-import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 import com.simplicite.webapp.ObjectContextWeb;
 
@@ -320,8 +319,8 @@ public class AIModuleCreate extends Processus {
 		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
 		DataFile dataGroup = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataFile(FIELD, ROW_ID,false);
 		String[] groupIds = Tool.isEmpty(dataGroup)?new String[]{}:dataGroup.getValues();
-
 		String domainId = getContext(getActivity(ACTIVITY_SELECT_DOMAIN)).getDataValue(FIELD, ROW_ID);
+		
 		try{
 			JSONObject jsonObject = AITools.getValidJson(json);
 			if(Tool.isEmpty(jsonObject)){
@@ -340,14 +339,55 @@ public class AIModuleCreate extends Processus {
 				return "<p>"+g.getText("AI_COMPLETED")+"</p><script>" + g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("AI_GEN_MODEL")+"\n"+ "aiGenModel.AINewModel();"+END_SCRIPT;
 			}
 			
-			} catch (GetException | ValidateException | SaveException e) {
+		} catch (Exception e) {
 			AppLog.error(e, g);
-			return "error";
+			Grant admin = Grant.getSystemAdmin();
+			devSaveError(e,groupIds,json,domainId, moduleId,g.getLogin(),admin);
+			return admin.getText("AI_ERROR");
 		}
 		
 		
 	}
-	
+	private void devSaveError(Exception e,String[] groupIds,String json,String domainId, String moduleId,String userLogin,Grant admin){
+		if(!Tool.isEmpty(ModuleDB.getModuleId("DevAIAddon", false))){
+			JSONObject jsonLog = new JSONObject();
+			jsonLog.put("daaLmcUser", userLogin);
+			jsonLog.put("daaLmcAiModuleJson",json);
+			List<String> error = new ArrayList<>();
+			error.add(e.getMessage());
+			for(StackTraceElement trace : e.getStackTrace()){
+				error.add(trace.toString());
+			}
+
+			jsonLog.put("daaLmcError",String.join("\n\t at ", error));
+			jsonLog.put("daaLmcModuleId",moduleId);
+			jsonLog.put("daaLmcDomainId",domainId);
+			ObjectDB obj = admin.getTmpObject("DaaLogModuleCreate");
+			try{
+				synchronized(obj.getLock()){
+					BusinessObjectTool objT = obj.getTool();
+					objT.selectForCreate();
+					obj.setValuesFromJSONObject(jsonLog, false, false);
+					obj.populate(true);
+					objT.validateAndCreate();
+				}
+				String id = obj.getRowId();
+				obj = admin.getTmpObject("DaaLogModuleCreateGroup");
+				synchronized(obj.getLock()){
+					BusinessObjectTool objT = obj.getTool();
+					for(String groupId : groupIds){
+						objT.selectForCreate();
+						obj.setFieldValue("groupId", groupId);
+						obj.setFieldValue("daaLogModuleCreateId", id);
+						obj.populate(true);
+						objT.validateAndCreate();
+					}
+				}
+			}catch(Exception ex){
+				if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)) AppLog.error(ex, admin);
+			}
+		}
+	}
 	private String getAIAnswer(ActivityFile context,Grant g){
 		if (!getActivity(ACTIVITY_AI).isUserDialog()){
 			List<String> result = getJsonAi(getPreviousContext(getPreviousContext(context)).getActivity().getStep(), g);
@@ -581,7 +621,6 @@ public class AIModuleCreate extends Processus {
 			String val="";
 			if (df!=null) val = df.getValue(0);
 			if (df == null || Tool.isEmpty(val)) continue;
-
 			String name = df.getName();
 			if (name.startsWith("tsl"))
 			{

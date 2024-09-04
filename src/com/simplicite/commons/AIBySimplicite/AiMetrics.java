@@ -39,6 +39,7 @@ public class AiMetrics implements java.io.Serializable {
 	"function(){//code exemple to do search on the object myObject witch has a field myField\n"+
 		"const app = $ui.getApp();\n"+
 		"const obj = app.getBusinessObject(\"MyObject\");\n"+
+		"obj.resetFilters();\n"+//reset filters
 		"obj.search(function(items){\n"+
 			"for(let i=0;i<items.length;i++){\n"+
 				"//do something with items[i] \n"+

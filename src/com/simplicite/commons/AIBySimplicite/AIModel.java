@@ -905,12 +905,24 @@ public class AIModel implements java.io.Serializable {
 			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
 		}else if(hasNotCaseSensitibve(jsonFld.optJSONObject(JSON_ENUM_KEY.toLowerCase()), JSON_VALUES_UPPER_KEY, JSON_VALUES_LOWER_KEY) ){
 			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
+		}else{
+			JSONArray values = new JSONArray();
+			String[] defaultVal = {"A","B","C"};
+			String[] defaultColor = {"green", "orange", "red"};
+			for(int i=0;i<defaultVal.length;i++){
+				String val = defaultVal[i];
+				values.put(new JSONObject().put("code",val).put("en",val).put("fr",val).put("color",defaultColor[i]));
+			}
+			completeList(mInfo.moduleId, enumId, values,objName,fldName, g);
 		}
 	}
 	private static boolean hasJsonArray(JSONObject json, String upperkey, String lowerkey){
 		return json.has(upperkey) && json.get(upperkey) instanceof JSONArray || json.has(lowerkey) && json.get(lowerkey) instanceof JSONArray;
 	}
 	private static boolean hasNotCaseSensitibve(JSONObject json, String upperKey, String lowerKey){
+		if(Tool.isEmpty(json)){
+			return false;
+		}
 		return json.has(upperKey) || json.has(lowerKey);
 	}
 	private static void completeList(String moduleId,String listId,JSONArray values,String objName,String fldName,Grant g) throws GetException, ValidateException, UpdateException{

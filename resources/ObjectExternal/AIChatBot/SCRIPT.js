@@ -24,6 +24,8 @@ var AIChatBot = AIChatBot || (function() {
 				chatbotSendMessage(ctn);
 			}
 		});
+
+		console.log("Chatbot initialized focus on input");
 		ctn.querySelector('#chatbot_send_button').onclick = function() {
 			AIChatBot.chatbotSendMessage(ctn);
 		};
@@ -69,8 +71,6 @@ var AIChatBot = AIChatBot || (function() {
 				let result = botResponse.response.choices[0].message.content;
 				result = escapeHtml(result);
 				result = $view.markdownToHTML(result).html();
-				//result = result.replaceAll("\n","<br>");
-				
 				$(ctn).find(".bot-messages:last-child span").html(result);	
 				
 			}else{

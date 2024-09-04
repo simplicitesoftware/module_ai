@@ -31,11 +31,8 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		$(window).resize(function() {
 			resizeUp();
 		});
-		// add url to img bootstrap $ui.getApp().getIconURL("icon/color/camera");
 		$("#add-img").addClass("fas fa-upload");
 		$("#take-img").addClass("fas fa-camera");
-		/* $("#add-img-icon").attr("src", $ui.getApp().getIconURL("fas/upload"));
-		$("#take-img-icon").attr("src", $ui.getApp().getIconURL("fas/camera")); */
 		botTemplate = $("#botTemplate").html();
 		userTemplate = $("#userTemplate").html();
 		setBotName();

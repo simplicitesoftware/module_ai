@@ -1,5 +1,6 @@
 var AIMetricsChat = AIMetricsChat || (function() {
 	const app = $ui.getApp();
+	const histObj = app.getBusinessObject("AiMetricsHist");
 	let botTemplateMetrics = "<div class=\"bot-messages\"><strong>{{botName}}: </strong><span class=\"msg\">...</span></div>";
 	let userTemplateMetrics ="<div class=\"user-messages\"><strong>{{user}}: </strong><span class=\"msg\">{{msg}}</span></div>";
 	let swagger="";
@@ -7,9 +8,13 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	let moduleName = "";
 	let lastScript = "";
 	let lastText ="";
+	let moduleId = "";
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 	let useAsync = true;
-	function render(params,module,s) {
+	function render(params,id,module,s) {
+		displayHist();
+		console.log("Render chat");
+		moduleId = id;
 		// set button text
 		moduleName = module;
 		$('#metrics_user_text').click(function() { showWarn();});
@@ -138,6 +143,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 				lastScript = botResponse.js;
 				
 				$('#metrics_messages .bot-messages:last .msg').text(lastText.replace(/\\n/g, "<br>"));
+				saveHist(botResponse,params.prompt);
 				reOpenChat();
 			}catch(e){
 				console.log("Error on script: "+botResponse.js);
@@ -160,6 +166,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			}
 		}else{
 			lastScript = $("#ia_html script").text();
+			saveHist(botResponse,params.prompt);
 			reOpenChat();
 		}
 		
@@ -176,6 +183,77 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		}
 
 		return true;
+	}
+	function saveHist(botResponse,prompt){
+		
+		let js = botResponse.js;
+		//check if function is auto call
+		if(botResponse.js.indexOf(botResponse.function) == -1) {
+			js+= "\n"+botResponse.function;
+		}
+		histObj.selectForCreate(item=>createHist(item,js,prompt,botResponse));
+	}
+	function createHist(item,js,prompt,botResponse){
+		item.aiMhModuleId = moduleId
+		item.aiMhPreview = botResponse.html 
+		item.aiMhMetrics = js
+		item.aiMhSimpleuserId = ''+$grant.userid+'';
+		item.aiMhPrompt = prompt;
+		histObj.populate(res => histObj.create(c =>addHist(c,document.getElementById("metrics_hist_list")),res),item);
+	}
+	function displayHist(){
+		let histList = document.getElementById("metrics_hist_list");
+		histObj.resetFilters();
+		histObj.getFiltersForSearch(function(filters){
+			filters.aiMhSimpleuserId = ''+$grant.userid+'';
+			filters.order__aiMhCreateOn = 1;
+			filters.order__aiMhSimpleuserId = 0;
+			histObj.search(function(res){
+				for(const item of res){
+					console.log(item);
+					addHist(item, histList);
+				}
+
+			},filters);
+		});
+	}
+	
+	function addHist(res,histList){
+		prompt = res.aiMhPrompt;
+		let htmlListItems = document.createElement('li');
+		htmlListItems.id = "hist_"+res.row_id;
+		let viewicon = document.createElement('i');
+		let deleteicon = document.createElement('i');
+		viewicon.className = "fa fa-eye";
+		viewicon.style.marginLeft = "10px";
+		deleteicon.className = "fa fa-trash";
+		deleteicon.style.marginLeft = "10px";
+		viewicon.onclick = function(){
+			displayHistItem(res.aiMhPreview,res.aiMhMetrics);
+		};
+		deleteicon.onclick = function(){
+			$ui.confirm({title:"Delete historic?",onOk:function(){
+				deleteObj(res.row_id);
+			}});
+				
+		};
+		htmlListItems.innerHTML = prompt;
+		htmlListItems.appendChild(viewicon);
+		htmlListItems.appendChild(deleteicon);
+		histList.insertBefore(htmlListItems, histList.firstChild);
+	}
+	function deleteObj(id){
+		histObj.resetFilters();
+		histObj.getForDelete(function(item){
+			histObj.del(function(res){
+				console.log("Deleted: ",res);
+				$("#hist_"+id).remove();
+			},item,{error:function(err){console.log(err);}});
+		},id,null);
+	}
+	function displayHistItem(html,js){
+		$('#ia_html').html(html);
+		eval(js);
 	}
 	return { render: render ,sendMetricsMessage:sendMetricsMessage,saveAsCrosstable:saveAsCrosstable};
 })();
