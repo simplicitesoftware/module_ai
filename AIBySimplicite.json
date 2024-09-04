@@ -417,6 +417,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT AI_CONFIRM_DEL English",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_CONFIRM_DEL",
+      "lov_lang": "ENU",
+      "lov_value": "Delete this graphic definitively?",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT AI_DISCLAIMER_DATA English",
      "item": {
       "lov_name": "TEXT",
@@ -618,6 +631,19 @@
       "lov_code": "AI_COMPLETED",
       "lov_lang": "FRA",
       "lov_value": "Les modifications ont été apportées à votre module avec succès.",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT AI_CONFIRM_DEL French",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_CONFIRM_DEL",
+      "lov_lang": "FRA",
+      "lov_value": "Supprimer définitivement ce graphique?",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"

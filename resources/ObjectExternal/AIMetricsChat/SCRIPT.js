@@ -23,7 +23,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			let sendText = textes?.AI_BUTTON_SEND ||"Send";
 			let cancelText = textes?.AI_BUTTON_CANCEL || "Cancel";
 			let length = Math.max(sendText.length, cancelText.length);
-			if(!actLabel == "")$("#work .actions").prepend('<button class="btn btn-secondary" type="button" onclick="AIMetricsChat.saveAsCrosstable()"><span>'+actLabel+'</span></button>');
+			if(actLabel != "")$("#work .actions").prepend('<button class="btn btn-secondary" type="button" onclick="AIMetricsChat.saveAsCrosstable()"><span>'+actLabel+'</span></button>');
 			$('.chat-button').css('min-width', length + 'em');
 			$('.user-message').css('width', 'calc(100% - ' + (length + 1) + 'em)');
 			$('#metrics_send_button').text(sendText);
@@ -194,9 +194,9 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		histObj.selectForCreate(item=>createHist(item,js,prompt,botResponse));
 	}
 	function createHist(item,js,prompt,botResponse){
-		item.aiMhModuleId = moduleId
-		item.aiMhPreview = botResponse.html 
-		item.aiMhMetrics = js
+		item.aiMhModuleId = moduleId;
+		item.aiMhPreview = botResponse.html; 
+		item.aiMhMetrics = js;
 		item.aiMhSimpleuserId = ''+$grant.userid+'';
 		item.aiMhPrompt = prompt;
 		histObj.populate(res => histObj.create(c =>addHist(c,document.getElementById("metrics_hist_list")),res),item);
@@ -232,7 +232,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			displayHistItem(res.aiMhPreview,res.aiMhMetrics);
 		};
 		deleteicon.onclick = function(){
-			$ui.confirm({title:"Delete historic?",onOk:function(){
+			$ui.confirm({title:$T('AI_CONFIRM_DEL'),onOk:function(){
 				deleteObj(res.row_id);
 			}});
 				
