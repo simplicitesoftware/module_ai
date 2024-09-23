@@ -232,7 +232,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			displayHistItem(res.aiMhPreview,res.aiMhMetrics);
 		};
 		deleteicon.onclick = function(){
-			$ui.confirm({title:$T('AI_CONFIRM_DEL'),onOk:function(){
+			$ui.confirm({content:$T('AI_CONFIRM_DEL'),onOk:function(){
 				deleteObj(res.row_id);
 			}});
 				

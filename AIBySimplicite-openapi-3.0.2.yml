@@ -59,7 +59,7 @@ components:
           description: Group gui desc id Home page
           type: string
         aiGroupId:
-          description: aiGroupId
+          description: group id ai
           type: string
         aiGroupGuiDescId:
           description: Group gui desc id
@@ -422,7 +422,7 @@ paths:
           type: string
         in: query
         name: aiGroupId
-        description: Search filter for aiGroupId
+        description: Search filter for group id ai
         required: false
       - schema:
           type: string

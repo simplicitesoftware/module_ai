@@ -5,6 +5,9 @@ var AIWfChatBot = AIWfChatBot || (function() {
 	const app = $ui.getApp();
 	let userName ="user";
 	let image_base64 ="";
+	// Params
+	let useAsync = true; // use async callback pattern
+	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 	function resizeUp(){
 		const vh = window.innerHeight * 0.01;
 		const maxHeight = `${45 * vh - 250}px`;
@@ -33,6 +36,8 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		});
 		$("#add-img").addClass("fas fa-upload");
 		$("#take-img").addClass("fas fa-camera");
+		$("#speech").addClass("fas fa-microphone");
+		console.log("Render chat");
 		botTemplate = $("#botTemplate").html();
 		userTemplate = $("#userTemplate").html();
 		setBotName();
@@ -87,9 +92,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		chatMessages.innerHTML += userCompletMessage;
 		chatMessages.innerHTML += botTemplate;
 		$("#send-button").attr("disabled", "disabled");
-		// Params
-		let useAsync = true; // use async callback pattern
-		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+		
 		let prompt =[];
 		prompt.push({"type":"text","text":userMessage});
 		if(userImage){
@@ -171,10 +174,81 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		});
 		return false;
 	}
+	let mediaRecorder;
+	let audioChunks = [];
+	let isCancelled = false;  
+	// Fonction pour démarrer l'enregistrement
+	async function startRecording() {
+		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+		
+		mediaRecorder = new MediaRecorder(stream);
+
+		mediaRecorder.ondataavailable = function(event) {
+			audioChunks.push(event.data);
+		};
+
+		mediaRecorder.onstop = function() {
+			if(!isCancelled){
+				const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+				audioChunks = [];
+				const formData = new FormData();
+				formData.append('file', audioBlob, 'audio.webm');
+				formData.append('reqType', 'audio');
+				convertBlobToBase64(audioBlob).then(function(audio64) {
+					audio64 = audio64.split(",")[1];
+					const jsonData = {
+						file: audio64,
+						reqType: 'audio'
+					};
+					app._call(useAsync, url, jsonData, function callback(botResponse){
+						console.log(botResponse);
+						console.log(botResponse.msg);
+						let json = JSON.parse(botResponse.msg);
+						console.log(json.text);
+						$("#module_user_message").val(json.text);
+					});
+				});
+				
+				
+			}else{
+				isCancelled = false;
+
+			}
+			stream.getTracks().forEach(track => track.stop());
+		};
+
+		mediaRecorder.start();
+	}
+	function convertBlobToBase64(blob) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onloadend = function() {
+				resolve(reader.result);  // Extraire la partie Base64 de la chaîne data URL
+			};
+			reader.onerror = function(error) {
+				reject(error);
+			};
+			reader.readAsDataURL(blob);
+		});
+	}
+	// Fonction pour arrêter l'enregistrement
+	function stopRecording() {
+		mediaRecorder.stop();
+	}
+	
+	function cancelRecording() {
+		isCancelled = true;
+		mediaRecorder.stop();
+	}
+	function getSpeech(){
+		startRecording();
+		$ui.confirm({content:"<i class='fas fa-microphone-on big-icon'></i>", onOk:function(){stopRecording();}, onCancel:function(){cancelRecording();}});
+	}
 	return {
 		sendModuleMessage: sendModuleMessage,
 		addImage: addImage,
 		takeImage: takeImage,
+		getSpeech: getSpeech,
 		render: render,
 		resizeUp: resizeUp
 	};

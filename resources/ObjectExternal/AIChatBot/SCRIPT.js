@@ -25,11 +25,12 @@ var AIChatBot = AIChatBot || (function() {
 			}
 		});
 
+		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('#user-input'),true,true,true);}});
 		console.log("Chatbot initialized focus on input");
 		ctn.querySelector('#chatbot_send_button').onclick = function() {
 			AIChatBot.chatbotSendMessage(ctn);
 		};
-
+		
 		
 	}
 	function chatbotSendMessage(ctn) {
@@ -52,7 +53,7 @@ var AIChatBot = AIChatBot || (function() {
 		// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
 		
 		
-		chatMessages.innerHTML += Mustache.render(userTemplate, {user:userName,ask:userMessage});
+		chatMessages.innerHTML += Mustache.render(userTemplate, {user:userName,msg:userMessage});
 		chatMessages.innerHTML += botTemplate;
 		// Params
 		let useAsync = true; // use async callback pattern
@@ -110,6 +111,7 @@ var AIChatBot = AIChatBot || (function() {
 		$(ctn).find("#chatbot_send_button").prop("disabled", false);
 		$(ctn).find("#chatbot_input_message").prop("disabled", false);
 	}
+
 	return { render: render, chatbotSendMessage: chatbotSendMessage};
 
 })();

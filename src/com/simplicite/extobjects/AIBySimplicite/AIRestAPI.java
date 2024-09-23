@@ -6,6 +6,9 @@ import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
+
+import ch.simschla.minify.cli.App;
+
 import org.json.JSONArray;
 import org.json.JSONObject; 
 
@@ -27,6 +30,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	public Object post(Parameters params) throws HTTPException {
 		try {
 			
+			AppLog.info(params.toString(), getGrant());
 			String prompt =params.getParameter(PARAMS_PROMPT_KEY);
 			String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 			String type = params.getParameter(JSON_REQ_TYPE);
@@ -61,6 +65,11 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 						ping = Message.formatInfo("AI_SUCCESS_PING",null,null);
 					}
 					return new JSONObject().put("msg",ping);
+				case "audio":
+					String audio64 = params.getParameter("file");
+					String text = AITools.speechToText(audio64);
+					AppLog.info(params.toString(), getGrant());
+					return new JSONObject().put("msg",text);
 				default:
 					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
 						return updateFieldByRequest(req);

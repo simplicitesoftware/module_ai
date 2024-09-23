@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
 
+import ch.simschla.minify.cli.App;
+
 
 
 
@@ -1135,16 +1137,76 @@ public class AITools implements java.io.Serializable {
     public static int getHistDepth(){
         return aiHistDepth;
     }
+    public static String speechToText(String audioBase64){
+        Grant g = Grant.getSystemAdmin();
+        String apiUrl = getAIParam("stt_url");
+        if(Tool.isEmpty(apiUrl)){
+            AppLog.info("STT url not set", g);
+            return Message.formatWarning("clasique stt",null,null);
+        }
+        try{
+            URI url = new URI(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=---Boundary");
+            connection.setDoOutput(true);
 
+            // Convertir la chaîne Base64 en octets (décodage)
+            byte[] audioBytes = Base64.getDecoder().decode(audioBase64);
+
+            // Préparer le corps de la requête multipart/form-data
+            try (DataOutputStream request = new DataOutputStream(connection.getOutputStream())) {
+                String boundary = "---Boundary";
+
+                // Ajout du fichier audio
+                request.writeBytes("--" + boundary + "\r\n");
+                request.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"audio.webm\"\r\n");
+                request.writeBytes("Content-Type: audio/webm\r\n\r\n");
+                request.write(audioBytes); // Écrire les octets du fichier audio
+                request.writeBytes("\r\n");
+
+                // Ajout du modèle "whisper-1"
+                request.writeBytes("--" + boundary + "\r\n");
+                request.writeBytes("Content-Disposition: form-data; name=\"model\"\r\n\r\n");
+                request.writeBytes("whisper-1\r\n");
+
+                // Ajout de la langue
+                request.writeBytes("--" + boundary + "\r\n");
+                request.writeBytes("Content-Disposition: form-data; name=\"language\"\r\n\r\n");
+                request.writeBytes("fr\r\n");
+
+                // Fin du multipart/form-data
+                request.writeBytes("--" + boundary + "--\r\n");
+                
+                request.flush();
+            }
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                String res = readResponse(connection, g);
+                AppLog.info("STT success "+res , g);
+                return  res;
+               
+            }else{
+                JSONObject error = readError(connection,responseCode,g);
+                if(Tool.isEmpty(error))
+                    return Message.formatError(AI_PING_ERROR,null,null);
+                return Message.formatError(AI_PING_ERROR,error.optString("code")+": "+error.optString(ERROR_KEY),null);
+            }
+        }catch (IOException | URISyntaxException e) {
+            AppLog.error(e,g);
+            return Message.formatError(AI_PING_ERROR,e.getMessage(),null);
+        }
+    }
     public static JSONObject getParameters(boolean forDisplay,String lang){
         JSONObject params = new JSONObject(aiApiParam,JSONObject.getNames(aiApiParam));
         if(!forDisplay) return params;
         JSONObject defaultParam = new JSONObject(Grant.getSystemAdmin().T("AI_DEFAULT_PARAM"));
-        		JSONArray specificParam = new JSONArray();
+        JSONArray specificParam = new JSONArray();
         JSONObject newParam = new JSONObject();
         JSONArray leftColumn = new JSONArray();
         JSONArray rightColumn = new JSONArray();
-		for(String key: params.keySet()){
+        for(String key: params.keySet()){
             if(API_KEY.equals(key)) continue;
             if(defaultParam.has(key)){
                 JSONObject data = new JSONObject().put("field", key).put("value", getDisplayField(key,params.get(key),defaultParam.optJSONObject(key))).put(LABEL_KEY, optLabel(key,defaultParam,lang));
@@ -1157,7 +1219,7 @@ public class AITools implements java.io.Serializable {
 
                 specificParam.put(new JSONObject().put("key", key).put("value", checkPrivate(params,key)));
             }
-		}
+        }
         newParam.put("columns", new JSONArray()
                                 .put(new JSONObject().put("class",HTML_LEFT_COLUMN_ID).put("fields", leftColumn))
                                 .put(new JSONObject().put("class","right_column").put("fields", rightColumn))
