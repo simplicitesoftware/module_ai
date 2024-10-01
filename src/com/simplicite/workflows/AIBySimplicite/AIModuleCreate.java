@@ -26,7 +26,8 @@ public class AIModuleCreate extends Processus {
 	private static final String ROW_MODULE_ID_FIELD ="row_module_id";
 	private static final String DOMAIN_NAME_FIELD ="obd_name";
 	private static final String ROW_ID ="row_id";
-	private static final String EMPTY_TEXTAREA ="<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;\" id=\"json_return\" name=\"json_return\"></textarea>";
+	private static final String EMPTY_TEXTAREA ="<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\"  name=\"json_return\"></textarea>";
+	private static final String ACE_DIV ="<div id=\"ace_json_return\"></div>";
 	private static final String ACTIVITY_CREATE_MODULE ="AIC_0010";
 	private static final String ACTIVITY_GRANT_USER ="AIC_0020";
 	private static final String ACTIVITY_SELECT_MODULE ="AIC_0100";
@@ -145,7 +146,6 @@ public class AIModuleCreate extends Processus {
 		String html = g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceHTMLContent("CHAT_BOT_MODEL");
 		html = html.replace("{{{script}}}", script);
 		html = html.replace("{{css}}", css);
-		html = html.replace("{{init}}", Globals.LANG_FRENCH.equals(g.getLang())?"Bonjour! Comment puis-je vous aider avec la conception d'applications? Voulez-vous que je vous aide a definir vos besoin ou avez-vous des questions spécifiques sur la conception?":"Hello! How can I help you with application design? Do you want me to help you define your needs or do you have specific questions about design?");
 		html = html.replace("{{botMesage}}", Tool.isEmpty(response)?"":"<div class=\"bot-messages\" id=\"context\"><strong>"+AITools.getBotName()+": </strong><span class=\"msg\">"+response+"</span></div>");
 		return html;
 	}
@@ -175,35 +175,13 @@ public class AIModuleCreate extends Processus {
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
 		String divId = "ace_json_return";
-		String aceEditor ="$ui.loadAceEditor(function(){\n" + //
-						"\t\t\tvar aceEditor = window.ace.edit('"+divId+"');\n" + //
-						"\t\t\taceEditor.setOptions({\n" + //
-						"\t\t\t   enableBasicAutocompletion: true, // the editor completes the statement when you hit Ctrl + Space\n" + //
-						"\t\t\t   enableLiveAutocompletion: true, // the editor completes the statement while you are typing\n" + //
-						"\t\t\t   showPrintMargin: false, // hides the vertical limiting strip\n" + //
-						"\t\t\t   maxLines: 25,\n" + //
-						"\t\t\t   fontSize: \"100%\" // ensures that the editor fits in the environment\n" + //
-						"\t\t\t});\n" + //
-						"\t\t\t\n" + //
-						"\t\t\t// defines the style of the editor\n" + //
-						"\t\t\taceEditor.setTheme(\"ace/theme/eclipse\");\n" + //
-						"\t\t\t// hides line numbers (widens the area occupied by error and warning messages)\n" + //
-						"\t\t\taceEditor.renderer.setOption(\"showLineNumbers\", true); \n" + //
-						"\t\t\t// ensures proper autocomplete, validation and highlighting of JavaScript code\n" + //
-						"\t\t\taceEditor.getSession().setMode(\"ace/mode/json\");\n" + //
-						"\t\t\taceEditor.getSession().setValue($(\"#json_return\").val(), 0);\r\n" + //
-						"\t\t\taceEditor.getSession().on('change', function() {\r\n" + //
-						"\t\t\t\tlet val=aceEditor.getSession().getValue();\r\n" + //
-						"\t\t\t\t$(\"#json_return\").val(val);\r\n" + //
-						"\t\t\t});\n" + //
-						"\t\t\t\n" + //
-						"\t\t});";
+		String aceEditor ="$ui.loadScript({url: $ui.getApp().dispositionResourceURL(\"AiJsTools\", \"JS\"),onload: function(){ AiJsTools.loadResultInAceEditor($('#json_return'),'"+divId+"');}});";
 		if(!AITools.isAIParam(true)) return  g.T(AI_SETTING_NEED);
 		List<String> listResult = getJsonAi( getPreviousContext(context).getActivity().getStep(), g);
-		if(Tool.isEmpty(listResult)) return EMPTY_TEXTAREA+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
+		if(Tool.isEmpty(listResult)) return ACE_DIV+EMPTY_TEXTAREA+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
 		if(listResult.size()!=3)return Message.formatError("AI_ERROR_RETURN", listResult.get(0),null );
 		
-		return "<p>"+listResult.get(0)+"</p>"+"<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\"  name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>"+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
+		return "<p>"+listResult.get(0)+"</p>"+ACE_DIV+"<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\"  name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>"+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
 		
 		
 	}
@@ -425,11 +403,12 @@ public class AIModuleCreate extends Processus {
 	}
 	@Override
 	public Message preValidate(ActivityFile context) {
-		if("AIC_0050".equals(context.getActivity().getStep())){
+		String step = context.getActivity().getStep();
+		if("AIC_0050".equals(step)){
 			context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
 			if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(context.getDataValue("Return","Code"), getGrant());
 		}
-		if(ACTIVITY_CREATE_MODULE.equals(context.getActivity().getStep()) && !displayPrefixWarning){
+		if(ACTIVITY_CREATE_MODULE.equals(step) && !displayPrefixWarning){
 			Object prefix = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD); 
 			ObjectDB obj = getGrant().getTmpObject("Module");
 			synchronized(obj.getLock()){
@@ -450,6 +429,15 @@ public class AIModuleCreate extends Processus {
 			}
 			
 			
+		}else if(ACTIVITY_NEW_SCOPE.equals(step) && !context.getActivity().isUserDialog()){
+				String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, "mdl_name");
+				String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
+				context.setDataFile(FIELD, "viw_name", "Scope"+moduleName);
+				context.setDataFile(FIELD, "viw_type", "H");
+				context.setDataFile(FIELD, ROW_MODULE_ID_FIELD, moduleId);
+			
+		}else if(ACTIVITY_TRL_DOMAIN.equals(step) && !context.getActivity().isUserDialog()){
+			automaticTrlDom(context, getGrant());
 		}
 		return super.preValidate(context);
 	}
@@ -470,7 +458,8 @@ public class AIModuleCreate extends Processus {
 			displayPrefixWarning = false;
 
 		}else if(ACTIVITY_GRANT_USER.equals(step)){
-			boolean isGrantUser ="1".equals(context.getDataValue("Data", "AREA:1")); 
+			boolean isGrantUser =true;
+			if(context.getActivity().isUserDialog())isGrantUser = "1".equals(context.getDataValue("Data", "AREA:1")); 
 			if(isGrantUser){
 				String groupName = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataValue(FIELD, "grp_name");
 				if(Tool.isEmpty(groupName)){
@@ -483,9 +472,58 @@ public class AIModuleCreate extends Processus {
 		}else if(ACTIVITY_TRL_DOMAIN.equals(step)){
 			saveTranslate(context);
 		}else if(ACTIVITY_NEW_SCOPE.equals(step)){
-			scopeGrant(context);
+			scopeGrant(context.getDataValue(FIELD, ROW_ID));
+			if(!context.getActivity().isUserDialog()){
+				String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, "mdl_name");
+				trlScope(context.getDataValue(FIELD, ROW_ID),moduleName);
+			}
 		}
 		super.postValidate(context);
+	}
+	private void trlScope(String scopeId,String moduleName){
+		ObjectDB obj = getGrant().getTmpObject("TranslateView");
+		synchronized(obj.getLock()){
+			try{
+				BusinessObjectTool objTool = obj.getTool();
+				obj.resetFilters();
+				obj.setFieldFilter("tsl_object", "View:"+scopeId);
+				for(String[] row : obj.search()){
+					objTool.selectForUpdate(row[obj.getRowIdFieldIndex()]);
+					if("FRA".equals(row[obj.getFieldIndex("tsl_lang")])){
+						obj.setFieldValue("tsl_value", "Vue "+moduleName);
+					}else{
+						obj.setFieldValue("tsl_value", "Scope "+moduleName);
+					}
+				}
+				objTool.validateAndUpdate();
+			}catch(Exception e){
+				AppLog.error(e, getGrant());
+			}
+		}
+	}
+	private void automaticTrlDom(ActivityFile af, Grant g){
+		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
+		String moduleName = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, "mdl_name");
+		String[] langCodes = g.getLangsCodes();
+		// Domains translations
+		ObjectDB dom = g.getTmpObject(DOMAIN);
+		dom.resetFilters();
+		dom.setFieldFilter(ROW_MODULE_ID_FIELD, moduleId);
+		List<String[]> v = dom.search();
+		for (int j=0; j<v.size(); j++)
+		{
+			dom.setValues(v.get(j), false);
+			for (int i=0; i<langCodes.length; i++)
+			{
+				String lang = langCodes[i];
+				String val = g.simpleQuery(
+					"select tsl_value from m_translate " +
+					"where tsl_object='Domain:"+dom.getRowId()+"' and tsl_lang='"+lang+"'");
+				val+= " "+moduleName;
+				String name = "tsl"+lang+dom.getRowId();
+				addDynamicData(af, name, val);
+			}
+		}
 	}
 	private void grantGroupToDomain(String domainId, String groupId, String moduleId){
 		ObjectDB obj = getGrant().getTmpObject("Permission");
@@ -639,8 +677,7 @@ public class AIModuleCreate extends Processus {
 			}
 		}
 	}
-	private void scopeGrant(ActivityFile context){
-		String scopeId = context.getDataValue(FIELD, ROW_ID);
+	private void scopeGrant(String scopeId){
 		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
 		String groupeId = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataValue(FIELD, ROW_ID);
 		ObjectDB obj = getGrant().getTmpObject("Group");

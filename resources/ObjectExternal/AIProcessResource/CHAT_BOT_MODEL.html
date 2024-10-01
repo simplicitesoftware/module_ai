@@ -3,23 +3,18 @@
 <link rel="stylesheet" type="text/css" href="/resource?code=AI_STYLE&type=CSS"/>
 <style>{{css}}</style>
 
-<template id="botTemplate"><div class="bot-messages"><strong>{{botName}}: </strong><span class="msg">...</span></div></template>
+<template id="botTemplate"><div class="bot-messages"><strong>{{botName}}: </strong><span class="msg"><div class="ai-chat-ellipsis">Chargement</div>
+</span></div></template>
 <template id="userTemplate" ><div class="user-messages"><strong>{{user}}: </strong>{{img}} <span class="msg">{{msg}}</span></div></template>
 
 <div id="AIchatbotProcess">
-    <div id="chat-container">
+    <div class="chat-container">
         <div id="module_chat_messages" class="chat-messages">
-            <div class="bot-first-messages"><strong>{{botName}}: </strong><span class="msg">{{init}}</span></div>
-            {{botMesage}}
-            
+           {{botMesage}} 
         </div>
         <div class="ai-chat-input-area">
             <div id="input-img" style="display: none;"><img class="minified-img-chat" alt="" /></div>
             <div id="user-input">
-                
-                <button id="add-img" class="chat-button" onclick="AIWfChatBot.addImage()"></button>
-                <button id="take-img" class="chat-button" onclick="AIWfChatBot.takeImage()"></button>
-                <button id="speech" class="chat-button" onclick="AIWfChatBot.getSpeech()"></button>
                 <textarea id="module_user_message" class="user-message" placeholder="Type your message..." onkeypress="AIWfChatBot.resizeUp()"></textarea>
                 <button id="send-button" class="chat-button" onclick="AIWfChatBot.sendModuleMessage()" >Send</button>
             </div>

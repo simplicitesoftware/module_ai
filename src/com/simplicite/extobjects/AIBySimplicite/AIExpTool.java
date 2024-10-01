@@ -1,6 +1,10 @@
 package com.simplicite.extobjects.AIBySimplicite;
 
+import java.util.*;
+
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Scalar.String;
 import com.simplicite.util.*;
+import com.simplicite.util.exceptions.ActionException;
 import com.simplicite.util.tools.*;
 /**
  * External object AIExpTool
@@ -16,6 +20,13 @@ public class AIExpTool extends ExternalObject { // or com.simplicite.webapp.web.
 	 */
 	@Override
 	public Object display(Parameters params) {
-		return javascript("alert(\"not front object\")");
+		ObjectDB cli = getGrant().getTmpObject("TnnClient");
+		
+		return javascript("let obj = $grant.getObject(null,'TnnClient');obj.displayList(null, obj, null, function(){$ui.doAction(obj.getAction('TnnOpenTv'),obj);});");
+	
+		//return javascript("alert(\"not front object\")");
 	}
 }
+
+//JS
+

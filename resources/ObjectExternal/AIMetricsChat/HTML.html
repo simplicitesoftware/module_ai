@@ -1,24 +1,26 @@
 <div id="aimetricschat">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <div id="AIchatbotMetrics" class="chat-space">
-        <div id="metrics_messages" class="chat-messages"></div>
-        <div class="ai-chat-input-area">
-            <div id="input-img" style="display: none;"><img class="minified-img-chat" alt="" /></div>
-            <div class="user-input">
-                <input id="metrics_user_text" type="text" class="user-message" placeholder="Type your message...">
-                <button id="metrics_send_button" class="chat-button" onclick="AIMetricsChat.sendMetricsMessage()" >Send</button>
-                <button id="metrics_cancel_button" class="chat-button" >Cancel</button>
+    <div id="graph_area">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <div id="AIchatbotMetrics" class="chat-space">
+            <div id="metrics_messages" class="chat-messages"></div> 
+            <div class="ai-chat-input-area">
+                <div id="input-img" style="display: none;"><img class="minified-img-chat" alt="" /></div>
+                <div class="user-input">
+                        <input id="metrics_user_text" type="text" class="user-message" placeholder="Type your message...">
+                        <button id="metrics_send_button" class="chat-button" onclick="AIMetricsChat.sendMetricsMessage()" >Send</button>
+                        <button id="metrics_cancel_button" class="chat-button" >Cancel</button>
+                </div>
             </div>
+            
         </div>
+        <div id="ia_html" class="result-space"></div>
     </div>
-    <div id="ia_html" class="result-space">
-    </div>
-</div>
-<div id = "hist">
-    <details>
-        <summary>History</summary>
-        <ul id="metrics_hist_list">
+    <div id = "hist" class="history_area">
+        <details>
+            <summary>History</summary>
+            <ul id="metrics_hist_list">
 
-        </ul>
-    </details>
+            </ul>
+        </details>
+    </div>
 </div>

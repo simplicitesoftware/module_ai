@@ -1,53 +1,53 @@
 
 var AIWfChatBot = AIWfChatBot || (function() {
-	let botTemplate;
-	let userTemplate;
 	const app = $ui.getApp();
-	let userName ="user";
-	let image_base64 ="";
 	// Params
 	let useAsync = true; // use async callback pattern
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+	//chat options
+	let addImgVisible = true;
+	let takeImgVisible = true;
+	let SpeechVisible = true;
+	let maxbodyH=null;
 	function resizeUp(){
-		const vh = window.innerHeight * 0.01;
-		const maxHeight = `${45 * vh - 250}px`;
-		const minHeight = `40px`;
-		
-		$("#module_user_message").css("height", minHeight);
-		let textheight = $("#module_user_message").prop('scrollHeight')-5 ;
-		let areaheight = $("#chat-container").height();
-		let imgheight = $("#input-img").is(':hidden')?0: $("#input-img").height();
-		if(textheight >maxHeight-imgheight){
-			textheight = maxHeight-imgheight;
-			
-		}else if(textheight < minHeight){
-			textheight = minHeight;
+		if(!AiJsTools.hasOwnProperty("resizeUp")){
+			console.log("load AiJsTools");
+			$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ 
+				AiJsTools.resizeUp($(".ai-chat-input-area"),$("#module_chat_messages"),maxbodyH);}
+			});
+		}else{
+			console.log("resizeUp");
+			AiJsTools.resizeUp($(".ai-chat-input-area"),$("#module_chat_messages"),maxbodyH);
 		}
-		$("#module_user_message").css("height", textheight);
-		areaheight = areaheight - (textheight +30)-imgheight;
-		$("#module_chat_messages").css("height", areaheight);
 	}
-	
-
 	function render() {
+		console.log("render");
+		$('.btn-action[data-action="AIGenerate"]').attr("disabled", "disabled");
+		let ctn = document.getElementById('AIchatbotProcess');
 		$(".btn-validate").remove();
 		$(window).resize(function() {
 			resizeUp();
 		});
-		$("#add-img").addClass("fas fa-upload");
-		$("#take-img").addClass("fas fa-camera");
-		$("#speech").addClass("fas fa-microphone");
-		console.log("Render chat");
-		botTemplate = $("#botTemplate").html();
-		userTemplate = $("#userTemplate").html();
-		setBotName();
-		
 		if(app.getGrant().firstname ){
 			userName =app.getGrant().firstname;
 		}else{
 			userName =app.getGrant().login;
 		}
-		userTemplate=userTemplate.replace('{{user}}', userName);
+		maxbodyH = $('#AIchatbotProcess').parent().height()
+		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ 
+			AiJsTools.addChatOption(ctn.querySelector('#user-input'),addImgVisible,takeImgVisible,SpeechVisible);
+			let msgs = $('#module_chat_messages');
+			let initMsg;
+			if(msgs.length == 0){
+				initMsg = AiJsTools.getDisplayBotMessage($T("AI_CHAT_HELLO"));
+			}else{
+				initMsg = AiJsTools.getDisplayBotMessage($T("AI_CHAT_RESUME_MODULE"));
+			}
+			initMsg.className = "bot-first-messages";
+			msgs.append(initMsg);
+			
+			
+		}});
 	}
 	function sendModuleMessage() {
 		let userMessage = document.getElementById('module_user_message').value;
@@ -67,7 +67,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			let contents =[];
 			let content = {"type":"text","text":$(this).find(".msg").text()};
 			contents.push(content);
-			let img = $(this).find(".img");
+			let img = $(this).find(".ai-chat-img");
 			if(img.length >0){
 				content = {"type":"image_url","image_url":{"url":img.attr("src")}};
 				contents.push(content);
@@ -80,17 +80,8 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			historic.push(JSON.stringify(text));
 			
 		});
-
-		// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
-		let userCompletMessage =userTemplate.replace('{{msg}}', userMessage.replaceAll("\n","<br>"));
-		if(userImage){
-			userCompletMessage = userCompletMessage.replace('{{img}}', "<img class='img' src='"+userImage+"' >");
-		}else{
-			userCompletMessage = userCompletMessage.replace('{{img}}', "");
-		
-		}
-		chatMessages.innerHTML += userCompletMessage;
-		chatMessages.innerHTML += botTemplate;
+		chatMessages.append(AiJsTools.getDisplayUserMessage($("#AIchatbotProcess")));
+		chatMessages.append(AiJsTools.getDisplayBotMessage());
 		$("#send-button").attr("disabled", "disabled");
 		
 		let prompt =[];
@@ -109,7 +100,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		// Faites défiler vers le bas pour afficher les messages les plus récents
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 		// Call Webservice (POST requests only)
-		
+		$('.btn-action[data-action="AIGenerate"]').attr("disabled", "disabled");
 		app._call(useAsync, url, postParams, function callback(botResponse){
 			let text ={};
 			text.role = "user";
@@ -117,7 +108,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			historic.push(JSON.stringify(text));
 			if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
 				let result = botResponse.response.choices[0].message.content;
-				result = result.replaceAll("\n","<br>");
+				result = $view.markdownToHTML(result).html();
 				$(".bot-messages:last-child span").html(result);
 				
 				text={};
@@ -136,119 +127,14 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			}
 			$("#AI_data").html(JSON.stringify(historic));
 			$("#send-button").removeAttr("disabled");
+			$('.btn-action[data-action="AIGenerate"]').removeAttr('disabled', true);
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		});
 		
 	}
-	function addImage(){
-		let input = document.createElement('input');
-		input.type = 'file';
-		input.accept = 'image/jpeg';
-		input.onchange = function(event) {
-			let file = event.target.files[0];
-			let reader = new FileReader();
-			reader.onload = function(event) {
-				image_base64 = event.target.result;
-				$("#input-img img").attr("src", image_base64);
-				$("#input-img").show();
-				resizeUp();
-			};
-			reader.readAsDataURL(file);
-		};
-		input.click();
-	}
-	async function takeImage(){
-		let input =await $view.widget.takePicture({title: $T('TAKE_PICT'),facingMode: "environment"});
-		$("#input-img img").attr("src", input);
-		$("#input-img").show();
-		resizeUp();
-	}
-	function setBotName(){
-		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
-		let postParams = {"reqType":"BOT_NAME"};
-		app._call(false, url, postParams, function callback(botResponse){
-						let param = botResponse.botName;
-			botTemplate = botTemplate.replace("{{botName}}",param);
-			$("#AIchatbotProcess").html($("#AIchatbotProcess").html().replace("{{botName}}",param));
-			return true;
-		});
-		return false;
-	}
-	let mediaRecorder;
-	let audioChunks = [];
-	let isCancelled = false;  
-	// Fonction pour démarrer l'enregistrement
-	async function startRecording() {
-		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-		
-		mediaRecorder = new MediaRecorder(stream);
-
-		mediaRecorder.ondataavailable = function(event) {
-			audioChunks.push(event.data);
-		};
-
-		mediaRecorder.onstop = function() {
-			if(!isCancelled){
-				const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-				audioChunks = [];
-				const formData = new FormData();
-				formData.append('file', audioBlob, 'audio.webm');
-				formData.append('reqType', 'audio');
-				convertBlobToBase64(audioBlob).then(function(audio64) {
-					audio64 = audio64.split(",")[1];
-					const jsonData = {
-						file: audio64,
-						reqType: 'audio'
-					};
-					app._call(useAsync, url, jsonData, function callback(botResponse){
-						console.log(botResponse);
-						console.log(botResponse.msg);
-						let json = JSON.parse(botResponse.msg);
-						console.log(json.text);
-						$("#module_user_message").val(json.text);
-					});
-				});
-				
-				
-			}else{
-				isCancelled = false;
-
-			}
-			stream.getTracks().forEach(track => track.stop());
-		};
-
-		mediaRecorder.start();
-	}
-	function convertBlobToBase64(blob) {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.onloadend = function() {
-				resolve(reader.result);  // Extraire la partie Base64 de la chaîne data URL
-			};
-			reader.onerror = function(error) {
-				reject(error);
-			};
-			reader.readAsDataURL(blob);
-		});
-	}
-	// Fonction pour arrêter l'enregistrement
-	function stopRecording() {
-		mediaRecorder.stop();
-	}
 	
-	function cancelRecording() {
-		isCancelled = true;
-		mediaRecorder.stop();
-	}
-	function getSpeech(){
-		startRecording();
-		$ui.confirm({content:"<i class='fas fa-microphone-on big-icon'></i>", onOk:function(){stopRecording();}, onCancel:function(){cancelRecording();}});
-	}
 	return {
 		sendModuleMessage: sendModuleMessage,
-		addImage: addImage,
-		takeImage: takeImage,
-		getSpeech: getSpeech,
 		render: render,
 		resizeUp: resizeUp
 	};

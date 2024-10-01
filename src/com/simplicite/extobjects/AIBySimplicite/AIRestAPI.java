@@ -7,8 +7,6 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 
-import ch.simschla.minify.cli.App;
-
 import org.json.JSONArray;
 import org.json.JSONObject; 
 
@@ -29,8 +27,6 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	@Override
 	public Object post(Parameters params) throws HTTPException {
 		try {
-			
-			AppLog.info(params.toString(), getGrant());
 			String prompt =params.getParameter(PARAMS_PROMPT_KEY);
 			String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 			String type = params.getParameter(JSON_REQ_TYPE);
@@ -58,6 +54,8 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 					return AiMetrics.getReformulatePrompt(prompt);
 				case "BOT_NAME":
 					return new JSONObject().put("botName",AITools.getBotName());
+				case "CHECK_SPEECH_RECOGNITION":
+					return new JSONObject().put("isSpeechRecognitionSupported",AITools.checkSpeechRecognition());
 				case "ping":
 					String ping = AITools.pingAI();
 					boolean isSuccess = AITools.PING_SUCCESS.equals(ping);

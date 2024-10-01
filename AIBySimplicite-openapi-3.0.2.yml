@@ -2,7 +2,7 @@
 # / __(_)_ __  _ __| (_)__(_) |_ /_/
 # \__ \ | '  \| '_ \ | / _| |  _/ -_)
 # |___/_|_|_|_| .__/_|_\__|_|\__\___|
-#             |_| Module: AIBySimplicite 0.22
+#             |_| Module: AIBySimplicite 0.23
 components:
   schemas:
     Error404:
@@ -171,6 +171,9 @@ components:
         aiPrvDefaultUrl:
           description: Default url
           type: string
+        aiPrvSttUrl:
+          description: Speech to text endpoint url
+          type: string
         aiPrvPingUrl:
           description: Ping url
           type: string
@@ -181,7 +184,7 @@ components:
           description: Specific parameter
           type: string
         aiPrvCompletionUrl:
-          description: Completion url
+          description: Completion endpoint url
           type: string
         aiPrvHelp:
           description: Key and endpoints help
@@ -1542,13 +1545,19 @@ paths:
           type: string
         in: query
         name: aiPrvCompletionUrl
-        description: Search filter for Completion url
+        description: Search filter for Completion endpoint url
         required: false
       - schema:
           type: string
         in: query
         name: aiPrvPingUrl
         description: Search filter for Ping url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvSttUrl
+        description: Search filter for Speech to text endpoint url
         required: false
       tags:
       - AIProvider
@@ -1562,7 +1571,7 @@ info:
     email: contact@simplicitesoftware.com
   description: API for module AIBySimplicite
   title: AIBySimplicite
-  version: '0.22'
+  version: '0.23'
 tags:
 - name: AiGroupGuiDesc
   description: Group gui description

@@ -21,6 +21,7 @@ public class AiSettingsProcess extends Processus {
 	private static final String PROVIDER_OBJECT = "AIProvider";
 	private static final String COMPLETION_URL_FLD = "aiPrvCompletionUrl";
 	private static final String MODEL_URL_FLD = "aiPrvModelsUrl";
+	private static final String STT_URL_FLD = "aiPrvSttUrl";
 	private static final String FIELD_DATA = "Field";
 	private static final String ROW_ID = "row_id";
 	private static final String PROVIDER_ACT = "ASP-0100";
@@ -41,6 +42,7 @@ public class AiSettingsProcess extends Processus {
 		context.addDataFile("Data", "aiPrvPingUrl");
 		context.addDataFile("Data", COMPLETION_URL_FLD);
 		context.addDataFile("Data", MODEL_URL_FLD);
+		context.addDataFile("Data", STT_URL_FLD);
 		return (String)obj.invokeMethod("getConfigurationPage", null, null);
 
 	}
@@ -162,6 +164,7 @@ public class AiSettingsProcess extends Processus {
 				}
 			}
 			param.put("ping_url",getContext(getActivity(AUTH_ACT)).getDataValue("Data","aiPrvPingUrl"));
+			param.put("stt_url",getContext(getActivity(AUTH_ACT)).getDataValue("Data",STT_URL_FLD));
 			String url = getContext(getActivity(AUTH_ACT)).getDataValue("Data", COMPLETION_URL_FLD);
 			param.put("completion_url",url);
 			String key = getContext(getActivity(AUTH_ACT)).getDataValue("Data", "key");

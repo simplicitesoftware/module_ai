@@ -26,6 +26,7 @@ public class AIProvider extends ObjectDB {
 				.put(getUrlJSON("aiPrvPingUrl",false))
 				.put(getUrlJSON("aiPrvCompletionUrl",true))
 				.put(getUrlJSON("aiPrvModelsUrl",true))
+				.put(getUrlJSON("aiPrvSttUrl", false))
 		);
 		datas.put("help",MarkdownTool.toHTML(getFieldValue("aiPrvHelp")));
 		String html = HTMLTool.getResourceHTMLContent(this,"AISettingsKeyAndEPTemplate");

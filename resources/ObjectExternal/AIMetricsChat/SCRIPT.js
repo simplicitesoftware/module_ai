@@ -1,8 +1,6 @@
 var AIMetricsChat = AIMetricsChat || (function() {
 	const app = $ui.getApp();
 	const histObj = app.getBusinessObject("AiMetricsHist");
-	let botTemplateMetrics = "<div class=\"bot-messages\"><strong>{{botName}}: </strong><span class=\"msg\">...</span></div>";
-	let userTemplateMetrics ="<div class=\"user-messages\"><strong>{{user}}: </strong><span class=\"msg\">{{msg}}</span></div>";
 	let swagger="";
 	let userName = "user";
 	let moduleName = "";
@@ -11,21 +9,47 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	let moduleId = "";
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 	let useAsync = true;
+	let addImgVisible = false;
+	let takeImgVisible = false;
+	let SpeechVisible = true;
+	let defaultSchema = document.createElement('div');
+	defaultSchema.className = "ai-default-schema";
+	defaultSchema.textContent = "your schema will be displayed here";
+	let defaultSchemaDiv = document.createElement('div');
+	defaultSchemaDiv.className = "ai-default-schema-content";
+	defaultSchemaDiv.appendChild(defaultSchema);
 	function render(params,id,module,s) {
+		let ctn = params[0];
+		let printicon = document.createElement('i');
+		let printbutton = document.createElement('button');
+		printbutton.className = "btn btn-secondary";
+		printicon.className = "fa fa-print icon";
+		printbutton.appendChild(printicon);
+		printbutton.onclick = function(){
+			console.log("Print");
+		};
+		let acts = $('.form-actionbar').find('.actions');
+		acts.append(printbutton);
 		displayHist();
-		console.log("Render chat");
 		moduleId = id;
 		// set button text
 		moduleName = module;
 		$('#metrics_user_text').click(function() { showWarn();});
+		
 		app.getTexts(function(textes){
 			let actLabel = textes?.AiSaveAsCrosstableAction||"";
 			let sendText = textes?.AI_BUTTON_SEND ||"Send";
 			let cancelText = textes?.AI_BUTTON_CANCEL || "Cancel";
 			let length = Math.max(sendText.length, cancelText.length);
+			let optionalButtonWidth =0;
+			$(ctn).find(".chat-icon-button").each(function(){
+				console.log("Optional button: "+this);
+				optionalButtonWidth += $(this).outerWidth();
+			});
+			console.log("Optional button length: "+optionalButtonWidth);
 			if(actLabel != "")$("#work .actions").prepend('<button class="btn btn-secondary" type="button" onclick="AIMetricsChat.saveAsCrosstable()"><span>'+actLabel+'</span></button>');
 			$('.chat-button').css('min-width', length + 'em');
-			$('.user-message').css('width', 'calc(100% - ' + (length + 1) + 'em)');
+			$('.user-message').css('width', 'calc(100% - ' + (length + 2) + 'em - '+optionalButtonWidth+'px)');
 			$('#metrics_send_button').text(sendText);
 			$('#metrics_cancel_button').text(cancelText);
 		},null);
@@ -35,8 +59,13 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		}else{
 			userName =app.getGrant().login;
 		}
-		userTemplateMetrics=userTemplateMetrics.replace('{{user}}', userName);
-		setBotName();
+		//userTemplateMetrics=userTemplateMetrics.replace('{{user}}', userName);
+		//setBotName();
+		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('.user-input'),addImgVisible,takeImgVisible,SpeechVisible);}});
+		$(ctn).find(".chat-icon-button").each(function(){
+			$(this).mouseover(function() { showWarn();});
+		});
+		resetChat();
 		$('#metrics_user_text').keypress(function(e) {
 			if (e.which === 13) {
 				sendMetricsMessage();
@@ -61,15 +90,15 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			
 			
 		});
-		$('#ia_html').html('');
+		$('#metrics_messages').append(AiJsTools.getDisplayUserMessage($('#AIchatbotMetrics')));
+		$('#metrics_messages').append(AiJsTools.getDisplayBotMessage());
+		$('#ia_html').html(defaultSchemaDiv);
 		input = $('#metrics_user_text').val();
 		$('#metrics_user_text').val('');
 		$('#metrics_send_button').prop('disabled', true);
 		$('#metrics_send_button').hide();
 		$('#metrics_user_text').prop('disabled', true);
 		let params = {prompt:input, reqType:"metrics",swagger:swagger,lang:app.grant.lang};
-		$('#metrics_messages').append(userTemplateMetrics.replace('{{msg}}',input));
-		$('#metrics_messages').append(botTemplateMetrics);
 		lastText = "";
 		app._call(useAsync, url, params, function callback(botResponse){
 			processResponse(botResponse,true,isCancelled,params);
@@ -82,7 +111,6 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		
 	}
 	function reOpenChat(){
-		console.log("Reopen chat");
 		$('#metrics_user_text').prop('disabled', false);
 		$('#metrics_send_button').show();
 		$('#metrics_send_button').prop('disabled', false);
@@ -91,6 +119,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	}
 	function resetChat(){
 		$('#metrics_messages').html('');
+		$('#ia_html').html(defaultSchemaDiv);
 		reOpenChat();
 	
 	}
@@ -98,6 +127,9 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		app.getTexts(function(textes){
 			$ui.alert(app.getText(textes?.AI_GRAPH_DISCLAIMER, false));
 			$('#metrics_user_text').unbind('click');
+			$('.chat-icon-button').each(function(){
+				$(this).unbind('mouseover');
+			});
 		});
 	}
 	function saveAsCrosstable(){
@@ -109,16 +141,9 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		});
 		
 	}
-	function setBotName(){
-		let postParams = {"reqType":"BOT_NAME"};
-		app._call(false, url, postParams, function callback(botResponse){
-			let param = botResponse.botName;
-			botTemplateMetrics = botTemplateMetrics.replace("{{botName}}",param);
-			return true;
-		});
-		return false;
-	}
+
 	function processResponse(botResponse,recall,isCancelled,params){
+		botResponse.text = $view.markdownToHTML(botResponse.text).html();
 		if(isCancelled){
 			return;
 		}
@@ -142,7 +167,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 				}
 				lastScript = botResponse.js;
 				
-				$('#metrics_messages .bot-messages:last .msg').text(lastText.replace(/\\n/g, "<br>"));
+				$('#metrics_messages .bot-messages:last .msg').html(lastText);
 				saveHist(botResponse,params.prompt);
 				reOpenChat();
 			}catch(e){
@@ -155,11 +180,11 @@ var AIMetricsChat = AIMetricsChat || (function() {
 					params.error = e.toString();
 					params.script = botResponse.js;
 					params.html = botResponse.html;
-					console.log(params);
 					app._call(useAsync, url, params, function callback(botResponse){
 						processResponse(botResponse,false,isCancelled);
 					});
 				}else{
+					console.log("Error on script: "+botResponse.js);
 					$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 					reOpenChat();
 				}
@@ -173,12 +198,13 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	}
 	function hasJS(botResponse){
 		if(botResponse.error !=null || ((botResponse.js == null && !botResponse?.html?.includes("script")))){
+			console.log("Error on script in hasjs: "+botResponse.js);
 			$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 			return false;
 		}
 		
 		if(botResponse.html == null && botResponse.js == null && botResponse.text != null){
-			$('#metrics_messages .bot-messages:last .msg').text(botResponse.text.replace(/\\n/g, "<br>"));
+			$('#metrics_messages .bot-messages:last .msg').html(botResponse.text);
 			return false;
 		}
 
@@ -210,7 +236,6 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			filters.order__aiMhSimpleuserId = 0;
 			histObj.search(function(res){
 				for(const item of res){
-					console.log(item);
 					addHist(item, histList);
 				}
 
@@ -224,22 +249,27 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		htmlListItems.id = "hist_"+res.row_id;
 		let viewicon = document.createElement('i');
 		let deleteicon = document.createElement('i');
+		
 		viewicon.className = "fa fa-eye";
 		viewicon.style.marginLeft = "10px";
 		deleteicon.className = "fa fa-trash";
 		deleteicon.style.marginLeft = "10px";
+		
 		viewicon.onclick = function(){
 			displayHistItem(res.aiMhPreview,res.aiMhMetrics);
 		};
 		deleteicon.onclick = function(){
-			$ui.confirm({content:$T('AI_CONFIRM_DEL'),onOk:function(){
+			let content = $T('AI_CONFIRM_DEL')+"<script>AIMetricsChat.displayHistItemById("+res.row_id+",$('#confirm_ia_chart'))</script>";
+			$ui.confirm({content:content,onOk:function(){
 				deleteObj(res.row_id);
 			}});
 				
 		};
+		
 		htmlListItems.innerHTML = prompt;
 		htmlListItems.appendChild(viewicon);
 		htmlListItems.appendChild(deleteicon);
+		
 		histList.insertBefore(htmlListItems, histList.firstChild);
 	}
 	function deleteObj(id){
@@ -248,12 +278,25 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			histObj.del(function(res){
 				console.log("Deleted: ",res);
 				$("#hist_"+id).remove();
-			},item,{error:function(err){console.log(err);}});
+			},item,{error:function(err){}});
 		},id,null);
 	}
-	function displayHistItem(html,js){
-		$('#ia_html').html(html);
+	function displayHistItem(html,js,ctn){
+		if(ctn == null) ctn = $('#ia_html');
+		ctn.html(html);
 		eval(js);
 	}
-	return { render: render ,sendMetricsMessage:sendMetricsMessage,saveAsCrosstable:saveAsCrosstable};
+	function displayHistItemById(id,ctn){
+		histObj.select(function(item){
+			displayHistItem(item.aiMhPreview,item.aiMhMetrics,ctn);
+		},id);
+		console.log("Display hist item by id: "+id);
+	}
+	
+	return { 
+		render: render,
+		sendMetricsMessage: sendMetricsMessage,
+		saveAsCrosstable: saveAsCrosstable,
+		displayHistItemById: displayHistItemById
+	};
 })();

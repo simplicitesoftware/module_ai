@@ -1,4 +1,5 @@
 package com.simplicite.commons.AIBySimplicite;
+import org.checkerframework.checker.units.qual.t;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -22,9 +23,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
 
 import ch.simschla.minify.cli.App;
-
-
-
 
 
 /**
@@ -1137,12 +1135,22 @@ public class AITools implements java.io.Serializable {
     public static int getHistDepth(){
         return aiHistDepth;
     }
+    public static boolean checkSpeechRecognition(){
+        AppLog.info("Check STT",Grant.getSystemAdmin());
+        if(Tool.isEmpty(getAIParam("stt_url"))){
+            AppLog.info("STT url not set",Grant.getSystemAdmin());
+            AppLog.info("STT url not set");
+            return false;
+        }
+        AppLog.info("STT url set",Grant.getSystemAdmin());
+        return true;
+    }
     public static String speechToText(String audioBase64){
         Grant g = Grant.getSystemAdmin();
         String apiUrl = getAIParam("stt_url");
         if(Tool.isEmpty(apiUrl)){
             AppLog.info("STT url not set", g);
-            return Message.formatWarning("clasique stt",null,null);
+            return Message.formatWarning("Speach to text not set",null,null);
         }
         try{
             URI url = new URI(apiUrl);

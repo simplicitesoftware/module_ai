@@ -1,23 +1,17 @@
 var AIChatBot = AIChatBot || (function() {
 	let specialisation="";
 	const app = $ui.getApp();
-	let botTemplate;
-	let userTemplate;
-	let userName ="user";
+	//addImg,takeImg,Speech
+	let addImgVisible = true;
+	let takeImgVisible = true;
+	let SpeechVisible = true;
+
 	function render(params,spe,dataDisclaimer) {
 		let ctn = params[0];
-		botTemplate = $("#botTemplate").html();
-		setBotName();
-		if(app.getGrant().firstname ){
-			userName =app.getGrant().firstname;
-		}else{
-			userName =app.getGrant().login;
-		}
 		if(dataDisclaimer){
 			$(ctn).find('#data_warn').html(dataDisclaimer);
 			$(ctn).find('#data_warn').show();
 		}
-		userTemplate = $("#userTemplate").html();
 		specialisation = spe;
 		ctn.querySelector('#chatbot_input_message').addEventListener('keyup', function(event) {
 			if (event.key === 'Enter' && event.target.matches('#chatbot_input_message')) {
@@ -25,8 +19,7 @@ var AIChatBot = AIChatBot || (function() {
 			}
 		});
 
-		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('#user-input'),true,true,true);}});
-		console.log("Chatbot initialized focus on input");
+		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('#user-input'),addImgVisible,takeImgVisible,SpeechVisible);}});
 		ctn.querySelector('#chatbot_send_button').onclick = function() {
 			AIChatBot.chatbotSendMessage(ctn);
 		};
@@ -37,7 +30,7 @@ var AIChatBot = AIChatBot || (function() {
 		let userMessage = ctn.querySelector('#chatbot_input_message').value;
 		let chatMessages = ctn.querySelector('#chatbot_messages');
 		desableChatbot(ctn);
-		// Ajoutez ici la logique de votre chatbot pour générer une réponse en fonction de userMessage
+		
 		let historic =[];
 		$(ctn).find(".user-messages").each(function() {
 			let text ={};
@@ -50,18 +43,42 @@ var AIChatBot = AIChatBot || (function() {
 			historic.push(JSON.stringify(text));
 			
 		});
-		// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
 		
-		
-		chatMessages.innerHTML += Mustache.render(userTemplate, {user:userName,msg:userMessage});
-		chatMessages.innerHTML += botTemplate;
 		// Params
-		let useAsync = true; // use async callback pattern
-		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
-		let postParams = {prompt:userMessage, specialisation: specialisation, historic: JSON.stringify(historic)}; // post params
+		let useAsync; // use async callback pattern
+		if(AiJsTools){
+			useAsync = AiJsTools.useAsync;
+		}else{
+			useAsync = true;
+		}
+		let url;
+		if(AiJsTools){
+			url = AiJsTools.url;
+		}else{
+			url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+		}
+		let postParams;
+		if(AiJsTools){
+			postParams =  AiJsTools.getPostParams(ctn,specialisation);
+		}else{
+			postParams = {prompt:userMessage, specialisation: specialisation, historic: JSON.stringify(historic)};
+		}
 		
+		// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat
+		if(AiJsTools){
+			chatMessages.append(AiJsTools.getDisplayUserMessage(ctn));
+			chatMessages.append(AiJsTools.getDisplayBotMessage());	
+		}
+
+
+
 		// Efface le champ de saisie utilisateur
-		ctn.querySelector('#chatbot_input_message').value = '';
+		if(AiJsTools){
+			AiJsTools.resetInput(ctn.querySelector('.ai-chat-input-area'));
+		}else{
+			ctn.querySelector('#chatbot_input_message').value = '';
+		}
+		
 	
 		// Faites défiler vers le bas pour afficher les messages les plus récents
 		chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -93,7 +110,7 @@ var AIChatBot = AIChatBot || (function() {
 		};
 		return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 	}
-	function setBotName(){
+/* 	function setBotName(){
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"BOT_NAME"};
 		app._call(false, url, postParams, function callback(botResponse){
@@ -102,7 +119,7 @@ var AIChatBot = AIChatBot || (function() {
 			return true;
 		});
 		return false;
-	}
+	} */
 	function desableChatbot(ctn){
 		$(ctn).find("#chatbot_send_button").prop("disabled", true);
 		$(ctn).find("#chatbot_input_message").prop("disabled", true);

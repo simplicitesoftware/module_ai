@@ -176,6 +176,7 @@ For detailed examples on how to generate modules, interact with business chatbot
 | `aiPrvHelp`                                                  | text(5000)                               |          | yes       |          | -                                                                                |
 | `aiPrvCompletionUrl`                                         | url(100)                                 | yes      | yes       |          | -                                                                                |
 | `aiPrvPingUrl`                                               | url(100)                                 |          | yes       |          | -                                                                                |
+| `aiPrvSttUrl`                                                | url(100)                                 |          | yes       |          | -                                                                                |
 
 `AIGenData` business process definition
 ---------------------------------------
