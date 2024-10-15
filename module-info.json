@@ -4,6 +4,6 @@
     "format": "json",
     "files": ["AIBySimplicite.json"],
     "repository": {"origin": {"uri": "https://github.com/simplicitesoftware/module_ai.git"}},
-    "version": "0.23",
+    "version": "0.24",
     "platform": "6.1.10"
 }
