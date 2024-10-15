@@ -29,9 +29,7 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			appendCSSInclude(HTMLTool.getResourceCSSURL(g, "AI_STYLE"));
 			setTitle(false);
 			String currentPage = "";
-			AppLog.info("Scope "+getGrant().getHome(), g);
 			String scopeDesc = getScopeDesc(getGrant().getHome());
-			AppLog.info(scopeDesc, g);
 			String specialisation = "";
 			String object  = params.getParameter("object");
 			String rowId = params.getParameter("row_id"); //undefine or null with object context = list

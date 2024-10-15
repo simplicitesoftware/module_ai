@@ -52,7 +52,6 @@ public class AIGenData extends Processus {
 		String divId = "ace_json_return";
 		String aceEditor ="$ui.loadScript({url: $ui.getApp().dispositionResourceURL(\"AiJsTools\", \"JS\"),onload: function(){ AiJsTools.loadResultInAceEditor($('#json_return'),'"+divId+"');}});";
 		String moduleId = getContext(getActivity("GGD_0100")).getDataValue("Field", "mdl_name");
-		AppLog.info("moduleId : "+moduleId, getGrant());
 		if(Tool.isEmpty(moduleId)) return "<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\" name=\"json_return\"></textarea>"+"<script>"+aceEditor+"</script>";
 		JSONObject response = AIData.genDataForModule(moduleId,getGrant());
 		if(response.has("error")) return response.getString("error");

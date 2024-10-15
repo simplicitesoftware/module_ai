@@ -1,5 +1,4 @@
 package com.simplicite.commons.AIBySimplicite;
-import org.checkerframework.checker.units.qual.t;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -21,8 +20,6 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
-
-import ch.simschla.minify.cli.App;
 
 
 /**
@@ -76,6 +73,7 @@ public class AITools implements java.io.Serializable {
     private static final String ROW_MLD_ID = "row_module_id";
 
     public static final String PING_SUCCESS = "200";
+    private static final String STT_URL_ERROR = "STT url not set";
 
     private static  JSONObject aiApiParam =getOptAiApiParam();
     private static final boolean IS_ENV_SETUP =  !Tool.isEmpty(System.getenv(SYSPARAM_AI_API_PARAM));
@@ -1136,27 +1134,25 @@ public class AITools implements java.io.Serializable {
         return aiHistDepth;
     }
     public static boolean checkSpeechRecognition(){
-        AppLog.info("Check STT",Grant.getSystemAdmin());
         if(Tool.isEmpty(getAIParam("stt_url"))){
-            AppLog.info("STT url not set",Grant.getSystemAdmin());
-            AppLog.info("STT url not set");
+            AppLog.info(STT_URL_ERROR,Grant.getSystemAdmin());
+            AppLog.info(STT_URL_ERROR);
             return false;
         }
-        AppLog.info("STT url set",Grant.getSystemAdmin());
         return true;
     }
     public static String speechToText(String audioBase64){
         Grant g = Grant.getSystemAdmin();
         String apiUrl = getAIParam("stt_url");
         if(Tool.isEmpty(apiUrl)){
-            AppLog.info("STT url not set", g);
+            AppLog.info(STT_URL_ERROR, g);
             return Message.formatWarning("Speach to text not set",null,null);
         }
         try{
             URI url = new URI(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+            connection.setRequestProperty(AUTH_PROPERTY, AUTH_PREFIX + apiKey);
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=---Boundary");
             connection.setDoOutput(true);
 
@@ -1191,9 +1187,7 @@ public class AITools implements java.io.Serializable {
             }
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                String res = readResponse(connection, g);
-                AppLog.info("STT success "+res , g);
-                return  res;
+                return  readResponse(connection, g);
                
             }else{
                 JSONObject error = readError(connection,responseCode,g);

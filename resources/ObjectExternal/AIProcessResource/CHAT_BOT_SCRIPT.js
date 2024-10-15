@@ -28,14 +28,9 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		$(window).resize(function() {
 			resizeUp();
 		});
-		if(app.getGrant().firstname ){
-			userName =app.getGrant().firstname;
-		}else{
-			userName =app.getGrant().login;
-		}
 		maxbodyH = $('#AIchatbotProcess').parent().height()
 		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ 
-			AiJsTools.addChatOption(ctn.querySelector('#user-input'),addImgVisible,takeImgVisible,SpeechVisible);
+			AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);
 			let msgs = $('#module_chat_messages');
 			let initMsg;
 			if(msgs.length == 0){

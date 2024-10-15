@@ -19,7 +19,7 @@ var AIChatBot = AIChatBot || (function() {
 			}
 		});
 
-		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('#user-input'),addImgVisible,takeImgVisible,SpeechVisible);}});
+		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);}});
 		ctn.querySelector('#chatbot_send_button').onclick = function() {
 			AIChatBot.chatbotSendMessage(ctn);
 		};
@@ -110,16 +110,6 @@ var AIChatBot = AIChatBot || (function() {
 		};
 		return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 	}
-/* 	function setBotName(){
-		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
-		let postParams = {"reqType":"BOT_NAME"};
-		app._call(false, url, postParams, function callback(botResponse){
-			let param = botResponse.botName;
-			botTemplate = Mustache.render(botTemplate, {botName:param});
-			return true;
-		});
-		return false;
-	} */
 	function desableChatbot(ctn){
 		$(ctn).find("#chatbot_send_button").prop("disabled", true);
 		$(ctn).find("#chatbot_input_message").prop("disabled", true);

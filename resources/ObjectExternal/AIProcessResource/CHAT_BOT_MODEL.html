@@ -13,8 +13,8 @@
            {{botMesage}} 
         </div>
         <div class="ai-chat-input-area">
-            <div id="input-img" style="display: none;"><img class="minified-img-chat" alt="" /></div>
-            <div id="user-input">
+            <div id="input-img" style="display: none;"><img class="minified-img-chat" alt="" /><button class="fa fa-times chat-icon-button" onclick="AiJsTools.removeimg(this)"></button></div>
+            <div class="ai-user-input">
                 <textarea id="module_user_message" class="user-message" placeholder="Type your message..." onkeypress="AIWfChatBot.resizeUp()"></textarea>
                 <button id="send-button" class="chat-button" onclick="AIWfChatBot.sendModuleMessage()" >Send</button>
             </div>

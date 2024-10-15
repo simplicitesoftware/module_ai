@@ -354,12 +354,7 @@ public class AiMetrics implements java.io.Serializable {
 		hist.put(new JSONObject().put("role","user").put(AITools.CONTENT_KEY,arrayPrompts));
 		String response = "```javascript\n"+script+MD_BALISE+"\n```html\n"+html+MD_BALISE;
 		response = AITools.normalize(response,true);
-		AppLog.info("response: "+response, null);
 		response = response.replace("\\", "\\\\").replace("\n", "\\n");
-		AppLog.info(response, null);
-
-		
-		
 		hist.put(new JSONObject().put("role","assistant").put(AITools.CONTENT_KEY,response));
 		String spe = " ```OpenAPI "+swagger+"```";
 		prompt = "this script is not valid, please correct it.I got this error: "+error+"\n correct only the script response in ```javascript```";

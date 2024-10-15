@@ -29,7 +29,6 @@ public class AIMetricsChat extends com.simplicite.util.ExternalObject {
 				return javascript("$ui.alert("+Message.formatError("AI_MODULE_ERROR", null,null)+")");
 			}
 			JSONObject swagger = AITools.getSimplifyedSwagger(moduleName, g);
-			AppLog.info("Module: "+moduleName+" swagger : "+swagger.toString(), g);
 			String swaggerString = new JSONObject().put("components",new JSONObject().put("schemas",swagger.optJSONObject("components").optJSONObject("schemas"))).toString();
 			swaggerString = swaggerString.replace("\\", "\\\\").replace("\"", "\\\"");
 			return javascript(getName() + ".render(ctn,'"+ModuleDB.getModuleId(moduleName)+"','"+moduleName+"','"+swaggerString+"');");

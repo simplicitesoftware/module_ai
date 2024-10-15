@@ -119,7 +119,7 @@
       "mod_doc": {
        "path": "files/Model/Model-AIModuleCreate.svg",
        "mime": "image/svg+xml",
-       "name": "Model-AIModuleCreate.svg"
+       "name": "model.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-AIModuleCreate.png",
@@ -407,6 +407,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT AI_BUTTON_STOP_RECORDING English",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_BUTTON_STOP_RECORDING",
+      "lov_lang": "ENU",
+      "lov_value": "Stop",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT AI_CHAT_HELLO English",
      "item": {
       "lov_name": "TEXT",
@@ -602,6 +615,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT AI_RECORDING_TITLE English",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_RECORDING_TITLE",
+      "lov_lang": "ENU",
+      "lov_value": "Recording in progress",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT AI_SETTING_NEED English",
      "item": {
       "lov_name": "TEXT",
@@ -699,6 +725,19 @@
       "lov_code": "AI_BUTTON_SEND",
       "lov_lang": "FRA",
       "lov_value": "Envoyer",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT AI_BUTTON_STOP_RECORDING French",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_BUTTON_STOP_RECORDING",
+      "lov_lang": "FRA",
+      "lov_value": "Stop",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -933,6 +972,19 @@
       "lov_code": "AI_PING_ERROR",
       "lov_lang": "FRA",
       "lov_value": "Erreur rencontrée lors du ping:",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT AI_RECORDING_TITLE French",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_RECORDING_TITLE",
+      "lov_lang": "FRA",
+      "lov_value": "Enregistrement en cours",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -2873,7 +2925,7 @@
       "obo_exportorder": null,
       "obo_distinct": false,
       "obo_indexable": false,
-      "obo_groupby": false,
+      "obo_groupby": null,
       "obo_dfltref": null,
       "obo_template_id__tpl_name": "AiGroupGuiDesc",
       "obo_tpl_list_id__tpl_name": null,
@@ -2889,13 +2941,13 @@
       "obo_useform": true,
       "obo_title": null,
       "obo_icon": "img/system/group",
-      "obo_refcount": false,
-      "obo_tree": false,
+      "obo_refcount": null,
+      "obo_tree": null,
       "obo_viewmode": "T",
       "obo_historic": null,
       "obo_printable": true,
       "obo_followlink": true,
-      "obo_mergeable": false,
+      "obo_mergeable": null,
       "obo_social": ["1"],
       "obo_rowid_id__fld_name": null,
       "obo_extend_id__obj_name": null,
@@ -2926,7 +2978,7 @@
       "obo_sortable": true,
       "obo_list_areas": null,
       "obo_minifiable": "M",
-      "obo_minified": false,
+      "obo_minified": null,
       "obo_permalink": null,
       "obo_btn_searchform": true
      }
@@ -5701,7 +5753,7 @@
       "acy_max_duration": null,
       "acy_duration_unit": null,
       "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
+      "acy_user_dlg": false,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -5720,7 +5772,7 @@
       "acy_max_duration": null,
       "acy_duration_unit": null,
       "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
+      "acy_user_dlg": false,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -5739,7 +5791,7 @@
       "acy_max_duration": null,
       "acy_duration_unit": null,
       "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
+      "acy_user_dlg": false,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },

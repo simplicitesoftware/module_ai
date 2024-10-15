@@ -66,7 +66,6 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 				case "audio":
 					String audio64 = params.getParameter("file");
 					String text = AITools.speechToText(audio64);
-					AppLog.info(params.toString(), getGrant());
 					return new JSONObject().put("msg",text);
 				default:
 					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){

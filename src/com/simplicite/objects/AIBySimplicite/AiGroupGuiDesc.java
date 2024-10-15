@@ -170,7 +170,6 @@ public class AiGroupGuiDesc extends ObjectDB {
 			JSONObject item = getItemDesc(mi,g);
 			if(!Tool.isEmpty(item))items.put(item);
 		}
-		AppLog.info(menuItems.get(0).getDomainDisplay(g.getLang())+" "+items.toString(1),g);
 		return new JSONObject().put("name",menuItems.get(0).getDomainDisplay(g.getLang())).put("items",items);
 	}
 	private JSONObject getItemDesc(MenuItem mi,Grant g){
@@ -202,7 +201,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 		}else if(mi.isView()){
 			item.put("type","view");
 		}else{
-			AppLog.info(mi.toJSON(g),g);
+			
 			AppLog.info("Unknown type for "+mi.getObjectDisplay(g.getLang())+" "+mi.getType(),g);
 			item.put("type","unknown");
 		}

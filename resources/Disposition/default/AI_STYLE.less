@@ -38,6 +38,7 @@
 	max-height: 55vh;
 	resize: none;
 	border: #e2e2e2;
+	min-height: 40px;
 } 
 .chat-button {
 	padding: 5px ;
@@ -105,23 +106,46 @@
 	  width: 1em;
 	  text-align: left;
 	}
-  }
-  
-  @keyframes dots {
+}  
+@keyframes dots {
 	0% {
-	  content: ''; // Pas de point au début
+		content: ''; // Pas de point au début
 	}
 	25% {
-	  content: '.'; // Un seul point
+		content: '.'; // Un seul point
 	}
 	50% {
-	  content: '..'; // Deux points
+		content: '..'; // Deux points
 	}
 	75% {
-	  content: '...'; // Trois points
+		content: '...'; // Trois points
 	}
 	100% {
-	  content: ''; // Retour à vide pour boucler
+		content: ''; // Retour à vide pour boucler
 	}
-  }
+}
+.ai-user-input {
+	height: 40px;
+	display: flex;
+	padding: 5px;
+	min-height: 40px;
+}
+.ai-microphone-ellipsis{
+	
+	display: inline-block;
+	color: red; // Couleur initiale de l'icône
+	animation: blink 1s steps(1, start) infinite; // Animation répétée en boucle
+
+	@keyframes blink {
+		0% {
+			color: red; // Icône rouge
+		}
+		50% {
+			color: black; // Icône noire
+		}
+		100% {
+			color: red; // Icône rouge
+		}
+	}
+}
   

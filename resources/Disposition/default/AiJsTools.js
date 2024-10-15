@@ -4,9 +4,9 @@ var AiJsTools = AiJsTools || (function() {
 	let app = $ui.getApp();
 	let isSpeechRecognitionSupported = null;
 	
-	botName= "SimpliBot";
+	let botName= "SimpliBot";
 	getBotName();
-	userName = app.getGrant().login;
+	let userName = app.getGrant().login;
 	if(app.getGrant().firstname ){
 		userName =app.getGrant().firstname;
 	}
@@ -24,42 +24,39 @@ var AiJsTools = AiJsTools || (function() {
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"CHECK_SPEECH_RECOGNITION"};
 		await app._call(false, url, postParams, function callback(botResponse){
-			console.log(botResponse+" && "+botResponse.isSpeechRecognitionSupported,(botResponse && botResponse.isSpeechRecognitionSupported));
-			if (botResponse && botResponse.isSpeechRecognitionSupported) {
-				isSpeechRecognitionSupported =  botResponse.isSpeechRecognitionSupported;
-			}else{
-				isSpeechRecognitionSupported = false;
-			}
-			
+			isSpeechRecognitionSupported = botResponse?.isSpeechRecognitionSupported ?? false;
 		});
 	}
-	function addButton(ctn, id) {
-        let htmlButton = document.createElement('button');
+	function addButton(ctn, id,onclick, fa_icon, title) {
+		let htmlButton = document.createElement('button');
         htmlButton.id = id;
+		htmlButton.className = "chat-icon-button fas "+fa_icon;
+		htmlButton.onclick = onclick;
+		htmlButton.title = title;
+		ctn.insertBefore(htmlButton, ctn.querySelector('.user-message'));
+
+	}
+	function defaultButton(ctn, id) {
         switch (id) {
             case "add-img":
-                htmlButton.className = "chat-icon-button fas fa-upload";
-                htmlButton.onclick = function() {
+				addButton(ctn,"add-img",function() {
                     AiJsTools.addImage(this.parentElement);
-                };
-				htmlButton.title =$T("AI_ICON_ADD_IMG");
+                },"fa-upload",$T("AI_ICON_ADD_IMG"));
                 break;
             case "take-img":
-                htmlButton.className = "chat-icon-button fas fa-camera";
-                htmlButton.onclick = function() {
+				addButton(ctn,"take-img",function() {
                     AiJsTools.takeImage(this.parentElement);
-                };
-				htmlButton.title =$T("AI_ICON_TAKE_IMG");
+                }, "fa-camera",$T("AI_ICON_TAKE_IMG"));
                 break;
             case "speech":
-                htmlButton.className = "chat-icon-button fas fa-microphone";
-                htmlButton.onclick = function() {
+				addButton(ctn,"speech",function() {
                     AiJsTools.getSpeech(this);
-                };
-				htmlButton.title =$T("AI_ICON_SPEECH");
+                }, "fa-microphone",$T("AI_ICON_SPEECH"));
                 break;
+			default:
+				
+				break;
         }
-        ctn.insertBefore(htmlButton, ctn.firstChild);
     }
 	
     async function addChatOption(ctn,addImg,takeImg,Speech){
@@ -67,19 +64,19 @@ var AiJsTools = AiJsTools || (function() {
 			console.log("ctn is null");
 			return;
 		}
+
+		ctn.querySelector(".chat-button").innerHTML = $T("AI_BUTTON_SEND");
 		
-        await checkSpeechRecognitionSupported();		
+        await checkSpeechRecognitionSupported();
+		if(addImg){
+            defaultButton(ctn,"add-img");
+        }
+		if(takeImg){
+            defaultButton(ctn,"take-img");
+        }
 		if(Speech && isSpeechRecognitionSupported){
-			addButton(ctn,"speech");
+			defaultButton(ctn,"speech");
 		}
-        if(takeImg){
-            addButton(ctn,"take-img");
-        }
-        if(addImg){
-            addButton(ctn,"add-img");
-        }
-		
-		
 		$(window).resize(function() {
 			resizeUp($(ctn).parent(),$(ctn).parent().parent().find(".chat-messages"));
 		});
@@ -92,12 +89,12 @@ var AiJsTools = AiJsTools || (function() {
 		inputCtn = $(inputCtn);
 		let input = document.createElement('input');
 		input.type = 'file';
-		input.accept = 'image/jpeg';
+		input.accept = 'image/jpeg, image/png';
 		input.onchange = function(event) {
 			let file = event.target.files[0];
 			let reader = new FileReader();
 			reader.onload = function(event) {
-				image_base64 = event.target.result;
+				let image_base64 = event.target.result;
 				inputCtn.parent().find("#input-img img").attr("src", image_base64);
 				inputCtn.parent().find("#input-img").show();
 				resizeUp(inputCtn.parent(),inputCtn.parent().parent().find(".chat-messages"));
@@ -122,10 +119,8 @@ var AiJsTools = AiJsTools || (function() {
 	function resizeUp(inputArea, messagesArea,maxbodyH) {
 		if(!inputArea || !messagesArea){console.log("resizeUp: ctn is null");return;}
 		let bodyH = messagesArea.closest(".card-body").height();
-		console.log("resizeUp: bodyH: "+bodyH+" maxbodyH: "+maxbodyH);
 		if (maxbodyH && bodyH > maxbodyH) {
 			bodyH = maxbodyH;
-			console.log("resizeUp max exept: bodyH: "+bodyH+" maxbodyH: "+maxbodyH);
 		}
 		let container = messagesArea.parent();
 		if(!isContainerFollowedByDiv(container)){
@@ -139,22 +134,20 @@ var AiJsTools = AiJsTools || (function() {
 		usermsg.css("height", minHeight);
 		let textheight = usermsg.prop('scrollHeight');
 		let isScrollbarVisible = textheight > usermsg.innerHeight();
-		console.log("scrollbar visible: "+isScrollbarVisible+": scorllH" + textheight + " innerH: "+usermsg.innerHeight());
 		if (!isScrollbarVisible) {
 			
 			textheight = usermsg.innerHeight();
 		}
 		let areaheight = messagesArea.parent().height();
-        imgCtn =inputArea.find("#input-img");
+        let imgCtn =inputArea.find("#input-img");
 		let imgheight = imgCtn.is(':hidden')?0: (imgCtn.height());
-		console.log("minH "+ minHeight+"> textheight: "+textheight+"< maxH: "+maxHeight+" - imgheight: "+imgheight);
 		if(textheight >maxHeight-imgheight){
 			textheight = maxHeight-imgheight;
 		}else if(textheight < minHeight){
 			textheight = minHeight;
 		}
 		usermsg.innerHeight(textheight);
-		for (butCtn of inputArea.find(".chat-icon-button")){
+		for (let butCtn of inputArea.find(".chat-icon-button")){
 			$(butCtn).css("height", textheight);
 		}
 		inputArea.find("#send-button").css("height", textheight);
@@ -164,18 +157,7 @@ var AiJsTools = AiJsTools || (function() {
 		messagesArea.css("height", areaheight);
 		
 	}
-/* 	function getdisplayUserMessage(ctn,userName,userTemplate){
-	    inputCtn=$(ctn).find(".ai-chat-input-area");
-	    let userMessage = inputCtn.find(".user-message").val();
-	    let userImage = inputCtn.find("#input-img img").attr("src");
-	    if(userImage){
-	        userImage = "<img class='ai-chat-img' src='"+userImage+"' >";
-	    }else{
-	        userImage = "";
-	    }
-	    params = {user:userName,msg:userMessage,img:userImage};
-	    return Mustache.render(userTemplate, params);
-	} */
+
 	function resetInput(ctn){
 		ctn = $(ctn);
 		ctn.find(".user-message").val("");
@@ -204,7 +186,7 @@ var AiJsTools = AiJsTools || (function() {
 			historic.push(JSON.stringify(text));
 			
 		});
-		inputCtn=$(ctn).find(".ai-chat-input-area");
+		let inputCtn=$(ctn).find(".ai-chat-input-area");
 	    let userMessage = inputCtn.find(".user-message").val();
 		let userImage = inputCtn.find("#input-img img").attr("src");
 		let prompt =[];
@@ -237,18 +219,7 @@ var AiJsTools = AiJsTools || (function() {
 				formData.append('file', audioBlob, 'audio.webm');
 				formData.append('reqType', 'audio');
 				convertBlobToBase64(audioBlob).then(function(audio64) {
-					audio64 = audio64.split(",")[1];
-					const jsonData = {
-						file: audio64,
-						reqType: 'audio'
-					};
-					app._call(useAsync, url, jsonData, function callback(botResponse){
-						console.log(botResponse.msg);
-						let json = JSON.parse(botResponse.msg);
-						console.log(json.text);
-						messageCtn.val(json.text);
-						messageCtn.focus();
-					});
+					callSTTAi(messageCtn, audio64);
 				});
 				
 				
@@ -261,6 +232,18 @@ var AiJsTools = AiJsTools || (function() {
 
 		mediaRecorder.start();
 	}
+	function callSTTAi(messageCtn, audio64) {
+		audio64 = audio64.split(",")[1];
+		const jsonData = {
+			file: audio64,
+			reqType: 'audio'
+		};
+		app._call(useAsync, url, jsonData, function callback(botResponse){
+			let json = JSON.parse(botResponse.msg);
+			messageCtn.val(json.text);
+			messageCtn.focus();
+		});
+	}
 	function convertBlobToBase64(blob) {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
@@ -268,7 +251,7 @@ var AiJsTools = AiJsTools || (function() {
 				resolve(reader.result);  // Extraire la partie Base64 de la chaîne data URL
 			};
 			reader.onerror = function(error) {
-				reject(error);
+				reject(new Error(error));
 			};
 			reader.readAsDataURL(blob);
 		});
@@ -284,11 +267,50 @@ var AiJsTools = AiJsTools || (function() {
 	}
 	function getSpeech(inputCtn){
 		startRecording(inputCtn);
-		$ui.confirm({content:"<i class='fas fa-microphone-on big-icon'></i>", onOk:function(){stopRecording();}, onCancel:function(){cancelRecording();}});
+		disableUi(inputCtn);
+	}
+	function removeimg(ctn){
+		ctn = $(ctn).parent();
+		ctn.find("img").removeAttr("src");
+		ctn.hide();
+		ctn = ctn.parent();
+		resizeUp(ctn,ctn.parent().find(".chat-messages"));
+	}
+	function disableUi(inputCtn){
+		let messageCtn = $(inputCtn).parent().find(".user-message");
+		let sendButton = $(inputCtn).parent().find(".chat-button");
+		$(sendButton).prop('disabled', true);
+		messageCtn.val( $T("AI_RECORDING_TITLE"));
+		messageCtn.prop('readonly', true);
+		inputCtn.className = "chat-icon-button fas fa-microphone ai-microphone-ellipsis";
+		inputCtn.title = $T("AI_RECORDING_TITLE");
+		addButton(inputCtn.parentElement,"cancel-recording",function() {
+			cancelRecording();
+			resetButtons(inputCtn, messageCtn, sendButton);
+		},"fa-times",$T("AI_CANCEL_RECORDING"));
+		addButton(inputCtn.parentElement,"stop-recording",function() {
+			stopRecording();
+			resetButtons(inputCtn, messageCtn, sendButton);
+		}, "fa-check",$T("AI_STOP_RECORDING"));
+		inputCtn.onclick = function() {
+			resetButtons(inputCtn, messageCtn, sendButton);
+			stopRecording();
+		}
+	}
+	function resetButtons(inputCtn, messageCtn, sendButton){
+			$(inputCtn.parentElement).find("#cancel-recording").remove();
+			$(inputCtn.parentElement).find("#stop-recording").remove();
+			messageCtn.prop('readonly', false);
+			messageCtn.val("");
+			inputCtn.className = "chat-icon-button fas fa-microphone";
+			inputCtn.onclick = function() {
+				getSpeech(inputCtn);
+			};
+			sendButton.prop('disabled', false);
 	}
 	function loadResultInAceEditor(ctn,divId){
 		$ui.loadAceEditor(function(){
-			var aceEditor = window.ace.edit(divId);
+			let aceEditor = window.ace.edit(divId);
 			aceEditor.setOptions({
 			   //enableBasicAutocomplete: true, // the editor completes the statement when you hit Ctrl + Space
 			   //enableLiveAutocomplete: true, // the editor completes the statement while you are typing
@@ -312,7 +334,7 @@ var AiJsTools = AiJsTools || (function() {
 		});
 	}
 	function getDisplayUserMessage(ctn){
-		inputCtn=$(ctn).find(".ai-chat-input-area");
+		let inputCtn=$(ctn).find(".ai-chat-input-area");
 	    let msg = inputCtn.find(".user-message").val();
 	    let imgb64 = inputCtn.find("#input-img img").attr("src");
 		let div= document.createElement("div");
@@ -366,6 +388,7 @@ var AiJsTools = AiJsTools || (function() {
 		getPostParams: getPostParams,
 		getDisplayUserMessage: getDisplayUserMessage,
 		getDisplayBotMessage: getDisplayBotMessage,
-		loadResultInAceEditor:loadResultInAceEditor 
+		loadResultInAceEditor:loadResultInAceEditor,
+		removeimg:removeimg
 	};
 })();

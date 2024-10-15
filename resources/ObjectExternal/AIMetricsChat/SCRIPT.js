@@ -2,7 +2,6 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	const app = $ui.getApp();
 	const histObj = app.getBusinessObject("AiMetricsHist");
 	let swagger="";
-	let userName = "user";
 	let moduleName = "";
 	let lastScript = "";
 	let lastText ="";
@@ -18,6 +17,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	let defaultSchemaDiv = document.createElement('div');
 	defaultSchemaDiv.className = "ai-default-schema-content";
 	defaultSchemaDiv.appendChild(defaultSchema);
+	let buttons = {};
 	function render(params,id,module,s) {
 		let ctn = params[0];
 		let printicon = document.createElement('i');
@@ -26,46 +26,37 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		printicon.className = "fa fa-print icon";
 		printbutton.appendChild(printicon);
 		printbutton.onclick = function(){
-			console.log("Print");
+			let canvas = document.querySelector('canvas');
+			if (canvas) {
+				let link = document.createElement('a');
+				link.href = canvas.toDataURL('image/png');
+				link.download = 'chart.png';
+				link.click();
+			} else {
+				console.log("No chart found to print.");
+			}
 		};
-		let acts = $('.form-actionbar').find('.actions');
-		acts.append(printbutton);
+		$("#work .actions").prepend(printbutton);
 		displayHist();
 		moduleId = id;
 		// set button text
 		moduleName = module;
-		$('#metrics_user_text').click(function() { showWarn();});
+		
 		
 		app.getTexts(function(textes){
 			let actLabel = textes?.AiSaveAsCrosstableAction||"";
 			let sendText = textes?.AI_BUTTON_SEND ||"Send";
 			let cancelText = textes?.AI_BUTTON_CANCEL || "Cancel";
-			let length = Math.max(sendText.length, cancelText.length);
-			let optionalButtonWidth =0;
-			$(ctn).find(".chat-icon-button").each(function(){
-				console.log("Optional button: "+this);
-				optionalButtonWidth += $(this).outerWidth();
-			});
-			console.log("Optional button length: "+optionalButtonWidth);
 			if(actLabel != "")$("#work .actions").prepend('<button class="btn btn-secondary" type="button" onclick="AIMetricsChat.saveAsCrosstable()"><span>'+actLabel+'</span></button>');
-			$('.chat-button').css('min-width', length + 'em');
-			$('.user-message').css('width', 'calc(100% - ' + (length + 2) + 'em - '+optionalButtonWidth+'px)');
 			$('#metrics_send_button').text(sendText);
 			$('#metrics_cancel_button').text(cancelText);
 		},null);
 		swagger=s;
-		if(app.getGrant().firstname ){
-			userName =app.getGrant().firstname;
-		}else{
-			userName =app.getGrant().login;
-		}
-		//userTemplateMetrics=userTemplateMetrics.replace('{{user}}', userName);
-		//setBotName();
-		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('.user-input'),addImgVisible,takeImgVisible,SpeechVisible);}});
-		$(ctn).find(".chat-icon-button").each(function(){
-			$(this).mouseover(function() { showWarn();});
-		});
+		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ 
+			AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible).then(() => {setShowWarn(ctn);});
+		}});
 		resetChat();
+		
 		$('#metrics_user_text').keypress(function(e) {
 			if (e.which === 13) {
 				sendMetricsMessage();
@@ -73,6 +64,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		});
 		
 	}
+	
 	function sendMetricsMessage(){
 		let isCancelled = false;
 		$('#metrics_cancel_button').show();
@@ -123,12 +115,20 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		reOpenChat();
 	
 	}
-	function showWarn(){
+	function setShowWarn(ctn){
+		$(ctn).find(".chat-icon-button").each(function(but){
+			buttons[but.id] = but.onclick;
+			but.onclick = function() { showWarn($(ctn).find('.chat-button'));};
+		});
+		$('#metrics_user_text').click(function() { showWarn($(ctn).find('.chat-button'));});
+	}
+	function showWarn(ctn){
 		app.getTexts(function(textes){
 			$ui.alert(app.getText(textes?.AI_GRAPH_DISCLAIMER, false));
 			$('#metrics_user_text').unbind('click');
-			$('.chat-icon-button').each(function(){
-				$(this).unbind('mouseover');
+			ctn.onclick = function() { sendMetricsMessage();};
+			$('.chat-icon-button').each(function(but){
+				but.onclick = buttons[but.id];
 			});
 		});
 	}
@@ -259,6 +259,8 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			displayHistItem(res.aiMhPreview,res.aiMhMetrics);
 		};
 		deleteicon.onclick = function(){
+			$('#metrics_messages').html('');
+			$('#ia_html').html(defaultSchemaDiv);
 			let content = $T('AI_CONFIRM_DEL')+"<script>AIMetricsChat.displayHistItemById("+res.row_id+",$('#confirm_ia_chart'))</script>";
 			$ui.confirm({content:content,onOk:function(){
 				deleteObj(res.row_id);
@@ -276,7 +278,6 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		histObj.resetFilters();
 		histObj.getForDelete(function(item){
 			histObj.del(function(res){
-				console.log("Deleted: ",res);
 				$("#hist_"+id).remove();
 			},item,{error:function(err){}});
 		},id,null);
@@ -290,12 +291,12 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		histObj.select(function(item){
 			displayHistItem(item.aiMhPreview,item.aiMhMetrics,ctn);
 		},id);
-		console.log("Display hist item by id: "+id);
 	}
 	
 	return { 
 		render: render,
 		sendMetricsMessage: sendMetricsMessage,
+		showWarn: showWarn,
 		saveAsCrosstable: saveAsCrosstable,
 		displayHistItemById: displayHistItemById
 	};

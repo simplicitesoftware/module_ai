@@ -14,6 +14,7 @@ import com.simplicite.webapp.ObjectContextWeb;
 
 
 
+
 /**
  * Process AIModuleCreate
  */
@@ -44,6 +45,8 @@ public class AIModuleCreate extends Processus {
 	private static final String BEGIN_SCRIPT="<script>";
 	private static final String END_SCRIPT="</script>";
 	private static final String DOMAIN="Domain";
+	private static final String MODULE_NAME_FIELD="mdl_name";
+	private static final String TSL_VALUE_FIELD="tsl_value";
 	private boolean displayPrefixWarning = false; 
 	
 	/**
@@ -404,11 +407,11 @@ public class AIModuleCreate extends Processus {
 	@Override
 	public Message preValidate(ActivityFile context) {
 		String step = context.getActivity().getStep();
+		
 		if("AIC_0050".equals(step)){
 			context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
 			if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(context.getDataValue("Return","Code"), getGrant());
-		}
-		if(ACTIVITY_CREATE_MODULE.equals(step) && !displayPrefixWarning){
+		}else if(ACTIVITY_CREATE_MODULE.equals(step) && !displayPrefixWarning){
 			Object prefix = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD); 
 			ObjectDB obj = getGrant().getTmpObject("Module");
 			synchronized(obj.getLock()){
@@ -418,7 +421,7 @@ public class AIModuleCreate extends Processus {
 				if(!search.isEmpty()){
 					List<String> modules = new ArrayList<>();
 					for(String[] el : search){
-						modules.add(el[obj.getFieldIndex("mdl_name")]);
+						modules.add(el[obj.getFieldIndex(MODULE_NAME_FIELD)]);
 					}
 					Message m = new Message();
 					m.raiseError(Message.formatWarning("AI_WARN_PREFIX", String.join(", ",modules), MDL_PREFIX_FIELD));
@@ -429,54 +432,76 @@ public class AIModuleCreate extends Processus {
 			}
 			
 			
-		}else if(ACTIVITY_NEW_SCOPE.equals(step) && !context.getActivity().isUserDialog()){
-				String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, "mdl_name");
-				String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
+		}
+		if(!context.getActivity().isUserDialog()){
+			automaticDataFile(context);
+		}
+		return super.preValidate(context);
+	}
+	private void automaticDataFile(ActivityFile context){
+		String step = context.getActivity().getStep();
+		switch (step) {
+			case ACTIVITY_NEW_SCOPE:
+				String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MODULE_NAME_FIELD);
+				String moduleId = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, ROW_ID);
 				context.setDataFile(FIELD, "viw_name", "Scope"+moduleName);
 				context.setDataFile(FIELD, "viw_type", "H");
 				context.setDataFile(FIELD, ROW_MODULE_ID_FIELD, moduleId);
-			
-		}else if(ACTIVITY_TRL_DOMAIN.equals(step) && !context.getActivity().isUserDialog()){
-			automaticTrlDom(context, getGrant());
+				break;
+		
+			case ACTIVITY_TRL_DOMAIN:
+				automaticTrlDom(context, getGrant());
+				break;
+
+			default:
+				break;
 		}
-		return super.preValidate(context);
 	}
 	@Override
 	public void postValidate(ActivityFile context) {
 		String step = context.getActivity().getStep();
-		if(ACTIVITY_CREATE_MODULE.equals(step)){
-			getContext(getActivity(ACTIVITY_SELECT_MODULE)).setDataFile(FIELD,ROW_ID, context.getDataValue(FIELD, ROW_ID));
-			String groupId = createGroup(context);
-			if(!Tool.isEmpty(groupId)){
-				getContext(getActivity(ACTIVITY_SELECT_GROUP)).setDataFile(FIELD, ROW_ID, groupId);
-			}
-			String domainId = createDomain(context);
-			if(!Tool.isEmpty(domainId)){
-				getContext(getActivity(ACTIVITY_SELECT_DOMAIN)).setDataFile(FIELD, ROW_ID, domainId);
-			}
-			grantGroupToDomain(domainId,groupId,context.getDataValue(FIELD, ROW_ID));
-			displayPrefixWarning = false;
-
-		}else if(ACTIVITY_GRANT_USER.equals(step)){
-			boolean isGrantUser =true;
-			if(context.getActivity().isUserDialog())isGrantUser = "1".equals(context.getDataValue("Data", "AREA:1")); 
-			if(isGrantUser){
-				String groupName = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataValue(FIELD, "grp_name");
-				if(Tool.isEmpty(groupName)){
-					groupName = SyntaxTool.join(SyntaxTool.UPPER, new String[]{getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD,MDL_PREFIX_FIELD),"GROUP"});
+		switch (step) {
+			case ACTIVITY_CREATE_MODULE:
+				getContext(getActivity(ACTIVITY_SELECT_MODULE)).setDataFile(FIELD,ROW_ID, context.getDataValue(FIELD, ROW_ID));
+				String groupId = createGroup(context);
+				if(!Tool.isEmpty(groupId)){
+					getContext(getActivity(ACTIVITY_SELECT_GROUP)).setDataFile(FIELD, ROW_ID, groupId);
 				}
-				String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, "mdl_name");
-				Grant.addResponsibility(Grant.getUserId(getGrant().getLogin()),groupName,null,null,true, moduleName);
-			}
+				String domainId = createDomain(context);
+				if(!Tool.isEmpty(domainId)){
+					getContext(getActivity(ACTIVITY_SELECT_DOMAIN)).setDataFile(FIELD, ROW_ID, domainId);
+				}
+				grantGroupToDomain(domainId,groupId,context.getDataValue(FIELD, ROW_ID));
+				displayPrefixWarning = false;
+	
+				break;
+			case ACTIVITY_GRANT_USER:
+				boolean isGrantUser =true;
+				if(context.getActivity().isUserDialog())isGrantUser = "1".equals(context.getDataValue("Data", "AREA:1")); 
+				if(isGrantUser){
+					String groupName = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataValue(FIELD, "grp_name");
+					if(Tool.isEmpty(groupName)){
+						groupName = SyntaxTool.join(SyntaxTool.UPPER, new String[]{getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD,MDL_PREFIX_FIELD),"GROUP"});
+					}
+					String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MODULE_NAME_FIELD);
+					Grant.addResponsibility(Grant.getUserId(getGrant().getLogin()),groupName,null,null,true, moduleName);
+				}
+				
+				break;
+			case ACTIVITY_TRL_DOMAIN:
+				saveTranslate(context);
+				break;
+			case ACTIVITY_NEW_SCOPE:
+				scopeGrant(context.getDataValue(FIELD, ROW_ID));
+				if(!context.getActivity().isUserDialog()){
+					String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MODULE_NAME_FIELD);
+					trlScope(context.getDataValue(FIELD, ROW_ID),moduleName);
+				}
 			
-		}else if(ACTIVITY_TRL_DOMAIN.equals(step)){
-			saveTranslate(context);
-		}else if(ACTIVITY_NEW_SCOPE.equals(step)){
-			scopeGrant(context.getDataValue(FIELD, ROW_ID));
-			if(!context.getActivity().isUserDialog()){
-				String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, "mdl_name");
-				trlScope(context.getDataValue(FIELD, ROW_ID),moduleName);
-			}
+				break;
+		
+			default:
+				break;
 		}
 		super.postValidate(context);
 	}
@@ -490,9 +515,9 @@ public class AIModuleCreate extends Processus {
 				for(String[] row : obj.search()){
 					objTool.selectForUpdate(row[obj.getRowIdFieldIndex()]);
 					if("FRA".equals(row[obj.getFieldIndex("tsl_lang")])){
-						obj.setFieldValue("tsl_value", "Vue "+moduleName);
+						obj.setFieldValue(TSL_VALUE_FIELD, "Vue "+moduleName);
 					}else{
-						obj.setFieldValue("tsl_value", "Scope "+moduleName);
+						obj.setFieldValue(TSL_VALUE_FIELD, "Scope "+moduleName);
 					}
 				}
 				objTool.validateAndUpdate();
@@ -502,8 +527,8 @@ public class AIModuleCreate extends Processus {
 		}
 	}
 	private void automaticTrlDom(ActivityFile af, Grant g){
-		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
-		String moduleName = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, "mdl_name");
+		String moduleId = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, ROW_ID);
+		String moduleName = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MODULE_NAME_FIELD);
 		String[] langCodes = g.getLangsCodes();
 		// Domains translations
 		ObjectDB dom = g.getTmpObject(DOMAIN);
@@ -521,7 +546,7 @@ public class AIModuleCreate extends Processus {
 					"where tsl_object='Domain:"+dom.getRowId()+"' and tsl_lang='"+lang+"'");
 				val+= " "+moduleName;
 				String name = "tsl"+lang+dom.getRowId();
-				addDynamicData(af, name, val);
+				af.addDataFile("Data", name,val);
 			}
 		}
 	}
@@ -671,7 +696,7 @@ public class AIModuleCreate extends Processus {
 				if (!v.isEmpty())
 				{
 					tsl.setValues(v.get(0), true);
-					tsl.setFieldValue("tsl_value", val);
+					tsl.setFieldValue(TSL_VALUE_FIELD, val);
 					tsl.update();
 				}
 			}
@@ -706,4 +731,5 @@ public class AIModuleCreate extends Processus {
 		}
 		
 	}
+	
 }
