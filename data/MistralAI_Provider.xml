@@ -4,10 +4,11 @@
 	<name>AIProvider</name>
 	<action>upsert</action>
 	<data>
-		<aiPrvProvider>Mistral AI_</aiPrvProvider>
+		<aiPrvProvider>Mistral AI</aiPrvProvider>
 		<aiPrvDefaultUrl><![CDATA[https://api.mistral.ai/]]></aiPrvDefaultUrl>
 		<aiPrvDataModel><![CDATA[{}]]></aiPrvDataModel>
 		<aiPrvModelsUrl><![CDATA[https://api.mistral.ai/v1/models]]></aiPrvModelsUrl>
+		
 		<aiPrvHelp><![CDATA[### Finding Your API Key
 
 **Sign In to Mistral AI:**
@@ -45,6 +46,7 @@ For standard deployments, use the following endpoints:
 - **Set Limits for Projects:** Define usage limits and quotas for using the API to prevent unexpected usage spikes and ensure budget control.]]></aiPrvHelp>
 		<aiPrvCompletionUrl><![CDATA[https://api.mistral.ai/v1/chat/completions]]></aiPrvCompletionUrl>
 		<aiPrvPingUrl><![CDATA[https://api.mistral.ai/v1/models]]></aiPrvPingUrl>
+		<aiPrvSttUrl> <!-- No STT URL provided --> </aiPrvSttUrl>
 	</data>
 </object>
 </simplicite>

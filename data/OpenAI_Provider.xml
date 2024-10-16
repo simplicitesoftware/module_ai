@@ -62,6 +62,7 @@ For standard deployments, use the following endpoints:
 - **Set Limits for Projects:** Define usage limits and quotas for each project or application using the API to prevent unexpected usage spikes and ensure budget control.]]></aiPrvHelp>
 		<aiPrvCompletionUrl><![CDATA[https://api.openai.com/v1/chat/completions]]></aiPrvCompletionUrl>
 		<aiPrvPingUrl><![CDATA[https://api.openai.com/v1/models]]></aiPrvPingUrl>
+		<aiPrvSttUrl><![CDATA[https://api.openai.com/v1/audio/transcriptions]]></aiPrvSttUrl>
 	</data>
 </object>
 </simplicite>

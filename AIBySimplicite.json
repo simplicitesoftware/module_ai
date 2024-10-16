@@ -2072,7 +2072,7 @@
       "fld_minsize": null,
       "fld_precision": null,
       "fld_fromdate_id__fld_name": null,
-      "fld_dfault": "[VALUE:aiPrvDefaultUrl]+\"v1/chat/completions\"",
+      "fld_dfault": null,
       "fld_indexable": false,
       "fld_autocomp": "0",
       "fld_groupby": false,
@@ -2256,7 +2256,7 @@
       "fld_minsize": null,
       "fld_precision": null,
       "fld_fromdate_id__fld_name": null,
-      "fld_dfault": "[VALUE:aiPrvDefaultUrl]+\"v1/models\"",
+      "fld_dfault": null,
       "fld_indexable": false,
       "fld_autocomp": "0",
       "fld_groupby": false,
@@ -2302,7 +2302,7 @@
       "fld_minsize": null,
       "fld_precision": null,
       "fld_fromdate_id__fld_name": null,
-      "fld_dfault": "[VALUE:aiPrvDefaultUrl]+\"v1/ping\"",
+      "fld_dfault": null,
       "fld_indexable": false,
       "fld_autocomp": "0",
       "fld_groupby": false,
@@ -2391,7 +2391,7 @@
       "fld_minsize": null,
       "fld_precision": null,
       "fld_fromdate_id__fld_name": null,
-      "fld_dfault": "[VALUE:aiPrvDefaultUrl]+\"v1/audio/transcriptions\"",
+      "fld_dfault": null,
       "fld_indexable": false,
       "fld_autocomp": "0",
       "fld_groupby": false,
@@ -11180,7 +11180,7 @@
        "object": "Field"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Speech to text endpoint url",
+      "tsl_value": "Speech to text url",
       "tsl_simplehelp": null,
       "tsl_plural_value": null,
       "tsl_short_value": null,
@@ -11202,7 +11202,7 @@
        "object": "Field"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "Prv stt url",
+      "tsl_value": "URL  de la synthèse vocale",
       "tsl_simplehelp": null,
       "tsl_plural_value": null,
       "tsl_short_value": null,
@@ -13698,14 +13698,28 @@
    "list": [
     {
      "object": "Dataset",
-     "userkey": "AIBySimplicite MistralAI_Povider",
+     "userkey": "AIBySimplicite AIBySimplicite-data-20241016140316",
      "item": {
       "row_module_id__mdl_name": "AIBySimplicite",
-      "dt_name": "MistralAI_Povider",
+      "dt_name": "AIBySimplicite-data-20241016140316",
       "dt_file": {
-       "path": "data/MistralAI_Povider.xml",
+       "path": "data/AIBySimplicite-data-20241016140316.zip",
+       "mime": "application/zip",
+       "name": "AIBySimplicite-data-20241016140316.zip"
+      },
+      "dt_desc": "Created by module's data export on 2024-10-16 14:03:16"
+     }
+    },
+    {
+     "object": "Dataset",
+     "userkey": "AIBySimplicite MistralAI_Provider",
+     "item": {
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "dt_name": "MistralAI_Provider",
+      "dt_file": {
+       "path": "data/MistralAI_Provider.xml",
        "mime": "text/xml",
-       "name": "MistralAI_Povider.xml"
+       "name": "MistralAI_Provider.xml"
       },
       "dt_desc": "Mistral AI_ provider default parameters"
      }

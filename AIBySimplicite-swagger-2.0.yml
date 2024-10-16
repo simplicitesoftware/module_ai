@@ -1095,7 +1095,7 @@ paths:
         required: false
       - in: query
         name: aiPrvSttUrl
-        description: Search filter for Speech to text endpoint url
+        description: Search filter for Speech to text url
         type: string
         required: false
       tags:
@@ -1275,7 +1275,7 @@ definitions:
         description: Default url
         type: string
       aiPrvSttUrl:
-        description: Speech to text endpoint url
+        description: Speech to text url
         type: string
       aiPrvPingUrl:
         description: Ping url

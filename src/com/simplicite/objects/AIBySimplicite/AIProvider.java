@@ -17,16 +17,21 @@ import com.simplicite.util.tools.*;
  */
 public class AIProvider extends ObjectDB {
 	private static final long serialVersionUID = 1L;
+	private static final String MODELS_ENDPOINT = "aiPrvModelsUrl";
+	private static final String COMPLETION_ENDPOINT = "aiPrvCompletionUrl";
+	private static final String PING_ENDPOINT = "aiPrvPingUrl";
+	private static final String STT_ENDPOINT = "aiPrvSttUrl";
+	private static final Map<String, String> DEFAULT_EDNPOINT =   Map.of(MODELS_ENDPOINT, "v1/models", COMPLETION_ENDPOINT, "v1/chat/completions", PING_ENDPOINT, "v1/ping", STT_ENDPOINT, "v1/audio/transcriptions");
 	private JSONObject getDefaultFields(){
 		return new JSONObject(getGrant().T("AI_DEFAULT_PARAM"));
 	}
 	public String getConfigurationPage(){
 		JSONObject datas = new JSONObject();
 		datas.put("fields", new JSONArray()
-				.put(getUrlJSON("aiPrvPingUrl",false))
-				.put(getUrlJSON("aiPrvCompletionUrl",true))
-				.put(getUrlJSON("aiPrvModelsUrl",true))
-				.put(getUrlJSON("aiPrvSttUrl", false))
+				.put(getUrlJSON(PING_ENDPOINT,false))
+				.put(getUrlJSON(COMPLETION_ENDPOINT,true))
+				.put(getUrlJSON(MODELS_ENDPOINT,true))
+				.put(getUrlJSON(STT_ENDPOINT, false))
 		);
 		datas.put("help",MarkdownTool.toHTML(getFieldValue("aiPrvHelp")));
 		String html = HTMLTool.getResourceHTMLContent(this,"AISettingsKeyAndEPTemplate");
@@ -107,7 +112,19 @@ public class AIProvider extends ObjectDB {
 
 		return MarkdownTool.toHTML(help).replaceAll("<a href=\"([^\"]*)\"", "<a target=\"_blank\" href=\"$1\"").replace("\n", "").replace("\"", "\\\"");
 	}
-
+	
+	@Override
+	public List<String> preValidate() {
+		if(!"0".equals(getRowId()) || isBatchInstance()) return super.preValidate();
+		String defaultUrl = getFieldValue("aiPrvDefaultUrl");
+		for (Map.Entry<String, String> entry : DEFAULT_EDNPOINT.entrySet()) {
+			String key = entry.getKey();
+			if(Tool.isEmpty(getFieldValue(key))){
+				setFieldValue(entry.getKey(), defaultUrl + entry.getValue());
+			}
+		}
+		return super.preValidate();
+	}
 		 
 		
 }
