@@ -4233,6 +4233,41 @@
       "obf_joined_id__obf_field_id__fld_name": null,
       "obf_joined_id__obf_order": null
      }
+    },
+    {
+     "object": "ObjectFieldSystem",
+     "userkey": "Group aiGroupGuiVirtual 1",
+     "item": {
+      "obf_object_id__obo_name": "Group",
+      "obf_field_id__fld_name": "aiGroupGuiVirtual",
+      "obf_order": 1,
+      "obf_group_by": null,
+      "obf_dfault_order": null,
+      "obf_input": null,
+      "obf_ref_field_id__fld_name": null,
+      "obf_ref_object_id__obo_name": "AiGroupGuiDesc",
+      "obf_cascad": "Z",
+      "obf_card": "0,n",
+      "obf_visible": true,
+      "obf_ref_export": true,
+      "obf_copy": false,
+      "obf_ref_order": null,
+      "obf_fld_visible": "1",
+      "obf_fld_required": null,
+      "obf_fld_updatable": ["0"],
+      "obf_fld_research": null,
+      "obf_fld_more": null,
+      "obf_fld_listmore": null,
+      "obf_fld_researchreq": null,
+      "obf_fld_dfault": null,
+      "obf_fld_exportable": null,
+      "obf_fld_uk": null,
+      "obf_area_id__ofa_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "obf_joined_id__obf_object_id__obo_name": null,
+      "obf_joined_id__obf_field_id__fld_name": null,
+      "obf_joined_id__obf_order": null
+     }
     }
    ]
   },
@@ -4259,6 +4294,30 @@
       "obf_ref_export": true,
       "obf_copy": false,
       "obf_associate": "1",
+      "obf_inline": false,
+      "obf_rendering": null,
+      "obf_treedepth": null,
+      "obf_area_id__ofa_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Link",
+     "userkey": "1 Group aiGroupGuiVirtual",
+     "item": {
+      "obf_ref_object_id__obo_name": "AiGroupGuiDesc",
+      "obf_order": 1,
+      "obf_ref_order": null,
+      "obf_object_id__obj_name": "Group",
+      "obf_field_id__fld_name": "aiGroupGuiVirtual",
+      "obf_cascad": "Z",
+      "obf_card": "0,n",
+      "obf_query": "t.row_id in (select v.vig_group_id from m_view_group v join ai_group_gui_desc d on d.ai_ggd_viewhome_id = v.vig_view_id where d.row_id = [row_id] ) \nOR t.row_id in (select g.row_id FROM m_group g JOIN ai_group_gui_desc d ON d.ai_ggd_viewhome_id=g.grp_home_id WHERE d.row_id = [row_id] )",
+      "obf_filters": null,
+      "obf_visible": true,
+      "obf_ref_export": true,
+      "obf_copy": false,
+      "obf_associate": null,
       "obf_inline": false,
       "obf_rendering": null,
       "obf_treedepth": null,
