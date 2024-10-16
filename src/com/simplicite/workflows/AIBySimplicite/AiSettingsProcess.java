@@ -10,6 +10,7 @@ import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
+import com.simplicite.util.tools.BusinessObjectTool;
 import com.simplicite.webapp.ObjectContextWeb;
 
 /**
@@ -143,36 +144,48 @@ public class AiSettingsProcess extends Processus {
 	
 	@Override
 	public void postValidate(ActivityFile context) {
-		if(PARAM_ACT.equals(context.getActivity().getStep())){
-			ObjectDB obj = getGrant().getTmpObject(PROVIDER_OBJECT);
-			JSONObject param = new JSONObject();
-			synchronized(obj.getLock()){
-				String providerid = getContext(getActivity(PROVIDER_ACT)).getDataValue(FIELD_DATA, ROW_ID);
-				obj.select(providerid);
-				
-				JSONObject defaultParam = new JSONObject(getGrant().T(AI_DEFAULT_PARAM));
-				JSONObject sepParam = new JSONObject(obj.getFieldValue("aiPrvDataModel"));
-				
-				for(String k : defaultParam.keySet()){
+		String step = context.getActivity().getStep();
+		Grant g = getGrant();
+		switch (step) {
+			case PARAM_ACT:
+				ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);
+				JSONObject param = new JSONObject();
+				synchronized(obj.getLock()){
+					String providerid = getContext(getActivity(PROVIDER_ACT)).getDataValue(FIELD_DATA, ROW_ID);
+					obj.select(providerid);
 					
-					String val = context.getDataValue("Data", k);
-					param.put(k, "showDataDisclaimer".equals(k)?("1".equals(val)):val);
+					JSONObject defaultParam = new JSONObject(g.T(AI_DEFAULT_PARAM));
+					JSONObject sepParam = new JSONObject(obj.getFieldValue("aiPrvDataModel"));
+					
+					for(String k : defaultParam.keySet()){
+						
+						String val = context.getDataValue("Data", k);
+						param.put(k, "showDataDisclaimer".equals(k)?("1".equals(val)):val);
+					}
+					for(String k : sepParam.keySet()){
+						String val = context.getDataValue("Data", k);
+						param.put(k, val);
+					}
 				}
-				for(String k : sepParam.keySet()){
-					String val = context.getDataValue("Data", k);
-					param.put(k, val);
-				}
-			}
-			param.put("ping_url",getContext(getActivity(AUTH_ACT)).getDataValue("Data","aiPrvPingUrl"));
-			param.put("stt_url",getContext(getActivity(AUTH_ACT)).getDataValue("Data",STT_URL_FLD));
-			String url = getContext(getActivity(AUTH_ACT)).getDataValue("Data", COMPLETION_URL_FLD);
-			param.put("completion_url",url);
-			String key = getContext(getActivity(AUTH_ACT)).getDataValue("Data", "key");
-			param.put("api_key", key);
-			AITools.setParameters(param);
-			
-			
+				param.put("ping_url",getContext(getActivity(AUTH_ACT)).getDataValue("Data","aiPrvPingUrl"));
+				param.put("stt_url",getContext(getActivity(AUTH_ACT)).getDataValue("Data",STT_URL_FLD));
+				String url = getContext(getActivity(AUTH_ACT)).getDataValue("Data", COMPLETION_URL_FLD);
+				param.put("completion_url",url);
+				String key = getContext(getActivity(AUTH_ACT)).getDataValue("Data", "key");
+				param.put("api_key", key);
+				AITools.setParameters(param);
+				break;
+			case "ASP-0500":
+					if(!"1".equals(context.getDataValue("Data", "AREA:1"))) break;
+					String value = g.getUserSystemParam("SHORTCUT_PREFS");
+					JSONObject paramObj = Tool.isEmpty(value)?new JSONObject():new JSONObject(value);
+					paramObj.put("AIBot",paramObj.optJSONObject("AIBot",new JSONObject()).put("header", true));
+					g.setUserSystemParam("SHORTCUT_PREFS", paramObj.toString(), true);
+				break;
+			default:
+				break;
 		}
+
 			
 		super.postValidate(context);
 	}

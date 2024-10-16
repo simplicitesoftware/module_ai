@@ -232,6 +232,7 @@ Auomatic model generation process
 * `SelectProvider`: 
 * `Auth`: 
 * `OtherParam`: 
+* `AddShortCut`: 
 * `Begin`: 
 * `End`: 
 
