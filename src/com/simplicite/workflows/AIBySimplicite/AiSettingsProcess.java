@@ -10,7 +10,6 @@ import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
-import com.simplicite.util.tools.BusinessObjectTool;
 import com.simplicite.webapp.ObjectContextWeb;
 
 /**

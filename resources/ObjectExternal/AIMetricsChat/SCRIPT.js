@@ -18,7 +18,6 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	defaultSchemaDiv.className = "ai-default-schema-content";
 	defaultSchemaDiv.appendChild(defaultSchema);
 	let buttons = {};
-	let hasbeenShown = false;
 	function render(params,id,module,s) {
 		let ctn = params[0];
 		let printicon = document.createElement('i');
