@@ -432,7 +432,7 @@ public class AIModuleCreate extends Processus {
 			}
 			
 			
-		}
+		} 
 		if(!context.getActivity().isUserDialog()){
 			automaticDataFile(context);
 		}

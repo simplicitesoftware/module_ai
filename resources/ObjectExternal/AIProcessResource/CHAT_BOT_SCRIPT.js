@@ -22,7 +22,11 @@ var AIWfChatBot = AIWfChatBot || (function() {
 	}
 	function render() {
 		console.log("render");
-		$('.btn-action[data-action="AIGenerate"]').attr("disabled", "disabled");
+		let actionBtn = $('.btn[data-action="AIGenerate"]');
+		actionBtn.attr("disabled", "disabled");
+		actionBtn.removeClass("btn-action");
+		actionBtn.addClass("btn-primary");
+
 		let ctn = document.getElementById('AIchatbotProcess');
 		$(".btn-validate").remove();
 		$(window).resize(function() {
@@ -94,8 +98,8 @@ var AIWfChatBot = AIWfChatBot || (function() {
 
 		// Faites défiler vers le bas pour afficher les messages les plus récents
 		chatMessages.scrollTop = chatMessages.scrollHeight;
+		$('.btn[data-action="AIGenerate"]').attr("disabled", "disabled");
 		// Call Webservice (POST requests only)
-		$('.btn-action[data-action="AIGenerate"]').attr("disabled", "disabled");
 		app._call(useAsync, url, postParams, function callback(botResponse){
 			let text ={};
 			text.role = "user";
@@ -122,7 +126,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			}
 			$("#AI_data").html(JSON.stringify(historic));
 			$("#send-button").removeAttr("disabled");
-			$('.btn-action[data-action="AIGenerate"]').removeAttr('disabled', true);
+			$('.btn[data-action="AIGenerate"]').removeAttr('disabled', true);
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		});
 		

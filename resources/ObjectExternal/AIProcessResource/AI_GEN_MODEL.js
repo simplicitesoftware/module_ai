@@ -3,6 +3,17 @@ var aiGenModel = aiGenModel || (function() {
 	const data = app.getBusinessProcess("AIModuleCreate").activity.data.Data;
 	const moduleID = data.moduleId.values[0];
 	function AINewModel() {
+		let deletebutton = $(".btn[data-action='AIDeleteModule']");
+		let nextbutton = $(".btn[data-action='validate']");
+		deletebutton.removeClass("btn-action");
+		deletebutton.addClass("btn-secondary");
+		let parentDiv = $(".btn[data-action='AIDeleteModule']").parent();
+		parentDiv.css("flex-direction", "row-reverse");
+		deletebutton.css("border-top-right-radius", "0px");
+		deletebutton.css("border-bottom-right-radius", "0px");
+		nextbutton.css("border-top-right-radius", ".25rem");
+		nextbutton.css("border-bottom-right-radius", ".25rem");
+
 		let idsData = data.allIds;
 		let ids = null;
 		if (idsData != null){
@@ -35,7 +46,7 @@ var aiGenModel = aiGenModel || (function() {
 			{
 				row_module_id: moduleID,
 			},
-			null)
+			null);
 			
 		}
 	
@@ -139,7 +150,7 @@ var aiGenModel = aiGenModel || (function() {
 					popup: false
 				});
 			},true);
-		}
+		};
 	}
 	function construcNodesList(ids){
 		let list = [];

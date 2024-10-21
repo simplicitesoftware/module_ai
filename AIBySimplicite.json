@@ -4774,7 +4774,7 @@
       "act_count": null,
       "act_order": null,
       "act_color": null,
-      "act_color_bg": null,
+      "act_color_bg": "#3a77bb",
       "act_image": null,
       "act_group_id__acg_name": null,
       "act_queue_id__acq_name": null
@@ -4866,7 +4866,7 @@
   {
    "object": "ActionField",
    "label": "Action field",
-   "icon": "object",
+   "icon": "img/system/object_field",
    "field": "row_module_id",
    "list": [
     {

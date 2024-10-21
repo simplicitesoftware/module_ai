@@ -18,6 +18,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	defaultSchemaDiv.className = "ai-default-schema-content";
 	defaultSchemaDiv.appendChild(defaultSchema);
 	let buttons = {};
+	let hasbeenShown = false;
 	function render(params,id,module,s) {
 		let ctn = params[0];
 		let printicon = document.createElement('i');
@@ -116,19 +117,27 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	
 	}
 	function setShowWarn(ctn){
-		$(ctn).find(".chat-icon-button").each(function(but){
-			buttons[but.id] = but.onclick;
-			but.onclick = function() { showWarn($(ctn).find('.chat-button'));};
+		ctn.querySelectorAll('.chat-icon-button').forEach(button => {
+			buttons[button.id] = button.onclick;
+			button.onclick = function(){
+				showWarn();
+			};
 		});
-		$('#metrics_user_text').click(function() { showWarn($(ctn).find('.chat-button'));});
+		
+		$("#metrics_send_button").click(function() { AIMetricsChat.showWarn()});
+		$('#metrics_user_text').click(function() { showWarn();});
 	}
-	function showWarn(ctn){
+	function showWarn(){
+		console.log("showwarn")
 		app.getTexts(function(textes){
 			$ui.alert(app.getText(textes?.AI_GRAPH_DISCLAIMER, false));
 			$('#metrics_user_text').unbind('click');
-			ctn.onclick = function() { sendMetricsMessage();};
-			$('.chat-icon-button').each(function(but){
-				but.onclick = buttons[but.id];
+			$('#metrics_send_button').unbind('click');
+			$("#metrics_send_button").click(function() { sendMetricsMessage();});
+
+			document.getElementById("aimetricschat").querySelectorAll('.chat-icon-button').forEach(button => {
+				button.onclick = buttons[button.id];
+				console.log(button,button.onclick);
 			});
 		});
 	}
@@ -241,6 +250,21 @@ var AIMetricsChat = AIMetricsChat || (function() {
 
 			},filters);
 		});
+		let purgeButton = document.createElement('button');
+		purgeButton.className = "btn btn-secondary";
+		purgeButton.textContent = "Purge History";
+		purgeButton.onclick = function() {
+			$ui.confirm({
+				content: "Are you sure you want to purge the history?",
+				onOk: function() {
+					for(const item of histList.children){
+						let id = item.id.split("_")[1];
+						deleteObj(id);
+					}
+				}
+			});
+		};
+		histList.parentNode.appendChild(purgeButton);
 	}
 	
 	function addHist(res,histList){
