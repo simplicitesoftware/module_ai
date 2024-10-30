@@ -4,6 +4,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import java.util.*;
 
+
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 
@@ -43,7 +44,7 @@ public class AITools implements java.io.Serializable {
     public static final String CONTENT_KEY = "content";
     private static final String MESSAGE_KEY = "message";
     private static final String MESSAGES_KEY = "messages";
-    private static final String USAGE_KEY = "usage";
+    public static final String USAGE_KEY = "usage";
     private static final String PROVIDER_KEY = "provider";
     private static final String API_KEY = "api_key";
     private static final String MODEL_KEY = "model";
@@ -85,6 +86,14 @@ public class AITools implements java.io.Serializable {
     private static String apiKey = getAIParam(API_KEY);
     private static String completionUrl = getAIParam(COMPLETION_KEY);
     
+    public static class AITypeException extends Exception {
+        private static final long serialVersionUID = 1L;
+        
+        public AITypeException(String object, String classname, String needClass) {
+            super("Invalid type for "+object+": "+classname+" need "+needClass);
+        }
+    }
+
     private static JSONObject getOptAiApiParam(){
         String env = System.getenv(SYSPARAM_AI_API_PARAM);
         if(Tool.isEmpty(env)){
@@ -485,7 +494,8 @@ public class AITools implements java.io.Serializable {
         String errorMessage;
         try{
             JSONObject error = new JSONObject(response.toString());
-            errorMessage = error.optJSONObject(ERROR_KEY).optString(MESSAGE_KEY,"no message");
+
+            errorMessage = error.optJSONObject(ERROR_KEY,new JSONObject()).optString(MESSAGE_KEY,response.toString());
         }catch(JSONException e){
             errorMessage = response.toString();
         }
@@ -510,7 +520,7 @@ public class AITools implements java.io.Serializable {
             String res = response.toString();
             JSONObject resJson = refactorAiResponseInGPT(res);
             if(resJson.has(USAGE_KEY )){
-                AppLog.info("AI used token :"+new JSONObject(res).optJSONObject(USAGE_KEY).toString(1), g);
+                AppLog.info("AI used token :"+resJson.optJSONObject(USAGE_KEY).toString(1), g);
             }
             return resJson.toString();
         } catch (IOException e) {
@@ -613,7 +623,20 @@ public class AITools implements java.io.Serializable {
         
         return json;
     }
-
+    public static Message checkJson(String json){
+		if (Tool.isEmpty(json)){
+			Message m = new Message();
+			m.raiseError(Message.formatError("AI_JSON_EMPTY_ERROR",null, null));
+			return m;
+		}
+		JSONObject jsonObject = AITools.getValidJson(json);
+		if(Tool.isEmpty(jsonObject)){
+			Message m = new Message();
+			m.raiseError(Message.formatError("AI_JSON_ERROR",null, null));
+			return m;
+		}
+		return null;
+	}
     /**
      * Format a NotePad Field to a AI Format Historic Array
      * @param data notepad value (old value to not consider the actual ask)
@@ -1293,4 +1316,6 @@ public class AITools implements java.io.Serializable {
     public static boolean isConfigurable(){
         return !IS_ENV_SETUP;
     }
+
+    
 }

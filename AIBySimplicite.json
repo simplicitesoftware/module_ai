@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.25",
+  "mdl_version": "0.26",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\",\n    \"branch\": \"6.1\"\n}",
@@ -99,7 +99,7 @@
       "mod_doc": {
        "path": "files/Model/Model-AIGenData.svg",
        "mime": "image/svg+xml",
-       "name": "Model-AIGenData.svg"
+       "name": "model.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-AIGenData.png",
@@ -274,6 +274,15 @@
    "list": [
     {
      "object": "Profile",
+     "userkey": "AI_ADMIN AI_DESIGNER",
+     "item": {
+      "prf_profile_id__grp_name": "AI_ADMIN",
+      "prf_group_id__grp_name": "AI_DESIGNER",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Profile",
      "userkey": "AI_DESIGNER AI_BUSINESS",
      "item": {
       "prf_profile_id__grp_name": "AI_DESIGNER",
@@ -334,7 +343,7 @@
       "lov_name": "TEXT",
       "lov_code": "AI_DEFAULT_PARAM",
       "lov_lang": "ANY",
-      "lov_value": "{\n    \"bot_name\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"George\",\n        \"help\": \"The name of the bot that will be displayed to users.\",\n        \"label\": {\n            \"FRA\": \"Nom du bot\",\n            \"ENU\": \"Bot Name\"\n        },\n        \"left_column\": true\n    },\n    \"code_max_token\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"2000\",\n        \"help\": \"The maximum number of tokens the bot can handle for all technical calls, including  chart and modules generation.\",\n        \"label\": {\n            \"FRA\": \"Nombre maximum de jetons pour appels techniques\",\n            \"ENU\": \"Max Token for Technical Calls\"\n        }\n    },\n    \"default_max_token\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"1500\",\n        \"help\": \"The maximum number of tokens the bot can handle by default for each interaction.\",\n        \"label\": {\n            \"FRA\": \"Nombre maximum de jetons par défaut\",\n            \"ENU\": \"Default Max Token\"\n        }\n    },\n    \"hist_depth\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"3\",\n        \"help\": \"The number of previous messages the bot will consider when generating a new response.\",\n        \"label\": {\n            \"FRA\": \"Profondeur de l'historique\",\n            \"ENU\": \"History Depth\"\n        },\n        \"left_column\": true\n    },\n    \"provider\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"\",\n        \"help\": \"Name of the model provider, used in the data disclaimer.\",\n        \"label\": {\n            \"FRA\": \"Fournisseur\",\n            \"ENU\": \"Provider\"\n        },\n        \"left_column\": true\n    },\n    \"showDataDisclaimer\": {\n        \"type\": \"boolean\",\n        \"defaultValue\": true,\n        \"help\": \"Indicates whether the data disclaimer should be shown to users.\",\n        \"label\": {\n            \"FRA\": \"Afficher la clause de non-responsabilité des données\",\n            \"ENU\": \"Show Data Disclaimer\"\n        },\n        \"left_column\": true\n    },\n    \"model\": {\n        \"type\": \"select\",\n        \"defaultValue\": \"\",\n        \"help\": \"Select the AI model to use for interactions.\",\n        \"label\": {\n            \"FRA\": \"Modèle\",\n            \"ENU\": \"Model\"\n        },\n        \"left_column\": true\n    },\n    \"api_key\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"\",\n        \"help\": \"API key used to authenticate requests to the AI server.\",\n        \"label\": {\n            \"FRA\": \"Clé API\",\n            \"ENU\": \"API Key\"\n        }\n    },\n    \"completion_url\": {\n        \"type\": \"url\",\n        \"defaultValue\": \"\",\n        \"help\": \"URL where text completion requests will be sent.\",\n        \"label\": {\n            \"FRA\": \"URL de complétion\",\n            \"ENU\": \"Completion URL\"\n        }\n    },\n    \"stt_url\": {\n        \"type\": \"url\",\n        \"defaultValue\": \"\",\n        \"help\": \"URL used for speech recognition.\",\n        \"label\": {\n            \"FRA\": \"URL de la synthèse vocale \",\n            \"ENU\": \"Speech to text URL\"\n        }\n    },\n    \"ping_url\": {\n        \"type\": \"url\",\n        \"defaultValue\": \"\",\n        \"help\": \"URL used to check the availability of the AI server.\",\n        \"label\": {\n            \"FRA\": \"URL de ping\",\n            \"ENU\": \"Ping URL\"\n        }\n    }\n\n}",
+      "lov_value": "{\n    \"bot_name\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"George\",\n        \"help\": \"The name of the bot that will be displayed to users.\",\n        \"label\": {\n            \"FRA\": \"Nom du bot\",\n            \"ENU\": \"Bot Name\"\n        },\n        \"left_column\": true\n    },\n    \"data_number\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"5\",\n        \"help\": \"The amount of data per object requested from the AI.\",\n        \"label\": {\n            \"FRA\": \"Nombre de données à générer\",\n            \"ENU\": \"Number of data to generate\"\n        },\n        \"left_column\": true\n    },\n    \"code_max_token\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"2000\",\n        \"help\": \"The maximum number of tokens the bot can handle for all technical calls, including  chart and modules generation.\",\n        \"label\": {\n            \"FRA\": \"Nombre maximum de jetons pour appels techniques\",\n            \"ENU\": \"Max Token for Technical Calls\"\n        }\n    },\n    \"default_max_token\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"1500\",\n        \"help\": \"The maximum number of tokens the bot can handle by default for each interaction.\",\n        \"label\": {\n            \"FRA\": \"Nombre maximum de jetons par défaut\",\n            \"ENU\": \"Default Max Token\"\n        }\n    },\n    \"hist_depth\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"3\",\n        \"help\": \"The number of previous messages the bot will consider when generating a new response.\",\n        \"label\": {\n            \"FRA\": \"Profondeur de l'historique\",\n            \"ENU\": \"History Depth\"\n        },\n        \"left_column\": true\n    },\n    \"provider\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"\",\n        \"help\": \"Name of the model provider, used in the data disclaimer.\",\n        \"label\": {\n            \"FRA\": \"Fournisseur\",\n            \"ENU\": \"Provider\"\n        },\n        \"left_column\": true\n    },\n    \"showDataDisclaimer\": {\n        \"type\": \"boolean\",\n        \"defaultValue\": true,\n        \"help\": \"Indicates whether the data disclaimer should be shown to users.\",\n        \"label\": {\n            \"FRA\": \"Afficher la clause de non-responsabilité des données\",\n            \"ENU\": \"Show Data Disclaimer\"\n        },\n        \"left_column\": true\n    },\n    \"model\": {\n        \"type\": \"select\",\n        \"defaultValue\": \"\",\n        \"help\": \"Select the AI model to use for interactions.\",\n        \"label\": {\n            \"FRA\": \"Modèle\",\n            \"ENU\": \"Model\"\n        },\n        \"left_column\": true\n    },\n    \"api_key\": {\n        \"type\": \"text\",\n        \"defaultValue\": \"\",\n        \"help\": \"API key used to authenticate requests to the AI server.\",\n        \"label\": {\n            \"FRA\": \"Clé API\",\n            \"ENU\": \"API Key\"\n        }\n    },\n    \"completion_url\": {\n        \"type\": \"url\",\n        \"defaultValue\": \"\",\n        \"help\": \"URL where text completion requests will be sent.\",\n        \"label\": {\n            \"FRA\": \"URL de complétion\",\n            \"ENU\": \"Completion URL\"\n        }\n    },\n    \"stt_url\": {\n        \"type\": \"url\",\n        \"defaultValue\": \"\",\n        \"help\": \"URL used for speech recognition.\",\n        \"label\": {\n            \"FRA\": \"URL de la synthèse vocale \",\n            \"ENU\": \"Speech to text URL\"\n        }\n    },\n    \"ping_url\": {\n        \"type\": \"url\",\n        \"defaultValue\": \"\",\n        \"help\": \"URL used to check the availability of the AI server.\",\n        \"label\": {\n            \"FRA\": \"URL de ping\",\n            \"ENU\": \"Ping URL\"\n        }\n    }\n\n}",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -576,12 +585,25 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT AI_JSON_EMPTY_ERROR English",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_JSON_EMPTY_ERROR",
+      "lov_lang": "ENU",
+      "lov_value": "Empty field. Please try again.",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT AI_JSON_ERROR English",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_JSON_ERROR",
       "lov_lang": "ENU",
-      "lov_value": "The AI was unable to generate your module. Please try again.",
+      "lov_value": "The provided format is not valid: JSON expected. Please check the syntax",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -914,12 +936,25 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT AI_JSON_EMPTY_ERROR French",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_JSON_EMPTY_ERROR",
+      "lov_lang": "FRA",
+      "lov_value": "Champ vide. Veuillez recommencer.",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT AI_JSON_ERROR French",
      "item": {
       "lov_name": "TEXT",
       "lov_code": "AI_JSON_ERROR",
       "lov_lang": "FRA",
-      "lov_value": "L'IA n'a pas réussi à générer votre module. Veuillez réessayer.",
+      "lov_value": "Le format fourni n'est pas valide : JSON attendu. Veuillez vérifier la syntaxe",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -5861,7 +5896,7 @@
       "acy_max_duration": null,
       "acy_duration_unit": null,
       "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
+      "acy_user_dlg": false,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -5880,7 +5915,7 @@
       "acy_max_duration": null,
       "acy_duration_unit": null,
       "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
+      "acy_user_dlg": false,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -5899,7 +5934,7 @@
       "acy_max_duration": null,
       "acy_duration_unit": null,
       "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
+      "acy_user_dlg": false,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -6384,7 +6419,7 @@
       "trs_name": "Retry",
       "trs_action_id__act_name": "AI_GENDATA_RETRY",
       "trs_condition": null,
-      "trs_callback": null,
+      "trs_callback": "relaunchingGeneration",
       "trs_alert_id__alt_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }

@@ -5,7 +5,6 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
@@ -17,6 +16,7 @@ public class AIData implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_EMAIL ="email@example.com";
 	private static final String DEFAULT_PHONE ="0601020304";
+	private static final String DEVOBJ_GENERATE_MLDS = "DaaGenerateMlds";
 	private static HashMap<Integer,String> typeTrad;
 	private static Random random = new Random();
 	String html = "";
@@ -113,8 +113,8 @@ public class AIData implements java.io.Serializable {
 	public static JSONObject genDataForModule(String moduleName,Grant g){
 		try {
 			String[] ids = AITools.getObjectIdsModule(moduleName, g);
-			if(Tool.isEmpty(ids))throw new PlatformException("Not found or not granted object to generate for module: \n"+moduleName);
-			JSONObject response = AIData.callIADataOnModule(ids, g);
+			if(Tool.isEmpty(ids))throw new PlatformException("Not found or not granted object to generate for module "+moduleName+" and user "+g.getLogin());
+			JSONObject response = AIData.callIADataOnModule(ids,ModuleDB.getModuleId(moduleName), g);
 			response = AIData.jsonPreprocessing(response, g);
 			return response;
 		}catch (PlatformException e) {
@@ -336,10 +336,12 @@ public class AIData implements java.io.Serializable {
 		 * @return the JSON object containing the data
 		 * @throws PlatformException if there is an error in the platform
 	*/
-	private static JSONObject callIADataOnModule(String[] ids, Grant g) throws PlatformException{
+	private static JSONObject callIADataOnModule(String[] ids,String mldId, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
 		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)) AppLog.info("module uml: "+data.toString(1), g);
-		JSONObject jsonResponse = AITools.aiCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least 2 entries per class",false,true);
+		String dataNumber = AITools.getAIParam("data_number","5");
+		JSONObject jsonResponse = AITools.aiCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least "+dataNumber+" entries per class",false,true);
+		devSaveGenerationDataCost(mldId,jsonResponse.optJSONObject(AITools.USAGE_KEY));
 		String response = AITools.parseJsonResponse(jsonResponse);
 		JSONObject json = AITools.getValidJson(response);
 		if(Tool.isEmpty(json)){	
@@ -1051,5 +1053,48 @@ public class AIData implements java.io.Serializable {
 
 	private static float randomFloat(float max){
 		return max * random.nextFloat();
+	}
+	
+	private static void devSaveGenerationDataCost(String mldId, JSONObject cost){
+		if(!Tool.isEmpty(ModuleDB.getModuleId("DevAIAddon", false))){
+			Grant admin = Grant.getSystemAdmin();
+			admin.addAccessRead(DEVOBJ_GENERATE_MLDS);
+			admin.addAccessCreate(DEVOBJ_GENERATE_MLDS);
+			admin.addAccessCreate("DaaDataGeneration");
+			ObjectDB obj = admin.getTmpObject(DEVOBJ_GENERATE_MLDS);
+			obj.resetFilters();
+			obj.setFieldFilter("daaGmlModuleId", mldId);
+			List<String[]> r = obj.search();
+			String glmId;
+			if(Tool.isEmpty(r)){
+				synchronized(obj.getLock()){
+					BusinessObjectTool objT = obj.getTool();
+					try {
+						objT.selectForCreate();
+						obj.setFieldValue("daaGmlModuleId", mldId,false);
+						obj.setFieldValue("daaGmlModuleName",ModuleDB.getModuleName(mldId));
+						objT.validateAndCreate();
+						glmId = obj.getRowId();
+					} catch (GetException | CreateException | ValidateException e) {
+						AppLog.warning("Dev list object not Created",e);
+						return;
+					}
+				}
+			}else{
+				glmId = r.get(0)[obj.getFieldIndex("row_id")];
+			}
+			obj = admin.getTmpObject("DaaDataGeneration");
+			synchronized(obj.getLock()){
+				BusinessObjectTool objT = obj.getTool();
+				try {
+					objT.selectForCreate();
+					obj.setFieldValue("daaDgGmlId", glmId,false);
+					obj.setFieldValue("daaDgCost",cost);
+					objT.validateAndCreate();
+				} catch (GetException | CreateException | ValidateException e) {
+					AppLog.warning("Dev list object not Created",e);
+				}
+			}
+		}
 	}
 }

@@ -45,7 +45,7 @@ public class AIProvider extends ObjectDB {
 		specificParam = AITools.getCurrentParams(specificParam);
 		param.put("provider", getFieldValue("aiPrvProvider"));
 		JSONObject datas = new JSONObject();
-		datas.put("DefFields", addFields(new String[]{"provider", "model","bot_name"}, param, models, requiredFields,null));
+		datas.put("DefFields", addFields(new String[]{"provider", "model","bot_name","data_number"}, param, models, requiredFields,null));
 		
 		datas.put("DetailsFields", addFields(new String[]{"hist_depth","showDataDisclaimer"}, param, null,requiredFields,null));
 

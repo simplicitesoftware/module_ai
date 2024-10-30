@@ -348,7 +348,7 @@ public class AIModel implements java.io.Serializable {
 	}
 	
 	public static List<String> genModule(String moduleId,String[] groupIds, String domainID, JSONObject json) throws GetException, ValidateException, SaveException{
-		
+		AppLog.info("I'M HERE genmodule");
 		int domainOrder=100;	
 		ModuleInfo mInfo = new ModuleInfo(moduleId, SyntaxTool.getModulePrefix(moduleId), groupIds, domainID);
 		Grant g = Grant.getSystemAdmin();
@@ -1004,8 +1004,15 @@ public class AIModel implements java.io.Serializable {
 			funcObj.setFieldFilter(MODULE_ID_FIELD,moduleId);
 			funcObj.setFieldFilter("fct_function",GrantCore.FUNCTION_ALL);
 			funcObj.setFieldFilter("fct_object_id",objectId);
-			funcId = funcObj.search().get(0)[funcObj.getRowIdFieldIndex()];
+			List<String[]> funcs = funcObj.search();
+			if(Tool.isEmpty(funcs)){
+				AppLog.warning("No function found for object "+ObjectCore.getObjectName(objectId)+" in module "+ModuleDB.getModuleName(moduleId));
+				return;
+			}
+			funcId = funcs.get(0)[funcObj.getRowIdFieldIndex()];
+			
 		}
+
 		JSONObject grant = new JSONObject();
 		grant.put("grt_group_id", groupId);
 		grant.put(MODULE_ID_FIELD,moduleId);
