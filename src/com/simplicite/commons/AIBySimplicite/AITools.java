@@ -698,7 +698,9 @@ public class AITools implements java.io.Serializable {
     }
     private static String normalize(String text){
         text = removeAcent(text);
-        return  Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^a-zA-Z0-9@.-]", " ");
+        text = Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^\\w\\(\\),`{}.\\[\\]\"@\\/:-]", " ");
+        text = replaceSymboleBySafeHTML(text);
+        return  text;
     }
     public static String normalize(String text, boolean secure){
         text = removeAcent(text);
@@ -717,6 +719,23 @@ public class AITools implements java.io.Serializable {
         return text;
                     
                     
+    }
+    private static String replaceSymboleBySafeHTML(String text){
+        text = text.replaceAll("\\n", "<br>")
+            .replaceAll("\\{", "&#123;")
+            .replaceAll("\\}", "&#125;")
+            .replaceAll("\\(", "&#40;")
+            .replaceAll("\\)", "&#41;")
+            .replaceAll("\\[", "&#91;")
+            .replaceAll("\\]", "&#93;")
+            .replaceAll("\\.", "&#46;")
+            .replaceAll("\\,", "&#44;")
+            .replaceAll("\\`", "&#96;")
+            .replaceAll("\\\"", "&#34;")
+            .replaceAll("\\@", "&#64;")
+            .replaceAll("\\/", "&#47;")
+            .replaceAll("\\-", "&#45;");
+        return text;
     }
     /**
      * reverse the historic array to have the exchange in the correct order

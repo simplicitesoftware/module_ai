@@ -2883,7 +2883,7 @@
        "name": "AiMonitoring.java"
       },
       "obe_icon": null,
-      "obe_permalink": null,
+      "obe_permalink": "/ai-monitoring",
       "obe_widget": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -14122,6 +14122,23 @@
        "icon": "img/system/external_object",
        "label": "External object",
        "userkeylabel": "AIRestAPI",
+       "object": "ObjectExternal"
+      },
+      "pmg_perm_id__prm_prop": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "PermGroup",
+     "userkey": "PUBLIC AI_ADMIN AiMonitoring",
+     "item": {
+      "pmg_group_id__grp_name": "PUBLIC",
+      "pmg_perm_id__prm_group_id__grp_name": "AI_ADMIN",
+      "pmg_perm_id__prm_object": {
+       "item": {"obe_name": "AiMonitoring"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "AiMonitoring",
        "object": "ObjectExternal"
       },
       "pmg_perm_id__prm_prop": null,

@@ -67,7 +67,22 @@ public class AIGenData extends Processus {
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)
 			return null;
 		if(!AITools.isAIParam(true)) return  g.T(AI_SETTING_NEED);
-		return context.getDataValue("Data", "generate");
+		String js ="function refactorButtons(){\r\n" + //
+						"\tconsole.log(\"test refactorButtons\");\r\n" + //
+						"\tlet deletebutton = $(\".btn[data-action='AI_GENDATA_RETRY']\");\r\n" + //
+						"\tlet nextbutton = $(\".btn[data-action='validate']\");\r\n" + //
+						"\tdeletebutton.removeClass(\"btn-action\");\r\n" + //
+						"\tdeletebutton.addClass(\"btn-secondary\");\r\n" + //
+						"\tlet parentDiv = $(\".btn[data-action='AI_GENDATA_RETRY']\").parent();\r\n" + //
+						"\tparentDiv.css(\"flex-direction\", \"row-reverse\");\r\n" + //
+						"\tdeletebutton.css(\"border-top-right-radius\", \"0px\");\r\n" + //
+						"\tdeletebutton.css(\"border-bottom-right-radius\", \"0px\");\r\n" + //
+						"\tnextbutton.css(\"border-top-right-radius\", \".25rem\");\r\n" + //
+						"\tnextbutton.css(\"border-bottom-right-radius\", \".25rem\");\r\n" + //
+						"}\r\n" + //
+						"refactorButtons();";
+	
+		return context.getDataValue("Data", "generate")+"<script>"+js+"</script>";
 		
 	}
 	@Override
