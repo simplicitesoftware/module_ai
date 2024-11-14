@@ -88,8 +88,14 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		if(userImage){
 			prompt.push({"type":"image_url","image_url":{"url":userImage}});
 		}
-		let postParams = {prompt:JSON.stringify(prompt), specialisation: "You help design uml for object-oriented applications. Without function and whith relation description. Respond with a text", historic: JSON.stringify(historic)}; // post params
-		
+		let providerParams;
+		if(AiJsTools){
+			providerParams =  AiJsTools.getUserProviderParams();
+		}
+		console.log(providerParams);
+			
+		let postParams = {prompt:JSON.stringify(prompt), specialisation: "You help design uml for object-oriented applications. Without function and whith relation description. Respond with a text", historic: JSON.stringify(historic),providerParams: providerParams,reqType:"chatBot"}; // post params
+	
 		// Efface le champ de saisie utilisateur
 		document.getElementById('module_user_message').value = '';
 		$("#input-img img").removeAttr("src");

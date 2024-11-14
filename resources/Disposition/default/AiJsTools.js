@@ -1,14 +1,35 @@
-var AiJsTools = AiJsTools || (function() {
+var AiJsTools = AiJsTools || (function(param) {
 	let useAsync = true; 
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 	let app = $ui.getApp();
 	let isSpeechRecognitionSupported = null;
-	
+	let provider = "Open AI";//param;
+	let providerObj;
+	let providerParams;
+
+	getProviderParams();
 	let botName= "SimpliBot";
 	getBotName();
 	let userName = app.getGrant().login;
 	if(app.getGrant().firstname ){
 		userName =app.getGrant().firstname;
+	}
+	async function getProviderParams() {
+		let obj = app.getBusinessObject("AIProvider");
+		obj.search(function(r) {
+			if (r && r.length > 0) {
+				obj.select(function(params) {
+					providerObj = obj;
+					providerParams=obj.getUserParameters()// Affiche les paramètres sélectionnés
+					console.log(providerParams);
+				}, r[0].row_id, null);
+			} else {
+				console.log("Aucun résultat trouvé.");
+			}
+		}, {'aiPrvProvider': 'Open AI'}, null);
+	}
+	function getUserProviderParams(){
+		return providerParams;
 	}
 	function getBotName(){
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
@@ -77,6 +98,7 @@ var AiJsTools = AiJsTools || (function() {
 		if(Speech && isSpeechRecognitionSupported){
 			defaultButton(ctn,"speech");
 		}
+		addLLMParams(provider,ctn);
 		$(window).resize(function() {
 			resizeUp($(ctn).parent(),$(ctn).parent().parent().find(".chat-messages"));
 		});
@@ -178,7 +200,7 @@ var AiJsTools = AiJsTools || (function() {
 				content = {"type":"image_url","image_url":{"url":img.attr("src")}};
 				contents.push(content);
 			}
-			text.content = contents
+			text.content = contents;
 			historic.push(JSON.stringify(text));
 			text={};
 			text.role = "assistant";
@@ -194,8 +216,9 @@ var AiJsTools = AiJsTools || (function() {
 		if(userImage){
 			prompt.push({"type":"image_url","image_url":{"url":userImage}});
 		}
-		return {prompt:JSON.stringify(prompt), specialisation:specialisation, historic: JSON.stringify(historic)}; // post params
+		return {prompt:JSON.stringify(prompt), specialisation:specialisation, historic: JSON.stringify(historic), providerParams: providerParams,reqType:"chatBot"}; // post params
 	}
+
 	//speech recognition
 	let mediaRecorder;
 	let audioChunks = [];
@@ -295,7 +318,7 @@ var AiJsTools = AiJsTools || (function() {
 		inputCtn.onclick = function() {
 			resetButtons(inputCtn, messageCtn, sendButton);
 			stopRecording();
-		}
+		};
 	}
 	function resetButtons(inputCtn, messageCtn, sendButton){
 			$(inputCtn.parentElement).find("#cancel-recording").remove();
@@ -376,6 +399,45 @@ var AiJsTools = AiJsTools || (function() {
 		div.append(span);
 		return div;
 	}
+	function addLLMParams(provider,ctn){
+		
+		if(provider == "Open AI"){
+			let htmlButton = document.createElement('button');
+			htmlButton.id = "params";
+			htmlButton.className = "chat-icon-button fas fa-cog";
+			htmlButton.onclick = () => {updateLLMParams(provider);};
+			htmlButton.title = "llm parameters";
+			$(ctn).find('.user-message').after(htmlButton);
+		}
+	}
+	function updateLLMParams(provider){
+		console.log("params: ",providerParams);
+		// Créez un formulaire HTML à partir des gptParams
+		let formHtml = providerObj.getUserParametersForm(providerParams);
+
+
+		$ui.confirm({
+			"name": "params",
+			"title":"Parameters",
+			"content": formHtml,
+			"dontAskAgain" : false,
+			"moveable": true,
+			"onOk":() => {saveLLMParams();}
+		});
+	}
+	
+	function saveLLMParams(){
+		const formData = new FormData(document.getElementById('llmParamsForm'));
+		const updatedParams = {};
+		formData.forEach((value, key) => {
+			console.log(key,": ",value);
+			updatedParams[key] = value;
+		});
+		providerParams = updatedParams;
+		console.log("save: ", gptParams);
+		
+
+	}
 	return { 
 		useAsync: useAsync,
 		url: url,
@@ -389,6 +451,7 @@ var AiJsTools = AiJsTools || (function() {
 		getDisplayUserMessage: getDisplayUserMessage,
 		getDisplayBotMessage: getDisplayBotMessage,
 		loadResultInAceEditor:loadResultInAceEditor,
-		removeimg:removeimg
+		removeimg:removeimg,
+		getUserProviderParams:getUserProviderParams
 	};
 })();

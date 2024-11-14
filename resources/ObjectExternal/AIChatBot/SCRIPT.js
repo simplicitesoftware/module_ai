@@ -61,7 +61,7 @@ var AIChatBot = AIChatBot || (function() {
 		if(AiJsTools){
 			postParams =  AiJsTools.getPostParams(ctn,specialisation);
 		}else{
-			postParams = {prompt:userMessage, specialisation: specialisation, historic: JSON.stringify(historic)};
+			postParams = {prompt:userMessage, specialisation: specialisation, historic: JSON.stringify(historic),reqType:"chatBot"};
 		}
 		
 		// Affichez la question de l'utilisateur et la réponse du chatbot dans le chat

@@ -1,4 +1,5 @@
 package com.simplicite.commons.AIBySimplicite;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -59,6 +60,11 @@ public class AITools implements java.io.Serializable {
     private static final String ASSISTANT_ROLE="assistant";
     private static final String SYSTEM_ROLE= "system";
     private static final String HTML_LEFT_COLUMN_ID = "left_column";
+    private static final String CALLER_PARAM_SPE ="specialisation";
+    private static final String CALLER_PARAM_HISTORIC = "historic";
+    private static final String CALLER_PARAM_SECURE = "secure";
+    private static final String CALLER_PARAM_SAFE_SPE ="isSafeSpe";
+    private static final String CALLER_PARAM_TOKEN ="maxToken";
     
     private static final String MAX_TOKEN = "max_tokens";
     public static final String TYPE_TEXT = "text";
@@ -85,7 +91,6 @@ public class AITools implements java.io.Serializable {
     private static  String aiProvider = getProvider();
     private static String apiKey = getAIParam(API_KEY);
     private static String completionUrl = getAIParam(COMPLETION_KEY);
-    
     public static class AITypeException extends Exception {
         private static final long serialVersionUID = 1L;
         
@@ -93,7 +98,273 @@ public class AITools implements java.io.Serializable {
             super("Invalid type for "+object+": "+classname+" need "+needClass);
         }
     }
-
+    private static class AICallerParams {
+        private String specialisation;
+        private JSONArray prompt;
+        private JSONArray historic;
+        private JSONObject providerParams;
+        private int maxToken = 1500;
+        private boolean secure = false;
+        private boolean isSafeSpe = false;
+        private AICallerParams(Object promptObject,JSONObject params) throws AITypeException{
+            //prompt to JSONArray
+            if(promptObject instanceof String){
+                prompt = new JSONArray();
+                String strPrompt = normalize((String)promptObject,secure);
+                prompt.put(getformatedContentByType(strPrompt,TYPE_TEXT,false));
+                 
+            }else if(promptObject instanceof JSONArray){
+                prompt= (JSONArray)promptObject;
+            }else{
+               AppLog.info("Prompt must be a String or a JSONArray");
+               throw new AITypeException("prompt", promptObject.getClass().getName(), "String or JSONArray");
+            }
+            specialisation = params.optString(CALLER_PARAM_SPE);
+            historic = params.optJSONArray(CALLER_PARAM_HISTORIC, new JSONArray());
+            providerParams = params.optJSONObject("providerParams", new JSONObject());
+            secure = params.optBoolean(CALLER_PARAM_SECURE, secure);
+            isSafeSpe = params.optBoolean(CALLER_PARAM_SAFE_SPE, isSafeSpe);
+            if(!Tool.isEmpty(aiApiParam)) {
+                maxToken=aiApiParam.getInt(MAX_TOKEN_PARAM_KEY);
+            }
+            if(params.has(CALLER_PARAM_TOKEN)){
+                Object token = params.get(CALLER_PARAM_TOKEN);
+                if(token instanceof Integer){
+                    maxToken = (int)token;
+                }else if(token instanceof Boolean && !(boolean)token){
+                    maxToken = 0;
+                }
+            }
+        }
+        /**
+         * Function to format the call to chatAI API.
+         * Need the api key parameter set up with your key.
+         * Use the aiApiParam hist_depth parameter to limit the number of exchanges in the historic (useful to limit the number off token of requests).
+         * @param g Grant
+         * @param specialisation Prompt to specialise chatbot (ex: You're a java developer).
+         * @param prompt 
+         * @param historic exchange historic for contextual response
+         * @param maxToken number of tokens allow in response
+         * @return If API return code is 200: API answer else: error return.
+        */
+        public JSONObject aiCall(Grant g){
+            return new JSONObject( aiCaller(g));
+        }
+        private String aiCaller(Grant g){
+            specialisation = removeAcent(specialisation);
+            if(!isSafeSpe) specialisation = JSONObject.quote(normalize(specialisation,true));
+            if("\"\"".equals(specialisation)) specialisation = "";
+            prompt = parsedPrompts(prompt,secure);
+            String model =getAIParam(MODEL_KEY);
+            boolean isClaudeAPI = CLAUDE_LLM.equals(llm);
+            
+            if(Tool.isEmpty(completionUrl)){
+                AppLog.info("completion url not set", g);
+                return "";
+            }
+            try {
+                URI url = new URI(completionUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                addSpecificHeaders(connection,apiKey);
+                
+                // format data
+                JSONObject postData = new JSONObject();
+                if(maxToken>0)
+                    postData.put(MAX_TOKEN, maxToken);
+                if(!Tool.isEmpty(providerParams)){
+                    for(String key : providerParams.keySet()) {
+                        Object data = providerParams.get(key);
+                        if(!Tool.isEmpty(data)){
+                            try{
+                                float dataFloat = parseFloatParam(data);
+                                postData.put(key,dataFloat);
+                            }catch(AITypeException e){
+                                AppLog.warning(e.getMessage());
+                            }       
+                        }
+                        
+                    }
+                }
+                if(!Tool.isEmpty(model))
+                    postData.put(MODEL_KEY, model);
+                JSONArray messages = new JSONArray();
+                // format specialisation.
+                if(!Tool.isEmpty(specialisation))
+                    messages.put(new JSONObject().put("role",SYSTEM_ROLE).put(CONTENT_KEY,specialisation));
+                // add historic (restrict to Param histDepth the number of messages )
+                if(!Tool.isEmpty(historic)){
+                    messages.putAll(getCleanHistoric(historic));
+                }
+                
+                
+                messages.put(new JSONObject().put("role","user").put(CONTENT_KEY,prompt));
+                postData.put(MESSAGES_KEY, messages);
+                
+                if(HUGGINGFACE_LLM.equals(llm)){
+                    postData = getHuggingFormatData(postData);
+                }
+                if(isClaudeAPI){
+                    postData = getClaudeFormatData(postData);
+                }
+                if(Boolean.TRUE.equals(AI_DEBUG_LOGS)){
+                    AppLog.info("post data :"+postData.toString(1),g);
+                }
+                try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
+                    outputStream.writeBytes(postData.toString());
+                    outputStream.flush();
+                }
+                
+                int responseCode = connection.getResponseCode();
+                if(responseCode!=200){
+                    JSONObject error = readError(connection,responseCode,g);
+                    return Tool.isEmpty(error)?"":error.toString();
+                    
+                }
+               
+               return readResponse(connection,g);
+    
+                
+            } catch (IOException | URISyntaxException e) {
+                AppLog.error(e,g);
+            }
+            return "";
+    
+        }
+        private static float parseFloatParam(Object param) throws AITypeException {
+            if(param instanceof Number)
+                return ((Number)param).floatValue();  
+            if(param instanceof String)
+                return Float.parseFloat((String)param);
+            throw new AITypeException("provider parameters",param.getClass().getName(), "number");
+    
+        }
+        private static JSONObject getClaudeFormatData(JSONObject postData){
+            JSONArray messages = postData.getJSONArray(MESSAGES_KEY);
+            int toremove = -1;
+            
+            for (int i = 0; i < messages.length(); i++) {
+                JSONObject message = messages.getJSONObject(i);
+                // Perform your condition here
+                if (SYSTEM_ROLE.equals(message.optString("role"))) {
+                    String content = message.optString(CONTENT_KEY);
+                    postData.put(SYSTEM_ROLE, content);
+                    toremove = i;
+                    
+                }else if("user".equals(message.optString("role")) && !Tool.isEmpty(message.optString(CONTENT_KEY))){// to clomplete
+                    JSONArray contentArray = message.optJSONArray(CONTENT_KEY);
+                    for(int j = 0; j < contentArray.length(); j++){
+                        JSONObject contentJson = contentArray.getJSONObject(j);
+                        if(TYPE_IMAGE_URL.equals(contentJson.optString("type"))){
+                            refactorImageForClaudeAPI(contentJson);
+                        }
+                    }
+                }
+            }
+            if(toremove>=0){
+                messages.remove(toremove);
+            }
+            if(!postData.has(MAX_TOKEN)){
+                postData.put(MAX_TOKEN,aiApiParam.getInt(MAX_TOKEN_PARAM_KEY));
+            }
+            return postData;
+        }
+        private static void refactorImageForClaudeAPI(JSONObject contentJson){
+            contentJson.put("type","image");
+            String url = contentJson.optJSONObject(TYPE_IMAGE_URL).optString("url");
+            contentJson.remove(TYPE_IMAGE_URL);
+            JSONObject source = new JSONObject();
+            String regexUrl = "data:([\\w\\/]*);(\\w*),(.*)";
+            Pattern pattern = Pattern.compile(regexUrl);
+            Matcher matcher = pattern.matcher(url);
+            if(matcher.matches()){
+                source.put("type",matcher.group(2));
+                source.put("media_type",matcher.group(1));
+                source.put("data",matcher.group(3));
+                
+            }
+            if(!Tool.isEmpty(source)){
+                contentJson.put("source",source);
+            }
+    
+        }
+        private static JSONObject getHuggingFormatData(JSONObject postData){
+            JSONObject newPostData = new JSONObject();
+            StringBuilder dialogBuilder = new StringBuilder("");
+            JSONObject params = new JSONObject();
+            if(postData.has(MAX_TOKEN))
+                params.put("max_length",postData.getInt(MAX_TOKEN));
+            JSONArray messages = postData.getJSONArray(MESSAGES_KEY);
+            for(int i = 0; i < messages.length(); i++){
+                JSONObject message = messages.getJSONObject(i);
+                String role = message.optString("role","user");
+                String content = getContent(message.get(CONTENT_KEY));
+                switch (role) {
+                    case ASSISTANT_ROLE:
+                        dialogBuilder.append("bot: "+content+"\n");
+                        break;
+                    case SYSTEM_ROLE:
+                        if(Tool.isEmpty(content) || "\"\"".equals(content)) break;
+                        dialogBuilder.append("context: "+ content+"\n");
+                        break;
+                    default:
+                        dialogBuilder.append(content+"\n");
+                        break;
+                }
+    
+            }
+            newPostData.put("inputs",dialogBuilder.toString());
+            newPostData.put("parameters",params);
+            return newPostData;
+        }
+        private static String getContent(Object contentObj){
+            StringBuilder contentBuilder = new StringBuilder("");
+            if(contentObj instanceof JSONArray){
+                JSONArray arrayContent = (JSONArray)contentObj;
+                for(int j = 0; j < arrayContent.length(); j++){
+                    JSONObject contentJson = arrayContent.getJSONObject(j);
+                    if(contentJson.has(TYPE_TEXT)){
+                        contentBuilder.append(contentJson.getString(TYPE_TEXT)+"\n");
+                    }
+                }
+                return contentBuilder.toString();
+            }else if(contentObj instanceof String){
+                return (String)contentObj;
+            }
+            return "";
+        }
+        private static JSONArray getCleanHistoric(JSONArray historic){
+            int len = historic.length();
+            if( len< aiHistDepth*2){
+                return historic;
+            }else{
+                JSONArray newHistoric = new JSONArray();
+                for(int i = len - 2*aiHistDepth; i < len;i++ )
+                    newHistoric.put(historic.getJSONObject(i));
+                return newHistoric;
+            }
+        }
+        private static JSONArray parsedPrompts(JSONArray prompts, boolean secure){
+            JSONArray newPrompts = new JSONArray();
+            for(Object p : prompts){
+                if(p instanceof JSONObject){
+                    JSONObject contentJson = (JSONObject)p;
+                    if(!contentJson.optBoolean(TRUSTED,false) && contentJson.has(TYPE_TEXT)){
+                        contentJson.put(TYPE_TEXT,JSONObject.quote(normalize(contentJson.getString(TYPE_TEXT),secure)));
+                    }
+                    if(contentJson.has(TRUSTED)){
+                        contentJson.remove(TRUSTED);
+                    }
+                    newPrompts.put(contentJson);
+                }else{
+                   newPrompts.put(JSONObject.quote(normalize((String)p)));
+                }
+            }
+            return newPrompts;
+        }    
+    }
     private static JSONObject getOptAiApiParam(){
         String env = System.getenv(SYSPARAM_AI_API_PARAM);
         if(Tool.isEmpty(env)){
@@ -222,103 +493,6 @@ public class AITools implements java.io.Serializable {
         aiProvider = getAIParam(PROVIDER_KEY);
         apiKey = getAIParam(API_KEY);
     }
-	/**
-     * Function to format the call to chatAI API.
-     * Need the api key parameter set up with your key.
-     * Use the aiApiParam hist_depth parameter to limit the number of exchanges in the historic (useful to limit the number off token of requests).
-	 * @param g Grant
-	 * @param specialisation Prompt to specialise chatbot (ex: You're a java developer).
-	 * @param prompt 
-	 * @param historic exchange historic for contextual response
-	 * @param maxToken number of tokens allow in response
-	 * @return If API return code is 200: API answer else: error return.
-	 */
-    private static String aiCaller(Grant g, String specialisation, Object prompt ,JSONArray historic, boolean secure, int maxToken){
-        return aiCaller(g, specialisation, prompt,historic,secure,false,maxToken);
-    }
-    
-    private static String aiCaller(Grant g, String specialisation, Object prompt ,JSONArray historic, boolean secure,boolean isSafeSpe, int maxToken){
-        JSONArray arrayPrompt = new JSONArray();
-       if(prompt instanceof String){
-            String strPrompt = normalize((String)prompt,secure);
-            arrayPrompt.put(getformatedContentByType(strPrompt,TYPE_TEXT,false));
-            
-        }else if(prompt instanceof JSONArray){
-            arrayPrompt= (JSONArray)prompt;
-        }else{
-            AppLog.info("Prompt must be a String or a JSONArray",g);
-            return "";
-        }
-        return aiCaller(g, specialisation,arrayPrompt,historic,secure,isSafeSpe,maxToken);
-    }
-	private static String aiCaller(Grant g, String specialisation, JSONArray prompt ,JSONArray historic, boolean secure,boolean isSafeSpe, int maxToken){
-        specialisation = removeAcent(specialisation);
-        if(!isSafeSpe) specialisation = JSONObject.quote(normalize(specialisation,true));
-        if("\"\"".equals(specialisation)) specialisation = "";
-        prompt = parsedPrompts(prompt,secure);
-        String model =getAIParam(MODEL_KEY);
-        boolean isClaudeAPI = CLAUDE_LLM.equals(llm);
-        
-        if(Tool.isEmpty(completionUrl)){
-            AppLog.info("completion url not set", g);
-            return "";
-        }
-        try {
-            URI url = new URI(completionUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
-            addSpecificHeaders(connection,apiKey);
-            
-            // format data
-            JSONObject postData = new JSONObject();
-            if(maxToken>0)
-                postData.put(MAX_TOKEN, maxToken);
-            if(!Tool.isEmpty(model))
-                postData.put(MODEL_KEY, model);
-            JSONArray messages = new JSONArray();
-            // format specialisation.
-            if(!Tool.isEmpty(specialisation))
-                messages.put(new JSONObject().put("role",SYSTEM_ROLE).put(CONTENT_KEY,specialisation));
-            // add historic (restrict to Param histDepth the number of messages )
-            if(!Tool.isEmpty(historic)){
-                messages.putAll(getCleanHistoric(historic));
-            }
-            
-            messages.put(new JSONObject().put("role","user").put(CONTENT_KEY,prompt));
-            postData.put(MESSAGES_KEY, messages);
-            
-            if(HUGGINGFACE_LLM.equals(llm)){
-                postData = getHuggingFormatData(postData);
-            }
-            if(isClaudeAPI){
-                postData = getClaudeFormatData(postData);
-            }
-            if(Boolean.TRUE.equals(AI_DEBUG_LOGS)){
-                AppLog.info("post data :"+postData.toString(1),g);
-            }
-            try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
-                outputStream.writeBytes(postData.toString());
-                outputStream.flush();
-            }
-            
-            int responseCode = connection.getResponseCode();
-            if(responseCode!=200){
-                JSONObject error = readError(connection,responseCode,g);
-                return Tool.isEmpty(error)?"":error.toString();
-                
-            }
-           
-           return readResponse(connection,g);
-
-            
-        } catch (IOException | URISyntaxException e) {
-            AppLog.error(e,g);
-        }
-        return "";
-
-    }
     private static void addSpecificHeaders(HttpURLConnection connection,String apiKey){
         String projet = getAIParam("OpenAI-Project");
         String org = getAIParam("OpenAI-Organization");
@@ -339,129 +513,7 @@ public class AITools implements java.io.Serializable {
                 break;
         }
     }
-    private static JSONObject getClaudeFormatData(JSONObject postData){
-        JSONArray messages = postData.getJSONArray(MESSAGES_KEY);
-        int toremove = -1;
-        
-        for (int i = 0; i < messages.length(); i++) {
-            JSONObject message = messages.getJSONObject(i);
-            // Perform your condition here
-            if (SYSTEM_ROLE.equals(message.optString("role"))) {
-                String content = message.optString(CONTENT_KEY);
-                postData.put(SYSTEM_ROLE, content);
-                toremove = i;
-                
-            }else if("user".equals(message.optString("role")) && !Tool.isEmpty(message.optString(CONTENT_KEY))){// to clomplete
-                JSONArray contentArray = message.optJSONArray(CONTENT_KEY);
-                for(int j = 0; j < contentArray.length(); j++){
-                    JSONObject contentJson = contentArray.getJSONObject(j);
-                    if(TYPE_IMAGE_URL.equals(contentJson.optString("type"))){
-                        refactorImageForClaudeAPI(contentJson);
-                    }
-                }
-            }
-        }
-        if(toremove>=0){
-            messages.remove(toremove);
-        }
-        if(!postData.has(MAX_TOKEN)){
-            postData.put(MAX_TOKEN,aiApiParam.getInt(MAX_TOKEN_PARAM_KEY));
-        }
-        return postData;
-    }
-    private static void refactorImageForClaudeAPI(JSONObject contentJson){
-        contentJson.put("type","image");
-        String url = contentJson.optJSONObject(TYPE_IMAGE_URL).optString("url");
-        contentJson.remove(TYPE_IMAGE_URL);
-        JSONObject source = new JSONObject();
-        String regexUrl = "data:([\\w\\/]*);(\\w*),(.*)";
-        Pattern pattern = Pattern.compile(regexUrl);
-        Matcher matcher = pattern.matcher(url);
-        if(matcher.matches()){
-            source.put("type",matcher.group(2));
-            source.put("media_type",matcher.group(1));
-            source.put("data",matcher.group(3));
-            
-        }
-        if(!Tool.isEmpty(source)){
-            contentJson.put("source",source);
-        }
 
-    }
-    private static JSONObject getHuggingFormatData(JSONObject postData){
-        JSONObject newPostData = new JSONObject();
-        StringBuilder dialogBuilder = new StringBuilder("");
-        JSONObject params = new JSONObject();
-        if(postData.has(MAX_TOKEN))
-            params.put("max_length",postData.getInt(MAX_TOKEN));
-        JSONArray messages = postData.getJSONArray(MESSAGES_KEY);
-        for(int i = 0; i < messages.length(); i++){
-            JSONObject message = messages.getJSONObject(i);
-            String role = message.optString("role","user");
-            String content = getContent(message.get(CONTENT_KEY));
-            switch (role) {
-                case ASSISTANT_ROLE:
-                    dialogBuilder.append("bot: "+content+"\n");
-                    break;
-                case SYSTEM_ROLE:
-                    if(Tool.isEmpty(content) || "\"\"".equals(content)) break;
-                    dialogBuilder.append("context: "+ content+"\n");
-                    break;
-                default:
-                    dialogBuilder.append(content+"\n");
-                    break;
-            }
-
-        }
-        newPostData.put("inputs",dialogBuilder.toString());
-        newPostData.put("parameters",params);
-        return newPostData;
-    }
-    private static String getContent(Object contentObj){
-        StringBuilder contentBuilder = new StringBuilder("");
-        if(contentObj instanceof JSONArray){
-            JSONArray arrayContent = (JSONArray)contentObj;
-            for(int j = 0; j < arrayContent.length(); j++){
-                JSONObject contentJson = arrayContent.getJSONObject(j);
-                if(contentJson.has(TYPE_TEXT)){
-                    contentBuilder.append(contentJson.getString(TYPE_TEXT)+"\n");
-                }
-            }
-            return contentBuilder.toString();
-        }else if(contentObj instanceof String){
-            return (String)contentObj;
-        }
-        return "";
-    }
-    private static JSONArray getCleanHistoric(JSONArray historic){
-        int len = historic.length();
-        if( len< aiHistDepth*2){
-            return historic;
-        }else{
-            JSONArray newHistoric = new JSONArray();
-            for(int i = len - 2*aiHistDepth; i < len;i++ )
-                newHistoric.put(historic.getJSONObject(i));
-            return newHistoric;
-        }
-    }
-    private static JSONArray parsedPrompts(JSONArray prompts, boolean secure){
-        JSONArray newPrompts = new JSONArray();
-        for(Object p : prompts){
-            if(p instanceof JSONObject){
-                JSONObject contentJson = (JSONObject)p;
-                if(!contentJson.optBoolean(TRUSTED,false) && contentJson.has(TYPE_TEXT)){
-                    contentJson.put(TYPE_TEXT,JSONObject.quote(normalize(contentJson.getString(TYPE_TEXT),secure)));
-                }
-                if(contentJson.has(TRUSTED)){
-                    contentJson.remove(TRUSTED);
-                }
-                newPrompts.put(contentJson);
-            }else{
-               newPrompts.put(JSONObject.quote(normalize((String)p)));
-            }
-        }
-        return newPrompts;
-    }
     /**
      * Reads the error response from an HTTP connection and returns a formatted error message.
      *
@@ -544,38 +596,117 @@ public class AITools implements java.io.Serializable {
      * @return
      */
     public static JSONObject aiCaller(Grant g, String specialisation, Object prompt){
-        return aiCaller(g, specialisation,prompt,null,true,false);
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
     }
     public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, boolean maxToken){
-        return aiCaller(g, specialisation,prompt,null,maxToken,false);
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                                .put(CALLER_PARAM_TOKEN,maxToken);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
     }
     public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, boolean maxToken,boolean secure){
-        return aiCaller(g, specialisation,prompt,maxToken,secure,false);
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                                .put(CALLER_PARAM_TOKEN,maxToken)
+                                                .put(CALLER_PARAM_SECURE, secure);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
     }
     public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, boolean maxToken,boolean secure,boolean isSafeSpe){
-        return aiCaller(g, specialisation,prompt,null,maxToken,secure,isSafeSpe);
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                                .put(CALLER_PARAM_TOKEN,maxToken)
+                                                .put(CALLER_PARAM_SECURE, secure)
+                                                .put(CALLER_PARAM_SAFE_SPE,isSafeSpe);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
     }
     public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken){
-        return aiCaller(g, specialisation,prompt,historic,maxToken,false);
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                                .put(CALLER_PARAM_TOKEN,maxToken)
+                                                .put(CALLER_PARAM_HISTORIC,historic);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
     }
     public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken,boolean secure){
-        return aiCaller(g, specialisation,prompt,historic,maxToken,secure,false);
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                                .put(CALLER_PARAM_TOKEN,maxToken)
+                                                .put(CALLER_PARAM_HISTORIC,historic)
+                                                .put(CALLER_PARAM_SECURE, secure);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
     }
     public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, JSONArray historic,boolean maxToken,boolean secure,boolean isSafeSpe){
-        int tokens = 1500;
-        if(!Tool.isEmpty(aiApiParam)) {
-            tokens = maxToken?aiApiParam.getInt(MAX_TOKEN_PARAM_KEY):0;
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                                .put(CALLER_PARAM_TOKEN,maxToken)
+                                                .put(CALLER_PARAM_HISTORIC, historic)
+                                                .put(CALLER_PARAM_SECURE,secure)
+                                                .put(CALLER_PARAM_SAFE_SPE,isSafeSpe);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
         }
-        return new JSONObject(aiCaller(g, specialisation,prompt,historic,secure,isSafeSpe,tokens));
 
     }
     public static JSONObject aiCaller(Grant g, String specialisation, JSONArray historic, Object prompt){
-       return aiCaller(g, specialisation,prompt,historic,true,false);
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                            .put(CALLER_PARAM_HISTORIC, historic);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
     }
-    private static String aiCaller(Grant g, String specialisation, Object prompt ,JSONArray historic, int maxToken){
-        return aiCaller(g, specialisation,prompt,historic,false,maxToken);
-    
+    public static JSONObject aiCaller(Grant g, String specialisation, JSONArray historic,JSONObject providerParams ,Object prompt){
+        AppLog.info("ai coller with provider: "+providerParams.toString(1));
+        
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                            .put(CALLER_PARAM_HISTORIC, historic)
+                                            .put("providerParams", providerParams);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
     }
+
 	/**
      * call aiCaller with specification for code usable in Simplicité.
 	 * @param g
@@ -584,7 +715,16 @@ public class AITools implements java.io.Serializable {
 	 * @return
 	 */
 	public static JSONObject aiCodeHelper(Grant g, String prompt,JSONArray historic){
-        return new JSONObject(aiCaller(g, "you are java expert, optimize your function, answer only function",prompt,historic,aiApiParam.getInt("code_max_token")));
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, "you are java expert, optimize your function, answer only function")
+                                                .put(CALLER_PARAM_HISTORIC, historic)
+                                                .put(CALLER_PARAM_TOKEN, aiApiParam.getInt("code_max_token"));
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
     }
 
     /**
@@ -721,20 +861,20 @@ public class AITools implements java.io.Serializable {
                     
     }
     private static String replaceSymboleBySafeHTML(String text){
-        text = text.replaceAll("\\n", "<br>")
-            .replaceAll("\\{", "&#123;")
-            .replaceAll("\\}", "&#125;")
-            .replaceAll("\\(", "&#40;")
-            .replaceAll("\\)", "&#41;")
-            .replaceAll("\\[", "&#91;")
-            .replaceAll("\\]", "&#93;")
-            .replaceAll("\\.", "&#46;")
-            .replaceAll("\\,", "&#44;")
-            .replaceAll("\\`", "&#96;")
-            .replaceAll("\\\"", "&#34;")
-            .replaceAll("\\@", "&#64;")
-            .replaceAll("\\/", "&#47;")
-            .replaceAll("\\-", "&#45;");
+        text = text.replace("\\n", "<br>")
+            .replace("\\{", "&#123;")
+            .replace("\\}", "&#125;")
+            .replace("\\(", "&#40;")
+            .replace("\\)", "&#41;")
+            .replace("\\[", "&#91;")
+            .replace("\\]", "&#93;")
+            .replace("\\.", "&#46;")
+            .replace("\\,", "&#44;")
+            .replace("\\`", "&#96;")
+            .replace("\\\"", "&#34;")
+            .replace("\\@", "&#64;")
+            .replace("\\/", "&#47;")
+            .replace("\\-", "&#45;");
         return text;
     }
     /**
@@ -768,15 +908,16 @@ public class AITools implements java.io.Serializable {
     public static JSONObject expresionAiCaller(Grant g, String specialisation, String prompt,ObjectDB obj){
         try {
             String parsedPrompt = parseExpresion(prompt,obj);
-            String res = aiCaller(g, specialisation,parsedPrompt,null,3500);
-            return new JSONObject(res);
-         } catch (ScriptException e) {
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                            .put(CALLER_PARAM_TOKEN, 3500);
+            AICallerParams caller = new AICallerParams(parsedPrompt,params);
+            return caller.aiCall(g);
+         } catch (ScriptException | AITypeException e) {
             AppLog.error(e, g);
             return new JSONObject();
         }
         
     }
-
     public static String parseExpresion(String prompt,ObjectDB obj) throws ScriptException{
         String regex="(\\[[^\\[\\]]*\\])";
         Pattern pattern = Pattern.compile(regex);

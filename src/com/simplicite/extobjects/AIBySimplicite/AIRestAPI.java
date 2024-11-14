@@ -8,6 +8,7 @@ import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject; 
 
 /**
@@ -36,6 +37,8 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			if (Tool.isEmpty(type)) type = "default";
 			JSONObject swagger = params.has("swagger")?new JSONObject(params.getParameter("swagger")):null;
 			switch (type) { //use switch for future extension
+				case "chatBot":
+					return chatbotCaller(prompt,params);
 				case "metrics":
 					lang = params.getParameter("lang");
 					return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);
@@ -68,13 +71,20 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 					String text = AITools.speechToText(audio64);
 					return new JSONObject().put("msg",text);
 				default:
+					AppLog.info("isDefault : ");
 					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
+						AppLog.info("isDefault : updateFieldByRequest");
 						return updateFieldByRequest(req);
-					}else if (!Tool.isEmpty(prompt) ) {
-						return updateFieldByParam(prompt,params);
-					}else if(Tool.isEmpty(prompt) && !Tool.isEmpty(objectName) && !Tool.isEmpty(objectID)){
-						return frontAiCaller(objectName, objectID);
-					} else {
+					}else if (!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID) ) {
+						
+						if(!Tool.isEmpty(prompt)){
+							AppLog.info("isDefault : updateFieldByParam");
+							return updateFieldByParam(prompt,params,objectID,objectName);
+						}else{
+							AppLog.info("isDefault : frontAiCaller");
+							return frontAiCaller(objectName, objectID);
+						}
+					}else{
 						return error(400, "Call me with a prompt or a object param please!");
 					}
 			}
@@ -130,7 +140,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		}
 		return prompt;
 	}
-	private Object updateFieldByParam(String prompt, Parameters params){
+	private Object updateFieldByParam(String prompt, Parameters params,String objectID,String objectName ){
 		Grant g = getGrant();
 		boolean isJsonPrompt = true;
 		JSONArray jsonPrompt = optJSONArray(prompt);
@@ -140,12 +150,10 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		int histDepth = AITools.getHistDepth();
 		JSONObject res;
 		String specialisation = params.getParameter("specialisation");
-		String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
-		String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 		String historicString = params.getParameter("historic");
 		ObjectDB obj = null;
 		
-		if(!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID) && !isJsonPrompt){
+		if(!isJsonPrompt){
 			obj = Grant.getSystemAdmin().getTmpObject(objectName);
 			synchronized(obj.getLock()){
 				obj.select(objectID);
@@ -154,13 +162,29 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			
 		}else{
 			JSONArray historic = optHistoric(historicString, histDepth);
-			if(isJsonPrompt){
-				res = AITools.aiCaller(g, specialisation, historic, jsonPrompt);
-			}else{
-				res = AITools.aiCaller(g, specialisation, historic, prompt);
-			}
+			res = AITools.aiCaller(g, specialisation, historic, jsonPrompt);
 		}
 
+		return new JSONObject()
+			.put("request", prompt)
+			.put("response", res);
+	}
+	private Object chatbotCaller(String prompt, Parameters params){
+		Grant g = getGrant();
+		boolean isJsonPrompt = true;
+		JSONArray jsonPrompt = optJSONArray(prompt);
+		if(Tool.isEmpty(jsonPrompt)){
+			isJsonPrompt = false;
+		}
+		int histDepth = AITools.getHistDepth();
+		JSONObject res;
+		String specialisation = params.getParameter("specialisation");
+		String historicString = params.getParameter("historic");
+		String providerParamsString = params.getParameter("providerParams");
+		AppLog.info(providerParamsString);
+		JSONArray historic = optHistoric(historicString, histDepth);
+		JSONObject providerParams = optJSONObject(providerParamsString);
+		res = AITools.aiCaller(g, specialisation, historic, providerParams, isJsonPrompt ? jsonPrompt : prompt);
 		return new JSONObject()
 			.put("request", prompt)
 			.put("response", res);
@@ -171,6 +195,15 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		}catch(Exception e){
 		 	return new JSONArray();
 		}
+	}
+	private JSONObject optJSONObject(String object){
+		if(Tool.isEmpty(object)) return new JSONObject();
+		try{
+			return new JSONObject(object);
+		}catch(JSONException e){
+			return new JSONObject();
+		}
+		
 	}
 	private JSONArray optHistoric(String historicString, int histDepth){
 		if (Tool.isEmpty(historicString)) return null;

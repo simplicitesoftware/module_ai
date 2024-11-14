@@ -2,7 +2,7 @@
 # / __(_)_ __  _ __| (_)__(_) |_ /_/
 # \__ \ | '  \| '_ \ | / _| |  _/ -_)
 # |___/_|_|_|_| .__/_|_\__|_|\__\___|
-#             |_| Module: AIBySimplicite 0.26
+#             |_| Module: AIBySimplicite 0.27
 basePath: /api
 paths:
   /rest/AiMetricsHist:
@@ -1098,6 +1098,11 @@ paths:
         description: Search filter for Speech to text url
         type: string
         required: false
+      - in: query
+        name: aiPrvUserParameters
+        description: Search filter for Prv user parameters
+        type: string
+        required: false
       tags:
       - AIProvider
 securityDefinitions:
@@ -1292,6 +1297,9 @@ definitions:
       aiPrvHelp:
         description: Key and endpoints help
         type: string
+      aiPrvUserParameters:
+        description: Prv user parameters
+        type: string
       row_id:
         description: Unique technical row ID
         type: string
@@ -1355,7 +1363,7 @@ info:
     email: contact@simplicitesoftware.com
   description: API for module AIBySimplicite
   title: AIBySimplicite
-  version: '0.26'
+  version: '0.27'
 tags:
 - name: AiGroupGuiDesc
   description: Group gui description

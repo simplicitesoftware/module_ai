@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.26",
+  "mdl_version": "0.27",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\",\n    \"branch\": \"6.1\"\n}",
@@ -2445,6 +2445,52 @@
     },
     {
      "object": "Field",
+     "userkey": "aiPrvUserParameters",
+     "item": {
+      "fld_name": "aiPrvUserParameters",
+      "fld_dbname": "ai_prv_user_parameters",
+      "fld_visible": "3",
+      "fld_updatable": [
+       "3",
+       "2"
+      ],
+      "fld_required": false,
+      "fld_fonctid": false,
+      "fld_research": "1",
+      "fld_researchreq": "0",
+      "fld_sort": "C",
+      "fld_more": false,
+      "fld_listmore": true,
+      "fld_listsum": null,
+      "fld_exportable": true,
+      "fld_tray": null,
+      "fld_type": "13",
+      "fld_type_id__flt_code": null,
+      "fld_list_id__lov_name": null,
+      "fld_copy": true,
+      "fld_size": 5000,
+      "fld_minsize": null,
+      "fld_precision": null,
+      "fld_fromdate_id__fld_name": null,
+      "fld_dfault": null,
+      "fld_indexable": false,
+      "fld_autocomp": "0",
+      "fld_groupby": false,
+      "fld_updall": true,
+      "fld_case": null,
+      "fld_righttoleft": false,
+      "fld_rendering": "JSON",
+      "fld_speech": null,
+      "fld_calc": null,
+      "fld_objlist": null,
+      "fld_comment": null,
+      "fld_classification": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "fld_incrementsyntax": null
+     }
+    },
+    {
+     "object": "Field",
      "userkey": "aiSelectProcess",
      "item": {
       "fld_name": "aiSelectProcess",
@@ -2714,7 +2760,7 @@
       "ofa_name": "AIProvider-1",
       "ofa_position": 1,
       "ofa_title": false,
-      "ofa_ui": "<div>\n  <div class=\"field\" data-field=\"aiPrvProvider\"><\/div>\n  <div class=\"row\">\n    <div class=\"col-sm-8\">\n      <div class=\"field\" data-field=\"aiPrvDataModel\"><\/div>\n    <\/div>\n    <div class=\"col-sm-4\">\n      <div class=\"field\" data-field=\"aiPrvDefaultUrl\"><\/div>\n      <div class=\"area\" data-area=\"2:-\"><\/div>\n    <\/div>\n  <\/div>\n  <div class=\"field\" data-field=\"aiPrvHelp\"><\/div>\n<\/div>",
+      "ofa_ui": "<div>\n  <div class=\"field\" data-field=\"aiPrvProvider\"><\/div>\n  <div class=\"row\">\n    <div class=\"col-sm-8\">\n      <div class=\"field\" data-field=\"aiPrvDataModel\"><\/div>\n    <\/div>\n    <div class=\"col-sm-4\">\n      <div class=\"field\" data-field=\"aiPrvDefaultUrl\"><\/div>\n      <div class=\"area\" data-area=\"3:-\"><\/div>\n      <div class=\"area\" data-area=\"2:-\"><\/div>\n    <\/div>\n  <\/div>\n  <div class=\"field\" data-field=\"aiPrvHelp\"><\/div>\n<\/div>",
       "ofa_icon": "star",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -2728,6 +2774,18 @@
       "ofa_title": true,
       "ofa_ui": "<div>\n  <div class=\"field\" data-field=\"aiPrvModelsUrl\"><\/div>\n  <div class=\"field\" data-field=\"aiPrvCompletionUrl\"><\/div>\n  <div class=\"field\" data-field=\"aiPrvPingUrl\"><\/div>\n  <div class=\"field\" data-field=\"aiPrvSttUrl\"><\/div>\n<\/div>",
       "ofa_icon": "icon/color/url",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ObjectFieldArea",
+     "userkey": "AIProvider-3",
+     "item": {
+      "ofa_name": "AIProvider-3",
+      "ofa_position": 3,
+      "ofa_title": true,
+      "ofa_ui": "<div class=\"field\" data-display=\"input\" data-field=\"aiPrvUserParameters\"><\/div>",
+      "ofa_icon": "user",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -4263,6 +4321,41 @@
       "obf_fld_exportable": null,
       "obf_fld_uk": null,
       "obf_area_id__ofa_name": "AIProvider-2",
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "obf_joined_id__obf_object_id__obo_name": null,
+      "obf_joined_id__obf_field_id__fld_name": null,
+      "obf_joined_id__obf_order": null
+     }
+    },
+    {
+     "object": "ObjectFieldSystem",
+     "userkey": "AIProvider aiPrvUserParameters 90",
+     "item": {
+      "obf_object_id__obo_name": "AIProvider",
+      "obf_field_id__fld_name": "aiPrvUserParameters",
+      "obf_order": 90,
+      "obf_group_by": null,
+      "obf_dfault_order": null,
+      "obf_input": null,
+      "obf_ref_field_id__fld_name": null,
+      "obf_ref_object_id__obo_name": null,
+      "obf_cascad": null,
+      "obf_card": null,
+      "obf_visible": null,
+      "obf_ref_export": true,
+      "obf_copy": null,
+      "obf_ref_order": null,
+      "obf_fld_visible": null,
+      "obf_fld_required": null,
+      "obf_fld_updatable": null,
+      "obf_fld_research": null,
+      "obf_fld_more": null,
+      "obf_fld_listmore": null,
+      "obf_fld_researchreq": null,
+      "obf_fld_dfault": null,
+      "obf_fld_exportable": null,
+      "obf_fld_uk": null,
+      "obf_area_id__ofa_name": "AIProvider-3",
       "row_module_id__mdl_name": "AIBySimplicite",
       "obf_joined_id__obf_object_id__obo_name": null,
       "obf_joined_id__obf_field_id__fld_name": null,
@@ -9513,6 +9606,30 @@
     },
     {
      "object": "Resource",
+     "userkey": "AIProvider * CLASS",
+     "item": {
+      "res_object": {
+       "item": {"obo_name": "AIProvider"},
+       "icon": "img/system/business_object",
+       "label": "Business object",
+       "userkeylabel": "AIProvider",
+       "object": "ObjectInternal"
+      },
+      "res_type": "JS",
+      "res_lang": "ANY",
+      "res_code": "CLASS",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectInternal/AIProvider/CLASS.js",
+       "mime": "text/javascript",
+       "name": "class.js"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Resource",
      "userkey": "AiGroupGuiDesc * AI_DOMAIN_TEMPLATE_DESC_ENU",
      "item": {
       "res_object": {
@@ -11290,6 +11407,50 @@
       "tsl_tooltip": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "aiPrvUserParameters English",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiPrvUserParameters"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiPrvUserParameters",
+       "object": "Field"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Prv user parameters",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateField",
+     "userkey": "aiPrvUserParameters French",
+     "item": {
+      "tsl_object": {
+       "item": {"fld_name": "aiPrvUserParameters"},
+       "icon": "img/system/field",
+       "label": "Field",
+       "userkeylabel": "aiPrvUserParameters",
+       "object": "Field"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "User Parameters",
+      "tsl_simplehelp": null,
+      "tsl_plural_value": null,
+      "tsl_short_value": null,
+      "tsl_placeholder": null,
+      "tsl_listhelp": null,
+      "tsl_tooltip": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -11648,6 +11809,38 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Metrics",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateFieldArea",
+     "userkey": "AIProvider-3 English",
+     "item": {
+      "tsl_object": {
+       "item": {"ofa_name": "AIProvider-3"},
+       "icon": "img/system/field_area",
+       "label": "Fields area",
+       "userkeylabel": "AIProvider-3",
+       "object": "ObjectFieldArea"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Provider -3",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateFieldArea",
+     "userkey": "AIProvider-3 French",
+     "item": {
+      "tsl_object": {
+       "item": {"ofa_name": "AIProvider-3"},
+       "icon": "img/system/field_area",
+       "label": "Fields area",
+       "userkeylabel": "AIProvider-3",
+       "object": "ObjectFieldArea"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "User parameters",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
@@ -14122,23 +14315,6 @@
        "icon": "img/system/external_object",
        "label": "External object",
        "userkeylabel": "AIRestAPI",
-       "object": "ObjectExternal"
-      },
-      "pmg_perm_id__prm_prop": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "PermGroup",
-     "userkey": "PUBLIC AI_ADMIN AiMonitoring",
-     "item": {
-      "pmg_group_id__grp_name": "PUBLIC",
-      "pmg_perm_id__prm_group_id__grp_name": "AI_ADMIN",
-      "pmg_perm_id__prm_object": {
-       "item": {"obe_name": "AiMonitoring"},
-       "icon": "img/system/external_object",
-       "label": "External object",
-       "userkeylabel": "AiMonitoring",
        "object": "ObjectExternal"
       },
       "pmg_perm_id__prm_prop": null,
