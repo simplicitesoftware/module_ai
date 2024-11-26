@@ -3,29 +3,26 @@ var AiJsTools = AiJsTools || (function(param) {
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 	let app = $ui.getApp();
 	let isSpeechRecognitionSupported = null;
-	let provider="provider";//param;
-	let providerObj;
+	let provider;//param;
+	let providerID;
 	let providerParams;
 
-	getProviderParams();
+	
 	getProvider();
 	let botName= "SimpliBot";
 	getBotName();
-	console.log(botName);
 	let userName = app.getGrant().login;
 	if(app.getGrant().firstname ){
 		userName =app.getGrant().firstname;
 	}
 	async function getProviderParams() {
-		console.log("provider: ",provider);
 		let obj = app.getBusinessObject("AIProvider");
+		obj.resetFilters();
 		obj.search(function(r) {
-			console.log("result: ",r);
 			if (r && r.length > 0) {
 				obj.select(function(params) {
-					providerObj = obj;
+					providerID = obj.row_id;
 					providerParams=obj.getUserParameters();// Affiche les paramètres sélectionnés
-					console.log(providerParams);
 				}, r[0].row_id, null);
 			} else {
 				console.log("Aucun résultat trouvé.",provider);
@@ -40,7 +37,8 @@ var AiJsTools = AiJsTools || (function(param) {
 		let postParams = {"reqType":"provider"};
 		app._call(false, url, postParams, function callback(botResponse){
 			provider = botResponse.provider;
-			console.log("provider set: ",provider);
+			getProviderParams();
+			
 		});
 		return null;
 	}
@@ -58,7 +56,6 @@ var AiJsTools = AiJsTools || (function(param) {
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"CHECK_SPEECH_RECOGNITION"};
 		await app._call(false, url, postParams, function callback(botResponse){
-			console.log("test ai: bot",botResponse);
 			isSpeechRecognitionSupported = botResponse?.isSpeechRecognitionSupported ?? false;
 		});
 	}
@@ -96,7 +93,6 @@ var AiJsTools = AiJsTools || (function(param) {
 	
     async function addChatOption(ctn,addImg,takeImg,Speech){
 		if(!ctn){
-			console.log("ctn is null");
 			return;
 		}
 
@@ -397,7 +393,6 @@ var AiJsTools = AiJsTools || (function(param) {
 		let div= document.createElement("div");
 		div.className = "bot-messages";
 		let strong = document.createElement("strong");
-		console.log(botName);
 		strong.textContent= botName+": ";
 		div.append(strong);
 		let span = document.createElement("span");
@@ -415,7 +410,6 @@ var AiJsTools = AiJsTools || (function(param) {
 		return div;
 	}
 	function addLLMParams(ctn){
-		console.log('addLLMParams');
 		if(provider == "Open AI" || provider == "Mistral AI"){
 			let htmlButton = document.createElement('button');
 			htmlButton.id = "params";
@@ -426,10 +420,11 @@ var AiJsTools = AiJsTools || (function(param) {
 		}
 	}
 	function updateLLMParams(){
-		console.log("params: ",providerParams);
-		// Créez un formulaire HTML à partir des gptParams
+		let providerObj = app.getBusinessObject("AIProvider");
+		providerObj.resetFilters();
+		providerObj.select(providerID);
+		// Créez un formulaire HTML à partir des providerParams
 		let formHtml = providerObj.getUserParametersForm(providerParams);
-
 
 		$ui.confirm({
 			"name": "params",
@@ -450,9 +445,6 @@ var AiJsTools = AiJsTools || (function(param) {
 		
 		}
 		providerParams = updatedParams;
-		console.log("save: ", gptParams);
-		
-
 	}
 	function checkMinMAx(min,max,input){
 		let value = parseFloat(input.value); // Récupérer la valeur de l'élément input
@@ -461,9 +453,7 @@ var AiJsTools = AiJsTools || (function(param) {
 		} else if (value < min) {
 			input.value = min; // Limite à la valeur minimale
 		}
-		console.log("change min: ", min, ",max: ", max, " ", input.value);
 	}
-	console.log("return");
 	return { 
 		useAsync: useAsync,
 		url: url,
@@ -479,7 +469,6 @@ var AiJsTools = AiJsTools || (function(param) {
 		loadResultInAceEditor:loadResultInAceEditor,
 		removeimg:removeimg,
 		getUserProviderParams:getUserProviderParams,
-		checkMinMAx:checkMinMAx,
-		providerObj:providerObj
+		checkMinMAx:checkMinMAx
 	};
 })();

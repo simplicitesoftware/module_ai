@@ -5303,6 +5303,18 @@
     },
     {
      "object": "Grant",
+     "userkey": "AI_BUSINESS AI_PRV_R AIProvider",
+     "item": {
+      "grt_group_id__grp_name": "AI_BUSINESS",
+      "grt_function_id__fct_name": "AI_PRV_R",
+      "grt_function_id__fct_object_id__obo_name": "AIProvider",
+      "grt_function_id__fct_action_id__act_name": null,
+      "grt_activ": true,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Grant",
      "userkey": "AI_DESIGNER AI_GGD_AI_UPDATE_DESC_A AiGroupGuiDesc AI_UPDATE_DESC",
      "item": {
       "grt_group_id__grp_name": "AI_DESIGNER",
@@ -14027,6 +14039,26 @@
        "object": "ViewSimple"
       },
       "prm_perm": true,
+      "prm_upd": false,
+      "prm_req": false,
+      "prm_prop": null,
+      "prm_value": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Permission",
+     "userkey": "AI_BUSINESS AIDomain",
+     "item": {
+      "prm_group_id__grp_name": "AI_BUSINESS",
+      "prm_object": {
+       "item": {"obd_name": "AIDomain"},
+       "icon": "img/system/domain",
+       "label": "Domain",
+       "userkeylabel": "AIDomain",
+       "object": "Domain"
+      },
+      "prm_perm": false,
       "prm_upd": false,
       "prm_req": false,
       "prm_prop": null,
