@@ -3,33 +3,46 @@ var AiJsTools = AiJsTools || (function(param) {
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 	let app = $ui.getApp();
 	let isSpeechRecognitionSupported = null;
-	let provider = "Open AI";//param;
+	let provider="provider";//param;
 	let providerObj;
 	let providerParams;
 
 	getProviderParams();
+	getProvider();
 	let botName= "SimpliBot";
 	getBotName();
+	console.log(botName);
 	let userName = app.getGrant().login;
 	if(app.getGrant().firstname ){
 		userName =app.getGrant().firstname;
 	}
 	async function getProviderParams() {
+		console.log("provider: ",provider);
 		let obj = app.getBusinessObject("AIProvider");
 		obj.search(function(r) {
+			console.log("result: ",r);
 			if (r && r.length > 0) {
 				obj.select(function(params) {
 					providerObj = obj;
-					providerParams=obj.getUserParameters()// Affiche les paramètres sélectionnés
+					providerParams=obj.getUserParameters();// Affiche les paramètres sélectionnés
 					console.log(providerParams);
 				}, r[0].row_id, null);
 			} else {
-				console.log("Aucun résultat trouvé.");
+				console.log("Aucun résultat trouvé.",provider);
 			}
-		}, {'aiPrvProvider': 'Open AI'}, null);
+		}, {'aiPrvProvider': provider}, null);
 	}
 	function getUserProviderParams(){
 		return providerParams;
+	}
+	function getProvider(){
+		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+		let postParams = {"reqType":"provider"};
+		app._call(false, url, postParams, function callback(botResponse){
+			provider = botResponse.provider;
+			console.log("provider set: ",provider);
+		});
+		return null;
 	}
 	function getBotName(){
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
@@ -45,6 +58,7 @@ var AiJsTools = AiJsTools || (function(param) {
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"CHECK_SPEECH_RECOGNITION"};
 		await app._call(false, url, postParams, function callback(botResponse){
+			console.log("test ai: bot",botResponse);
 			isSpeechRecognitionSupported = botResponse?.isSpeechRecognitionSupported ?? false;
 		});
 	}
@@ -98,7 +112,7 @@ var AiJsTools = AiJsTools || (function(param) {
 		if(Speech && isSpeechRecognitionSupported){
 			defaultButton(ctn,"speech");
 		}
-		addLLMParams(provider,ctn);
+		addLLMParams(ctn);
 		$(window).resize(function() {
 			resizeUp($(ctn).parent(),$(ctn).parent().parent().find(".chat-messages"));
 		});
@@ -383,6 +397,7 @@ var AiJsTools = AiJsTools || (function(param) {
 		let div= document.createElement("div");
 		div.className = "bot-messages";
 		let strong = document.createElement("strong");
+		console.log(botName);
 		strong.textContent= botName+": ";
 		div.append(strong);
 		let span = document.createElement("span");
@@ -399,9 +414,9 @@ var AiJsTools = AiJsTools || (function(param) {
 		div.append(span);
 		return div;
 	}
-	function addLLMParams(provider,ctn){
-		
-		if(provider == "Open AI"){
+	function addLLMParams(ctn){
+		console.log('addLLMParams');
+		if(provider == "Open AI" || provider == "Mistral AI"){
 			let htmlButton = document.createElement('button');
 			htmlButton.id = "params";
 			htmlButton.className = "chat-icon-button fas fa-cog";
@@ -410,7 +425,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			$(ctn).find('.user-message').after(htmlButton);
 		}
 	}
-	function updateLLMParams(provider){
+	function updateLLMParams(){
 		console.log("params: ",providerParams);
 		// Créez un formulaire HTML à partir des gptParams
 		let formHtml = providerObj.getUserParametersForm(providerParams);
@@ -427,17 +442,28 @@ var AiJsTools = AiJsTools || (function(param) {
 	}
 	
 	function saveLLMParams(){
-		const formData = new FormData(document.getElementById('llmParamsForm'));
+		 formData = document.getElementById('llmParamsForm');
 		const updatedParams = {};
-		formData.forEach((value, key) => {
-			console.log(key,": ",value);
-			updatedParams[key] = value;
-		});
+		for (const [key, value] of Object.entries(providerParams)) {
+			
+			updatedParams[key] = formData.querySelector(`#${key}`).value;
+		
+		}
 		providerParams = updatedParams;
 		console.log("save: ", gptParams);
 		
 
 	}
+	function checkMinMAx(min,max,input){
+		let value = parseFloat(input.value); // Récupérer la valeur de l'élément input
+		if (value > max) {
+			input.value = max; // Limite à la valeur maximale
+		} else if (value < min) {
+			input.value = min; // Limite à la valeur minimale
+		}
+		console.log("change min: ", min, ",max: ", max, " ", input.value);
+	}
+	console.log("return");
 	return { 
 		useAsync: useAsync,
 		url: url,
@@ -452,6 +478,8 @@ var AiJsTools = AiJsTools || (function(param) {
 		getDisplayBotMessage: getDisplayBotMessage,
 		loadResultInAceEditor:loadResultInAceEditor,
 		removeimg:removeimg,
-		getUserProviderParams:getUserProviderParams
+		getUserProviderParams:getUserProviderParams,
+		checkMinMAx:checkMinMAx,
+		providerObj:providerObj
 	};
 })();

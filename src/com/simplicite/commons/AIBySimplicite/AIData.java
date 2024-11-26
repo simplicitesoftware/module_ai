@@ -1058,9 +1058,11 @@ public class AIData implements java.io.Serializable {
 	private static void devSaveGenerationDataCost(String mldId, JSONObject cost){
 		if(!Tool.isEmpty(ModuleDB.getModuleId("DevAIAddon", false))){
 			Grant admin = Grant.getSystemAdmin();
+			admin.addAccessObject("DaaDataGeneration");
+			admin.addAccessCreate("DaaDataGeneration");
 			admin.addAccessRead(DEVOBJ_GENERATE_MLDS);
 			admin.addAccessCreate(DEVOBJ_GENERATE_MLDS);
-			admin.addAccessCreate("DaaDataGeneration");
+			
 			ObjectDB obj = admin.getTmpObject(DEVOBJ_GENERATE_MLDS);
 			obj.resetFilters();
 			obj.setFieldFilter("daaGmlModuleId", mldId);

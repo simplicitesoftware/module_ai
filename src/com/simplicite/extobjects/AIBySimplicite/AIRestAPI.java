@@ -28,6 +28,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	@Override
 	public Object post(Parameters params) throws HTTPException {
 		try {
+			AppLog.info("_____________________Test_________________");
 			String prompt =params.getParameter(PARAMS_PROMPT_KEY);
 			String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 			String type = params.getParameter(JSON_REQ_TYPE);
@@ -35,8 +36,15 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			JSONObject req = params.getJSONObject();
 			String lang;
 			if (Tool.isEmpty(type)) type = "default";
+			if (Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)) type = "requestField";
+			else if (!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID) ) type = Tool.isEmpty(prompt)?"frontAiCall":"paramField";
+
 			JSONObject swagger = params.has("swagger")?new JSONObject(params.getParameter("swagger")):null;
+			AppLog.info(type);
 			switch (type) { //use switch for future extension
+				case "provider":
+					
+				 	return  new JSONObject().put("provider",AITools.provider());
 				case "chatBot":
 					return chatbotCaller(prompt,params);
 				case "metrics":
@@ -70,23 +78,15 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 					String audio64 = params.getParameter("file");
 					String text = AITools.speechToText(audio64);
 					return new JSONObject().put("msg",text);
+				case "requestField":
+					return updateFieldByRequest(req);
+				case "paramField":
+					return updateFieldByParam(prompt,params,objectID,objectName);
+				case "frontAiCall":
+					return frontAiCaller(objectName, objectID);
 				default:
-					AppLog.info("isDefault : ");
-					if(Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)){
-						AppLog.info("isDefault : updateFieldByRequest");
-						return updateFieldByRequest(req);
-					}else if (!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID) ) {
-						
-						if(!Tool.isEmpty(prompt)){
-							AppLog.info("isDefault : updateFieldByParam");
-							return updateFieldByParam(prompt,params,objectID,objectName);
-						}else{
-							AppLog.info("isDefault : frontAiCaller");
-							return frontAiCaller(objectName, objectID);
-						}
-					}else{
-						return error(400, "Call me with a prompt or a object param please!");
-					}
+					AppLog.info("AI API ERROR: "+type+params.toJSON());
+					return error(400, "Call me with a predefined request type, prompt or a object param please!");
 			}
 			
 		} catch (Exception e) {

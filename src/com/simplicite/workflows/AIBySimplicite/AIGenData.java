@@ -3,7 +3,7 @@ import com.simplicite.bpm.*;
 import com.simplicite.commons.AIBySimplicite.AIData;
 import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
-
+import com.simplicite.util.tools.HTMLTool;
 import com.simplicite.webapp.ObjectContextWeb;
 
 
@@ -82,7 +82,7 @@ public class AIGenData extends Processus {
 						"}\r\n" + //
 						"refactorButtons();";
 	
-		return context.getDataValue("Data", "generate")+"<script>"+js+"</script>";
+		return context.getDataValue("Data", "generate")+HTMLTool.jsBlock(js);
 		
 	}
 	@Override
@@ -106,9 +106,9 @@ public class AIGenData extends Processus {
 			return "<div class=\"alert alert-danger\" role=\"alert\">"+error+"</div>";
 		}
 		if(!Tool.isEmpty(dataJson)){
-			return "<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\" name=\"json_return\">"+dataJson+"</textarea>"+"<script>"+aceEditor+"</script>";
+			return "<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\" name=\"json_return\">"+dataJson+"</textarea>"+HTMLTool.jsBlock(aceEditor);
 		}
-		return "<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\" name=\"json_return\"></textarea>"+"<script>"+aceEditor+"</script>";
+		return "<div id=\"ace_json_return\"></div><textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\" name=\"json_return\"></textarea>"+HTMLTool.jsBlock(aceEditor);
 		
 	}
 	public String testFucntion(){

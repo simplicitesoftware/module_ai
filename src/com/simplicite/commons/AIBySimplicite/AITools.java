@@ -98,32 +98,23 @@ public class AITools implements java.io.Serializable {
             super("Invalid type for "+object+": "+classname+" need "+needClass);
         }
     }
+
     private static class AICallerParams {
         private String specialisation;
         private JSONArray prompt;
         private JSONArray historic;
         private JSONObject providerParams;
         private int maxToken = 1500;
-        private boolean secure = false;
-        private boolean isSafeSpe = false;
+
         private AICallerParams(Object promptObject,JSONObject params) throws AITypeException{
-            //prompt to JSONArray
-            if(promptObject instanceof String){
-                prompt = new JSONArray();
-                String strPrompt = normalize((String)promptObject,secure);
-                prompt.put(getformatedContentByType(strPrompt,TYPE_TEXT,false));
-                 
-            }else if(promptObject instanceof JSONArray){
-                prompt= (JSONArray)promptObject;
-            }else{
-               AppLog.info("Prompt must be a String or a JSONArray");
-               throw new AITypeException("prompt", promptObject.getClass().getName(), "String or JSONArray");
-            }
-            specialisation = params.optString(CALLER_PARAM_SPE);
+            boolean secure = params.optBoolean(CALLER_PARAM_SECURE, false);
+            boolean isSafeSpe = params.optBoolean(CALLER_PARAM_SAFE_SPE, false);
+            setPrompt(promptObject, secure);
+            setSpecialisation(params.optString(CALLER_PARAM_SPE),isSafeSpe);
             historic = params.optJSONArray(CALLER_PARAM_HISTORIC, new JSONArray());
             providerParams = params.optJSONObject("providerParams", new JSONObject());
-            secure = params.optBoolean(CALLER_PARAM_SECURE, secure);
-            isSafeSpe = params.optBoolean(CALLER_PARAM_SAFE_SPE, isSafeSpe);
+            
+            
             if(!Tool.isEmpty(aiApiParam)) {
                 maxToken=aiApiParam.getInt(MAX_TOKEN_PARAM_KEY);
             }
@@ -136,28 +127,41 @@ public class AITools implements java.io.Serializable {
                 }
             }
         }
+        private void setSpecialisation(String spe,boolean isSafe){
+            spe = removeAcent(spe);
+            if(!isSafe) spe = JSONObject.quote(normalize(spe,true));
+            if("\"\"".equals(spe)) spe = "";
+            specialisation = spe;
+        }
+        private void setPrompt(Object promptObject,boolean isSafe) throws AITypeException{
+             //prompt to JSONArray
+             if(promptObject instanceof String){
+                prompt = new JSONArray();
+                String strPrompt = normalize((String)promptObject,isSafe);
+                prompt.put(getformatedContentByType(strPrompt,TYPE_TEXT,false));
+                 
+            }else if(promptObject instanceof JSONArray){
+                prompt= (JSONArray)promptObject;
+            }else{
+               AppLog.info("Prompt must be a String or a JSONArray");
+               throw new AITypeException("prompt", promptObject.getClass().getName(), "String or JSONArray");
+            }
+            prompt = parsedPrompts(prompt,isSafe);
+        }
+        
         /**
          * Function to format the call to chatAI API.
          * Need the api key parameter set up with your key.
          * Use the aiApiParam hist_depth parameter to limit the number of exchanges in the historic (useful to limit the number off token of requests).
          * @param g Grant
-         * @param specialisation Prompt to specialise chatbot (ex: You're a java developer).
-         * @param prompt 
-         * @param historic exchange historic for contextual response
-         * @param maxToken number of tokens allow in response
          * @return If API return code is 200: API answer else: error return.
         */
         public JSONObject aiCall(Grant g){
             return new JSONObject( aiCaller(g));
         }
         private String aiCaller(Grant g){
-            specialisation = removeAcent(specialisation);
-            if(!isSafeSpe) specialisation = JSONObject.quote(normalize(specialisation,true));
-            if("\"\"".equals(specialisation)) specialisation = "";
-            prompt = parsedPrompts(prompt,secure);
             String model =getAIParam(MODEL_KEY);
             boolean isClaudeAPI = CLAUDE_LLM.equals(llm);
-            
             if(Tool.isEmpty(completionUrl)){
                 AppLog.info("completion url not set", g);
                 return "";
@@ -175,18 +179,7 @@ public class AITools implements java.io.Serializable {
                 if(maxToken>0)
                     postData.put(MAX_TOKEN, maxToken);
                 if(!Tool.isEmpty(providerParams)){
-                    for(String key : providerParams.keySet()) {
-                        Object data = providerParams.get(key);
-                        if(!Tool.isEmpty(data)){
-                            try{
-                                float dataFloat = parseFloatParam(data);
-                                postData.put(key,dataFloat);
-                            }catch(AITypeException e){
-                                AppLog.warning(e.getMessage());
-                            }       
-                        }
-                        
-                    }
+                    addProviderParamsToPost(postData);
                 }
                 if(!Tool.isEmpty(model))
                     postData.put(MODEL_KEY, model);
@@ -232,6 +225,20 @@ public class AITools implements java.io.Serializable {
             }
             return "";
     
+        }
+        private void addProviderParamsToPost(JSONObject postData){
+            for(String key : providerParams.keySet()) {
+                Object data = providerParams.get(key);
+                if(!Tool.isEmpty(data)){
+                    try{
+                        float dataFloat = parseFloatParam(data);
+                        postData.put(key,dataFloat);
+                    }catch(AITypeException e){
+                        AppLog.warning(e.getMessage());
+                    }       
+                }
+                
+            }
         }
         private static float parseFloatParam(Object param) throws AITypeException {
             if(param instanceof Number)
@@ -1477,5 +1484,8 @@ public class AITools implements java.io.Serializable {
         return !IS_ENV_SETUP;
     }
 
-    
+    public static String provider(){
+        AppLog.info(aiProvider);
+        return aiProvider;
+    }
 }

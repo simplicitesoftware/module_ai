@@ -22,6 +22,11 @@ public class AIProvider extends ObjectDB {
 	private static final String PING_ENDPOINT = "aiPrvPingUrl";
 	private static final String STT_ENDPOINT = "aiPrvSttUrl";
 	private static final Map<String, String> DEFAULT_EDNPOINT =   Map.of(MODELS_ENDPOINT, "v1/models", COMPLETION_ENDPOINT, "v1/chat/completions", PING_ENDPOINT, "v1/ping", STT_ENDPOINT, "v1/audio/transcriptions");
+	@Override
+	public void postLoad() {
+		traceHooks(TRACE_HOOKS_FULL);
+		super.postLoad();
+	}
 	private JSONObject getDefaultFields(){
 		return new JSONObject(getGrant().T("AI_DEFAULT_PARAM"));
 	}

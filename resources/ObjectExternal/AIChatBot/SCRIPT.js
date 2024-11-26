@@ -1,4 +1,5 @@
 var AIChatBot = AIChatBot || (function() {
+	console.log("chatbot");
 	let specialisation="";
 	const app = $ui.getApp();
 	//addImg,takeImg,Speech
@@ -18,8 +19,9 @@ var AIChatBot = AIChatBot || (function() {
 				chatbotSendMessage(ctn);
 			}
 		});
-
-		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);}});
+		console.log("AIJSTooL");
+		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);console.log(AiJsTools.provider);}});
+		
 		ctn.querySelector('#chatbot_send_button').onclick = function() {
 			AIChatBot.chatbotSendMessage(ctn);
 		};

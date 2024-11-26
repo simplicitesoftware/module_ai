@@ -59,8 +59,6 @@ public class AIModuleCreate extends Processus {
 	private static final String ACTIVITY_NEW_SCOPE="AIC_0017";
 	private static final String AI_SETTING_NEED="AI_SETTING_NEED";
 	private static final String EXISTING_OBJECT="exisitingObject";
-	private static final String BEGIN_SCRIPT="<script>";
-	private static final String END_SCRIPT="</script>";
 	private static final String DOMAIN="Domain";
 	private static final String MODULE_NAME_FIELD="mdl_name";
 	private static final String TSL_VALUE_FIELD="tsl_value";
@@ -203,9 +201,9 @@ public class AIModuleCreate extends Processus {
 		listResult.add(context.getDataValue("Data", DATA_PRE));
 		listResult.add(context.getDataValue("Data", DATA_JSON));
 		listResult.add(context.getDataValue("Data", DATA_POST));
-		if(Tool.isEmpty(listResult)) return ACE_DIV+EMPTY_TEXTAREA+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
+		if(Tool.isEmpty(listResult)) return ACE_DIV+EMPTY_TEXTAREA+HTMLTool.jsBlock(aceEditor);
 		
-		return "<p>"+listResult.get(0)+"</p>"+ACE_DIV+"<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\"  name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>"+BEGIN_SCRIPT+aceEditor+END_SCRIPT;
+		return "<p>"+listResult.get(0)+"</p>"+ACE_DIV+"<textarea  class=\"form-control autosize js-focusable\"  style=\"height: 50vh;display: none;\" id=\"json_return\"  name=\"json_return\">"+listResult.get(1)+"</textarea>"+"<p>"+listResult.get(2)+"</p>"+HTMLTool.jsBlock(aceEditor);
 		
 		
 	}
@@ -339,9 +337,9 @@ public class AIModuleCreate extends Processus {
 		}
 		DataFile allids = context.getDataFile("Data", "allIds",false);
 		if(Tool.isEmpty(allids)){
-			return "<p>"+g.getText("AI_SUCCESS")+"</p><script>" + g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("AI_GEN_MODEL")+"\n"+ "aiGenModel.AINewModel();"+END_SCRIPT;
+			return "<p>"+g.getText("AI_SUCCESS")+"</p>" + HTMLTool.jsBlock(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("AI_GEN_MODEL")+"\n"+ "aiGenModel.AINewModel();");
 		}else{
-			return "<p>"+g.getText("AI_COMPLETED")+"</p><script>" + g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("AI_GEN_MODEL")+"\n"+ "aiGenModel.AINewModel();"+END_SCRIPT;
+			return "<p>"+g.getText("AI_COMPLETED")+"</p> "+HTMLTool.jsBlock(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("AI_GEN_MODEL")+"\n"+ "aiGenModel.AINewModel();");
 		}		
 	}
 	private void devSaveIACreatedModule(String mldId){
@@ -370,6 +368,7 @@ public class AIModuleCreate extends Processus {
 			Grant admin = Grant.getSystemAdmin();
 			admin.addAccessRead(DEVOBJ_GENERATE_MLDS);
 			admin.addAccessCreate(DEVOBJ_GENERATE_MLDS);
+			admin.addAccessObject("DaaObjectGeneration");
 			admin.addAccessCreate("DaaObjectGeneration");
 			ObjectDB obj = admin.getTmpObject(DEVOBJ_GENERATE_MLDS);
 			obj.resetFilters();
