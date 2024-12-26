@@ -2,7 +2,7 @@
 # / __(_)_ __  _ __| (_)__(_) |_ /_/
 # \__ \ | '  \| '_ \ | / _| |  _/ -_)
 # |___/_|_|_|_| .__/_|_\__|_|\__\___|
-#             |_| Module: AIBySimplicite 0.27
+#             |_| Module: AIBySimplicite 0.28
 components:
   schemas:
     Error404:
@@ -1580,7 +1580,7 @@ info:
     email: contact@simplicitesoftware.com
   description: API for module AIBySimplicite
   title: AIBySimplicite
-  version: '0.27'
+  version: '0.28'
 tags:
 - name: AiGroupGuiDesc
   description: Group gui description

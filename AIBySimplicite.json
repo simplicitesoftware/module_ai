@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.27",
+  "mdl_version": "0.28",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\",\n    \"branch\": \"6.1\"\n}",
