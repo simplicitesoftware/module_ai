@@ -63,6 +63,60 @@ For standard deployments, use the following endpoints:
 		<aiPrvCompletionUrl><![CDATA[https://api.openai.com/v1/chat/completions]]></aiPrvCompletionUrl>
 		<aiPrvPingUrl><![CDATA[https://api.openai.com/v1/models]]></aiPrvPingUrl>
 		<aiPrvSttUrl><![CDATA[https://api.openai.com/v1/audio/transcriptions]]></aiPrvSttUrl>
+		<aiPrvUserParameters><![CDATA[{
+    "top_p": {
+        "help": {
+            "FRA": "Utilise la méthode de filtrage par noyau. Un top_p de 0.9 signifie que le modèle choisira parmi les mots qui composent 90% de la probabilité cumulée.Il est généralement recommandé de modifier soit le top p, soit la température, mais pas les deux.",
+            "ENU": "Uses nucleus sampling. A top_p of 0.9 means the model will choose from the words that make up 90% of the cumulative probability. We generally recommend altering this or temperature but not both"
+        },
+        "default": "",
+        "min": 0,
+        "max": 1,
+        "label": {
+            "FRA": "Top p",
+            "ENU": "Top p"
+        }
+    },
+    "frequency_penalty": {
+        "help": {
+            "FRA": "Diminue la probabilité que le modèle génère des mots déjà utilisés dans la conversation.",
+            "ENU": "Decreases the likelihood that the model will generate words that have already been used in the conversation."
+        },
+        "default": 0,
+        "min": -1.5,
+        "max": 1.5,
+        "label": {
+            "FRA": "Pénalité de fréquence",
+            "ENU": "Frequency penalty"
+        }
+    },
+    "presence_penalty": {
+        "help": {
+            "FRA": "Augmente la probabilité que le modèle évite de répéter des phrases ou des concepts déjà mentionnés dans la conversation.",
+            "ENU": "Increases the likelihood that the model will avoid repeating phrases or concepts already mentioned in the conversation."
+        },
+        "default": 0,
+        "min": -1.5,
+        "max": 1.5,
+        "label": {
+            "FRA": "Pénalité de présence",
+            "ENU": "Presence penalty"
+        }
+    },
+    "temperature": {
+        "help": {
+            "FRA": "Contrôle la créativité des réponses. Une température plus élevée (ex. 1.0) rend les réponses plus variées, tandis qu'une température plus basse (ex. 0.2) les rend plus déterministes.",
+            "ENU": "Controls the creativity of the responses. A higher temperature (e.g., 1.0) makes responses more varied, while a lower temperature (e.g., 0.2) makes them more deterministic."
+        },
+        "default": 1,
+        "min": -1.5,
+        "max": 1.5,
+        "label": {
+            "FRA": "Température",
+            "ENU": "Temperature"
+        }
+    }
+}]]></aiPrvUserParameters>
 	</data>
 </object>
 </simplicite>

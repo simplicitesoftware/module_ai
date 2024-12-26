@@ -11833,7 +11833,7 @@
        "object": "ObjectFieldArea"
       },
       "tsl_lang": "ENU",
-      "tsl_value": "Provider -3",
+      "tsl_value": "User parameters",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -11849,7 +11849,7 @@
        "object": "ObjectFieldArea"
       },
       "tsl_lang": "FRA",
-      "tsl_value": "User parameters",
+      "tsl_value": "Paramètres de l'utilisateur",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
@@ -13933,20 +13933,6 @@
    "icon": "img/color/file",
    "field": "row_module_id",
    "list": [
-    {
-     "object": "Dataset",
-     "userkey": "AIBySimplicite AIBySimplicite-data-20241016140316",
-     "item": {
-      "row_module_id__mdl_name": "AIBySimplicite",
-      "dt_name": "AIBySimplicite-data-20241016140316",
-      "dt_file": {
-       "path": "data/AIBySimplicite-data-20241016140316.zip",
-       "mime": "application/zip",
-       "name": "AIBySimplicite-data-20241016140316.zip"
-      },
-      "dt_desc": "Created by module's data export on 2024-10-16 14:03:16"
-     }
-    },
     {
      "object": "Dataset",
      "userkey": "AIBySimplicite MistralAI_Provider",
