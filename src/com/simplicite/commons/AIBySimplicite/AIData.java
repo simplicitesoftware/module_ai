@@ -19,6 +19,7 @@ public class AIData implements java.io.Serializable {
 	private static final String DEVOBJ_GENERATE_MLDS = "DaaGenerateMlds";
 	private static HashMap<Integer,String> typeTrad;
 	private static Random random = new Random();
+	private static final String DAA_DATA_GENERATION ="DaaDataGeneration";
 	String html = "";
 	private static class CreatedObject {
 		private JSONObject objectCreate;
@@ -442,11 +443,11 @@ public class AIData implements java.io.Serializable {
 				try{
 					if(Tool.isEmpty(filters)){
 						objT.selectForCreate();
-						obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
+						obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false, true);
 						obj.populate(true);
 						objT.validateAndCreate();
 					}else if(!objT.selectForCreateOrUpdate(filters)){
-						obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false);
+						obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false,true);
 						if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("create object: "+obj.getName()+" with values: "+objectToCreate.objectCreate.toString(1), g);
 						obj.populate(true);
 						objT.validateAndCreate();
@@ -1058,8 +1059,8 @@ public class AIData implements java.io.Serializable {
 	private static void devSaveGenerationDataCost(String mldId, JSONObject cost){
 		if(!Tool.isEmpty(ModuleDB.getModuleId("DevAIAddon", false))){
 			Grant admin = Grant.getSystemAdmin();
-			admin.addAccessObject("DaaDataGeneration");
-			admin.addAccessCreate("DaaDataGeneration");
+			admin.addAccessObject(DAA_DATA_GENERATION);
+			admin.addAccessCreate(DAA_DATA_GENERATION);
 			admin.addAccessRead(DEVOBJ_GENERATE_MLDS);
 			admin.addAccessCreate(DEVOBJ_GENERATE_MLDS);
 			
@@ -1085,7 +1086,7 @@ public class AIData implements java.io.Serializable {
 			}else{
 				glmId = r.get(0)[obj.getFieldIndex("row_id")];
 			}
-			obj = admin.getTmpObject("DaaDataGeneration");
+			obj = admin.getTmpObject(DAA_DATA_GENERATION);
 			synchronized(obj.getLock()){
 				BusinessObjectTool objT = obj.getTool();
 				try {

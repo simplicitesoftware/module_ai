@@ -52,7 +52,17 @@ public class AIModel implements java.io.Serializable {
 	private static final String SHORT_TEXT ="Short text";
 	private static final String HEXA_BLACK ="#303030";
 	private static final String HEXA_WHITE ="#FFFFFF";
-	
+	private static final String IS_STATUS ="isStatus";
+	private static final String CLASS ="class";
+	private static final JSONObject DEFAULT_CODE_FK = new JSONObject()
+															.put("name","code")
+															.put("fr","Code")
+															.put("en","Code")
+															.put("key",true)
+															.put("required",true)
+															.put("type",SHORT_TEXT)
+															.put(IS_STATUS,false)
+															.put(CLASS,"");
 	private static class EnumFieldStyle {
 		private String bg;   //background color
 		private String hexa; //hexadecimal color
@@ -400,13 +410,18 @@ public class AIModel implements java.io.Serializable {
 				fieldOrder+=10;
 			}
 		}
+		if(Tool.isEmpty(fKs)){
+			
+			String fldId=addField(DEFAULT_CODE_FK, oboId, objPrefix, fieldOrder,mInfo, dataMaps, g);
+			fKs.add(fldId);
+		}
 		return fKs;
 	}
 
 	private static String getClassFromJson(JSONObject jsonFld){
 		String class2 = jsonFld.getString("name");
-		if(jsonFld.has("class")){
-			class2 = jsonFld.getString("class");
+		if(jsonFld.has(CLASS)){
+			class2 = jsonFld.getString(CLASS);
 		}else if(jsonFld.has(JSON_LINK_CLASS_TO_KEY)){
 			class2 = jsonFld.getString(JSON_LINK_CLASS_TO_KEY);
 		}
@@ -521,14 +536,15 @@ public class AIModel implements java.io.Serializable {
 		if(type == ObjectField.TYPE_ENUM || type == ObjectField.TYPE_ENUM_MULTI){
 			String enumId = createListOfValue(objPrefix, fieldName, mInfo, g);
 			field.put("fld_list_id",enumId);
-			completeList(enumId, jsonFld,objName,fldName, mInfo, g);
+			String defaultCode = completeList(enumId, jsonFld,objName,fldName, mInfo, g);
+			field.put("fld_dfault", defaultCode);
 		}
 		
 		String fldId = AITools.createOrUpdateWithJson(OBJECTFIELD,field, g);
 		dataMaps.fieldCreate.put(fieldName, fldId);
 		translateField(jsonFld, fldId, dataMaps, g);
 		String oboFldId = createObjectField(oboId, fieldName, fieldOrder, mInfo, dataMaps, g);
-		if(type == ObjectField.TYPE_ENUM && ("status".equalsIgnoreCase(fieldName) || jsonFld.has("isStatus") && jsonFld.getBoolean("isStatus"))){
+		if(type == ObjectField.TYPE_ENUM && ("status".equalsIgnoreCase(fieldName) || jsonFld.has(IS_STATUS) && jsonFld.getBoolean(IS_STATUS))){
 			addStateModel(oboId,  oboFldId,mInfo, g);
 		}
 		return fldId;
@@ -898,13 +914,13 @@ public class AIModel implements java.io.Serializable {
 		}
 		return fks;
 	}
-	private static void completeList(String enumId,JSONObject jsonFld,String objName,String fldName,ModuleInfo mInfo,Grant g) throws GetException, ValidateException, UpdateException{
+	private static String completeList(String enumId,JSONObject jsonFld,String objName,String fldName,ModuleInfo mInfo,Grant g) throws GetException, ValidateException, UpdateException{
 		if(hasJsonArray(jsonFld,JSON_VALUES_UPPER_KEY,JSON_VALUES_LOWER_KEY)){
-			completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
+			return completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
 		}else if(hasNotCaseSensitibve(jsonFld.optJSONObject(JSON_ENUM_KEY), JSON_VALUES_UPPER_KEY, JSON_VALUES_LOWER_KEY)){
-			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
+			return completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY).getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
 		}else if(hasNotCaseSensitibve(jsonFld.optJSONObject(JSON_ENUM_KEY.toLowerCase()), JSON_VALUES_UPPER_KEY, JSON_VALUES_LOWER_KEY) ){
-			completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
+			return completeList(mInfo.moduleId, enumId, jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).has(JSON_VALUES_LOWER_KEY) ?jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONObject(JSON_ENUM_KEY.toLowerCase()).getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
 		}else{
 			JSONArray values = new JSONArray();
 			String[] defaultVal = {"A","B","C"};
@@ -913,7 +929,7 @@ public class AIModel implements java.io.Serializable {
 				String val = defaultVal[i];
 				values.put(new JSONObject().put("code",val).put("en",val).put("fr",val).put("color",defaultColor[i]));
 			}
-			completeList(mInfo.moduleId, enumId, values,objName,fldName, g);
+			return completeList(mInfo.moduleId, enumId, values,objName,fldName, g);
 		}
 	}
 	private static boolean hasJsonArray(JSONObject json, String upperkey, String lowerkey){
@@ -925,17 +941,20 @@ public class AIModel implements java.io.Serializable {
 		}
 		return json.has(upperKey) || json.has(lowerKey);
 	}
-	private static void completeList(String moduleId,String listId,JSONArray values,String objName,String fldName,Grant g) throws GetException, ValidateException, UpdateException{
+	private static String completeList(String moduleId,String listId,JSONArray values,String objName,String fldName,Grant g) throws GetException, ValidateException, UpdateException{
 		int order = 1;
-		ObjectDB oTra = g.getTmpObject("FieldListValue");
-		BusinessObjectTool oTraT = oTra.getTool();
-		for( Object value : values){
+		String defaultCode = "";
+		for (int index = 0; index < values.length(); index++) {
+			Object value = values.get(index);
 			JSONObject jsonValue = getJsonValue(value,g);
 			String color = jsonValue.optString("color").toLowerCase();
 			if(Tool.isEmpty(jsonValue)){
-				return;
+				return defaultCode;
 			}
 			String code = SyntaxTool.forceCase(jsonValue.getString("code"), 1).toUpperCase();
+			if(index == 0){
+				defaultCode = code;
+			}
 			JSONObject enumCodeFields = new JSONObject();
 			enumCodeFields.put("lov_list_id", listId);
 			enumCodeFields.put("lov_code", code);
@@ -952,16 +971,19 @@ public class AIModel implements java.io.Serializable {
 				addFieldStyle(objName,fldName,code,style.bg,moduleId,g);
 			}
 			String enumId = AITools.createOrUpdateWithJson("FieldListCode",enumCodeFields, g);
-			if(jsonValue.has("en") && (jsonValue.get("en") instanceof String) && (oTraT.selectForCreateOrUpdate(new JSONObject().put("lov_code_id",enumId).put("lov_lang",Globals.LANG_ENGLISH)))){
-					oTra.setFieldValue("lov_value", jsonValue.getString("en"));
-					oTraT.validateAndUpdate();
-			}
-			if(jsonValue.has("fr") && (jsonValue.get("fr") instanceof String)&& (oTraT.selectForCreateOrUpdate(new JSONObject().put("lov_code_id",enumId).put("lov_lang",Globals.LANG_FRENCH))) ){
-				oTra.setFieldValue("lov_value", jsonValue.getString("fr"));
-				oTraT.validateAndUpdate();
-			} 
+			traductListItems(jsonValue,enumId,"en",Globals.LANG_ENGLISH,g);
+			traductListItems(jsonValue,enumId,"fr",Globals.LANG_FRENCH,g);
 			order+=1;
 		}
+		return defaultCode;
+	}
+	private static void traductListItems(JSONObject jsonValue,String enumId,String lang,String filterLang,Grant g) throws UpdateException, ValidateException, GetException{
+		ObjectDB oTra = g.getTmpObject("FieldListValue");
+		BusinessObjectTool oTraT = oTra.getTool();
+		if(jsonValue.has(lang) && (jsonValue.get(lang) instanceof String)&& (oTraT.selectForCreateOrUpdate(new JSONObject().put("lov_code_id",enumId).put("lov_lang",filterLang))) ){
+			oTra.setFieldValue("lov_value", jsonValue.getString(lang));
+			oTraT.validateAndUpdate();
+		} 
 	}
 	private static void addFieldStyle(String objName,String fldName,String code,String style,String moduleId,Grant g){
 		JSONObject fieldStyle= new JSONObject();

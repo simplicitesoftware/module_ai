@@ -414,12 +414,13 @@ var AiJsTools = AiJsTools || (function(param) {
 			let htmlButton = document.createElement('button');
 			htmlButton.id = "params";
 			htmlButton.className = "chat-icon-button fas fa-cog";
-			htmlButton.onclick = () => {updateLLMParams(provider);};
+			htmlButton.onclick = () => {updateLLMParams();};
 			htmlButton.title = "llm parameters";
 			$(ctn).find('.user-message').after(htmlButton);
 		}
 	}
 	function updateLLMParams(){
+		console.log("updateLLMParams sonar update");
 		let providerObj = app.getBusinessObject("AIProvider");
 		providerObj.resetFilters();
 		providerObj.select(providerID);
@@ -437,12 +438,10 @@ var AiJsTools = AiJsTools || (function(param) {
 	}
 	
 	function saveLLMParams(){
-		 formData = document.getElementById('llmParamsForm');
+		let formData = document.getElementById('llmParamsForm');
 		const updatedParams = {};
-		for (const [key, value] of Object.entries(providerParams)) {
-			
+		for (const [key] of Object.entries(providerParams)) {
 			updatedParams[key] = formData.querySelector(`#${key}`).value;
-		
 		}
 		providerParams = updatedParams;
 	}
@@ -457,6 +456,7 @@ var AiJsTools = AiJsTools || (function(param) {
 	return { 
 		useAsync: useAsync,
 		url: url,
+		botName: botName,
 		resizeUp: resizeUp,
 		addChatOption: addChatOption,
 		addImage: addImage, 

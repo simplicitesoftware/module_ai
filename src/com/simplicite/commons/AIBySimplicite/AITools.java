@@ -1164,7 +1164,7 @@ public class AITools implements java.io.Serializable {
 			synchronized(obj.getLock()){
 				BusinessObjectTool objTool = obj.getTool();
 				if(!objTool.selectForCreateOrUpdate(filters)){
-					obj.setValuesFromJSONObject(fields, false, false);
+					obj.setValuesFromJSONObject(fields, false, false,true);
 					obj.populate(true);
 					objTool.validateAndCreate();
 				}

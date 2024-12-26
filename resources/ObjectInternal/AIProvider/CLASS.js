@@ -373,17 +373,16 @@ getUserParametersForm(providersParams){
 	form.id = "llmParamsForm";
 	console.log("getUserParameters");
 	let context = this.item.aiPrvUserParameters;
-	if (!context) return "";
+	if (!context) return form;
 
 	for (const [key, value] of Object.entries(context)) {
 		let label = value.label[grantLang];
 		let help = value.help[grantLang];
 		let inputValue = providersParams ? providersParams[key] : value.default;
-		let min = 
 		console.log(inputValue, " : ", value.default);
 		if (!inputValue) inputValue = value.default;
 
-		var inputElement = $tools.input({
+		let inputElement = $tools.input({
 			type: 'number',        // Type de l'input
 			id: key,              // ID de l'input
 			value: inputValue,     // Valeur de l'input
@@ -396,11 +395,11 @@ getUserParametersForm(providersParams){
 			onchange:"let min = "+value.min+";let max = "+value.max+";if (this.value < min) {this.value = min;} else if (this.value > max) {this.value = max;}console.log(min,\": \",max,\" : \",this.value);"
 			//()=>{let min = "+value.min+";let max = "+value.max+";if (this.value < min) {this.value = min;} else if (this.value > max) {this.value = max;}}
 		});
-		var inputContainer = $("<div>",{
+		let inputContainer = $("<div>",{
 			class: 'field-container flex-nowrap',        // Type de l'input  
 		});
 		inputContainer.append(inputElement);
-		var helpButton = $tools.buttonHelp(key, help, label,$('<span class="btn-help"/>'));
+		let helpButton = $tools.buttonHelp(key, help, label,$('<span class="btn-help"/>'));
 		helpButton.class=
 		inputContainer.append(helpButton);
 		let group = $tools.formGroup("control-group", label, inputContainer, null, null);
@@ -408,6 +407,7 @@ getUserParametersForm(providersParams){
 		//group[0].querySelector(".control-group").appendChild(helpButton[0]);
 		form.appendChild(group[0]);
 	}
+	console.log("sonar verif 2",form);
 	return form;
 }
 

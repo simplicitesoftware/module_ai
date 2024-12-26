@@ -1,6 +1,8 @@
 
 var AIWfChatBot = AIWfChatBot || (function() {
 	const app = $ui.getApp();
+	let isAdaContext = false;
+	let moduleid;
 	// Params
 	let useAsync = true; // use async callback pattern
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
@@ -9,6 +11,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 	let takeImgVisible = true;
 	let SpeechVisible = true;
 	let maxbodyH=null;
+	let historicObject;
 	function resizeUp(){
 		if(!AiJsTools.hasOwnProperty("resizeUp")){
 			console.log("load AiJsTools");
@@ -32,7 +35,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		$(window).resize(function() {
 			resizeUp();
 		});
-		maxbodyH = $('#AIchatbotProcess').parent().height()
+		maxbodyH = $('#AIchatbotProcess').parent().height();
 		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ 
 			AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);
 			let msgs = $('#module_chat_messages');
@@ -47,6 +50,17 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			
 			
 		}});
+		console.log("isAdaContext: ",isAdaContext);
+		if(isAdaContext){
+			historicObject= app.getBusinessObject("AdaPromptHistory");
+			historicObject.getForCreate(createHistoric);
+		}
+	}
+	function createHistoric(item){
+		if(moduleid){
+			item.adaPhyModuleId = moduleid;
+		}
+		historicObject.save((newItem)=>{console.log("historic created",newItem);},item);
 	}
 	function sendModuleMessage() {
 		let userMessage = document.getElementById('module_user_message').value;
@@ -71,7 +85,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 				content = {"type":"image_url","image_url":{"url":img.attr("src")}};
 				contents.push(content);
 			}
-			text.content = contents
+			text.content = contents;
 			historic.push(JSON.stringify(text));
 			text={};
 			text.role = "assistant";
@@ -120,6 +134,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 				text.role = "assistant";
 				text.content =result;
 				historic.push(JSON.stringify(text));
+				addHistoric(userMessage,result,$grant.getLogin());
 				
 				
 			}else{
@@ -129,6 +144,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 				text.role = "assistant";
 				text.content ="Sorry, an error occurred";
 				historic.push(JSON.stringify(text));
+				addHistoric(userMessage,"Sorry, an error occurred",$grant.getLogin());
 			}
 			$("#AI_data").html(JSON.stringify(historic));
 			$("#send-button").removeAttr("disabled");
@@ -136,6 +152,21 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		});
 		
+	}
+	function addHistoric(userMessage,botMessage,login){
+		if(!historicObject) return;
+		let botn = "bot";
+		if(AiJsTools){
+			botn = AiJsTools.botName;
+		}
+		let message = "";
+		if(historicObject.item.adaPhyChat){
+			message = historicObject.item.adaPhyChat;
+		}
+		message += `\n# ${login}\n${userMessage}\n\n# ${botn}\n${botMessage}\n\n`;
+		historicObject.item.adaPhyChat = message;
+		historicObject.item[`adaPhyUserPrompts`] = userMessage;
+		historicObject.save();
 	}
 	
 	return {
@@ -148,3 +179,4 @@ $(document).ready(function() {
 	AIWfChatBot.render();
 	
 });
+

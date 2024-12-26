@@ -20,6 +20,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	private static final String PARAMS_PROMPT_KEY = "prompt";
 	private static final String OBJ_FIELD_NAME = "fieldName";
 	private static final String JSON_REQ_TYPE = "reqType";
+	private static final String JSON_SWAGGER = "swagger";
 	@Override
 	public Object get(Parameters params) throws HTTPException {
 		return error(400, "Call me in POST please!");
@@ -34,33 +35,23 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			String type = params.getParameter(JSON_REQ_TYPE);
 			String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 			JSONObject req = params.getJSONObject();
-			String lang;
 			if (Tool.isEmpty(type)) type = "default";
 			if (Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)) type = "requestField";
 			else if (!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID) ) type = Tool.isEmpty(prompt)?"frontAiCall":"paramField";
 
-			JSONObject swagger = params.has("swagger")?new JSONObject(params.getParameter("swagger")):null;
+			
 			AppLog.info(type);
 			switch (type) { //use switch for future extension
 				case "provider":
-					
 				 	return  new JSONObject().put("provider",AITools.provider());
 				case "chatBot":
 					return chatbotCaller(prompt,params);
 				case "metrics":
-					lang = params.getParameter("lang");
-					return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);
+					return metricsPost(params,prompt);
 				case "saveMetrics":
-					String mdlName = params.getParameter("moduleName");
-					String function = params.getParameter("function");
-					String ctx = params.getParameter("ctx");
-					return saveMetricsAsCrosstable(ctx,swagger,function,mdlName);	
+					return saveMetrics(params);
 				case "errorMetricsSolver":
-					String error = params.getParameter("error");
-					lang = params.getParameter("lang");
-					String script = params.getParameter("script");
-					String html = params.getParameter("html");
-					return AiMetrics.recallWithError(prompt, lang, swagger,script,html, error);
+					return recallWithError(params,prompt);
 				case "reformulateMetrics":
 					return AiMetrics.getReformulatePrompt(prompt);
 				case "BOT_NAME":
@@ -68,16 +59,9 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 				case "CHECK_SPEECH_RECOGNITION":
 					return new JSONObject().put("isSpeechRecognitionSupported",AITools.checkSpeechRecognition());
 				case "ping":
-					String ping = AITools.pingAI();
-					boolean isSuccess = AITools.PING_SUCCESS.equals(ping);
-					if(isSuccess){
-						ping = Message.formatInfo("AI_SUCCESS_PING",null,null);
-					}
-					return new JSONObject().put("msg",ping);
+					return ping();
 				case "audio":
-					String audio64 = params.getParameter("file");
-					String text = AITools.speechToText(audio64);
-					return new JSONObject().put("msg",text);
+					return audio(params);
 				case "requestField":
 					return updateFieldByRequest(req);
 				case "paramField":
@@ -95,8 +79,40 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		}
 		
 	}
-
-
+	private Object metricsPost(Parameters params,String prompt){
+		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(params.getParameter(JSON_SWAGGER)):null;
+		String lang = params.getParameter("lang");
+		return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);
+	}
+	private Object saveMetrics(Parameters params){
+		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(params.getParameter(JSON_SWAGGER)):null;
+		if(Tool.isEmpty(swagger)) return error(400,"No swagger provided");
+		String mdlName = params.getParameter("moduleName");
+		String function = params.getParameter("function");
+		String ctx = params.getParameter("ctx");
+		return saveMetricsAsCrosstable(ctx,swagger,function,mdlName);	
+	}
+	private Object recallWithError(Parameters params,String prompt){
+		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(params.getParameter(JSON_SWAGGER)):null;
+		String error = params.getParameter("error");
+		String lang = params.getParameter("lang");
+		String script = params.getParameter("script");
+		String html = params.getParameter("html");
+		return AiMetrics.recallWithError(prompt, lang, swagger,script,html, error);
+	}
+	private Object ping(){
+		String ping = AITools.pingAI();
+		boolean isSuccess = AITools.PING_SUCCESS.equals(ping);
+		if(isSuccess){
+			ping = Message.formatInfo("AI_SUCCESS_PING",null,null);
+		}
+		return new JSONObject().put("msg",ping);
+	}
+	private Object audio(Parameters params){
+		String audio64 = params.getParameter("file");
+		String text = AITools.speechToText(audio64);
+		return new JSONObject().put("msg",text);
+	}
 	private Object frontAiCaller(String objectName, String objectID){
 		ObjectDB obj = Grant.getSystemAdmin().getTmpObject(objectName);
 		JSONArray res = new JSONArray();

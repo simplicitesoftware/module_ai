@@ -50,15 +50,18 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			if(!Tool.isEmpty(context)) specialisation = specialisation+currentPage+"\nDatas:\n" + context;
 			if(!Tool.isEmpty(specialisation)) {
 				specialisation = specialisation.replace("'","\\'").replace("\n", "\\n");
-			 	return javascript(getName() + ".render(ctn,'"+specialisation+"',\""+AITools.getDataDisclaimer(g)+"\");");
+			 	return javascript(getName() + ".render(ctn,"+isAdaContext()+",'"+specialisation+"',\""+AITools.getDataDisclaimer(g)+"\");");
 			}
 			
-			return javascript(getName() + ".render(ctn,\"\",\""+AITools.getDataDisclaimer(g)+"\");");
+			return javascript(getName() + ".render(ctn,"+isAdaContext()+",\"\",\""+AITools.getDataDisclaimer(g)+"\");");
 		}
 		catch (Exception e) {
 			AppLog.error(null, e, g);
 			return e.getMessage();
 		}
+	}
+	private String isAdaContext(){
+		return (Tool.isEmpty(ModuleDB.getModuleId​("AiDemonstrationAddon", false)))?"false":"true";
 	}
 	private String getScopeDesc(View home){
 		if(home!=null){

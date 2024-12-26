@@ -6,8 +6,9 @@ var AIChatBot = AIChatBot || (function() {
 	let addImgVisible = true;
 	let takeImgVisible = true;
 	let SpeechVisible = true;
+	let historicObject;
 
-	function render(params,spe,dataDisclaimer) {
+	function render(params,isAdaContext,spe,dataDisclaimer) {
 		let ctn = params[0];
 		if(dataDisclaimer){
 			$(ctn).find('#data_warn').html(dataDisclaimer);
@@ -25,8 +26,15 @@ var AIChatBot = AIChatBot || (function() {
 		ctn.querySelector('#chatbot_send_button').onclick = function() {
 			AIChatBot.chatbotSendMessage(ctn);
 		};
+		if(isAdaContext){
+			historicObject= app.getBusinessObject("AdaPromptHistory");
+			historicObject.getForCreate(createHistoric);
+		}
 		
 		
+	}
+	function createHistoric(item){
+		historicObject.save((newItem)=>{console.log("historic created",newItem)},item);
 	}
 	function chatbotSendMessage(ctn) {
 		let userMessage = ctn.querySelector('#chatbot_input_message').value;
@@ -92,9 +100,10 @@ var AIChatBot = AIChatBot || (function() {
 				result = escapeHtml(result);
 				result = $view.markdownToHTML(result).html();
 				$(ctn).find(".bot-messages:last-child span").html(result);	
-				
+				addHistoric(userMessage,result,$grant.getLogin());
 			}else{
 				$(ctn).find(".bot-messages:last-child span").text("Sorry, an error occurred");
+				addHistoric(userMessage,"Sorry, an error occurred",$grant.getLogin());
 			}
 			enableChatbot(ctn);
 			chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -120,7 +129,21 @@ var AIChatBot = AIChatBot || (function() {
 		$(ctn).find("#chatbot_send_button").prop("disabled", false);
 		$(ctn).find("#chatbot_input_message").prop("disabled", false);
 	}
-
+	function addHistoric(userMessage,botMessage,login){
+		if(!historicObject) return;
+		let botn = "bot";
+		if(AiJsTools){
+			botn = AiJsTools.botName;
+		}
+		let message = "";
+		if(historicObject.item.adaPhyChat){
+			message = historicObject.item.adaPhyChat;
+		}
+		message += `\n# ${login}\n${userMessage}\n\n# ${botn}\n${botMessage}\n\n`;
+		historicObject.item.adaPhyChat = message;
+		historicObject.item[`adaPhyUserPrompts`] = userMessage;
+		historicObject.save();
+	}
 	return { render: render, chatbotSendMessage: chatbotSendMessage};
 
 })();

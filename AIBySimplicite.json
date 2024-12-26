@@ -2131,10 +2131,7 @@
       "fld_name": "aiPrvDataModel",
       "fld_dbname": "ai_prv_data_model",
       "fld_visible": "2",
-      "fld_updatable": [
-       "2",
-       "3"
-      ],
+      "fld_updatable": ["0"],
       "fld_required": true,
       "fld_fonctid": false,
       "fld_research": "1",

@@ -62,6 +62,7 @@ public class AIModuleCreate extends Processus {
 	private static final String DOMAIN="Domain";
 	private static final String MODULE_NAME_FIELD="mdl_name";
 	private static final String TSL_VALUE_FIELD="tsl_value";
+	private static final String DAA_OBJECT_GENERATION="DaaObjectGeneration";
 	private boolean displayPrefixWarning = false; 
 	
 	/**
@@ -78,15 +79,16 @@ public class AIModuleCreate extends Processus {
 			return null;
 		AppLog.info("chatBot", getGrant());
 		if(!AITools.isAIParam(true)) return  g.T(AI_SETTING_NEED);
+		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
 		List<String[]> objs = getModuleObjects(getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID),g);
-		if (Tool.isEmpty(objs)) return getModuleChat("",g);
+		if (Tool.isEmpty(objs)) return getModuleChat("",g,moduleId);
 		JSONObject json = objectToJSON(objs,getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD));
 
 		getContext(getActivity(ACTIVITY_GEN)).setDataFile("Data",EXISTING_OBJECT,getObjsIds(objs,g));
 		JSONObject jsonResponse =AITools.aiCaller(g, "you help to describe UML for non technical person","Describes the application defined by this JSON in a graphical way for non-technical users: "+json.toString() , null,false,true);
 		String contextApp =AITools.parseJsonResponse(jsonResponse);
 		contextApp = formatAnswerAI(contextApp);
-		return getModuleChat(contextApp,g);
+		return getModuleChat(contextApp,g,moduleId);
 
 	}
 	private String[] getObjsIds(List<String[]> objs,Grant g){
@@ -158,15 +160,25 @@ public class AIModuleCreate extends Processus {
 
 		return obj.search();
 	}
-	private String getModuleChat(String response,Grant g){
+	private String getModuleChat(String response,Grant g,String moduleId){
 
 		String script =HTMLTool.jsBlock(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("CHAT_BOT_SCRIPT"));
+		AppLog.info("moduleId: "+moduleId+(isAdaContext()?" true":" false"), g);
+		if(!Tool.isEmpty(moduleId) && isAdaContext()){
+			AppLog.info("before: "+script, g);
+			script = script.replace("let isAdaContext=false;", "let isAdaContext = true;");
+			script = script.replace("let moduleid;", "let moduleid = "+moduleId+";");
+			AppLog.info("after: "+script, g);
+		}
 		String css = HTMLTool.lessToCss(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceCSSContent("CHAT_BOT_CSS"));
 		String html = g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceHTMLContent("CHAT_BOT_MODEL");
 		html = html.replace("{{{script}}}", script);
 		html = html.replace("{{css}}", css);
 		html = html.replace("{{botMesage}}", Tool.isEmpty(response)?"":"<div class=\"bot-messages\" id=\"context\"><strong>"+AITools.getBotName()+": </strong><span class=\"msg\">"+response+"</span></div>");
 		return html;
+	}
+	private boolean isAdaContext(){
+		return !Tool.isEmpty(ModuleDB.getModuleId​("AiDemonstrationAddon", false));
 	}
 	/**
 	 * Generates a form element for capturing user input.
@@ -368,8 +380,8 @@ public class AIModuleCreate extends Processus {
 			Grant admin = Grant.getSystemAdmin();
 			admin.addAccessRead(DEVOBJ_GENERATE_MLDS);
 			admin.addAccessCreate(DEVOBJ_GENERATE_MLDS);
-			admin.addAccessObject("DaaObjectGeneration");
-			admin.addAccessCreate("DaaObjectGeneration");
+			admin.addAccessObject(DAA_OBJECT_GENERATION);
+			admin.addAccessCreate(DAA_OBJECT_GENERATION);
 			ObjectDB obj = admin.getTmpObject(DEVOBJ_GENERATE_MLDS);
 			obj.resetFilters();
 			obj.setFieldFilter(DEVFIELD_MLD_ID, mldId);
@@ -392,7 +404,7 @@ public class AIModuleCreate extends Processus {
 			}else{
 				glmId = r.get(0)[obj.getFieldIndex(ROW_ID)];
 			}
-			obj = admin.getTmpObject("DaaObjectGeneration");
+			obj = admin.getTmpObject(DAA_OBJECT_GENERATION);
 			synchronized(obj.getLock()){
 				BusinessObjectTool objT = obj.getTool();
 				try {
@@ -427,7 +439,7 @@ public class AIModuleCreate extends Processus {
 				synchronized(obj.getLock()){
 					BusinessObjectTool objT = obj.getTool();
 					objT.selectForCreate();
-					obj.setValuesFromJSONObject(jsonLog, false, false);
+					obj.setValuesFromJSONObject(jsonLog, false, false,false);
 					obj.populate(true);
 					objT.validateAndCreate();
 				}
@@ -712,7 +724,7 @@ public class AIModuleCreate extends Processus {
 				JSONObject permFlds = new JSONObject().put("prm_group_id", groupId).put("prm_object", "Domain:"+domainId);
 				if(!objTool.selectForCreateOrUpdate(permFlds)){
 					permFlds.put(ROW_MODULE_ID_FIELD, moduleId);
-					obj.setValuesFromJSONObject(permFlds, false, false);
+					obj.setValuesFromJSONObject(permFlds, false, false,false);
 					obj.populate(true);
 					objTool.validateAndCreate();
 				}
@@ -731,7 +743,7 @@ public class AIModuleCreate extends Processus {
 				BusinessObjectTool objTool = obj.getTool();
 				if(!objTool.selectForCreateOrUpdate(groupFlds)){
 					groupFlds.put(ROW_MODULE_ID_FIELD, moduleId);
-					obj.setValuesFromJSONObject(groupFlds, false, false);
+					obj.setValuesFromJSONObject(groupFlds, false, false,false);
 					obj.populate(true);
 					objTool.validateAndCreate();
 				}
@@ -758,7 +770,7 @@ public class AIModuleCreate extends Processus {
 					i++;
 				}
 				domainFlds.put(ROW_MODULE_ID_FIELD, moduleId).put("obd_nohome",1);
-				obj.setValuesFromJSONObject(domainFlds, false, false);
+				obj.setValuesFromJSONObject(domainFlds, false, false,false);
 				obj.populate(true);
 				objTool.validateAndCreate();
 				return obj.getRowId();
