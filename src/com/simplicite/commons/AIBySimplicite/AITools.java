@@ -391,6 +391,7 @@ public class AITools implements java.io.Serializable {
 				datasets.resetFilters();
 				datasets.setFieldFilter(ROW_MLD_ID, moduleID);
 				for(String[] row: datasets.search()){
+					datasets.resetFilters();	
 					datasets.select(row[datasets.getRowIdFieldIndex()]);
 					try {
 						datasets.invokeAction("Dataset-apply");

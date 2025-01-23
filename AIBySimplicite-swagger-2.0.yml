@@ -149,7 +149,7 @@ paths:
         - FRA
       - in: query
         name: aiGroupId
-        description: Search filter for group id ai
+        description: Search filter for aiGroupId
         type: string
         required: false
       - in: query
@@ -1167,7 +1167,7 @@ definitions:
         description: Group gui desc id Home page
         type: string
       aiGroupId:
-        description: group id ai
+        description: aiGroupId
         type: string
       aiGroupGuiDescId:
         description: Group gui desc id
