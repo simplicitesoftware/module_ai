@@ -42,7 +42,7 @@ var AiMonitoring = (function() {
 		msg = msg.replaceAll("&#39;", "'");
 		msg = msg.replaceAll("&lt;", "<");
 		msg = msg.replaceAll("&gt;", ">");
-		let jsonMsg = $ui.getApp().messageToJson(msg);
+		let jsonMsg = getFullJsonMessage(msg);
 		
         let ctn = $("#ping_banner");
         ctn.removeClass("loading_ping_banner");
@@ -81,6 +81,22 @@ var AiMonitoring = (function() {
 			$("#panel_AIMonitoring_3").hide();
 		}
 	}
+	function getFullJsonMessage(msg){
+		try{
+			let jsonMsg = JSON.parse(msg);
+			if(jsonMsg.label) return jsonMsg;
+			let text = (jsonMsg.text) ? ": "+jsonMsg.text : "";
+			let code = jsonMsg.code;
+			let level = jsonMsg.level;
+			jsonMsg.level = level[0];
+			jsonMsg.label = $T(code)+text;
+			jsonMsg.error = level === "ERROR";
+			return jsonMsg;
+		}catch(e){ // release-compatible
+			return $ui.getApp().messageToJson(msg);
+		}
+	}
+
 	return { render: render,renderAINotParam:renderAINotParam,ping:ping};
 	
 })();

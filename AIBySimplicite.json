@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.28",
+  "mdl_version": "0.29",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\",\n    \"branch\": \"6.1\"\n}",
@@ -668,7 +668,7 @@
       "lov_name": "TEXT",
       "lov_code": "AI_PING_ERROR",
       "lov_lang": "ENU",
-      "lov_value": "Error encountered during ping:",
+      "lov_value": "Error encountered during ping",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -1097,7 +1097,7 @@
       "lov_name": "TEXT",
       "lov_code": "AI_PING_ERROR",
       "lov_lang": "FRA",
-      "lov_value": "Erreur rencontrée lors du ping:",
+      "lov_value": "Erreur rencontrée lors du ping",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
