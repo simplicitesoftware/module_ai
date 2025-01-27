@@ -14,6 +14,19 @@ var AiMonitoring = (function() {
 		}else{
 			$('#aimonitoring').append($T('AI_SETTING_NEED'));
 		}
+		let buttonText = $T('AI_SETTING_BUTTON');
+		if(buttonText === 'AI_SETTING_BUTTON') buttonText = "Setting AI";
+		let button = $("<button>", {
+		    id: "btn-AIStartParam",
+		    class: "btn btn-action",
+		    text:  buttonText,
+		    css: {
+        		float: "right" // Aligne le bouton à droite
+    		}
+		    
+		}).on("click", function() {
+		    $ui.displayWorkflow(null,"AiSettingsProcess","start",null,null); 
+		}).appendTo("#ctnSettings"); 
 		
 		
 	}

@@ -61,7 +61,8 @@ public class AIGenData extends Processus {
 		super.postValidate(context);
 	}
 	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
-		return getGrant().T(AI_SETTING_NEED);
+		String js = HTMLTool.JS_START_TAG+"$('.btn-validate').hide();$('.btn-AIStartParam').css('border-radius', '.25rem');"+HTMLTool.JS_END_TAG;
+		return js+getGrant().T(AI_SETTING_NEED);
 	}
 	public String genData(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)

@@ -371,6 +371,44 @@ paths:
       - AiMetricsHist
       consumes:
       - application/json
+  /rest/AIProvider/{row_id}/action:AIProvidersImport:
+    get:
+      summary: Call a custom action for a AIProvider business object record or for
+        all records
+      security:
+      - bearerAuth: []
+      produces:
+      - application/json
+      operationId: obj-aiprovider-action-aiprovidersimport
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/ActionResult'
+          description: Success in calling the custom action
+        '400':
+          schema:
+            $ref: '#/definitions/Error400'
+          description: Bad request
+        '401':
+          schema:
+            $ref: '#/definitions/Error401'
+          description: Unauthorized
+        '500':
+          schema:
+            $ref: '#/definitions/Error500'
+          description: Internal server error
+        '404':
+          schema:
+            $ref: '#/definitions/Error404'
+          description: Not found
+      parameters:
+      - in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        type: string
+        required: true
+      tags:
+      - AIProvider
   /rest/AiGroupView/{row_id}:
     post:
       summary: Create a new AiGroupView business object record

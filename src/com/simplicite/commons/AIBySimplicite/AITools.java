@@ -380,27 +380,41 @@ public class AITools implements java.io.Serializable {
         //importDatasets(ModuleDB.getModuleId("AIBySimplicite"));
         return new JSONObject(env);
     }
-    public static void importDatasets(String moduleID){
+    public static List<String> importDatasets(String moduleID){
+        return importDatasets(moduleID,false);
+    }
+    public static List<String> importDatasets(String moduleID,boolean force){
         Grant g = Grant.getSystemAdmin();
+        if(force){return applyDatasets(moduleID,g);}
 		g.addResponsibility("AI_ADMIN");
 		ObjectDB obj = g.getTmpObject("AIProvider");
 		obj.resetFilters();
 		if(obj.search().isEmpty()){
-			ObjectDB datasets = g.getTmpObject("Dataset");
-			synchronized(datasets.getLock()){
-				datasets.resetFilters();
-				datasets.setFieldFilter(ROW_MLD_ID, moduleID);
-				for(String[] row: datasets.search()){
-					datasets.resetFilters();	
-					datasets.select(row[datasets.getRowIdFieldIndex()]);
-					try {
-						datasets.invokeAction("Dataset-apply");
-					} catch (ActionException e) {
-						AppLog.error(e, g);
-					}
-				}
+			return applyDatasets(moduleID,g);
+		}
+        return new ArrayList<>();
+    }
+    private static List<String> applyDatasets(String moduleID,Grant g){
+        List<String> result = new ArrayList<>();
+        ObjectDB datasets = g.getTmpObject("Dataset");
+		synchronized(datasets.getLock()){
+		    datasets.resetFilters();
+			datasets.setFieldFilter(ROW_MLD_ID, moduleID);
+			for(String[] row: datasets.search()){
+                datasets.resetFilters();
+				if(datasets.select(row[datasets.getRowIdFieldIndex()])){
+                    try {
+                        datasets.invokeAction("Dataset-apply");
+                        result.add(row[datasets.getFieldIndex("dt_name")]);
+                    } catch (ActionException e) {
+                        AppLog.error(e, g);
+                    }
+                    
+                }
+				
 			}
 		}
+        return result;
     }
     private static JSONObject getOptAiApiParamByGrant(){
         Grant g = Grant.getSystemAdmin();

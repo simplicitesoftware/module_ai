@@ -179,6 +179,10 @@ For detailed examples on how to generate modules, interact with business chatbot
 | `aiPrvSttUrl`                                                | url(100)                                 |          | yes       |          | -                                                                                |
 | `aiPrvUserParameters`                                        | text(5000)                               |          | yes       |          | -                                                                                |
 
+### Custom actions
+
+* `AIProvidersImport`: 
+
 `AIGenData` business process definition
 ---------------------------------------
 
@@ -186,7 +190,7 @@ For detailed examples on how to generate modules, interact with business chatbot
 
 ### Activities
 
-* `EndHome`: 
+* `GoToSettings`: 
 * `Begin`: 
 * `End`: 
 * `IsParam`: 
@@ -204,7 +208,6 @@ Auomatic model generation process
 
 * `Begin`: 
 * `End`: 
-* `EndHome`: 
 * `Choice`: 
 * `CreateModule`: 
 * `TranslateDomain`: 
@@ -220,6 +223,7 @@ Auomatic model generation process
 * `AI`: AI for modeling
 * `Generation`: Module generation based on ia feedback
 * `RemoveModule`: Remove module
+* `GoToSettings`: 
 
 `AiSettingsProcess` business process definition
 -----------------------------------------------
