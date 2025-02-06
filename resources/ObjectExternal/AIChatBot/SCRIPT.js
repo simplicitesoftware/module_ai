@@ -34,7 +34,7 @@ var AIChatBot = AIChatBot || (function() {
 		
 	}
 	function createHistoric(item){
-		historicObject.save((newItem)=>{console.log("historic created",newItem)},item);
+		historicObject.save((newItem)=>{console.log("historic created",newItem);},item);
 	}
 	function chatbotSendMessage(ctn) {
 		let userMessage = ctn.querySelector('#chatbot_input_message').value;
@@ -81,7 +81,7 @@ var AIChatBot = AIChatBot || (function() {
 		}
 
 
-
+		let userImg = $(ctn).find("#input-img img")?.attr("src");
 		// Efface le champ de saisie utilisateur
 		if(AiJsTools){
 			AiJsTools.resetInput(ctn.querySelector('.ai-chat-input-area'));
@@ -99,11 +99,13 @@ var AIChatBot = AIChatBot || (function() {
 				let result = botResponse.response.choices[0].message.content;
 				result = escapeHtml(result);
 				result = $view.markdownToHTML(result).html();
-				$(ctn).find(".bot-messages:last-child span").html(result);	
-				addHistoric(userMessage,result,$grant.getLogin());
+				$(ctn).find(".bot-messages:last-child span").html(result);
+				console.log("botResponse",botResponse);
+				console.log("addHistoric(",userMessage,",",result,",",userImg,",",botResponse.response.usage,",",$grant.getLogin(),")");
+				addHistoric(userMessage,result,userImg,botResponse.response.usage,$grant.getLogin());
 			}else{
 				$(ctn).find(".bot-messages:last-child span").text("Sorry, an error occurred");
-				addHistoric(userMessage,"Sorry, an error occurred",$grant.getLogin());
+				addHistoric(userMessage,"Sorry, an error occurred",null,null,$grant.getLogin());
 			}
 			enableChatbot(ctn);
 			chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -129,20 +131,40 @@ var AIChatBot = AIChatBot || (function() {
 		$(ctn).find("#chatbot_send_button").prop("disabled", false);
 		$(ctn).find("#chatbot_input_message").prop("disabled", false);
 	}
-	function addHistoric(userMessage,botMessage,login){
+	function addHistoric(userMessage,botMessage,userImg,cost,login){
 		if(!historicObject) return;
 		let botn = "bot";
 		if(AiJsTools){
 			botn = AiJsTools.botName;
 		}
+		let promptHist = $app.getBusinessObject("AdaPromptsLogger");
+		promptHist.getForCreate((item)=>{
+			
+			item.adaPlogPhyId = historicObject.getRowId();
+			item.adaPlogPrompt = userMessage;
+			item.adaPlogResponse = botMessage;
+			item.adaPlogCost = cost;
+			if(userImg)item.adaPlogImage =userImg;
+			console.log("item to create",item);
+			app._call(true, Simplicite.ROOT+"/ext/AdaSavePrompt", {obj:item}, function callback(botResponse){
+				if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
+					console.log("prompt saved");
+				}else{
+					console.log("error prompt save",botResponse);
+				}
+			 });
+		});
+		/*oldhist
 		let message = "";
 		if(historicObject.item.adaPhyChat){
 			message = historicObject.item.adaPhyChat;
 		}
+		
 		message += `\n# ${login}\n${userMessage}\n\n# ${botn}\n${botMessage}\n\n`;
 		historicObject.item.adaPhyChat = message;
 		historicObject.item[`adaPhyUserPrompts`] = userMessage;
 		historicObject.save();
+		*/
 	}
 	return { render: render, chatbotSendMessage: chatbotSendMessage};
 

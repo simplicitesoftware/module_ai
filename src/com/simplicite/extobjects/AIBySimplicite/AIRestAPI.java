@@ -21,6 +21,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	private static final String OBJ_FIELD_NAME = "fieldName";
 	private static final String JSON_REQ_TYPE = "reqType";
 	private static final String JSON_SWAGGER = "swagger";
+	private static final String PARAMS_CONTENT_KEY = "content";
 	@Override
 	public Object get(Parameters params) throws HTTPException {
 		return error(400, "Call me in POST please!");
@@ -68,6 +69,10 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 					return updateFieldByParam(prompt,params,objectID,objectName);
 				case "frontAiCall":
 					return frontAiCaller(objectName, objectID);
+				case "commentCode":
+					String content =params.getParameter(PARAMS_CONTENT_KEY);
+					return commentCode(content);
+
 				default:
 					AppLog.info("AI API ERROR: "+type+params.toJSON());
 					return error(400, "Call me with a predefined request type, prompt or a object param please!");
@@ -78,6 +83,12 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			return error(e);
 		}
 		
+	}
+	private Object commentCode(String code){
+		Grant g = Grant.getSystemAdmin();
+		AppLog.info(code);
+		JSONObject commentedCode = AITools.aiCodeCaller(g,"You add comment on the code provided.e",code);
+		return commentedCode;
 	}
 	private Object metricsPost(Parameters params,String prompt){
 		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(params.getParameter(JSON_SWAGGER)):null;

@@ -1,4 +1,5 @@
 var AiJsTools = AiJsTools || (function(param) {
+	let devMode = false;
 	let useAsync = true; 
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 	let app = $ui.getApp();
@@ -341,6 +342,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			};
 			sendButton.prop('disabled', false);
 	}
+	
 	function loadResultInAceEditor(ctn,divId){
 		$ui.loadAceEditor(function(){
 			let aceEditor = window.ace.edit(divId);
@@ -453,6 +455,147 @@ var AiJsTools = AiJsTools || (function(param) {
 			input.value = min; // Limite à la valeur minimale
 		}
 	}
+	
+	function commentCode(){
+		// Implémentation de la fonction
+		let activeTab = $tools.getTabActive($('.code-editor')).data("data");
+		let dlg;
+		let diff;
+	    let left_code;
+		let right_code;
+		//console.log(code);
+		//call the AI API
+		$ui.loadLocalEditor((e)=>{
+			console.log("editor",e);
+			e.loadAceDiff();
+			console.log(e.active);
+			displayDiffCode(e,activeTab);
+		});
+		
+		function close(){
+			console.log("close",diff);
+			diff.destroy();
+			$tools.dialogClose(dlg);
+		}
+		function displayDiffCode(editor,activeTab){
+			const aceEditor = ace.edit(activeTab.div[0]);
+			console.log("selected:",aceEditor.getSelectedText());
+			let selected = aceEditor.getSelectedText();
+			let range = selected?aceEditor.getSelectionRange():null;
+			const code = selected || aceEditor.getValue();
+			console.log("code",code);
+			let div = $('<div class="acediff"/>').css("min-height", $(window).height()-125),
+				bar = $('<div class="actions"/>'),
+				title = $('<div class="title"/>').text($T("COMPARE")).append(bar);
+			let postParams =  {
+				reqType: 'commentCode',
+				content: code
+			};
+			// apply the ai comment to the code
+			bar.append($tools.button({ label:$T("ACCEPT_ALL"), level:"primary", size:"sm", click:() => {
+				left_code.setValue(right_code.getValue());
+			}}));
+			// discard the modified code and close
+			bar.append($tools.button({ label:$T("RESTORE"), level:"action", size:"sm", click:() => {
+				console.log("RESTORE");
+				close();
+			}}));
+			// save the code and close
+			bar.append($tools.button({ label:$T("SAVE"), level:"action", size:"sm", click:() => {
+				if(selected){
+					aceEditor.session.replace(range,left_code.getValue());
+				}else{
+					aceEditor.setValue(left_code.getValue());
+				}
+				editor.saveActive();
+				console.log("CLOSE");
+				close();
+			} }));
+
+			dlg = $tools.dialog({
+				content: $('<div class="diff-body"/>')
+					.append(title)
+					.append($('<div class="header"/>')
+						.append($('<div/>').text("Original code "))
+						.append($('<div/>').text("AI Commented Code")))
+					.append(div),
+				width: "90%",
+				onload:() =>{
+					$view.showLoading($(".diff-body"));
+					if(!devMode){
+						app._call(true, url, postParams, function callback(botResponse){
+							console.log("botResponse",botResponse,botResponse.choices[0],botResponse.choices[0]?.message,botResponse.choices[0]?.message?.content);
+							let newCode = botResponse.choices[0]?.message?.content;
+							console.log("newCode",newCode);
+							if(!newCode){
+								$ui.alert("no code return");
+								return;
+							} 
+							newCode = newCode?.replace(/(?:.*\n)*```.*?\n([\s\S]*?)```(?:.*\n)*/,'$1');
+							displayResult(code,newCode,activeTab);
+						});
+					}else{
+						let newCode = code+"\n// AI Commented Code";
+						displayResult(code,newCode,activeTab);
+					}
+					
+				}
+			}).addClass("code-diff");
+		}
+		function displayResult(oldCode,newCode,activeTab){
+			console.log("displayResult activeTab",activeTab);
+			let aceMode = getAceModeOfTab(activeTab);
+			console.log("displayResult mime type",aceMode);
+			
+			diff =new AceDiff({
+				element: '.acediff',
+				theme: "ace/theme/eclipse",
+				left: {
+					title: 'Code original',
+					editable: true,
+					content: oldCode,
+					mode: aceMode
+				},
+				right: {
+					title: 'AI Commented Code',
+					editable: true,
+					content: newCode,
+					mode: aceMode
+				}
+			});
+			console.log("diff",diff);
+			left_code = diff.editors.left.ace;
+			right_code = diff.editors.right.ace;
+			console.log("left",left_code);
+			$view.hideLoading($(".diff-body"));
+			$('.acediff__left .ace_scrollbar-v').scroll(() =>
+				right_code.session.setScrollTop(left_code.session.getScrollTop()));
+			$('.acediff__right .ace_scrollbar-v').scroll(() =>
+				left_code.session.setScrollTop(right_code.session.getScrollTop()));
+		}
+		function getAceModeOfTab(activeTab){
+			let mode = activeTab?.mode;
+			console.log("getAceModeOfTab mode",mode);
+			if(!mode){
+				return "ace/mode/text";
+			}
+			return "ace/mode/"+mode;
+		}
+	}
+	
+	function addCommentCodeButton(ctn,nextAction){
+		let button = $('<button>Comment code</button>').addClass("btn btn-secondary btn-ai"); // Création d'un nouveau bouton avec jQuery
+		button.click(function() {
+			AiJsTools.commentCode();
+		});
+		let nextBtn = nextAction?ctn.find(`button[data-action="${nextAction}"]`):null;
+		if(nextBtn){
+			nextBtn.before(button); 
+		}else{
+			$(ctn).append(button); // Ajout du bouton à la barre d'édition
+		}
+	}
+		
 	return { 
 		useAsync: useAsync,
 		url: url,
@@ -469,6 +612,8 @@ var AiJsTools = AiJsTools || (function(param) {
 		loadResultInAceEditor:loadResultInAceEditor,
 		removeimg:removeimg,
 		getUserProviderParams:getUserProviderParams,
-		checkMinMAx:checkMinMAx
+		checkMinMAx:checkMinMAx,
+		commentCode:commentCode,
+		addCommentCodeButton:addCommentCodeButton
 	};
 })();

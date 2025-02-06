@@ -19,5 +19,3 @@ public class AIExpTool extends ExternalObject { // or com.simplicite.webapp.web.
 		return javascript("alert(\"not front object\")");
 	}
 }
-
-

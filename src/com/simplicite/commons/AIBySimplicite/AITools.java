@@ -19,6 +19,8 @@ import java.net.URISyntaxException;
 import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
@@ -65,7 +67,7 @@ public class AITools implements java.io.Serializable {
     private static final String CALLER_PARAM_SECURE = "secure";
     private static final String CALLER_PARAM_SAFE_SPE ="isSafeSpe";
     private static final String CALLER_PARAM_TOKEN ="maxToken";
-    
+    private static final String CALLER_PARAM_CODE_SECURE = "code_secure";
     private static final String MAX_TOKEN = "max_tokens";
     public static final String TYPE_TEXT = "text";
     public static final String TYPE_IMAGE_URL = "image_url";
@@ -105,11 +107,11 @@ public class AITools implements java.io.Serializable {
         private JSONArray historic;
         private JSONObject providerParams;
         private int maxToken = 1500;
-
         private AICallerParams(Object promptObject,JSONObject params) throws AITypeException{
             boolean secure = params.optBoolean(CALLER_PARAM_SECURE, false);
             boolean isSafeSpe = params.optBoolean(CALLER_PARAM_SAFE_SPE, false);
-            setPrompt(promptObject, secure);
+            boolean codeSecure = params.optBoolean(CALLER_PARAM_CODE_SECURE, false);
+            setPrompt(promptObject, secure,codeSecure);
             setSpecialisation(params.optString(CALLER_PARAM_SPE),isSafeSpe);
             historic = params.optJSONArray(CALLER_PARAM_HISTORIC, new JSONArray());
             providerParams = params.optJSONObject("providerParams", new JSONObject());
@@ -133,13 +135,18 @@ public class AITools implements java.io.Serializable {
             if("\"\"".equals(spe)) spe = "";
             specialisation = spe;
         }
-        private void setPrompt(Object promptObject,boolean isSafe) throws AITypeException{
+        private void setPrompt(Object promptObject,boolean isSafe,boolean codeSecure) throws AITypeException{
              //prompt to JSONArray
              if(promptObject instanceof String){
                 prompt = new JSONArray();
-                String strPrompt = normalize((String)promptObject,isSafe);
-                prompt.put(getformatedContentByType(strPrompt,TYPE_TEXT,false));
-                 
+                if(codeSecure){
+                    String strPrompt = normalizeCode((String)promptObject);
+                    prompt.put(getformatedContentByType(strPrompt,TYPE_TEXT,true));
+                }else{
+                    String strPrompt = normalize((String)promptObject,isSafe);
+                    prompt.put(getformatedContentByType(strPrompt,TYPE_TEXT,false));
+                }
+                
             }else if(promptObject instanceof JSONArray){
                 prompt= (JSONArray)promptObject;
             }else{
@@ -447,6 +454,22 @@ public class AITools implements java.io.Serializable {
         }
         return provider;
     }
+    public static JSONObject filterTokensJson(JSONObject original) {
+		JSONObject filtered = new JSONObject();
+		if (original.has("total_tokens")) {
+			filtered.put("total_tokens", original.get("total_tokens"));
+		}
+		if (original.has("prompt_tokens")) {
+			filtered.put("prompt_tokens", original.get("prompt_tokens"));
+		}
+		if (original.has("completion_tokens")) {
+			filtered.put("completion_tokens", original.get("completion_tokens"));
+		}
+		return filtered;
+	}
+	public static boolean isProvider(String provider,String key){
+        return (aiProvider.equals(provider) && apiKey.equals(key));
+    }
     /**
      * This method is used to patch the merged system parameters.
      * It checks if the old AI sysparams style exists and if so, it patches the new AI sysparams.
@@ -748,6 +771,19 @@ public class AITools implements java.io.Serializable {
             return new JSONObject();
         }
     }
+    public static JSONObject aiCodeCaller(Grant g,String specialisation, String code){
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                                .put(CALLER_PARAM_TOKEN, aiApiParam.getInt("code_max_token"))
+                                                .put(CALLER_PARAM_CODE_SECURE,true);
+            AppLog.info("CODE "+code);
+            AICallerParams caller = new AICallerParams(code,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
+    }
 
     /**
      * Format an exchange to AI API format.
@@ -867,6 +903,9 @@ public class AITools implements java.io.Serializable {
     public static String normalize(String text, boolean secure){
         text = removeAcent(text);
         return secure?Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[\u0300-\u036F]", "").replaceAll("[^\\w\\(\\),`{}.\\[\\]\"@\\/:-]", " "):normalize(text);
+    }
+    public static String normalizeCode(String text){
+        return removeAcent(text);
     }
     public static String removeAcent(String text){
         text = text.replaceAll("(?u)[éèêë]", "e")
