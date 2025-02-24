@@ -123,11 +123,11 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			};
 		});
 		
-		$("#metrics_send_button").click(function() { AIMetricsChat.showWarn()});
+		$("#metrics_send_button").click(function() { AIMetricsChat.showWarn();});
 		$('#metrics_user_text').click(function() { showWarn();});
 	}
 	function showWarn(){
-		console.log("showwarn")
+		console.log("showwarn");
 		app.getTexts(function(textes){
 			$ui.alert(app.getText(textes?.AI_GRAPH_DISCLAIMER, false));
 			$('#metrics_user_text').unbind('click');
