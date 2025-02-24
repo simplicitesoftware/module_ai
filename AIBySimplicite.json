@@ -357,6 +357,24 @@
    ]
   },
   {
+   "object": "Responsability",
+   "label": "Responsibilities",
+   "icon": "img/system/responsability",
+   "field": "row_module_id",
+   "list": [{
+    "object": "Responsability",
+    "userkey": "designer AI_DESIGNER 02/18/2025",
+    "item": {
+     "rsp_login_id__usr_login": "designer",
+     "rsp_group_id__grp_name": "AI_DESIGNER",
+     "rsp_start_dt": "2025-02-18",
+     "rsp_end_dt": null,
+     "rsp_activ": true,
+     "row_module_id__mdl_name": "AIBySimplicite"
+    }
+   }]
+  },
+  {
    "object": "ShortCut",
    "label": "Shortcuts",
    "icon": "img/system/shortcut",
@@ -3930,7 +3948,7 @@
       "obf_input": null,
       "obf_ref_field_id__fld_name": null,
       "obf_ref_object_id__obo_name": "User",
-      "obf_cascad": "R",
+      "obf_cascad": "C",
       "obf_card": "0,n",
       "obf_visible": true,
       "obf_ref_export": false,
@@ -4038,7 +4056,7 @@
       "obf_input": null,
       "obf_ref_field_id__fld_name": null,
       "obf_ref_object_id__obo_name": "Module",
-      "obf_cascad": "R",
+      "obf_cascad": "C",
       "obf_card": "0,n",
       "obf_visible": true,
       "obf_ref_export": false,
@@ -4640,7 +4658,7 @@
       "obf_ref_order": null,
       "obf_object_id__obj_name": "AiMetricsHist",
       "obf_field_id__fld_name": "aiMhModuleId",
-      "obf_cascad": "R",
+      "obf_cascad": "C",
       "obf_card": "0,n",
       "obf_query": null,
       "obf_filters": null,
@@ -4664,7 +4682,7 @@
       "obf_ref_order": null,
       "obf_object_id__obj_name": "AiMetricsHist",
       "obf_field_id__fld_name": "aiMhSimpleuserId",
-      "obf_cascad": "R",
+      "obf_cascad": "C",
       "obf_card": "0,n",
       "obf_query": null,
       "obf_filters": null,
