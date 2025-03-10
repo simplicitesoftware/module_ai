@@ -103,7 +103,7 @@ For AI enhanced code editor, you have to use `Code editor`in the `AI enhanced si
 ![Dedicated scope](resources/Tutorial/Enhanced_Code_Editor/Disposition_1.png)
 ![Code editor](resources/Tutorial/Enhanced_Code_Editor/Disposition_2.png)
 1. Open the scope selector.
-2. Select the `AI Simpliité Administrator` scope.
+2. Select the `AI Simplicité Administrator` scope.
 3. Go to the `Code editor`.
 
 ##### Comment code
