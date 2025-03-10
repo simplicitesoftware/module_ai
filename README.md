@@ -49,10 +49,10 @@ To configure the AI connection, utilize the `configuring the wizard` process in 
 Select the model (LLM) you wish to use, configure the API key, and the URL of your API:
 |Process steps||
 |---|---|
-|![Step 1, Select LLM](resources/Tutorial/Configuring_LMM_API_1_select.png)|1. Domain AI<br>2. Configuration process<br>3. Select the LLM you will use|
-|![Step 2, Set authent](resources/Tutorial/Configuring_LMM_API_2_authentication.png)|4. Set your API key<br>5. If you use a dedied api set the endpoint of your API|
-|![Step 3, Other parameters](resources/Tutorial/Configuring_LMM_API_3_parameters.png)|See help for details<br>6. parametres<br>7. Depends of your LLM |
-|![Step 4, Monitoring of setup](resources/Tutorial/Configuring_LMM_API_4_monitoring.png)|8. recap of setup and ping result<br>9. you can test the chatbot|
+|![Step 1, Select LLM](resources/Tutorial/Configure/Configuring_LMM_API_1_select.png)|1. Domain AI<br>2. Configuration process<br>3. Select the LLM you will use|
+|![Step 2, Set authent](resources/Tutorial/Configure/Configuring_LMM_API_2_authentication.png)|4. Set your API key<br>5. If you use a dedied api set the endpoint of your API|
+|![Step 3, Other parameters](resources/Tutorial/Configure/Configuring_LMM_API_3_parameters.png)|See help for details<br>6. parametres<br>7. Depends of your LLM |
+|![Step 4, Monitoring of setup](resources/Tutorial/Configure/Configuring_LMM_API_4_monitoring.png)|8. recap of setup and ping result<br>9. you can test the chatbot|
 
 
 **Follow the process:**
@@ -79,16 +79,17 @@ Maximum number of tokens for technical calls.
 
 ---
 
-### wizzard
+### Wizard
 
-![UI](resources/Tutorial/AI_utils.png)
+![UI](resources/Tutorial/Wizard/AI_utils.png)
 
 1. AI domain
-2. [LLM and API configuration](#configure)
-3. [AI-assisted module creation or completion process](#module-generation)
-4. [Data generation process](#data-generation)
-5. [Chatbot for Business with context](#business-chatbot)
-6. List of LLMs currently configurable. 
+1. [LLM and API configuration](#configure)
+1. [AI-assisted module creation or completion process](#module-generation)
+1. [Enhanced Code Editor](#enhanced-code-editor)
+1. [Data generation process](#data-generation)
+1. [Chatbot for Business with context](#business-chatbot)
+1. List of LLMs currently configurable. 
 
 #### Module generation
 Use AI to co-create or update a module based on your business needs
@@ -97,6 +98,26 @@ Use AI to co-create or update a module based on your business needs
 #### Data generation
 Use AI to generate test data for a module.
 `Data generation` in `AI assistant` domain.
+#### Enhanced Code Editor
+For AI enhanced code editor, you have to use `Code editor`in the `AI enhanced simplicite` disposition.
+![Dedicated scope](resources/Tutorial/Enhanced_Code_Editor/Disposition_1.png)
+![Code editor](resources/Tutorial/Enhanced_Code_Editor/Disposition_2.png)
+1. Open the scope selector.
+2. Select the `AI Simpliité Administrator` scope.
+3. Go to the `Code editor`.
+
+##### Comment code
+A Keyboard shortcut is available to comment on a file or a block of code with AI:
+![Select the code](resources/Tutorial/Enhanced_Code_Editor/Comment_code_1.png)
+![Check the comment](resources/Tutorial/Enhanced_Code_Editor/Comment_code_2.png)
+1. Select the code you want to comment; nothing for the whole file.
+2. Press `Ctrl+Q`
+3. The old code.
+4. AI suggested commentary
+5. Use ace editor obtion to accept part of the commentary or all. Then use the option to close the commentator.
+	1. Accept all: accept all the commentary (`AI commented code` part).
+	2. Restore: restore the original code (do not save the commentary).
+	3. Save: save the manual check commentary (`Original code` part).
 
 #### Business chatbot
 A shortcut to a chatbot contextualized according to the form on which it is opened.
@@ -110,7 +131,7 @@ The chatbot can be contextualized to the current user's scope, including knowled
 * Create a new `Group gui description` by choosing the desired language.
 * You can refine the description by selecting the groups to be considered for this description (by default, the groups of rights in the scope are taken into account).
 
-![Group gui parameters](resources/Tutorial/ChatBot_configuring_context.png)
+![Group gui parameters](resources/Tutorial/Wizard/ChatBot_configuring_context.png)
 1. The chatbot open in this scope will have UI context
 2. The lang (to get context in the user language)
 3. Auto generated Description of the ui and the rules
@@ -120,131 +141,7 @@ The chatbot can be contextualized to the current user's scope, including knowled
 
 #### Metrics
 Generating AI graphs on a module's data
-In a `view` add an `external page` of source `External object`: `AIMetricsChat?module=<you_module_name>`
-
+In a `view` add an `external page` (1) of source `External object` (2): `AIMetricsChat?module=<you_module_name>` (3)
+![Metrics](resources/Tutorial/Metrics/Metrics_1.png)
 For detailed examples on how to generate modules, interact with business chatbots, and visualize metrics, please refer to the example available at the following link:
 [Explore AI Assistant Prompt Examples](https://github.com/simplicitesoftware/module_ai/blob/51425242c08e8f224ecc8d15ebcd80ca8b205d4c/EXAMPLE.md)
-
-`AIProvider` business object definition
----------------------------------------
-
-
-
-### Fields
-
-| Name                                                         | Type                                     | Required | Updatable | Personal | Description                                                                      |
-|--------------------------------------------------------------|------------------------------------------|----------|-----------|----------|----------------------------------------------------------------------------------|
-| `aiPrvProvider`                                              | char(100)                                | yes*     | yes       |          | -                                                                                |
-| `aiPrvDefaultUrl`                                            | url(100)                                 | yes      | yes       |          | -                                                                                |
-| `aiPrvDataModel`                                             | text(1000)                               | yes      | yes       |          | -                                                                                |
-| `aiPrvModelsUrl`                                             | url(100)                                 | yes      | yes       |          | -                                                                                |
-| `aiPrvHelp`                                                  | text(5000)                               |          | yes       |          | -                                                                                |
-| `aiPrvCompletionUrl`                                         | url(100)                                 | yes      | yes       |          | -                                                                                |
-| `aiPrvPingUrl`                                               | url(100)                                 |          | yes       |          | -                                                                                |
-
-`AIGenData` business process definition
----------------------------------------
-
-
-
-### Activities
-
-* `EndHome`: 
-* `Begin`: 
-* `End`: 
-* `IsParam`: 
-* `NoParam`: 
-* `SelectModule`: Selection module
-* `Confirm`: 
-* `GenData`: AI call for data gen
-
-`AIModuleCreate` business process definition
---------------------------------------------
-
-Auomatic model generation process
-
-### Activities
-
-* `Begin`: 
-* `End`: 
-* `EndHome`: 
-* `Choice`: 
-* `CreateModule`: 
-* `TranslateDomain`: 
-* `NewScope`: 
-* `GrantUser`: 
-* `isParam`: 
-* `NoParam`: 
-* `SelectModule`: Selection module
-* `SelectGroup`: Selection group
-* `SelectDomain`: Selection Domain
-* `interaction`: Chat with the AI
-* `Prompt`: Direct chat with the AI
-* `AI`: AI for modeling
-* `Generation`: Module generation based on ia feedback
-* `RemoveModule`: Remove module
-
-`AiSettingsProcess` business process definition
------------------------------------------------
-
-
-
-### Activities
-
-* `isGlobalParam`: 
-* `Global`: 
-* `SelectProvider`: 
-* `Auth`: 
-* `OtherParam`: 
-* `Begin`: 
-* `End`: 
-
-`AIChatBot` external object definition
---------------------------------------
-
-Chat interface
-
-
-`AIExpTool` external object definition
---------------------------------------
-
-Front tool
-
-
-`AIMetricsChat` external object definition
-------------------------------------------
-
-AI contextual chat for personalised metrics. 
-Use parameter "module" to specify context.
-
-
-`AiMonitoring` external object definition
------------------------------------------
-
-
-
-
-`AIProcessResource` external object definition
-----------------------------------------------
-
-Process resource
-
-
-`AIPromptTool` external object definition
------------------------------------------
-
-Tool
-
-
-`AIRestAPI` external object definition
---------------------------------------
-
-Local API
-
-
-`AIShortcut` external object definition
----------------------------------------
-
-Chat in shortcut
-
-
