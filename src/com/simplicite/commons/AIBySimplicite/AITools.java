@@ -78,7 +78,7 @@ public class AITools implements java.io.Serializable {
 
 	private static final String SYS_CODE = "sys_code";
 	private static final String SYS_VAL2 = "sys_value2";
-    private static final String DEFAULT_MODULE = "Application";
+    private static final String DEFAULT_MODULE = "System";
     private static final String ROW_MLD_ID = "row_module_id";
 
     public static final String PING_SUCCESS = "200";

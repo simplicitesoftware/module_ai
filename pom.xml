@@ -13,10 +13,12 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
   <description>Simplicite module: AIBySimplicite</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <simplicite.url>https://dgddidev.dev2.simplicite.io</simplicite.url>
+    <simplicite.url>https://cbirec.demo.simplicite.io</simplicite.url>
     <simplicite.version>6.2-SNAPSHOT</simplicite.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.proc>full</maven.compiler.proc>
+    <skipTests>true</skipTests>
     <sonar.projectKey>simplicite-modules-AIBySimplicite</sonar.projectKey>
     <sonar.projectName>AIBySimplicite</sonar.projectName>
     <sonar.projectVersion>0.30</sonar.projectVersion>

@@ -6,6 +6,7 @@
 components:
   schemas:
     Error404:
+      description: Not found
       type: object
       properties:
         error:
@@ -17,27 +18,34 @@ components:
           enum:
           - 404
     AiGroupGuiDesc:
+      description: Group gui description
       type: object
       properties:
         aiGgdDescription:
           description: Description
           type: string
+          maxLength: 50000
         aiGgdLang:
           description: Language
           type: string
+          maxLength: 100
           enum:
           - ENU
           - FRA
         aiGgdViewhomeId__viw_name:
           description: Scope
           type: string
+          maxLength: 100
         aiGgdViewhomeId:
           description: Home page
           type: string
+          maxLength: 11
         row_id:
           description: Unique technical row ID
           type: string
+          maxLength: 11
     AiGroupView:
+      description: Described group
       type: object
       properties:
         aiAigroupviewUsed:
@@ -46,28 +54,36 @@ components:
         aiGroupGuiDescId__aiGgdViewhomeId__viw_name:
           description: Group gui desc id Home page Name
           type: string
+          maxLength: 100
         aiGroupGuiDescId__aiGgdLang:
           description: Group gui desc id Language
           type: string
+          maxLength: 100
           enum:
           - ENU
           - FRA
         row_id:
           description: Unique technical row ID
           type: string
+          maxLength: 11
         aiGroupGuiDescId__aiGgdViewhomeId:
           description: Group gui desc id Home page
           type: string
+          maxLength: 11
         aiGroupId:
           description: aiGroupId
           type: string
+          maxLength: 11
         aiGroupGuiDescId:
           description: Group gui desc id
           type: string
+          maxLength: 11
         aiGroupId__grp_name:
           description: Group name
           type: string
+          maxLength: 100
     PublicationResult:
+      description: Publication result
       type: object
       properties:
         mime:
@@ -77,6 +93,7 @@ components:
           description: Content (plain text or base64 encoded)
           type: string
     PlaceData:
+      description: Place data
       type: object
       properties:
         coord:
@@ -98,6 +115,7 @@ components:
           description: 'Label #3'
           type: string
     PlaceMapData:
+      description: Places map data
       type: object
       properties:
         places:
@@ -109,12 +127,14 @@ components:
           description: Name
           type: string
     ActionResult:
+      description: Action result
       type: object
       properties:
         result:
           description: Action result
           type: string
     ArrayOfAIProvider:
+      description: List of Providers
       type: array
       items:
         $ref: '#/components/schemas/AIProvider'
@@ -125,10 +145,12 @@ components:
           description: Object item with lists of linked objects' items
           type: object
     ArrayOfAiGroupGuiDesc:
+      description: List of Group gui description
       type: array
       items:
         $ref: '#/components/schemas/AiGroupGuiDesc'
     Error400:
+      description: Bad request
       type: object
       properties:
         error:
@@ -140,6 +162,7 @@ components:
           enum:
           - 400
     Error401:
+      description: Unauthorized
       type: object
       properties:
         error:
@@ -151,6 +174,7 @@ components:
           enum:
           - 401
     Error500:
+      description: Internal server error
       type: object
       properties:
         error:
@@ -162,43 +186,56 @@ components:
           enum:
           - 500
     ArrayOfAiGroupView:
+      description: List of Described group
       type: array
       items:
         $ref: '#/components/schemas/AiGroupView'
     AIProvider:
+      description: Provider
       type: object
       properties:
         aiPrvDefaultUrl:
           description: Default url
           type: string
+          maxLength: 100
         aiPrvSttUrl:
           description: Speech to text url
           type: string
+          maxLength: 100
         aiPrvPingUrl:
           description: Ping url
           type: string
+          maxLength: 100
         aiPrvProvider:
           description: Provider
           type: string
+          maxLength: 100
         aiPrvDataModel:
           description: Specific parameter
           type: string
+          maxLength: 1000
         aiPrvCompletionUrl:
           description: Completion endpoint url
           type: string
+          maxLength: 100
         aiPrvHelp:
           description: Key and endpoints help
           type: string
+          maxLength: 5000
         aiPrvUserParameters:
           description: Prv user parameters
           type: string
+          maxLength: 5000
         row_id:
           description: Unique technical row ID
           type: string
+          maxLength: 11
         aiPrvModelsUrl:
           description: Models url
           type: string
+          maxLength: 100
     Error403:
+      description: Forbidden
       type: object
       properties:
         error:
@@ -210,37 +247,48 @@ components:
           enum:
           - 403
     AiMetricsHist:
+      description: History of generated graphs
       type: object
       properties:
         aiMhPrompt:
           description: Title
           type: string
+          maxLength: 1000
         aiMhCreateOn:
           description: Mh create on
           type: string
+          maxLength: 19
           example: yyyy-MM-dd HH:mm:ss
         aiMhSimpleuserId:
           description: Mh simpleuser id
           type: string
+          maxLength: 11
         aiMhSimpleuserId__usr_login:
           description: Login
           type: string
+          maxLength: 100
         aiMhModuleId__mdl_name:
           description: Module name
           type: string
+          maxLength: 100
         aiMhMetrics:
           description: Mh metrics
           type: string
+          maxLength: 10000
         row_id:
           description: Unique technical row ID
           type: string
+          maxLength: 11
         aiMhModuleId:
           description: Mh module id
           type: string
+          maxLength: 11
         aiMhPreview:
           description: Preview
           type: string
+          maxLength: 10000
     ArrayOfAiMetricsHist:
+      description: List of History of generated graphs
       type: array
       items:
         $ref: '#/components/schemas/AiMetricsHist'
@@ -689,20 +737,118 @@ paths:
         required: true
       tags:
       - AiMetricsHist
-  /rest/AIProvider/{row_id}/action:AIProvidersImport:
-    get:
-      summary: Call a custom action for a AIProvider business object record or for
-        all records
+  /rest/AIProvider/{row_id}:
+    post:
+      summary: Create a new AIProvider business object record
       security:
       - bearerAuth: []
-      operationId: obj-aiprovider-action-aiprovidersimport
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIProvider'
+      operationId: obj-aiprovider-create
       responses:
         '200':
-          description: Success in calling the custom action
+          description: Success in creating a new business object record
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActionResult'
+                $ref: '#/components/schemas/AIProvider'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      tags:
+      - AIProvider
+    get:
+      summary: Get a AIProvider business object record
+      security:
+      - bearerAuth: []
+      operationId: obj-aiprovider-get
+      responses:
+        '200':
+          description: Success in getting a single business object record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProvider'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      - schema:
+          type: boolean
+        in: query
+        name: _inline_documents
+        description: Inline documents?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _inline_thumbnails
+        description: Inline documents' thumbnails?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _inline_objects
+        description: Inline objects?
+        required: false
+      tags:
+      - AIProvider
+    delete:
+      summary: Delete a AIProvider business object record
+      security:
+      - bearerAuth: []
+      operationId: obj-aiprovider-delete
+      responses:
+        '200':
+          description: Success in deleting a business object record
+          content:
+            application/json: {}
         '400':
           description: Bad request
           content:
@@ -734,6 +880,157 @@ paths:
         name: row_id
         description: Row ID (or empty or _ for all row IDs)
         required: true
+      tags:
+      - AIProvider
+    put:
+      summary: Update a AIProvider business object record
+      security:
+      - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIProvider'
+      operationId: obj-aiprovider-update
+      responses:
+        '200':
+          description: Success in updating a business object record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIProvider'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      parameters:
+      - schema:
+          type: string
+        in: path
+        name: row_id
+        description: Row ID (or empty or _ for all row IDs)
+        required: true
+      tags:
+      - AIProvider
+  /rest/AIProvider:
+    get:
+      summary: Search AIProvider business object records or get contextualized metadata
+      security:
+      - bearerAuth: []
+      operationId: obj-aiprovider-search
+      responses:
+        '200':
+          description: Success in searching business object records (or in getting
+            contextualized business object metadata, documentation, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfAIProvider'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+      parameters:
+      - schema:
+          type: boolean
+        in: query
+        name: _metadata
+        description: Metadata?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _count
+        description: Count?
+        required: false
+      - schema:
+          type: boolean
+        in: query
+        name: _doc
+        description: Documentation?
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvProvider
+        description: Search filter for Provider
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvDefaultUrl
+        description: Search filter for Default url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvDataModel
+        description: Search filter for Specific parameter
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvModelsUrl
+        description: Search filter for Models url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvHelp
+        description: Search filter for Key and endpoints help
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvCompletionUrl
+        description: Search filter for Completion endpoint url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvPingUrl
+        description: Search filter for Ping url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvSttUrl
+        description: Search filter for Speech to text url
+        required: false
+      - schema:
+          type: string
+        in: query
+        name: aiPrvUserParameters
+        description: Search filter for Prv user parameters
+        required: false
       tags:
       - AIProvider
   /rest/AiGroupView/{row_id}:
@@ -1227,396 +1524,6 @@ paths:
         required: false
       tags:
       - session
-  /rest/AiGroupGuiDesc/{row_id}/action:AI_UPDATE_DESC_GLOBAL:
-    get:
-      summary: Call a custom action for a AiGroupGuiDesc business object record or
-        for all records
-      security:
-      - bearerAuth: []
-      operationId: obj-aigroupguidesc-action-ai_update_desc_global
-      responses:
-        '200':
-          description: Success in calling the custom action
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActionResult'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AiGroupGuiDesc
-  /rest/AIProvider/{row_id}:
-    post:
-      summary: Create a new AIProvider business object record
-      security:
-      - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AIProvider'
-      operationId: obj-aiprovider-create
-      responses:
-        '200':
-          description: Success in creating a new business object record
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AIProvider'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AIProvider
-    get:
-      summary: Get a AIProvider business object record
-      security:
-      - bearerAuth: []
-      operationId: obj-aiprovider-get
-      responses:
-        '200':
-          description: Success in getting a single business object record
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AIProvider'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      - schema:
-          type: boolean
-        in: query
-        name: _inline_documents
-        description: Inline documents?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _inline_thumbnails
-        description: Inline documents' thumbnails?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _inline_objects
-        description: Inline objects?
-        required: false
-      tags:
-      - AIProvider
-    delete:
-      summary: Delete a AIProvider business object record
-      security:
-      - bearerAuth: []
-      operationId: obj-aiprovider-delete
-      responses:
-        '200':
-          description: Success in deleting a business object record
-          content:
-            application/json: {}
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AIProvider
-    put:
-      summary: Update a AIProvider business object record
-      security:
-      - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AIProvider'
-      operationId: obj-aiprovider-update
-      responses:
-        '200':
-          description: Success in updating a business object record
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AIProvider'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AIProvider
-  /rest/AiGroupGuiDesc/{row_id}/action:AI_UPDATE_DESC:
-    get:
-      summary: Call a custom action for a AiGroupGuiDesc business object record or
-        for all records
-      security:
-      - bearerAuth: []
-      operationId: obj-aigroupguidesc-action-ai_update_desc
-      responses:
-        '200':
-          description: Success in calling the custom action
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActionResult'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error404'
-      parameters:
-      - schema:
-          type: string
-        in: path
-        name: row_id
-        description: Row ID (or empty or _ for all row IDs)
-        required: true
-      tags:
-      - AiGroupGuiDesc
-  /rest/AIProvider:
-    get:
-      summary: Search AIProvider business object records or get contextualized metadata
-      security:
-      - bearerAuth: []
-      operationId: obj-aiprovider-search
-      responses:
-        '200':
-          description: Success in searching business object records (or in getting
-            contextualized business object metadata, documentation, ...)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArrayOfAIProvider'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error401'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-      parameters:
-      - schema:
-          type: boolean
-        in: query
-        name: _metadata
-        description: Metadata?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _count
-        description: Count?
-        required: false
-      - schema:
-          type: boolean
-        in: query
-        name: _doc
-        description: Documentation?
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiPrvProvider
-        description: Search filter for Provider
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiPrvDefaultUrl
-        description: Search filter for Default url
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiPrvDataModel
-        description: Search filter for Specific parameter
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiPrvModelsUrl
-        description: Search filter for Models url
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiPrvHelp
-        description: Search filter for Key and endpoints help
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiPrvCompletionUrl
-        description: Search filter for Completion endpoint url
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiPrvPingUrl
-        description: Search filter for Ping url
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiPrvSttUrl
-        description: Search filter for Speech to text url
-        required: false
-      - schema:
-          type: string
-        in: query
-        name: aiPrvUserParameters
-        description: Search filter for Prv user parameters
-        required: false
-      tags:
-      - AIProvider
 info:
   license:
     name: Simplicite license

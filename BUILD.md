@@ -8,7 +8,14 @@ Build
 -----
 
 ``` text
-mvn -U -DskipTests=true clean package
+mvn clean package
+```
+
+Javadoc
+-------
+
+``` text
+mvn javadoc:javadoc
 ```
 
 Sonar analysis
