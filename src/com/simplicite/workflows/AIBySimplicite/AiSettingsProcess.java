@@ -90,6 +90,7 @@ public class AiSettingsProcess extends Processus {
 		}
 		return m;
 	}
+	
 	private Message formatURLError(boolean urlEmpty,boolean completionEmpty,Grant g){
 		Message m = new Message();
 		ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);

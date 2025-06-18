@@ -1542,4 +1542,7 @@ public class AITools implements java.io.Serializable {
         AppLog.info(aiProvider);
         return aiProvider;
     }
+    public static boolean isTokenLimitReached(JSONObject json){ // mistral and gpt
+        return "length".equals(json.optJSONArray("choices").getJSONObject(0).optString("finish_reason"));
+    }
 }

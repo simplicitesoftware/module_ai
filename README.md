@@ -196,6 +196,7 @@ For detailed examples on how to generate modules, interact with business chatbot
 * `IsParam`: 
 * `NoParam`: 
 * `SelectModule`: Selection module
+* `params`: 
 * `Confirm`: 
 * `GenData`: AI call for data gen
 

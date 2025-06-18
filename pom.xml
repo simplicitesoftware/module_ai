@@ -7,13 +7,13 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.simplicite.modules</groupId>
-  <version>0.30-SNAPSHOT</version>
+  <version>0.31-SNAPSHOT</version>
   <artifactId>AIBySimplicite</artifactId>
   <name>AIBySimplicite</name>
   <description>Simplicite module: AIBySimplicite</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <simplicite.url>https://cbirec.demo.simplicite.io</simplicite.url>
+    <simplicite.url>https://rec.cbi.simplicite.io</simplicite.url>
     <simplicite.version>6.2-SNAPSHOT</simplicite.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
@@ -21,7 +21,7 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
     <skipTests>true</skipTests>
     <sonar.projectKey>simplicite-modules-AIBySimplicite</sonar.projectKey>
     <sonar.projectName>AIBySimplicite</sonar.projectName>
-    <sonar.projectVersion>0.30</sonar.projectVersion>
+    <sonar.projectVersion>0.31</sonar.projectVersion>
     <sonar.sources>src,resources</sonar.sources>
     <sonar.exclusions>AIBySimplicite.xml,AIBySimplicite.json,AIBySimplicite-*.yml,configuration/**,**.min.js,**.min.css</sonar.exclusions>
     <sonar.coverage.exclusions>resources/**.js,src/**.java</sonar.coverage.exclusions>
@@ -69,7 +69,7 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>10.19.0</version>
+            <version>10.23.0</version>
           </dependency>
         </dependencies>
       </plugin>

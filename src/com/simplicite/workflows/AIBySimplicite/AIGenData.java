@@ -14,6 +14,7 @@ import org.json.JSONObject;
 public class AIGenData extends Processus {
 	private static final String AI_SETTING_NEED = "AI_SETTING_NEED";
 	private static final String ACTIVITY_SELECT_MODULE = "GGD_0100";
+	private static final String ACTIVITY_PARAMS = "GGD_0125";
 	private static final String ACTIVITY_CONFIRM = "GGD_0150";
 	private static final String ACTIVITY_GEN_DATA = "GGD_0200";
 	private static final String ACTIVITY_IS_PARAM = "GGD_0050";
@@ -30,6 +31,16 @@ public class AIGenData extends Processus {
 				context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
 				if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(context.getDataValue("Return","Code"), getGrant());
 				break;
+			case ACTIVITY_PARAMS:
+				String moduleName = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(DATA_FIELD, MODULE_NAME_FIELD);
+				int nbData = Integer.parseInt(context.getDataValue("Data", "nbData"));
+				if(!aiGenerateData(moduleName,nbData,context)){
+					Message m = new Message();
+					m.raiseError(Message.formatError("AI_TOKEN_LIMIT_REACHED",null, null));
+					return m;
+				}
+				break;
+			
 			case ACTIVITY_CONFIRM:
 				Message check = AITools.checkJson(context.getDataValue("Data", DATA_JSON));
 				if(!Tool.isEmpty(check)) return check;
@@ -45,10 +56,6 @@ public class AIGenData extends Processus {
 		String step = context.getActivity().getStep();
 		String moduleName;
 		switch (step) {
-			case ACTIVITY_SELECT_MODULE:
-				moduleName = context.getDataValue(DATA_FIELD, MODULE_NAME_FIELD);
-				aiGenerateData(moduleName);
-				break;
 			case ACTIVITY_CONFIRM:
 				moduleName = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(DATA_FIELD, MODULE_NAME_FIELD);
 				JSONObject json = new JSONObject( context.getDataValue("Data", DATA_JSON));
@@ -59,6 +66,21 @@ public class AIGenData extends Processus {
 				break;
 		}
 		super.postValidate(context);
+	}
+	public String params(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
+		if(context.getStatus() == ActivityFile.STATE_DONE)
+			return null;
+		
+		context.setDataFile("Data", "nbData",AITools.getAIParam("data_number","5"));
+		String nbDataLabel = new JSONObject(g.T("AI_DEFAULT_PARAM")).optJSONObject("data_number").optJSONObject("label").optString(g.getLang());
+		return String.format("""
+				<div class=\"col-sm-3\">
+					<div class=\"form-group field-string\" data-group=\"nbData\">
+						<label for=\"nbData\">%s</label>
+						<input type=\"number\" class=\"form-control\" id=\"nbData\" name=\"nbData\" min=\"0\" value=\"{{value}}\" />
+					</div>
+				</div>
+				""",nbDataLabel); 
 	}
 	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		String js = HTMLTool.JS_START_TAG+"$('.btn-validate').hide();$('.btn-AIStartParam').css('border-radius', '.25rem');"+HTMLTool.JS_END_TAG;
@@ -115,19 +137,28 @@ public class AIGenData extends Processus {
 	public String testFucntion(){
 		return "test1";
 	}
-	private void aiGenerateData(String moduleName){
-		if(Tool.isEmpty(moduleName)) return;
-		JSONObject response = AIData.genDataForModule(moduleName,getGrant());
+	private boolean aiGenerateData(String moduleName,int nbData,ActivityFile context){
+		if(Tool.isEmpty(moduleName)) return false;
+		getContext(getActivity(ACTIVITY_CONFIRM)).removeDataFile("Data", ERROR);
+		JSONObject response = AIData.genDataForModule(moduleName,nbData,getGrant());
 		if(response.has(ERROR)){
+			if("token_limit_reached".equals(response.getString(ERROR))){
+				getContext(getActivity(ACTIVITY_CONFIRM)).setDataFile("Data", ERROR,getGrant().T("AI_TOKEN_LIMIT_REACHED"));
+				return false;
+			}
 			getContext(getActivity(ACTIVITY_CONFIRM)).setDataFile("Data", ERROR, response.getString(ERROR));
+			return true;
 		}else{
+			
 			getContext(getActivity(ACTIVITY_CONFIRM)).setDataFile("Data", DATA_JSON, response.toString(1));
+			return true;
 		}
 	}
 	public void relaunchingGeneration(ActivityFile context){
 		AppLog.info("Relaunching generation", getGrant());
 		String moduleName = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(DATA_FIELD, MODULE_NAME_FIELD);
-		aiGenerateData(moduleName);
+		int nbData = Integer.parseInt(getContext(getActivity(ACTIVITY_PARAMS)).getDataValue("Data", "nbData"));
+		aiGenerateData(moduleName,nbData,context);
 	}
 	
 	

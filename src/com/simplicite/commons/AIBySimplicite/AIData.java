@@ -1,5 +1,6 @@
 package com.simplicite.commons.AIBySimplicite;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import org.json.JSONArray;
@@ -104,6 +105,9 @@ public class AIData implements java.io.Serializable {
 		typeTrad.put(ObjectField.TYPE_COLOR,"Color");
 		typeTrad.put( ObjectField.TYPE_GEOCOORDS,"Geographical coordinates");
 	}
+	public static JSONObject genDataForModule(String moduleName,Grant g){
+		return genDataForModule(moduleName,Integer.parseInt(AITools.getAIParam("data_number","5")),g);
+	}
 	/**
 	 * Generates data for a specific module.
 	 * 
@@ -111,11 +115,12 @@ public class AIData implements java.io.Serializable {
 	 * @param g the Grant object
 	 * @return the formatted result as a String
 	 */
-	public static JSONObject genDataForModule(String moduleName,Grant g){
+	public static JSONObject genDataForModule(String moduleName,int nbData,Grant g){
 		try {
 			String[] ids = AITools.getObjectIdsModule(moduleName, g);
 			if(Tool.isEmpty(ids))throw new PlatformException("Not found or not granted object to generate for module "+moduleName+" and user "+g.getLogin());
-			JSONObject response = AIData.callIADataOnModule(ids,ModuleDB.getModuleId(moduleName), g);
+			JSONObject response = AIData.callIADataOnModule(ids,ModuleDB.getModuleId(moduleName),nbData, g);
+			if(response.has("error")) return response;
 			response = AIData.jsonPreprocessing(response, g);
 			return response;
 		}catch (PlatformException e) {
@@ -337,12 +342,16 @@ public class AIData implements java.io.Serializable {
 		 * @return the JSON object containing the data
 		 * @throws PlatformException if there is an error in the platform
 	*/
-	private static JSONObject callIADataOnModule(String[] ids,String mldId, Grant g) throws PlatformException{
+	private static JSONObject callIADataOnModule(String[] ids,String mldId,int nbData, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
 		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)) AppLog.info("module uml: "+data.toString(1), g);
-		String dataNumber = AITools.getAIParam("data_number","5");
-		JSONObject jsonResponse = AITools.aiCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least "+dataNumber+" entries per class",false,true);
+		String dataNumber = nbData > 0 ? String.valueOf(nbData) : AITools.getAIParam("data_number","5");
+		JSONObject jsonResponse = AITools.aiCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least "+dataNumber+" entries per class",true,true);
 		devSaveGenerationDataCost(mldId,jsonResponse.optJSONObject(AITools.USAGE_KEY));
+
+		if(AITools.isTokenLimitReached(jsonResponse)){
+			return new JSONObject().put("error","token_limit_reached");
+		}
 		String response = AITools.parseJsonResponse(jsonResponse);
 		JSONObject json = AITools.getValidJson(response);
 		if(Tool.isEmpty(json)){	
@@ -619,8 +628,13 @@ public class AIData implements java.io.Serializable {
 			if(value>max) value = randomFloat(max) ;
 			return String.valueOf(value);
 		}else{
+			int value;
+			if(val instanceof BigDecimal){
+				value = ((BigDecimal)val).intValue();
+			}else{
+				value = (int)val;
+			}
 			int max = (int) Math.pow(10,(size-precision)) - 1;
-			int value = (int)val;
 			if(value>max) value = random.nextInt(max);
 			return String.valueOf(value);
 		}
@@ -977,7 +991,16 @@ public class AIData implements java.io.Serializable {
 	 */
 	private static String formatResult(JSONObject json) {
 		StringBuilder html = new StringBuilder();
-		formatJson(json, html);
+		html.append("<ul>");
+		for (String key : json.keySet()) {
+			JSONArray value = json.optJSONArray(key);
+			html.append("<li>");
+			html.append("<strong>").append(key).append("</strong>: ");
+			html.append(value.length());
+			html.append("</li>");
+		}
+		html.append("</ul>");
+		//formatJson(json, html);
 		return html.toString();
 	}
 
