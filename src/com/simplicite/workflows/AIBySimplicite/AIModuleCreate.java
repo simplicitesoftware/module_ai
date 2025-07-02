@@ -64,6 +64,7 @@ public class AIModuleCreate extends Processus {
 	private static final String TSL_VALUE_FIELD="tsl_value";
 	private static final String DAA_OBJECT_GENERATION="DaaObjectGeneration";
 	private boolean displayPrefixWarning = false; 
+	private boolean displayEmptyPrefixWarning = false; 
 	
 	/**
 	 * This method is used to generate the HTML content for the chat bot.
@@ -496,8 +497,13 @@ public class AIModuleCreate extends Processus {
 				context.setDataFile(DATA_GROUP_RETURN,"Code", AITools.isAIParam()?"1":"0");
 				break;
 			case ACTIVITY_CREATE_MODULE:
-				if(!displayPrefixWarning){
-					Object prefix = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD); 
+				Object prefix = getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, MDL_PREFIX_FIELD); 
+				if(Tool.isEmpty(prefix) && !displayEmptyPrefixWarning){
+					Message m = new Message();
+					m.raiseError(Message.formatWarning("AI_WARN_EMPTY_PREFIX", null, MDL_PREFIX_FIELD));
+					displayEmptyPrefixWarning = true;
+					return m;
+				}else if(!displayPrefixWarning){
 					ObjectDB obj = getGrant().getTmpObject("Module");
 					synchronized(obj.getLock()){
 						obj.resetFilters();
@@ -558,6 +564,7 @@ public class AIModuleCreate extends Processus {
 			case ACTIVITY_CREATE_MODULE:
 				addDataToSelectActsAndGrant(context);
 				displayPrefixWarning = false;
+				displayEmptyPrefixWarning = false;
 				devSaveIACreatedModule(context.getDataValue(FIELD, ROW_ID));// add to a list for dev purpose
 				break;
 			case ACTIVITY_GRANT_USER:
