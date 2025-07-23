@@ -85,7 +85,7 @@ public class AITools implements java.io.Serializable {
     private static final String STT_URL_ERROR = "STT url not set";
 
     private static  JSONObject aiApiParam =getOptAiApiParam();
-    private static final boolean IS_ENV_SETUP =  !Tool.isEmpty(System.getenv(SYSPARAM_AI_API_PARAM));
+    private static final boolean IS_ENV_SETUP =  !Tool.isEmpty(System.getenv(SYSPARAM_AI_API_PARAM)) ||!Tool.isEmpty(System.getenv("SIMPLICITE_SYSPARAM_AI_API_PARAM"));
     private static  int aiHistDepth = aiApiParam.optInt("hist_depth");
     private static  String aiChatBotName = getAIParam(BOT_NAME_KEY, "George");
     private static  String llm = getLLM();
