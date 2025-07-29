@@ -93,6 +93,8 @@ public class AITools implements java.io.Serializable {
     private static  String aiProvider = getProvider();
     private static String apiKey = getAIParam(API_KEY);
     private static String completionUrl = getAIParam(COMPLETION_KEY);
+    public static String SPECIALISATION_NEED_JSON = "you help to create UML in json for application, your answers are automatically processed in java";
+    public static String SPECIALISATION_HELP_UML_DESIGN = "You help design uml for object-oriented applications. Without function and whith relation description. Respond with a text";
     public static class AITypeException extends Exception {
         private static final long serialVersionUID = 1L;
         
@@ -154,6 +156,7 @@ public class AITools implements java.io.Serializable {
                throw new AITypeException("prompt", promptObject.getClass().getName(), "String or JSONArray");
             }
             prompt = parsedPrompts(prompt,isSafe);
+           
         }
         
         /**
@@ -776,7 +779,6 @@ public class AITools implements java.io.Serializable {
             JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
                                                 .put(CALLER_PARAM_TOKEN, aiApiParam.getInt("code_max_token"))
                                                 .put(CALLER_PARAM_CODE_SECURE,true);
-            AppLog.info("CODE "+code);
             AICallerParams caller = new AICallerParams(code,params);
             return caller.aiCall(g);
         }catch (AITypeException e){
@@ -1212,7 +1214,10 @@ public class AITools implements java.io.Serializable {
         return "";
     }
     public static String createOrUpdateWithJson(String objName,JSONObject fields, Grant g){
-		JSONObject filters = getFKFilters(objName,fields, g);
+        return createOrUpdateWithJson(objName,fields,false,g);
+    }
+    public static String createOrUpdateWithJson(String objName,JSONObject fields,boolean forceUpdate, Grant g){
+        JSONObject filters = getFKFilters(objName,fields, g);
 		ObjectDB obj = g.getTmpObject(objName);
 		try{
 			synchronized(obj.getLock()){
@@ -1221,6 +1226,10 @@ public class AITools implements java.io.Serializable {
 					obj.setValuesFromJSONObject(fields, false, false,true);
 					obj.populate(true);
 					objTool.validateAndCreate();
+				}else if(forceUpdate){
+                    obj.setValuesFromJSONObject(fields, false, false,false);
+                    obj.populate(true);
+                    objTool.validateAndUpdate();
 				}
 			}
 			return obj.getRowId();

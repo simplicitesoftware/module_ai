@@ -1,14 +1,39 @@
+/**
+ * AI JavaScript Tools 
+ * Provides AI-powered front functionality for chat, speech recognition, image handling, and code commenting
+ * @namespace AiJsTools
+ */
 var AiJsTools = AiJsTools || (function(param) {
+	/** Development mode flag */
+	/** @type {boolean} */
 	let devMode = false;
+	/** Use async flag for API calls */
+	/** @type {boolean} */
 	let useAsync = true; 
+	/** URL for authenticated webservice */
+	/** @type {string} */
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+	/** Application instance */
+	/** @type {Object} */
 	let app = $ui.getApp();
+	/** Speech recognition support flag */
+	/** @type {boolean|null} */
 	let isSpeechRecognitionSupported = null;
+	/** AI provider name */
+	/** @type {string} */
 	let provider;//param;
+	/** Provider ID */
+	/** @type {string} */
 	let providerID;
+	/** Provider user parameters, all chat parameters like t-pop, temperature, etc. */
+	/** @type {Object} */
 	let providerParams;
-
-	
+	/** Specialization for UML chat */
+	/** @type {string} */
+	let chatUmlSpecialisation = "You help design uml for object-oriented applications. Without function and whith relation description. Respond with a text";
+	/** Specialization for UML JSON generation */
+	/** @type {string} */
+	let umlJsonGenSpecialisation = "you help to create UML in json for application, your answers are automatically processed in java";
 	getProvider();
 	let botName= "SimpliBot";
 	getBotName();
@@ -16,6 +41,11 @@ var AiJsTools = AiJsTools || (function(param) {
 	if(app.getGrant().firstname ){
 		userName =app.getGrant().firstname;
 	}
+	/**
+	 * Retrieves provider user parameters from the AIProvider business object
+	 * @async
+	 * @returns {Promise<void>}
+	 */
 	async function getProviderParams() {
 		let obj = app.getBusinessObject("AIProvider");
 		obj.resetFilters();
@@ -23,16 +53,24 @@ var AiJsTools = AiJsTools || (function(param) {
 			if (r && r.length > 0) {
 				obj.select(function(params) {
 					providerID = obj.row_id;
-					providerParams=obj.getUserParameters();// Affiche les paramètres sélectionnés
+					providerParams=obj.getUserParameters();// Display selected parameters
 				}, r[0].row_id, null);
 			} else {
-				console.log("Aucun résultat trouvé.",provider);
+				console.log("No results found.",provider);
 			}
 		}, {'aiPrvProvider': provider}, null);
 	}
+	/**
+	 * Gets the current provider parameters
+	 * @returns {Object} The provider parameters object
+	 */
 	function getUserProviderParams(){
 		return providerParams;
 	}
+	/**
+	 * Retrieves the current AI provider from the server
+	 * Initiates the provider parameters variables
+	 */
 	function getProvider(){
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"provider"};
@@ -41,17 +79,24 @@ var AiJsTools = AiJsTools || (function(param) {
 			getProviderParams();
 			
 		});
-		return null;
+		
 	}
+	/**
+	 * Retrieves the bot name from the server
+	 * Initiates the bot name variable
+	 */
 	function getBotName(){
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"BOT_NAME"};
 		app._call(false, url, postParams, function callback(botResponse){
 			botName = botResponse.botName;
 		});
-		return null;
 	}
-	// used for speech recognition
+	/**
+	 * Checks if speech recognition is supported by the server
+	 * @async
+	 * @returns {Promise<void>} Initiates the speech recognition support variable
+	 */
 	async function checkSpeechRecognitionSupported() {
 		if(isSpeechRecognitionSupported != null)return;
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
@@ -60,6 +105,14 @@ var AiJsTools = AiJsTools || (function(param) {
 			isSpeechRecognitionSupported = botResponse?.isSpeechRecognitionSupported ?? false;
 		});
 	}
+	/**
+	 * Adds a button to the chat interface
+	 * @param {HTMLElement} ctn - The container element
+	 * @param {string} id - The button ID
+	 * @param {Function} onclick - The click handler function
+	 * @param {string} fa_icon - The FontAwesome icon class
+	 * @param {string} title - The button title
+	 */
 	function addButton(ctn, id,onclick, fa_icon, title) {
 		let htmlButton = document.createElement('button');
         htmlButton.id = id;
@@ -69,6 +122,11 @@ var AiJsTools = AiJsTools || (function(param) {
 		ctn.insertBefore(htmlButton, ctn.querySelector('.user-message'));
 
 	}
+	/**
+	 * Creates default buttons for chat interface
+	 * @param {HTMLElement} ctn - The container element
+	 * @param {string} id - The button type identifier
+	 */
 	function defaultButton(ctn, id) {
         switch (id) {
             case "add-img":
@@ -92,6 +150,14 @@ var AiJsTools = AiJsTools || (function(param) {
         }
     }
 	
+    /**
+     * Adds chat options and buttons to the chat interface
+     * @async
+     * @param {HTMLElement} ctn - The chat container element
+     * @param {boolean} addImg - Whether to add image upload button
+     * @param {boolean} takeImg - Whether to add camera button
+     * @param {boolean} Speech - Whether to add speech recognition button
+     */
     async function addChatOption(ctn,addImg,takeImg,Speech){
 		if(!ctn){
 			return;
@@ -117,6 +183,10 @@ var AiJsTools = AiJsTools || (function(param) {
 		
 		
     }
+	/**
+	 * Get an image from user and add it to the chat input area
+	 * @param {HTMLElement} inputCtn - The input container element
+	 */
 	function addImage(inputCtn){
 		
 		inputCtn = $(inputCtn);
@@ -137,10 +207,20 @@ var AiJsTools = AiJsTools || (function(param) {
 		input.click();
 	}
 
+	/**
+	 * Checks if a container is followed by a div element
+	 * @param {HTMLElement} container - The container to check
+	 * @returns {boolean} True if followed by a div, false otherwise
+	 */
 	function isContainerFollowedByDiv(container) {
 		let nextElement = $(container).next();
 		return nextElement.length > 0 && nextElement.is('div');
 	}
+	/**
+	 * Takes a picture using the device camera
+	 * @async
+	 * @param {HTMLElement} inputCtn - The input container element
+	 */
 	async function takeImage(inputCtn){
 		inputCtn = $(inputCtn);
 		let input =await $view.widget.takePicture({title: $T('TAKE_PICT'),facingMode: "environment"});
@@ -149,6 +229,12 @@ var AiJsTools = AiJsTools || (function(param) {
 		resizeUp(inputCtn.parent(),inputCtn.parent().parent().find(".chat-messages"));
 	}
 
+	/**
+	 * Resizes the chat interface elements dynamically
+	 * @param {jQuery} inputArea - The input area jQuery object
+	 * @param {jQuery} messagesArea - The messages area jQuery object
+	 * @param {number} [maxbodyH] - Maximum body height
+	 */
 	function resizeUp(inputArea, messagesArea,maxbodyH) {
 		if(!inputArea || !messagesArea){console.log("resizeUp: ctn is null");return;}
 		let bodyH = messagesArea.closest(".card-body").height();
@@ -191,6 +277,10 @@ var AiJsTools = AiJsTools || (function(param) {
 		
 	}
 
+	/**
+	 * Resets the chat input area to its initial state
+	 * @param {HTMLElement} ctn - The container element
+	 */
 	function resetInput(ctn){
 		ctn = $(ctn);
 		ctn.find(".user-message").val("");
@@ -198,6 +288,12 @@ var AiJsTools = AiJsTools || (function(param) {
 		ctn.find("#input-img").hide();
 		resizeUp(ctn,$(ctn).parent().find(".chat-messages"));
 	}
+	/**
+	 * Builds the parameters for AI chat API calls
+	 * @param {HTMLElement} ctn - The chat container element
+	 * @param {string} specialisation - The AI specialization prompt
+	 * @returns {Object} The formatted parameters for the API call
+	 */
 	function getPostParams(ctn,specialisation){
 		let historic = [];
 		$(ctn).find(".user-messages").each(function() {
@@ -234,7 +330,11 @@ var AiJsTools = AiJsTools || (function(param) {
 	let mediaRecorder;
 	let audioChunks = [];
 	let isCancelled = false; 
-	// Fonction pour démarrer l'enregistrement
+	/**
+	 * Starts audio recording for speech recognition
+	 * @async
+	 * @param {HTMLElement} messageCtn - The message container element
+	 */
 	async function startRecording(messageCtn) {
 		messageCtn = $(messageCtn).parent().find(".user-message");
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -266,6 +366,11 @@ var AiJsTools = AiJsTools || (function(param) {
 
 		mediaRecorder.start();
 	}
+	/**
+	 * Calls the speech-to-text AI service
+	 * @param {HTMLElement} messageCtn - The message container element
+	 * @param {string} audio64 - Base64 encoded audio data
+	 */
 	function callSTTAi(messageCtn, audio64) {
 		audio64 = audio64.split(",")[1];
 		const jsonData = {
@@ -278,11 +383,16 @@ var AiJsTools = AiJsTools || (function(param) {
 			messageCtn.focus();
 		});
 	}
+	/**
+	 * Converts a Blob to Base64 string
+	 * @param {Blob} blob - The blob to convert
+	 * @returns {Promise<string>} Promise that resolves to Base64 string
+	 */
 	function convertBlobToBase64(blob) {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
 			reader.onloadend = function() {
-				resolve(reader.result);  // Extraire la partie Base64 de la chaîne data URL
+				resolve(reader.result);  // Extract the Base64 part from the data URL string
 			};
 			reader.onerror = function(error) {
 				reject(new Error(error));
@@ -290,19 +400,32 @@ var AiJsTools = AiJsTools || (function(param) {
 			reader.readAsDataURL(blob);
 		});
 	}
-	// Fonction pour arrêter l'enregistrement
+	/**
+	 * Stops the current audio recording
+	 */
 	function stopRecording() {
 		mediaRecorder.stop();
 	}
 	
+	/**
+	 * Cancels the current audio recording
+	 */
 	function cancelRecording() {
 		isCancelled = true;
 		mediaRecorder.stop();
 	}
+	/**
+	 * Initiates speech recognition for the input container
+	 * @param {HTMLElement} inputCtn - The input container element
+	 */
 	function getSpeech(inputCtn){
 		startRecording(inputCtn);
 		disableUi(inputCtn);
 	}
+	/**
+	 * Removes an image from the chat input area
+	 * @param {HTMLElement} ctn - The container element
+	 */
 	function removeimg(ctn){
 		ctn = $(ctn).parent();
 		ctn.find("img").removeAttr("src");
@@ -310,6 +433,10 @@ var AiJsTools = AiJsTools || (function(param) {
 		ctn = ctn.parent();
 		resizeUp(ctn,ctn.parent().find(".chat-messages"));
 	}
+	/**
+	 * Disables the UI during speech recording
+	 * @param {HTMLElement} inputCtn - The input container element
+	 */
 	function disableUi(inputCtn){
 		let messageCtn = $(inputCtn).parent().find(".user-message");
 		let sendButton = $(inputCtn).parent().find(".chat-button");
@@ -331,6 +458,12 @@ var AiJsTools = AiJsTools || (function(param) {
 			stopRecording();
 		};
 	}
+	/**
+	 * Resets the UI buttons after speech recording
+	 * @param {HTMLElement} inputCtn - The input container element
+	 * @param {jQuery} messageCtn - The message container jQuery object
+	 * @param {jQuery} sendButton - The send button jQuery object
+	 */
 	function resetButtons(inputCtn, messageCtn, sendButton){
 			$(inputCtn.parentElement).find("#cancel-recording").remove();
 			$(inputCtn.parentElement).find("#stop-recording").remove();
@@ -343,6 +476,11 @@ var AiJsTools = AiJsTools || (function(param) {
 			sendButton.prop('disabled', false);
 	}
 	
+	/**
+	 * Loads an Ace editor with the content from a container
+	 * @param {jQuery} ctn - The container with the content
+	 * @param {string} divId - The ID of the div where the editor will be loaded
+	 */
 	function loadResultInAceEditor(ctn,divId){
 		$ui.loadAceEditor(function(){
 			let aceEditor = window.ace.edit(divId);
@@ -368,6 +506,11 @@ var AiJsTools = AiJsTools || (function(param) {
 			
 		});
 	}
+	/**
+	 * Creates a display element for user messages
+	 * @param {HTMLElement} ctn - The container element
+	 * @returns {HTMLElement} The created user message display element
+	 */
 	function getDisplayUserMessage(ctn){
 		let inputCtn=$(ctn).find(".ai-chat-input-area");
 	    let msg = inputCtn.find(".user-message").val();
@@ -390,8 +533,12 @@ var AiJsTools = AiJsTools || (function(param) {
 		div.append(span);
 		return div;
 	}
+	/**
+	 * Creates a display element for bot messages
+	 * @param {string} msg - The bot message content
+	 * @returns {HTMLElement} The created bot message display element
+	 */
 	function getDisplayBotMessage(msg){
-		//<div class="bot-messages"><strong>{{botName}}: </strong><span class="msg"><div class="ai-chat-ellipsis">Chargement</div>
 		let div= document.createElement("div");
 		div.className = "bot-messages";
 		let strong = document.createElement("strong");
@@ -411,6 +558,10 @@ var AiJsTools = AiJsTools || (function(param) {
 		div.append(span);
 		return div;
 	}
+	/**
+	 * Adds LLM parameters button to the chat interface
+	 * @param {HTMLElement} ctn - The container element
+	 */
 	function addLLMParams(ctn){
 		if(provider == "Open AI" || provider == "Mistral AI"){
 			let htmlButton = document.createElement('button');
@@ -421,12 +572,15 @@ var AiJsTools = AiJsTools || (function(param) {
 			$(ctn).find('.user-message').after(htmlButton);
 		}
 	}
+	/**
+	 * Updates LLM parameters through a dialog interface
+	 */
 	function updateLLMParams(){
 		console.log("updateLLMParams sonar update");
 		let providerObj = app.getBusinessObject("AIProvider");
 		providerObj.resetFilters();
 		providerObj.select(providerID);
-		// Créez un formulaire HTML à partir des providerParams
+		// Create an HTML form from providerParams
 		let formHtml = providerObj.getUserParametersForm(providerParams);
 
 		$ui.confirm({
@@ -439,6 +593,9 @@ var AiJsTools = AiJsTools || (function(param) {
 		});
 	}
 	
+	/**
+	 * Saves the updated LLM parameters from the form
+	 */
 	function saveLLMParams(){
 		let formData = document.getElementById('llmParamsForm');
 		const updatedParams = {};
@@ -447,23 +604,30 @@ var AiJsTools = AiJsTools || (function(param) {
 		}
 		providerParams = updatedParams;
 	}
+	/**
+	 * Validates and constrains input values to min/max range
+	 * @param {number} min - Minimum allowed value
+	 * @param {number} max - Maximum allowed value
+	 * @param {HTMLInputElement} input - The input element to validate
+	 */
 	function checkMinMAx(min,max,input){
-		let value = parseFloat(input.value); // Récupérer la valeur de l'élément input
+		let value = parseFloat(input.value); // Get the value of the input element
 		if (value > max) {
-			input.value = max; // Limite à la valeur maximale
+			input.value = max; // Limit to maximum value
 		} else if (value < min) {
-			input.value = min; // Limite à la valeur minimale
+			input.value = min; // Limit to minimum value
 		}
 	}
 	
+	/**
+	 * Comments code using AI assistance with diff view
+	 */
 	function commentCode(){
-		// Implémentation de la fonction
 		let activeTab = $tools.getTabActive($('.code-editor')).data("data");
 		let dlg;
 		let diff;
 	    let left_code;
 		let right_code;
-		//console.log(code);
 		//call the AI API
 		$ui.loadLocalEditor((e)=>{
 			console.log("editor",e);
@@ -583,8 +747,13 @@ var AiJsTools = AiJsTools || (function(param) {
 		}
 	}
 	
+	/**
+	 * Adds a comment code button to the interface
+	 * @param {HTMLElement} ctn - The container element
+	 * @param {string} [nextAction] - The next action identifier
+	 */
 	function addCommentCodeButton(ctn,nextAction){
-		let button = $('<button>Comment code</button>').addClass("btn btn-secondary btn-ai"); // Création d'un nouveau bouton avec jQuery
+		let button = $('<button>Comment code</button>').addClass("btn btn-secondary btn-ai"); // Create a new button with jQuery
 		button.click(function() {
 			AiJsTools.commentCode();
 		});
@@ -592,28 +761,127 @@ var AiJsTools = AiJsTools || (function(param) {
 		if(nextBtn){
 			nextBtn.before(button); 
 		}else{
-			$(ctn).append(button); // Ajout du bouton à la barre d'édition
+			$(ctn).append(button); // Add button to the edit bar
 		}
 	}
 		
 	return { 
+		/** Use async calls flag */
+		/** @type {boolean} */
 		useAsync: useAsync,
+		/** URL for authenticated webservice */
+		/** @type {string} */
 		url: url,
+		/** Bot name */
+		/** @type {string} */
 		botName: botName,
+		/** Specialization for UML chat */
+		/** @type {string} */
+		chatUmlSpecialisation:chatUmlSpecialisation,
+		/** Specialization for UML JSON generation */
+		/** @type {string} */
+		umlJsonGenSpecialisation:umlJsonGenSpecialisation,
+		/**
+		 * Resizes the chat interface elements dynamically
+		 * @function resizeUp
+		 * @param {jQuery} inputArea - The input area jQuery object
+		 * @param {jQuery} messagesArea - The messages area jQuery object
+		 * @param {number} [maxbodyH] - Maximum body height
+		 */
 		resizeUp: resizeUp,
+		/**
+		 * Adds chat options and buttons to the chat interface
+		 * @function addChatOption
+		 * @param {HTMLElement} ctn - The chat container element
+		 * @param {boolean} addImg - Whether to add image upload button
+		 * @param {boolean} takeImg - Whether to add camera button
+		 * @param {boolean} Speech - Whether to add speech recognition button
+		 */
 		addChatOption: addChatOption,
+		/**
+		 * Get an image from user and add it to the chat input area
+		 * @function addImage
+		 * @param {HTMLElement} inputCtn - The input container element
+		 */
 		addImage: addImage, 
+		/**
+		 * Takes a picture using the device camera
+		 * @function takeImage
+		 * @param {HTMLElement} inputCtn - The input container element
+		 */
 		takeImage: takeImage, 
+		/**
+		 * Initiates speech recognition for the input container
+		 * @function getSpeech
+		 * @param {HTMLElement} inputCtn - The input container element
+		 */
 		getSpeech: getSpeech, 
+		/**
+		 * Resets the chat input area to its initial state
+		 * @function resetInput
+		 * @param {HTMLElement} ctn - The container element
+		 */
 		resetInput: resetInput,
+		/**
+		 * Builds the parameters for AI chat API calls
+		 * @function getPostParams
+		 * @param {HTMLElement} ctn - The chat container element
+		 * @param {string} specialisation - The AI specialization prompt
+		 * @returns {Object} The formatted parameters for the API call
+		 */
 		getPostParams: getPostParams,
+		/**
+		 * Creates a display element for user messages
+		 * @function getDisplayUserMessage
+		 * @param {HTMLElement} ctn - The container element
+		 * @returns {HTMLElement} The created user message display element
+		 */
 		getDisplayUserMessage: getDisplayUserMessage,
+		/**
+		 * Creates a display element for bot messages
+		 * @function getDisplayBotMessage
+		 * @param {string} msg - The bot message content
+		 * @returns {HTMLElement} The created bot message display element
+		 */
 		getDisplayBotMessage: getDisplayBotMessage,
+		/**
+		 * Loads an Ace editor with the content from a container
+		 * @function loadResultInAceEditor
+		 * @param {jQuery} ctn - The container with the content
+		 * @param {string} divId - The ID of the div where the editor will be loaded
+		 */
 		loadResultInAceEditor:loadResultInAceEditor,
+		/**
+		 * Removes an image from the chat input area
+		 * @function removeimg
+		 * @param {HTMLElement} ctn - The container element
+		 */
 		removeimg:removeimg,
+		/**
+		 * Gets the current provider parameters
+		 * @function getUserProviderParams
+		 * @returns {Object} The provider parameters object
+		 */
 		getUserProviderParams:getUserProviderParams,
+		/**
+		 * Validates and constrains input values to min/max range
+		 * @function checkMinMAx
+		 * @param {number} min - Minimum allowed value
+		 * @param {number} max - Maximum allowed value
+		 * @param {HTMLInputElement} input - The input element to validate
+		 */
 		checkMinMAx:checkMinMAx,
+		/**
+		 * Comments code using AI assistance with diff view
+		 * @function commentCode
+		 */
 		commentCode:commentCode,
+		/**
+		 * Adds a comment code button to the interface
+		 * @function addCommentCodeButton
+		 * @param {HTMLElement} ctn - The container element
+		 * @param {string} [nextAction] - The next action identifier
+		 */
 		addCommentCodeButton:addCommentCodeButton
 	};
 })();

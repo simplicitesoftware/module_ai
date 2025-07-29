@@ -991,16 +991,7 @@ public class AIData implements java.io.Serializable {
 	 */
 	private static String formatResult(JSONObject json) {
 		StringBuilder html = new StringBuilder();
-		html.append("<ul>");
-		for (String key : json.keySet()) {
-			JSONArray value = json.optJSONArray(key);
-			html.append("<li>");
-			html.append("<strong>").append(key).append("</strong>: ");
-			html.append(value.length());
-			html.append("</li>");
-		}
-		html.append("</ul>");
-		//formatJson(json, html);
+		formatJson(json, html);
 		return html.toString();
 	}
 

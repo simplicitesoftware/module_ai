@@ -40,7 +40,7 @@ public class AIModel implements java.io.Serializable {
 
 
 	private static final String JSON_ENUM_KEY = "Enumeration";
-	private static final String JSON_LINK_KEY = "relationships";
+	public static final String JSON_LINK_KEY = "relationships";
 	private static final String JSON_TRIGRAM_KEY = "trigram";
 	private static final String JSON_COMMENT_KEY = "comment";
 	private static final String JSON_LINK_CLASS_FROM_KEY = "class1";
@@ -90,13 +90,15 @@ public class AIModel implements java.io.Serializable {
 			this.linkorder = linkorder;
 		}
 	}
-	private static class ModuleInfo {
+	public static class ModuleInfo {
 		private String moduleId;
 		private String mPrefix;
 		private String[] groupIds;
 		private String domainID;
 		private Grant g;
-
+		public String getModuleId() {
+			return moduleId;
+		}
 		public ModuleInfo(String moduleId, String mPrefix, String[] groupIds, String domainID) {
 			this.moduleId = moduleId;
 			this.mPrefix = mPrefix;
@@ -104,11 +106,31 @@ public class AIModel implements java.io.Serializable {
 			this.domainID = domainID;
 			this.g = Grant.getSystemAdmin();
 		}
+		public ModuleInfo(JSONObject json) {
+			this.moduleId = json.getString("moduleId");
+			this.mPrefix = json.getString("mPrefix");
+			this.domainID = json.getString("domainId");
+			this.g = Grant.getSystemAdmin();
+			Object groupIds = json.opt("groupIds");
+			if(groupIds == null) groupIds = json.opt("groupId");
+			if (groupIds instanceof JSONArray jsonArray) {
+				this.groupIds = jsonArray.toList().toArray(new String[0]);
+			} else if((groupIds instanceof String id)){
+				this.groupIds = new String[] {id};
+			}
+		}
+		public JSONObject toJson(){
+			return new JSONObject()
+				.put("moduleId", moduleId)
+				.put("mPrefix", mPrefix)
+				.put("domainID", domainID)
+				.put("groupIds", groupIds);
+		}
 
 		
 	}
 	
-	private static class DataMapObject {
+	public static class DataMapObject {
 		private HashMap<String, String> objCreate;
 		private HashMap<String, String> objFr;
 		private HashMap<String, String> objEn;
@@ -125,7 +147,41 @@ public class AIModel implements java.io.Serializable {
 			this.fldEn = new HashMap<>();
 			this.fieldCreate = new HashMap<>();
 			this.linkDone = new ArrayList<>();
-			
+		}
+		public DataMapObject(HashMap<String, String> objCreate, HashMap<String, String> objFr, HashMap<String, String> objEn, HashMap<String, String> fldFr, HashMap<String, String> fldEn, HashMap<String, String> fieldCreate, List<String> linkDone) {
+			this.objCreate = objCreate;
+			this.objFr = objFr;
+			this.objEn = objEn;
+			this.fldFr = fldFr;
+			this.fldEn = fldEn;
+			this.fieldCreate = fieldCreate;
+			this.linkDone = linkDone;
+		}
+		public DataMapObject(JSONObject json) {
+			this.objCreate = toHashMap(json.getJSONObject("objCreate"));
+			this.objFr = toHashMap(json.getJSONObject("objFr"));
+			this.objEn = toHashMap(json.getJSONObject("objEn"));
+			this.fldFr = toHashMap(json.getJSONObject("fldFr"));
+			this.fldEn = toHashMap(json.getJSONObject("fldEn"));
+			this.fieldCreate = toHashMap(json.getJSONObject("fieldCreate"));
+			this.linkDone = (List<String>) json.opt("linkDone");
+			if(Tool.isEmpty(this.linkDone))this.linkDone =new ArrayList<>();
+		}
+		public JSONObject toJson(){
+			return new JSONObject()
+				.put("objCreate", objCreate)
+				.put("objFr", objFr)
+				.put("objEn", objEn)
+				.put("fldFr", fldFr)
+				.put("fldEn", fldEn)
+				.put("fieldCreate", fieldCreate);
+		}
+		private HashMap<String,String> toHashMap(JSONObject json){
+			HashMap<String,String> res = new HashMap<>();
+			for(String key: json.keySet()){
+				res.put(key, json.optString(key));
+			}
+			return res;
 		}
 	}
 	private static HashMap<String, Integer> typeTrad;
@@ -358,7 +414,6 @@ public class AIModel implements java.io.Serializable {
 	}
 	
 	public static List<String> genModule(String moduleId,String[] groupIds, String domainID, JSONObject json) throws GetException, ValidateException, SaveException{
-		AppLog.info("I'M HERE genmodule");
 		int domainOrder=100;	
 		ModuleInfo mInfo = new ModuleInfo(moduleId, SyntaxTool.getModulePrefix(moduleId), groupIds, domainID);
 		Grant g = Grant.getSystemAdmin();
@@ -379,7 +434,7 @@ public class AIModel implements java.io.Serializable {
 			domainOrder+=100;
 			//createFields
 			if(jsonObj.has("attributes")){	
-				fKs.addAll(parsefield(jsonObj, json, oboId, fieldOrder, mInfo, dataMaps, g));
+				fKs.addAll(parsefield(jsonObj, json, oboId, fieldOrder, mInfo, dataMaps,true, g));
 			}
 			
 			//check if AI mis placed link
@@ -387,17 +442,19 @@ public class AIModel implements java.io.Serializable {
 	
 		}
 		
-		createLinks(json.getJSONArray(JSON_LINK_KEY),mInfo, dataMaps, g);
+		createLinks(json.getJSONArray(JSON_LINK_KEY),mInfo, dataMaps,false, g);
 		return new ArrayList<>(dataMaps.objCreate.values());
 	}
-	private static List<String> parsefield(JSONObject jsonObj,JSONObject json, String oboId, int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
+	public static List<String> parsefield(JSONObject jsonObj,JSONObject json, String oboId, int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Boolean returnFks,Grant g) throws GetException, ValidateException, SaveException{
 
 		String objName = formatObjectNames(jsonObj.getString("name"));
 		String objPrefix = SyntaxTool.getObjectPrefix(oboId);
 		List<String> fKs = new ArrayList<>();
+		List<String> fields = new ArrayList<>();
 		for(Object field:jsonObj.getJSONArray("attributes")){
-					
+			
 			JSONObject jsonFld = (JSONObject) field;
+			
 			String fldType =jsonFld.optString("type",SHORT_TEXT);
 			if(linkType.contains(fldType)){
 				String class2 = getClassFromJson(jsonFld);
@@ -407,15 +464,18 @@ public class AIModel implements java.io.Serializable {
 				if(jsonFld.optBoolean("key")){
 					fKs.add(fldId);
 				}
+				fields.add(jsonFld.getString("name"));
 				fieldOrder+=10;
 			}
 		}
 		if(Tool.isEmpty(fKs)){
-			
 			String fldId=addField(DEFAULT_CODE_FK, oboId, objPrefix, fieldOrder,mInfo, dataMaps, g);
+			fields.add(0,DEFAULT_CODE_FK.getString("name"));
 			fKs.add(fldId);
 		}
-		return fKs;
+		if(returnFks)
+			return fKs;
+		return fields;
 	}
 
 	private static String getClassFromJson(JSONObject jsonFld){
@@ -427,7 +487,7 @@ public class AIModel implements java.io.Serializable {
 		}
 		return class2;
 	}
-	private static JSONArray checkMisplacedLink(JSONObject jsonObj,String objName){
+	public static JSONArray checkMisplacedLink(JSONObject jsonObj,String objName){
 		if(jsonObj.has(JSON_LINK_KEY)){
 			JSONArray links = jsonObj.getJSONArray(JSON_LINK_KEY);
 			for (Object link : links){
@@ -448,7 +508,7 @@ public class AIModel implements java.io.Serializable {
 		}
 		return new JSONArray();
 	}
-	private static String getOboPrefix(JSONObject jsonObj, String objName){
+	public static String getOboPrefix(JSONObject jsonObj, String objName){
 		String objPrefix = "";
 		if (jsonObj.has(JSON_TRIGRAM_KEY) && jsonObj.get(JSON_TRIGRAM_KEY) instanceof String){
 			objPrefix = jsonObj.getString(JSON_TRIGRAM_KEY).toLowerCase().replaceAll(NOT_WORD_CHAR_REGEX,"");	 
@@ -459,7 +519,7 @@ public class AIModel implements java.io.Serializable {
 		}
 		return objPrefix;
 	}
-	private static String createObject(JSONObject jsonObj, String objName,  String objPrefix, int domainOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
+	public static String createObject(JSONObject jsonObj, String objName,  String objPrefix, int domainOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
 		JSONObject fields = new JSONObject();
 		String nameWP = getNameWithoutPrefix(objName, mInfo.mPrefix, "");
 		fields.put(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,nameWP}));
@@ -692,8 +752,10 @@ public class AIModel implements java.io.Serializable {
 		enumObject.put(MODULE_ID_FIELD,mInfo.moduleId);
 		return AITools.createOrUpdateWithJson("FieldList",enumObject, g);
 	}
-	private static void createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, ValidateException, UpdateException {
+	
+	public static List<String> createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps,boolean returnMermaidLinks, Grant g) throws GetException, ValidateException, UpdateException {
 		int linkorder = 10;
+		List<String> mermaidLinks = new ArrayList<>();
 		for (Object link : links) {
 			JSONObject jsonLink = (JSONObject) link;
 			String linksType = jsonLink.getString("type");
@@ -712,12 +774,14 @@ public class AIModel implements java.io.Serializable {
 					case "m2m":
 					case "manytomany":
 					case "many-to-many":
+						mermaidLinks.add(class1Name+" \"*\" -- \"*\" "+class2Name);
 						createManyToManyLink(class1Name, class2Name, linkorder, mInfo, dataMaps, g);
 						linkorder += 20;
 						break;
 					case "m2o":
 					case "manytoone":
 					case "many-to-one":
+						mermaidLinks.add(class1Name+" \"*\" --> "+class2Name);
 						createLink(class1Name, class2Name, linkorder, mInfo, dataMaps,true);
 						linkorder += 10;
 						break;
@@ -725,12 +789,15 @@ public class AIModel implements java.io.Serializable {
 					case "onetomany":
 					case "one-to-many":
 					default:
+						mermaidLinks.add(class1Name+" <-- \"*\" "+class2Name);
 						createLink(class1Name, class2Name, linkorder, mInfo, dataMaps,false);
 						linkorder += 10;
 						break;
 				}
 			}
 		}
+		if(returnMermaidLinks) return mermaidLinks;
+		return null;
 	}
 
 	private static void createManyToManyLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, ValidateException, UpdateException{
@@ -1041,7 +1108,7 @@ public class AIModel implements java.io.Serializable {
 		grant.put("grt_function_id",funcId);
 		AITools.createOrUpdateWithJson("Grant",grant, g);
 	}
-	private static String formatObjectNames(String name){
+	public static String formatObjectNames(String name){
 		String regex="\\s(\\w)";
 		Pattern p = Pattern.compile(regex);	
 		Matcher m =p.matcher(name);
@@ -1064,5 +1131,96 @@ public class AIModel implements java.io.Serializable {
 		}
 		m.appendTail(sb);
 		return sb.toString();
+	}
+	public static JSONObject createModule(String name,String prefix,String login,Grant g) {
+		return createModule(name,name,null,prefix,login,g);
+	}
+	public static JSONObject createModule(String name,String translatedName,String theme,String prefix,String login,Grant g) {
+		JSONObject moduleInfo = new JSONObject();
+		JSONObject module = new JSONObject().put("mdl_name",name).put("mdl_prefix",prefix);
+		String mldId = AITools.createOrUpdateWithJson("Module",module,g);
+		if("0".equals(mldId)){
+			// error during module creation
+			return new JSONObject().put("error","Module creation failed");
+		}
+		//Domain
+		JSONObject domainFlds = new JSONObject();
+		domainFlds.put("row_module_id",mldId);
+		domainFlds.put("obd_name",SyntaxTool.join(SyntaxTool.PASCAL, new String[]{prefix,"Domain"}));
+		String domainId = AITools.createOrUpdateWithJson("Domain",domainFlds,g);
+
+		//Translate
+		JSONObject translateDomFlds = new JSONObject();
+		translateDomFlds.put("tsl_object","Domain:"+domainId);
+		translateDomFlds.put("row_module_id",mldId);
+		translateDomFlds.put("tsl_lang",Globals.LANG_FRENCH);
+		translateDomFlds.put("tsl_value",translatedName);
+		AITools.createOrUpdateWithJson("TranslateDomain",translateDomFlds,true,g);
+		translateDomFlds.put("tsl_lang",Globals.LANG_ENGLISH);
+		AITools.createOrUpdateWithJson("TranslateDomain",translateDomFlds,true,g);
+		//Scope
+		JSONObject scopeFlds = new JSONObject();
+		scopeFlds.put("row_module_id",mldId);
+		scopeFlds.put("viw_name","Scope_"+name);
+		scopeFlds.put("viw_type","H");
+		
+
+		String scopeId = AITools.createOrUpdateWithJson("View",scopeFlds,true,g);
+		if(!Tool.isEmpty(theme)){
+			ObjectDB obj = g.getTmpObject("Theme");
+			synchronized(obj.getLock()){
+				obj.resetFilters();
+				obj.setFieldFilter("thm_name",theme);
+				List<String[]> themes = obj.search();
+				if(!Tool.isEmpty(themes)){
+					scopeFlds.put("viw_theme_id",themes.get(0)[obj.getRowIdFieldIndex()]);
+				}
+			}
+			// Theme cant be set in creation process cause of type constraint
+			scopeId = AITools.createOrUpdateWithJson("View",scopeFlds,true,g); 
+
+		}
+		
+
+		// translate scope
+		JSONObject translateScopeFlds = new JSONObject();
+		translateScopeFlds.put("tsl_object","View:"+scopeId);
+		translateScopeFlds.put("tsl_lang",Globals.LANG_FRENCH);
+		translateScopeFlds.put("tsl_value",translatedName);
+		AITools.createOrUpdateWithJson("TranslateView",translateScopeFlds,true,g);
+		translateScopeFlds.put("tsl_lang",Globals.LANG_ENGLISH);
+		AITools.createOrUpdateWithJson("TranslateView",translateScopeFlds,true,g);
+		// Group
+		JSONObject groupFlds = new JSONObject();
+		String groupName = SyntaxTool.join(SyntaxTool.UPPER, new String[]{prefix,"GROUP"});
+		groupFlds.put("row_module_id",mldId);
+		groupFlds.put("grp_name",groupName);
+		groupFlds.put("grp_home_id",scopeId);
+		String groupId = AITools.createOrUpdateWithJson("Group",groupFlds,g);
+		if("0".equals(groupId)){
+			// error during module creation
+			return new JSONObject().put("error","Group creation failed");
+		}
+		// add active group to scope
+		JSONObject scopeActFlds = new JSONObject();
+		scopeActFlds.put("vig_view_id",scopeId);
+		scopeActFlds.put("vig_group_id",groupId);
+		scopeActFlds.put("row_module_id",mldId);
+		AITools.createOrUpdateWithJson("ViewGroup",scopeActFlds,g);
+		// grant Domain
+		JSONObject permissionFlds = new JSONObject();
+		permissionFlds.put("prm_group_id",groupId);
+		permissionFlds.put("prm_object","Domain:"+domainId);
+		permissionFlds.put("row_module_id",mldId);
+		AITools.createOrUpdateWithJson("Permission",permissionFlds,g);
+		// Add Responsability
+		Grant.addResponsibility(Grant.getUserId(login),groupName,null,null,true, name);
+		Grant.addResponsibility(Grant.getUserId(g.getLogin()),groupName,null,null,true, name);
+		moduleInfo.put("moduleId",mldId);
+		moduleInfo.put("domainId",domainId);
+		moduleInfo.put("groupId",groupId);
+		moduleInfo.put("mPrefix",prefix);
+		return moduleInfo;
+		
 	}
 }
