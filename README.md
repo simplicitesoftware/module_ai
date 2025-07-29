@@ -12,7 +12,8 @@
 ==================================
 
 ### Introduction
-Exploratory module on the use of AI in Simplicite
+Module for use of AI in Simplicite
+The `simplifiedProcess` branch is exploratory, and makes the necessary changes to the [SimAi module](https://github.com/CBimont/SimAi).
 
 ---
 
@@ -29,7 +30,7 @@ To import this module, you have two options:
 		"uri": "https://github.com/simplicitesoftware/module_ai.git"
 	},
 	"type": "git",
-	"branch": "6.1"
+	"branch": "simplifiedProcess"
 }
 ```
 3. Click on the Import module button.
