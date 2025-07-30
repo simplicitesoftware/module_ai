@@ -33,7 +33,11 @@ public class AIGenData extends Processus {
 				break;
 			case ACTIVITY_PARAMS:
 				String moduleName = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(DATA_FIELD, MODULE_NAME_FIELD);
-				int nbData = Integer.parseInt(context.getDataValue("Data", "nbData"));
+				String nb = getContext(getActivity(ACTIVITY_PARAMS)).getDataValue("Data", "nbData");
+				if(Tool.isEmpty(nb)){
+					nb = "2";
+				}
+				int nbData = Integer.parseInt(nb);
 				if(!aiGenerateData(moduleName,nbData,context)){
 					Message m = new Message();
 					m.raiseError(Message.formatError("AI_TOKEN_LIMIT_REACHED",null, null));
@@ -70,17 +74,17 @@ public class AIGenData extends Processus {
 	public String params(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
-		
-		context.setDataFile("Data", "nbData",AITools.getAIParam("data_number","5"));
+		String nbData = AITools.getAIParam("data_number","2");
+		context.setDataFile("Data", "nbData",nbData);
 		String nbDataLabel = new JSONObject(g.T("AI_DEFAULT_PARAM")).optJSONObject("data_number").optJSONObject("label").optString(g.getLang());
 		return String.format("""
 				<div class=\"col-sm-3\">
 					<div class=\"form-group field-string\" data-group=\"nbData\">
 						<label for=\"nbData\">%s</label>
-						<input type=\"number\" class=\"form-control\" id=\"nbData\" name=\"nbData\" min=\"0\" value=\"{{value}}\" />
+						<input type=\"number\" class=\"form-control\" id=\"nbData\" name=\"nbData\" min=\"0\" value=\"%s\" />
 					</div>
 				</div>
-				""",nbDataLabel); 
+				""",nbDataLabel,nbData); 
 	}
 	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		String js = HTMLTool.JS_START_TAG+"$('.btn-validate').hide();$('.btn-AIStartParam').css('border-radius', '.25rem');"+HTMLTool.JS_END_TAG;
@@ -111,6 +115,10 @@ public class AIGenData extends Processus {
 	@Override
 	public Message preAbandon() {
 		Activity act = getActivity("GGD-END");
+		if(!Tool.isEmpty(act)){
+			getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
+		}
+		act = getActivity("GDD_SETTINGS_END");
 		if(!Tool.isEmpty(act)){
 			getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
 		}
@@ -157,7 +165,11 @@ public class AIGenData extends Processus {
 	public void relaunchingGeneration(ActivityFile context){
 		AppLog.info("Relaunching generation", getGrant());
 		String moduleName = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(DATA_FIELD, MODULE_NAME_FIELD);
-		int nbData = Integer.parseInt(getContext(getActivity(ACTIVITY_PARAMS)).getDataValue("Data", "nbData"));
+		String nb = getContext(getActivity(ACTIVITY_PARAMS)).getDataValue("Data", "nbData");
+		if(Tool.isEmpty(nb)){
+			nb = "2";
+		}
+		int nbData = Integer.parseInt(nb);
 		aiGenerateData(moduleName,nbData,context);
 	}
 	
