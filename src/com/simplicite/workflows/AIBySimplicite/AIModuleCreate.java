@@ -47,6 +47,7 @@ public class AIModuleCreate extends Processus {
 	private static final String DATA_GROUP_RETURN ="Return";
 
 	private static final String ACTIVITY_CHOICE ="AIC_0005";
+	private static final String ACTIVITY_SELECT_THEME ="AIC_0016";
 	private static final String ACTIVITY_GRANT_USER ="AIC_0020";
 	private static final String ACTIVITY_SELECT_MODULE ="AIC_0100";
 	private static final String ACTIVITY_SELECT_GROUP ="AIC_0200";
@@ -222,6 +223,7 @@ public class AIModuleCreate extends Processus {
 	}
 	@Override
 	public void postActivate() {
+	
 		List<String> stepToPassForAPI = Arrays.asList(ACTIVITY_CHOICE,ACTIVITY_TRL_DOMAIN, ACTIVITY_NEW_SCOPE, ACTIVITY_GRANT_USER);
 		if(getGrant().isAPIEndpoint()){
 			for(String step : stepToPassForAPI){
@@ -231,6 +233,8 @@ public class AIModuleCreate extends Processus {
 
 		super.postActivate();
 	}
+
+
 	private List<String> getJsonAi(String step, Grant g){
 		JSONArray historic = new JSONArray();
 		String prompt = getPromptFromContext(step, historic,g);
@@ -557,6 +561,7 @@ public class AIModuleCreate extends Processus {
 				break;
 		}
 	}
+	
 	@Override
 	public void postValidate(ActivityFile context) {
 		String step = context.getActivity().getStep();		
@@ -567,6 +572,8 @@ public class AIModuleCreate extends Processus {
 				displayEmptyPrefixWarning = false;
 				devSaveIACreatedModule(context.getDataValue(FIELD, ROW_ID));// add to a list for dev purpose
 				break;
+			case ACTIVITY_SELECT_THEME:
+				AIModel.copyTheme(context.getDataValue(FIELD, ROW_ID),getContext(getActivity(ACTIVITY_CREATE_MODULE)).getDataValue(FIELD, ROW_ID),getGrant());
 			case ACTIVITY_GRANT_USER:
 				grantCurentUser(context);
 				break;
@@ -879,7 +886,7 @@ public class AIModuleCreate extends Processus {
 	private void scopeGrant(String scopeId){
 		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
 		String groupeId = getContext(getActivity(ACTIVITY_SELECT_GROUP)).getDataValue(FIELD, ROW_ID);
-		AppLog.info("scopeGrant module: "+moduleId+", groupe: "+groupeId, getGrant());
+		
 
 		ObjectDB obj = getGrant().getTmpObject("Group");
 		synchronized(obj.getLock()){
@@ -898,14 +905,9 @@ public class AIModuleCreate extends Processus {
 				BusinessObjectTool objTool = obj.getTool();
 				objTool.selectForCreate();
 				obj.setFieldValue(ROW_MODULE_ID_FIELD, moduleId);
-				AppLog.info("view group view id: "+scopeId +" name "+View.getViewName(scopeId)+" field "+obj.getFieldValue(SCOPE_ID_FIELD), getGrant());
 				obj.setFieldValue(SCOPE_ID_FIELD, scopeId,false);
 				obj.setFieldValue("vig_group_id", groupeId,false);
-				AppLog.info("view group view id: "+scopeId +" name "+View.getViewName(scopeId)+" field "+obj.getFieldValue(SCOPE_ID_FIELD), getGrant());
-				AppLog.info("view group group id: "+groupeId+ GroupDB.getGroupName(groupeId), getGrant());
-				AppLog.info("view group: "+obj.toJSON(), getGrant()); 
 				obj.populate(true);
-				AppLog.info("view group: "+obj.toJSON(), getGrant());
 				objTool.validateAndCreate();
 			}catch(Exception e){
 				AppLog.error("view group ",e, getGrant());

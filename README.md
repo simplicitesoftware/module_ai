@@ -212,6 +212,7 @@ Auomatic model generation process
 * `Choice`: 
 * `CreateModule`: 
 * `TranslateDomain`: 
+* `ThemeChoice`: 
 * `NewScope`: 
 * `GrantUser`: 
 * `isParam`: 

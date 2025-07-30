@@ -358,7 +358,7 @@ public class AIModel implements java.io.Serializable {
 	}
 	
 	public static List<String> genModule(String moduleId,String[] groupIds, String domainID, JSONObject json) throws GetException, ValidateException, SaveException{
-		AppLog.info("I'M HERE genmodule");
+		
 		int domainOrder=100;	
 		ModuleInfo mInfo = new ModuleInfo(moduleId, SyntaxTool.getModulePrefix(moduleId), groupIds, domainID);
 		Grant g = Grant.getSystemAdmin();
@@ -1064,5 +1064,54 @@ public class AIModel implements java.io.Serializable {
 		}
 		m.appendTail(sb);
 		return sb.toString();
+	}
+	public static void copyTheme(String theme,String mld,Grant g){
+		if( Tool.isEmpty(mld)){
+			return;
+		}
+		String newThemeId ="";
+		try{
+			ObjectDB oTheme = g.getTmpObject("Theme");
+			synchronized(oTheme.getLock()){
+				if(Tool.isEmpty(theme)){
+					theme = g.getParameter("AI_DEFAULT_THEME");
+					if(Tool.isEmpty(theme) || "empty".equals(theme)){
+						oTheme.resetFilters();
+						oTheme.setFieldFilter("thm_name","ThemeDefault");
+						List<String[]> themes = oTheme.search();
+						if(Tool.isEmpty(themes)){
+							AppLog.warning("No theme found for "+"ThemeDefault");
+							return;
+						}
+						theme = oTheme.getRowId(themes.get(0));
+					}
+				}
+				oTheme.resetFilters();
+				BusinessObjectTool oThemeT = oTheme.getTool();
+				oThemeT.getForCopy(theme,true);
+				oTheme.setFieldValue(MODULE_ID_FIELD,mld);
+				oTheme.setFieldValue("thm_name",oTheme.getFieldValue("thm_name")+"_"+ModuleDB.getModuleName(mld));
+				oThemeT.validateAndCreate();
+				newThemeId = oTheme.getRowId();
+			}	
+			ObjectDB oScope = g.getTmpObject("View");
+			synchronized(oScope.getLock()){
+				BusinessObjectTool oScopeT = oScope.getTool();
+				oScope.resetFilters();
+				oScope.setFieldFilter(MODULE_ID_FIELD,mld);
+				oScope.setFieldFilter("viw_type","H");
+				List<String[]> rows = oScope.search();
+				if(Tool.isEmpty(rows)){
+					AppLog.warning("No scope found for module "+mld);
+					return;
+				}
+				String scopeId = rows.get(0)[oScope.getRowIdFieldIndex()];
+				oScopeT.getForUpdate(scopeId);
+				oScope.setFieldValue("viw_theme_id",newThemeId);
+				oScopeT.validateAndUpdate();
+			}
+		}catch(GetException | CreateException | ValidateException | UpdateException e){
+			AppLog.error("Error copying theme "+theme+" in module "+mld,e);
+		}
 	}
 }

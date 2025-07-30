@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.31",
+  "mdl_version": "0.32",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai.git\"},\n    \"type\": \"git\",\n    \"branch\": \"6.2\"\n}",
@@ -156,7 +156,7 @@
       "mod_doc": {
        "path": "files/Model/Model-AIModuleCreate.svg",
        "mime": "image/svg+xml",
-       "name": "Model-AIModuleCreate.svg"
+       "name": "model.svg"
       },
       "mod_image": {
        "path": "files/Model/Model-AIModuleCreate.png",
@@ -5188,6 +5188,33 @@
     },
     {
      "object": "Action",
+     "userkey": "AiSetDefaultThemeForProcess",
+     "item": {
+      "act_name": "AiSetDefaultThemeForProcess",
+      "act_type": "I",
+      "act_async": "0",
+      "act_job_depth": null,
+      "act_method": null,
+      "act_script": null,
+      "act_url": "javascript:$app.setSysParam(console.log,\"AI_DEFAULT_THEME\",rowId,true);$ui.reloadForm($('#work'));",
+      "act_confirm": false,
+      "act_confirm_expr": null,
+      "act_confirm_ui": null,
+      "act_plus": false,
+      "act_comment": null,
+      "row_module_id__mdl_name": "AIBySimplicite",
+      "act_exec": "FRT",
+      "act_count": null,
+      "act_order": 50,
+      "act_color": null,
+      "act_color_bg": null,
+      "act_image": "fas/robot",
+      "act_group_id__acg_name": null,
+      "act_queue_id__acq_name": null
+     }
+    },
+    {
+     "object": "Action",
      "userkey": "AISetSettings",
      "item": {
       "act_name": "AISetSettings",
@@ -5471,6 +5498,18 @@
       "fct_object_id__obo_name": "AIProvider",
       "fct_function": "L",
       "fct_action_id__act_name": null,
+      "fct_view_id__viw_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Function",
+     "userkey": "AI_THEME_AI_SET_DEFAULT_THEME_FOR_PROCESS_A",
+     "item": {
+      "fct_name": "AI_THEME_AI_SET_DEFAULT_THEME_FOR_PROCESS_A",
+      "fct_object_id__obo_name": "Theme",
+      "fct_function": "A",
+      "fct_action_id__act_name": "AiSetDefaultThemeForProcess",
       "fct_view_id__viw_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -5758,6 +5797,18 @@
       "grt_activ": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "Grant",
+     "userkey": "AI_DESIGNER~AI_THEME_AI_SET_DEFAULT_THEME_FOR_PROCESS_A~Theme~AiSetDefaultThemeForProcess",
+     "item": {
+      "grt_group_id__grp_name": "AI_DESIGNER",
+      "grt_function_id__fct_name": "AI_THEME_AI_SET_DEFAULT_THEME_FOR_PROCESS_A",
+      "grt_function_id__fct_object_id__obo_name": "Theme",
+      "grt_function_id__fct_action_id__act_name": "AiSetDefaultThemeForProcess",
+      "grt_activ": true,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -5834,6 +5885,25 @@
       "cst_desc": "Show / Hides information depending on the rendering of field",
       "cst_type": "E",
       "cst_effects": ["F"],
+      "cst_field_id__fld_name": null,
+      "cst_expr": "true",
+      "cst_method": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ConstraintObject",
+     "userkey": "visibility_ai_default",
+     "item": {
+      "cst_name": "visibility_ai_default",
+      "cst_object_id__obo_name": "Theme",
+      "cst_order": 1,
+      "cst_desc": null,
+      "cst_type": "E",
+      "cst_effects": [
+       "F",
+       "B"
+      ],
       "cst_field_id__fld_name": null,
       "cst_expr": "true",
       "cst_method": null,
@@ -5955,6 +6025,30 @@
       "csi_objfield_id__obf_order": 110,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "ConstraintImpact",
+     "userkey": "visibility_ai_default~Theme~1",
+     "item": {
+      "csi_const_id__cst_name": "visibility_ai_default",
+      "csi_const_id__cst_object_id__obo_name": "Theme",
+      "csi_order": 1,
+      "csi_object_prop": null,
+      "csi_field_prop": null,
+      "csi_apply": "T",
+      "csi_expr": "[SYSPARAM:AI_DEFAULT_THEME] != [ROWID]",
+      "csi_target": {
+       "item": {"act_name": "AiSetDefaultThemeForProcess"},
+       "icon": "img/system/action_btn",
+       "label": "Action",
+       "userkeylabel": "AiSetDefaultThemeForProcess",
+       "object": "Action"
+      },
+      "csi_objfield_id__obf_object_id__obo_name": null,
+      "csi_objfield_id__obf_field_id__fld_name": null,
+      "csi_objfield_id__obf_order": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -6007,7 +6101,7 @@
       },
       "pcs_max_duration": null,
       "pcs_duration_unit": "D",
-      "pcs_persitant": false,
+      "pcs_persitant": null,
       "pcs_persist_depth": null,
       "pcs_alert_id__alt_name": null,
       "pcs_compensate_id__pcs_name": null,
@@ -6315,7 +6409,26 @@
       "acy_max_duration": null,
       "acy_duration_unit": null,
       "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
+      "acy_user_dlg": false,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMActivity",
+     "userkey": "AIModuleCreate~AIC_0016",
+     "item": {
+      "acy_process_id__pcs_name": "AIModuleCreate",
+      "acy_step": "AIC_0016",
+      "acy_name": "ThemeChoice",
+      "acy_comment": null,
+      "acy_type": "C",
+      "acy_posx": null,
+      "acy_posy": null,
+      "acy_reversible": "N",
+      "acy_max_duration": null,
+      "acy_duration_unit": null,
+      "acy_alert_id__alt_name": null,
+      "acy_user_dlg": false,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -6334,7 +6447,7 @@
       "acy_max_duration": null,
       "acy_duration_unit": null,
       "acy_alert_id__alt_name": null,
-      "acy_user_dlg": true,
+      "acy_user_dlg": false,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
@@ -6966,13 +7079,30 @@
     },
     {
      "object": "BPMTransition",
-     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0017~AIModuleCreate~AIC_0020",
+     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0016~AIModuleCreate~AIC_0020",
+     "item": {
+      "trs_process_id__pcs_name": "AIModuleCreate",
+      "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "trs_from_id__acy_step": "AIC_0016",
+      "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "trs_to_id__acy_step": "AIC_0020",
+      "trs_name": null,
+      "trs_action_id__act_name": null,
+      "trs_condition": null,
+      "trs_callback": null,
+      "trs_alert_id__alt_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMTransition",
+     "userkey": "AIModuleCreate~AIModuleCreate~AIC_0017~AIModuleCreate~AIC_0016",
      "item": {
       "trs_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_process_id__pcs_name": "AIModuleCreate",
       "trs_from_id__acy_step": "AIC_0017",
       "trs_to_id__acy_process_id__pcs_name": "AIModuleCreate",
-      "trs_to_id__acy_step": "AIC_0020",
+      "trs_to_id__acy_step": "AIC_0016",
       "trs_name": null,
       "trs_action_id__act_name": null,
       "trs_condition": null,
@@ -7605,6 +7735,34 @@
       "dta_name": "Method",
       "dta_order": 1,
       "dta_value": "translateDomain",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_0016~Constraint~Mandatory",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_0016",
+      "dta_group": "Constraint",
+      "dta_name": "Mandatory",
+      "dta_order": 1,
+      "dta_value": "false",
+      "dta_field_id__fld_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMData",
+     "userkey": "AIModuleCreate~AIC_0016~Object~Name",
+     "item": {
+      "dta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "dta_activity_id__acy_step": "AIC_0016",
+      "dta_group": "Object",
+      "dta_name": "Name",
+      "dta_order": 1,
+      "dta_value": "Theme",
       "dta_field_id__fld_name": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -8646,6 +8804,22 @@
     },
     {
      "object": "BPMGrantActivity",
+     "userkey": "AI_ADMIN~AIModuleCreate~AIC_0016",
+     "item": {
+      "gta_group_id__grp_name": "AI_ADMIN",
+      "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "gta_activity_id__acy_step": "AIC_0016",
+      "gta_activity_id__acy_name": "ThemeChoice",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
      "userkey": "AI_ADMIN~AiSettingsProcess~ASP-0050",
      "item": {
       "gta_group_id__grp_name": "AI_ADMIN",
@@ -8856,6 +9030,22 @@
       "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
       "gta_activity_id__acy_step": "AIC_0015",
       "gta_activity_id__acy_name": "TranslateDomain",
+      "gta_grant": [
+       "R",
+       "W",
+       "C"
+      ],
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "BPMGrantActivity",
+     "userkey": "AI_DESIGNER~AIModuleCreate~AIC_0016",
+     "item": {
+      "gta_group_id__grp_name": "AI_DESIGNER",
+      "gta_activity_id__acy_process_id__pcs_name": "AIModuleCreate",
+      "gta_activity_id__acy_step": "AIC_0016",
+      "gta_activity_id__acy_name": "ThemeChoice",
       "gta_grant": [
        "R",
        "W",
@@ -11159,6 +11349,40 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Complete module",
+      "tsl_simplehelp": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateAction",
+     "userkey": "Action(AiSetDefaultThemeForProcess)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {"act_name": "AiSetDefaultThemeForProcess"},
+       "icon": "img/system/action_btn",
+       "label": "Action",
+       "userkeylabel": "AiSetDefaultThemeForProcess",
+       "object": "Action"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Set default theme for process",
+      "tsl_simplehelp": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateAction",
+     "userkey": "Action(AiSetDefaultThemeForProcess)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {"act_name": "AiSetDefaultThemeForProcess"},
+       "icon": "img/system/action_btn",
+       "label": "Action",
+       "userkeylabel": "AiSetDefaultThemeForProcess",
+       "object": "Action"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Set default theme for process",
       "tsl_simplehelp": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -13522,6 +13746,44 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "End",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIModuleCreate AIC_0016)~ENU",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIModuleCreate",
+        "acy_step": "AIC_0016"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIModuleCreate AIC_0016",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Choice your theme",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AIModuleCreate AIC_0016)~FRA",
+     "item": {
+      "tsl_object": {
+       "item": {
+        "acy_process_id__pcs_name": "AIModuleCreate",
+        "acy_step": "AIC_0016"
+       },
+       "icon": "img/system/activity",
+       "label": "Activity",
+       "userkeylabel": "AIModuleCreate AIC_0016",
+       "object": "BPMActivity"
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Choix du thème",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },
