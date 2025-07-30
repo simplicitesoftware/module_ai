@@ -183,6 +183,13 @@ public class AIModel implements java.io.Serializable {
 			}
 			return res;
 		}
+		public List<String> getObjCreateIds(){
+			List<String> res = new ArrayList<>();
+			for(Map.Entry<String, String> entry: objCreate.entrySet()){
+				res.add(entry.getValue());
+			}
+			return res;
+		}
 	}
 	private static HashMap<String, Integer> typeTrad;
 	private static List<String> shortListIcon;
@@ -753,9 +760,10 @@ public class AIModel implements java.io.Serializable {
 		return AITools.createOrUpdateWithJson("FieldList",enumObject, g);
 	}
 	
-	public static List<String> createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps,boolean returnMermaidLinks, Grant g) throws GetException, ValidateException, UpdateException {
+	public static JSONObject createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps,boolean returnMermaidLinks, Grant g) throws GetException, ValidateException, UpdateException {
 		int linkorder = 10;
 		List<String> mermaidLinks = new ArrayList<>();
+		JSONArray createdLinks = new JSONArray();
 		for (Object link : links) {
 			JSONObject jsonLink = (JSONObject) link;
 			String linksType = jsonLink.getString("type");
@@ -775,13 +783,18 @@ public class AIModel implements java.io.Serializable {
 					case "manytomany":
 					case "many-to-many":
 						mermaidLinks.add(class1Name+" \"*\" -- \"*\" "+class2Name);
-						createManyToManyLink(class1Name, class2Name, linkorder, mInfo, dataMaps, g);
+						String childId = createManyToManyLink(class1Name, class2Name, linkorder, mInfo, dataMaps, g);
+						if(childId != null){
+							createdLinks.put(new JSONObject().put("source", childId).put("target", dataMaps.objCreate.get(class1Name.toLowerCase())));
+							createdLinks.put(new JSONObject().put("source", childId).put("target", dataMaps.objCreate.get(class2Name.toLowerCase())));
+						}
 						linkorder += 20;
 						break;
 					case "m2o":
 					case "manytoone":
 					case "many-to-one":
 						mermaidLinks.add(class1Name+" \"*\" --> "+class2Name);
+						createdLinks.put(new JSONObject().put("source", dataMaps.objCreate.get(class1Name.toLowerCase())).put("target", dataMaps.objCreate.get(class2Name.toLowerCase())));
 						createLink(class1Name, class2Name, linkorder, mInfo, dataMaps,true);
 						linkorder += 10;
 						break;
@@ -790,23 +803,26 @@ public class AIModel implements java.io.Serializable {
 					case "one-to-many":
 					default:
 						mermaidLinks.add(class1Name+" <-- \"*\" "+class2Name);
+						createdLinks.put(new JSONObject().put("source", dataMaps.objCreate.get(class2Name.toLowerCase())).put("target", dataMaps.objCreate.get(class1Name.toLowerCase())));
 						createLink(class1Name, class2Name, linkorder, mInfo, dataMaps,false);
 						linkorder += 10;
 						break;
 				}
 			}
 		}
-		if(returnMermaidLinks) return mermaidLinks;
+		if(returnMermaidLinks) return new JSONObject().put("mermaid", mermaidLinks).put("links", createdLinks);
 		return null;
 	}
 
-	private static void createManyToManyLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, ValidateException, UpdateException{
+	private static String createManyToManyLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, ValidateException, UpdateException{
 		String oboId = dataMaps.objCreate.get(class1Name.toLowerCase());
 		String oboId2 = dataMaps.objCreate.get(class2Name.toLowerCase());
 		if (!dataMaps.linkDone.contains(class1Name + class2Name + "m2m") && !dataMaps.linkDone.contains(class2Name + class1Name + "m2m")) {
-			manyToManyLink(new LinkObject(oboId, dataMaps.objEn.get(oboId), dataMaps.objFr.get(oboId), linkorder), new LinkObject(oboId2, dataMaps.objEn.get(oboId2), dataMaps.objFr.get(oboId2), linkorder + 10), mInfo, dataMaps, g);
+			String childId = manyToManyLink(new LinkObject(oboId, dataMaps.objEn.get(oboId), dataMaps.objFr.get(oboId), linkorder), new LinkObject(oboId2, dataMaps.objEn.get(oboId2), dataMaps.objFr.get(oboId2), linkorder + 10), mInfo, dataMaps, g);
 			dataMaps.linkDone.add(class1Name + class2Name + "m2m");
+			return childId;
 		}
+		return null;
 	}
 
 	private static void createLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, boolean isManyToOne) throws GetException, ValidateException, UpdateException {
@@ -886,7 +902,7 @@ public class AIModel implements java.io.Serializable {
 		}
 		
 	}
-	private static void manyToManyLink(LinkObject objectData1,LinkObject objectData2, ModuleInfo mInfo,DataMapObject dataMaps,Grant g) throws GetException, ValidateException, UpdateException{
+	private static String manyToManyLink(LinkObject objectData1,LinkObject objectData2, ModuleInfo mInfo,DataMapObject dataMaps,Grant g) throws GetException, ValidateException, UpdateException{
 		String childId="";
 		String prefix1=SyntaxTool.getObjectPrefix(objectData1.objId);
 		String prefix2=SyntaxTool.getObjectPrefix(objectData2.objId);
@@ -908,6 +924,7 @@ public class AIModel implements java.io.Serializable {
 		
 		manyToOneLink(childId, objectData1, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId));
 		manyToOneLink(childId, objectData2, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId));
+		return childId;
 	}
 	private static HashMap<String, String> linkIds = new HashMap<>();
 	private static void manyToOneLink(String childId,LinkObject objectData, ModuleInfo mInfo, DataMapObject dataMaps,char del,Boolean key,boolean recursive) throws GetException, ValidateException, UpdateException{
