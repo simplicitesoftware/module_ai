@@ -34,6 +34,8 @@ public class AIModel implements java.io.Serializable {
 	private static final String OBJECTFIELD_OBJECT_FIELD = "obf_object_id";
 	private static final String OBJECTFIELD_ORDER_FIELD = "obf_order";
 	private static final String OBJECTFIELD_FIELD_FIELD = "obf_field_id";
+	private static final String OBJECTFIELD_EDIT_LIST = "obo_list_edit";
+	private static final String OBJECTFIELD_EDIT_LIST_VAL = "N;U";
 
 	private static final String ACTIVITY_METHOD = "Method";
 	private static final String ACTIVITY = "Activity";
@@ -534,6 +536,7 @@ public class AIModel implements java.io.Serializable {
 		fields.put(MODULE_ID_FIELD, mInfo.moduleId);
 		fields.put(OBJECT_PREFIX_FIELD, objPrefix);
 		fields.put(OBJECT_ICON_FIELD, getIcon(jsonObj.optString("bootstrapIcon")));
+		fields.put(OBJECTFIELD_EDIT_LIST, OBJECTFIELD_EDIT_LIST_VAL);
 		String comment ="";
 		if (jsonObj.has(JSON_COMMENT_KEY) && !jsonObj.isNull(JSON_COMMENT_KEY)){
 			Object commentObj = jsonObj.get(JSON_COMMENT_KEY);
@@ -865,6 +868,7 @@ public class AIModel implements java.io.Serializable {
 		linkFields.put(MODULE_ID_FIELD, mInfo.moduleId);
 		linkFields.put(OBJECT_PREFIX_FIELD, namewp.substring(0, 3).toLowerCase());
 		linkFields.put(OBJECT_ICON_FIELD, getIcon(""));
+		linkFields.put(OBJECTFIELD_EDIT_LIST, OBJECTFIELD_EDIT_LIST_VAL);
 		String oboId = AITools.createOrUpdateWithJson(OBJECT_INTERNAL_NAME,linkFields, g);
 		dataMaps.objCreate.put(name.toLowerCase(),oboId);			
 		
@@ -916,12 +920,13 @@ public class AIModel implements java.io.Serializable {
 		objFields.put(OBJECT_PREFIX_FIELD, prefix1+prefix2);
 		objFields.put(OBJECT_ICON_FIELD, getIcon(""));
 		objFields.put(OBJECT_DESCRIPTION, "NN between "+objectData1.en+" and "+objectData2.en);
+		objFields.put(OBJECTFIELD_EDIT_LIST, OBJECTFIELD_EDIT_LIST_VAL);
 		childId = AITools.createOrUpdateWithJson(OBJECT_INTERNAL_NAME,objFields, g);
 		dataMaps.objCreate.put(name.toLowerCase(),childId);
 		for (String gId: mInfo.groupIds){
 			grantGroup(gId,childId,mInfo.moduleId,g);
 		}
-		
+		//TODO Translate new object
 		manyToOneLink(childId, objectData1, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId));
 		manyToOneLink(childId, objectData2, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId));
 		return childId;
