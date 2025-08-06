@@ -347,6 +347,10 @@ public class AIData implements java.io.Serializable {
 		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)) AppLog.info("module uml: "+data.toString(1), g);
 		String dataNumber = nbData > 0 ? String.valueOf(nbData) : AITools.getAIParam("data_number","5");
 		JSONObject jsonResponse = AITools.aiCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least "+dataNumber+" entries per class",true,true);
+		if(jsonResponse.has("error")){
+			return new JSONObject().put("error",jsonResponse.getString("error")).put("error_status",503);
+
+		}
 		devSaveGenerationDataCost(mldId,jsonResponse.optJSONObject(AITools.USAGE_KEY));
 
 		if(AITools.isTokenLimitReached(jsonResponse)){
