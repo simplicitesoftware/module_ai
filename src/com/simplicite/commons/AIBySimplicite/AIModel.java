@@ -468,13 +468,16 @@ public class AIModel implements java.io.Serializable {
 			if(linkType.contains(fldType)){
 				String class2 = getClassFromJson(jsonFld);
 				json.getJSONArray(JSON_LINK_KEY).put(new JSONObject().put(JSON_LINK_CLASS_FROM_KEY, objName).put(JSON_LINK_CLASS_TO_KEY,class2).put("type",fldType));
-			}else{
-				String fldId=addField(jsonFld, oboId, objPrefix, fieldOrder,mInfo, dataMaps, g);
-				if(jsonFld.optBoolean("key")){
-					fKs.add(fldId);
+			}else if(jsonFld.has("name")){
+				String fieldName = jsonFld.getString("name").replaceAll(NOT_WORD_CHAR_REGEX,"").replaceAll("\\s","");
+				if(!"id".equals(fieldName)){// id pass by default
+					String fldId=addField(jsonFld, oboId, objPrefix, fieldOrder,mInfo, dataMaps, g);
+					if(jsonFld.optBoolean("key")){
+						fKs.add(fldId);
+					}
+					fields.add(jsonFld.getString("name"));
+					fieldOrder+=10;
 				}
-				fields.add(jsonFld.getString("name"));
-				fieldOrder+=10;
 			}
 		}
 		if(Tool.isEmpty(fKs)){
