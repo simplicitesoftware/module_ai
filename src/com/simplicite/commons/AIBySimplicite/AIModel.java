@@ -967,8 +967,9 @@ public class AIModel implements java.io.Serializable {
 					enumCodeFields.put("lov_color_bg", style.hexa);
 					enumCodeFields.put("lov_icon", style.icon);
 					enumCodeFields.put("lov_color", style.color);
+					addFieldStyle(objName,fldName,code,style.bg,moduleId,g);
 				}
-				addFieldStyle(objName,fldName,code,style.bg,moduleId,g);
+				
 			}
 			String enumId = AITools.createOrUpdateWithJson("FieldListCode",enumCodeFields, g);
 			traductListItems(jsonValue,enumId,"en",Globals.LANG_ENGLISH,g);

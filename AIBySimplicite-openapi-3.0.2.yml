@@ -71,7 +71,7 @@ components:
           type: string
           maxLength: 11
         aiGroupId:
-          description: aiGroupId
+          description: group id ai
           type: string
           maxLength: 11
         aiGroupGuiDescId:
@@ -476,7 +476,7 @@ paths:
           type: string
         in: query
         name: aiGroupId
-        description: Search filter for aiGroupId
+        description: Search filter for group id ai
         required: false
       - schema:
           type: string
