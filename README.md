@@ -29,7 +29,7 @@ To import this module, you have two options:
 		"uri": "https://github.com/simplicitesoftware/module_ai.git"
 	},
 	"type": "git",
-	"branch": "<6 6.1 or 6.2>"
+	"branch": "<6 6.1 6.2 or 6.3>"
 }
 ```
 3. Click on the Import module button.
