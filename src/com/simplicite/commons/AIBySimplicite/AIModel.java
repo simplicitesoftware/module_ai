@@ -481,7 +481,7 @@ public class AIModel implements java.io.Serializable {
 			}
 		}
 		if(Tool.isEmpty(fKs)){
-			String fldId=addField(DEFAULT_CODE_FK, oboId, objPrefix, fieldOrder,mInfo, dataMaps, g);
+			String fldId=addField(DEFAULT_CODE_FK, oboId, objPrefix, 5,mInfo, dataMaps, g);
 			fields.add(0,DEFAULT_CODE_FK.getString("name"));
 			fKs.add(fldId);
 		}
