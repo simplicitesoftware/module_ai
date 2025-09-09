@@ -61,8 +61,9 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 		}
 	}
 	private String isAdaContext(){
-		return (Tool.isEmpty(ModuleDB.getModuleId​("AiDemonstrationAddon", false)))?"false":"true";
+		return (Tool.isEmpty(ModuleDB.getModuleId("AiDemonstrationAddon", false)))?"false":"true";
 	}
+	@SuppressWarnings("unused")
 	private String getScopeDesc(View home){
 		if(home!=null){
 			ObjectDB scopeDesc = getGrant().getTmpObject("AiGroupGuiDesc");

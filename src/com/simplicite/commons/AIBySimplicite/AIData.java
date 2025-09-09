@@ -300,6 +300,7 @@ public class AIData implements java.io.Serializable {
 		}
 		return comment;
 	}
+	@SuppressWarnings("unused")
 	private static boolean isInt(String str){
 		try{
 			Integer.parseInt(str);

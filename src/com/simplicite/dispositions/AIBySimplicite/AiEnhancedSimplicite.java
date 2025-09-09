@@ -1,7 +1,5 @@
 package com.simplicite.dispositions.AIBySimplicite;
 
-import java.util.*;
-
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.engine.PermaLinks;
@@ -19,6 +17,7 @@ public class AiEnhancedSimplicite extends com.simplicite.dispositions.UI.Bootstr
 	 * @param params Request parameters
 	 */
 	@Override
+	@SuppressWarnings("unused")
 	public String display(Parameters params) {
 		Grant g = getGrant();
 		try

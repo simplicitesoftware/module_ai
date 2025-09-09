@@ -94,7 +94,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 					try {
 						nnTool.selectForCreate();
 						JSONObject fields = new JSONObject().put("aiGroupGuiDescId",id).put("aiGroupId",row[obj.getRowIdFieldIndex()]);
-						nn.setValuesFromJSONObject(fields,false,false);
+						nn.setValuesFromJSONObject(fields,false,false,true);
 						nn.populate(true);
 						nnTool.validateAndCreate();
 

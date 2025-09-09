@@ -71,7 +71,7 @@ components:
           type: string
           maxLength: 11
         aiGroupId:
-          description: group id ai
+          description: aiGroupId
           type: string
           maxLength: 11
         aiGroupGuiDescId:
@@ -213,7 +213,7 @@ components:
         aiPrvDataModel:
           description: Specific parameter
           type: string
-          maxLength: 1000
+          maxLength: 4000
         aiPrvCompletionUrl:
           description: Completion endpoint url
           type: string
@@ -476,7 +476,7 @@ paths:
           type: string
         in: query
         name: aiGroupId
-        description: Search filter for group id ai
+        description: Search filter for aiGroupId
         required: false
       - schema:
           type: string

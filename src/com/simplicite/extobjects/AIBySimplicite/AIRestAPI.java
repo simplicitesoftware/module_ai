@@ -216,13 +216,15 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			.put("request", prompt)
 			.put("response", res);
 	}
+	@SuppressWarnings("unused")
 	private JSONArray optJSONArray(String prompt){
 		try {
 			return new JSONArray(prompt);
-		}catch(Exception e){
+		}catch(JSONException e){
 		 	return new JSONArray();
 		}
 	}
+	@SuppressWarnings("unused")
 	private JSONObject optJSONObject(String object){
 		if(Tool.isEmpty(object)) return new JSONObject();
 		try{

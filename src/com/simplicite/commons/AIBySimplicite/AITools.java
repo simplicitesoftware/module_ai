@@ -587,6 +587,7 @@ public class AITools implements java.io.Serializable {
         connection.disconnect();
         return null;
     }
+    @SuppressWarnings("unused")
     private static JSONObject formatErrorMsg(int responseCode,StringBuilder response ){
         String errorMessage;
         try{
@@ -626,6 +627,7 @@ public class AITools implements java.io.Serializable {
         connection.disconnect();
         return "";
     }
+    @SuppressWarnings("unused")
     private static JSONArray optJSONArray(String array){
         try{
             return new JSONArray(array);
@@ -1022,6 +1024,7 @@ public class AITools implements java.io.Serializable {
         }
                 return list ;
 	}
+	@SuppressWarnings("unused")
 	public static boolean isValidJson(String json){
 		try {
 			new JSONObject(json);
@@ -1031,6 +1034,7 @@ public class AITools implements java.io.Serializable {
 		}
 		return true;
 	}
+	@SuppressWarnings("unused")
     public static JSONObject getValidJson(String json){
         json =json.replace("...","");
         JSONObject res = null;
@@ -1064,10 +1068,10 @@ public class AITools implements java.io.Serializable {
 	 * @return The filtered list containing only the creatable elements.
 	 */
 	private static List<String[]> removeNotCreatable(List<String[]> list,int nameIndex, Grant g){
-		Map<String, String> creatables = g.getCreatable();
+		Map<String, GrantObject> grantedObjects = g.getGrantedObjects();
 		List<String[]> res = new ArrayList<>();
 		for(String[] row : list){
-			if("Y".equals(creatables.getOrDefault(row[nameIndex],"N"))){
+			if(grantedObjects.getOrDefault(row[nameIndex],new GrantObject()).canCreate()){
 				res.add(row);
 			}
 		}

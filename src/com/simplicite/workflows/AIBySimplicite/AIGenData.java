@@ -38,7 +38,7 @@ public class AIGenData extends Processus {
 					nb = "2";
 				}
 				int nbData = Integer.parseInt(nb);
-				if(!aiGenerateData(moduleName,nbData,context)){
+				if(!aiGenerateData(moduleName,nbData)){
 					Message m = new Message();
 					m.raiseError(Message.formatError("AI_TOKEN_LIMIT_REACHED",null, null));
 					return m;
@@ -71,6 +71,7 @@ public class AIGenData extends Processus {
 		}
 		super.postValidate(context);
 	}
+	@SuppressWarnings("unused")
 	public String params(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
@@ -86,10 +87,12 @@ public class AIGenData extends Processus {
 				</div>
 				""",nbDataLabel,nbData); 
 	}
+	@SuppressWarnings("unused")
 	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		String js = HTMLTool.JS_START_TAG+"$('.btn-validate').hide();$('.btn-AIStartParam').css('border-radius', '.25rem');"+HTMLTool.JS_END_TAG;
 		return js+getGrant().T(AI_SETTING_NEED);
 	}
+	@SuppressWarnings("unused")
 	public String genData(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)
 			return null;
@@ -125,6 +128,7 @@ public class AIGenData extends Processus {
 		
 		return super.preAbandon();
 	}
+	@SuppressWarnings("unused")
 	public String callIA(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() != ActivityFile.STATE_RUNNING)
 			return null;
@@ -145,7 +149,7 @@ public class AIGenData extends Processus {
 	public String testFucntion(){
 		return "test1";
 	}
-	private boolean aiGenerateData(String moduleName,int nbData,ActivityFile context){
+	private boolean aiGenerateData(String moduleName,int nbData){
 		if(Tool.isEmpty(moduleName)) return false;
 		getContext(getActivity(ACTIVITY_CONFIRM)).removeDataFile("Data", ERROR);
 		JSONObject response = AIData.genDataForModule(moduleName,nbData,getGrant());
@@ -162,6 +166,7 @@ public class AIGenData extends Processus {
 			return true;
 		}
 	}
+	@SuppressWarnings("unused")
 	public void relaunchingGeneration(ActivityFile context){
 		AppLog.info("Relaunching generation", getGrant());
 		String moduleName = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(DATA_FIELD, MODULE_NAME_FIELD);
@@ -170,7 +175,7 @@ public class AIGenData extends Processus {
 			nb = "2";
 		}
 		int nbData = Integer.parseInt(nb);
-		aiGenerateData(moduleName,nbData,context);
+		aiGenerateData(moduleName,nbData);
 	}
 	
 	

@@ -35,6 +35,7 @@ public class AiSettingsProcess extends Processus {
 		AITools.importDatasets(getModuleId());
 		super.postActivate();
 	}
+	@SuppressWarnings("unused")
 	public String setAuth(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g) throws MethodException{
 		ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);
 		String providerid = getContext(getActivity(PROVIDER_ACT)).getDataValue(FIELD_DATA, ROW_ID);
@@ -46,10 +47,11 @@ public class AiSettingsProcess extends Processus {
 		return (String)obj.invokeMethod("getConfigurationPage", null, null);
 
 	}
-	
+	@SuppressWarnings("unused")
 	public String isGlobal(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		return getGrant().T("AI_ENV_SETTING");
 	}
+	@SuppressWarnings("unused")
 	public String setParams(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g) throws MethodException{
 		ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);
 		String providerid = getContext(getActivity(PROVIDER_ACT)).getDataValue(FIELD_DATA, ROW_ID);

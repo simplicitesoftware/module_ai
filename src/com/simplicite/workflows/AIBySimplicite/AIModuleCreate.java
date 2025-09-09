@@ -1,23 +1,35 @@
 package com.simplicite.workflows.AIBySimplicite;
 
-import java.util.*;
+import java.util.List;
+import java.util.HashSet;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.simplicite.bpm.*;
+import com.simplicite.bpm.ActivityFile;
+import com.simplicite.bpm.Processus;
+import com.simplicite.bpm.Activity;
+import com.simplicite.bpm.DataFile;
 import com.simplicite.commons.AIBySimplicite.AIModel;
 import com.simplicite.commons.AIBySimplicite.AITools;
-import com.simplicite.util.*;
+import com.simplicite.util.ModuleDB;
+import com.simplicite.util.Grant;
+import com.simplicite.util.ObjectField ;
+import com.simplicite.util.ObjectDB ;
+import com.simplicite.util.Tool;
+import com.simplicite.util.AppLog;
+import com.simplicite.util.Resource;
+import com.simplicite.util.Message;
 import com.simplicite.util.exceptions.CreateException;
 import com.simplicite.util.exceptions.GetException;
 import com.simplicite.util.exceptions.ValidateException;
-import com.simplicite.util.tools.*;
+import com.simplicite.util.tools.HTMLTool;
+import com.simplicite.util.tools.SyntaxTool;
+import com.simplicite.util.tools.BusinessObjectTool;
+import com.simplicite.util.tools.MustacheTool;
 import com.simplicite.webapp.ObjectContextWeb;
-
-
-
-
 
 
 
@@ -76,6 +88,7 @@ public class AIModuleCreate extends Processus {
 	 * @param g The grant object.
 	 * @return The generated HTML content for the chat bot.
 	 */
+	@SuppressWarnings("unused")
 	public String chatBot(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
@@ -180,7 +193,7 @@ public class AIModuleCreate extends Processus {
 		return html;
 	}
 	private boolean isAdaContext(){
-		return !Tool.isEmpty(ModuleDB.getModuleId​("AiDemonstrationAddon", false));
+		return !Tool.isEmpty(ModuleDB.getModuleId("AiDemonstrationAddon",false));
 	}
 	/**
 	 * Generates a form element for capturing user input.
@@ -191,6 +204,7 @@ public class AIModuleCreate extends Processus {
 	 * @param g The grant object.
 	 * @return The HTML code for the form element.
 	 */
+	 @SuppressWarnings("unused")
 	public String form(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		return "<textarea  class=\"form-control autosize js-focusable\"  id=\"AI_prompt\" name=\"AI_prompt\" placeholder=\"Describe your needs here\"></textarea>";
 	}
@@ -204,6 +218,7 @@ public class AIModuleCreate extends Processus {
 	 * @param g The grant.
 	 * @return The generated response as a String.
 	 */
+	 @SuppressWarnings("unused")
 	public String ai(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		if(context.getStatus() == ActivityFile.STATE_DONE)
 			return null;
@@ -343,6 +358,7 @@ public class AIModuleCreate extends Processus {
 	 * @param g The Grant object.
 	 * @return The generated string.
 	 */
+	 @SuppressWarnings("unused")
 	public String gen(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		AppLog.info("gen", getGrant());
 		if(context.getStatus() == ActivityFile.STATE_DONE){
@@ -360,7 +376,7 @@ public class AIModuleCreate extends Processus {
 		}		
 	}
 	private void devSaveIACreatedModule(String mldId){
-		if(!Tool.isEmpty(ModuleDB.getModuleId(DEV_MODULE, false))){
+		if(!Tool.isEmpty(ModuleDB.getModuleId(DEV_MODULE,false))){
 			Grant admin = Grant.getSystemAdmin();
 			admin.addAccessCreate(DEVOBJ_GENERATE_MLDS);
 			ObjectDB obj = admin.getTmpObject(DEVOBJ_GENERATE_MLDS);
@@ -474,6 +490,7 @@ public class AIModuleCreate extends Processus {
 	 * @param g The grant object.
 	 * @return The HTML code for displaying the module delete confirmation.
 	 */
+	 @SuppressWarnings("unused")
 	public String deleteModule(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		AppLog.info("deleteModule", getGrant());
 		String moduleId = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(FIELD, ROW_ID);
@@ -489,6 +506,7 @@ public class AIModuleCreate extends Processus {
 			getContext(act).setDataFile("Forward", "Page", "ui/AiMonitoring");
 		return super.preAbandon();
 	}
+	@SuppressWarnings("unused")
 	public String noParam(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		String js = HTMLTool.JS_START_TAG+"$('.btn-validate').hide();$('.btn-AIStartParam').css('border-radius', '.25rem');"+HTMLTool.JS_END_TAG;
 		return js+getGrant().T(AI_SETTING_NEED);
@@ -646,6 +664,7 @@ public class AIModuleCreate extends Processus {
 			}
 		}
 	}
+	@SuppressWarnings("unused")
 	private void generateObjects(ActivityFile context, Processus p){
 		Grant g = getGrant();
 		ActivityFile genContext = getContext(getActivity(ACTIVITY_GEN));
@@ -796,7 +815,7 @@ public class AIModuleCreate extends Processus {
 		}
 
 	}
-
+	@SuppressWarnings("unused")
 	public String translateDomain(Processus p, ActivityFile context, ObjectContextWeb ctx, Grant g){
 		Activity a = p.getActivity(ACTIVITY_TRL_DOMAIN);
 		ActivityFile af = getContext(a);
