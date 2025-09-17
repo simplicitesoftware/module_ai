@@ -106,7 +106,10 @@ public class AIData implements java.io.Serializable {
 		typeTrad.put( ObjectField.TYPE_GEOCOORDS,"Geographical coordinates");
 	}
 	public static JSONObject genDataForModule(String moduleName,Grant g){
-		return genDataForModule(moduleName,Integer.parseInt(AITools.getAIParam("data_number","5")),g);
+		return genDataForModule(moduleName,false,g);
+	}
+	public static JSONObject genDataForModule(String moduleName,boolean getUsage,Grant g){
+		return genDataForModule(moduleName,Integer.parseInt(AITools.getAIParam("data_number","5")),getUsage,g);
 	}
 	/**
 	 * Generates data for a specific module.
@@ -116,12 +119,20 @@ public class AIData implements java.io.Serializable {
 	 * @return the formatted result as a String
 	 */
 	public static JSONObject genDataForModule(String moduleName,int nbData,Grant g){
+		return genDataForModule(moduleName,nbData,false,g);
+	}
+	public static JSONObject genDataForModule(String moduleName,int nbData,boolean getUsage,Grant g){
 		try {
 			String[] ids = AITools.getObjectIdsModule(moduleName, g);
 			if(Tool.isEmpty(ids))throw new PlatformException("Not found or not granted object to generate for module "+moduleName+" and user "+g.getLogin());
-			JSONObject response = AIData.callIADataOnModule(ids,ModuleDB.getModuleId(moduleName),nbData, g);
+			JSONObject response = AIData.callIADataOnModule(ids,ModuleDB.getModuleId(moduleName),nbData,getUsage, g);
 			if(response.has("error")) return response;
+			JSONObject usage = response.optJSONObject(AITools.USAGE_KEY);
+			response.remove(AITools.USAGE_KEY);
 			response = AIData.jsonPreprocessing(response, g);
+			if(getUsage){
+				response.put(AITools.USAGE_KEY, usage);
+			}
 			return response;
 		}catch (PlatformException e) {
 			AppLog.error(e, g);
@@ -342,7 +353,7 @@ public class AIData implements java.io.Serializable {
 		 * @return the JSON object containing the data
 		 * @throws PlatformException if there is an error in the platform
 	*/
-	private static JSONObject callIADataOnModule(String[] ids,String mldId,int nbData, Grant g) throws PlatformException{
+	private static JSONObject callIADataOnModule(String[] ids,String mldId,int nbData,boolean getUsage, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
 		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)) AppLog.info("module uml: "+data.toString(1), g);
 		String dataNumber = nbData > 0 ? String.valueOf(nbData) : AITools.getAIParam("data_number","5");
@@ -352,10 +363,10 @@ public class AIData implements java.io.Serializable {
 
 		}
 		devSaveGenerationDataCost(mldId,jsonResponse.optJSONObject(AITools.USAGE_KEY));
-
 		if(AITools.isTokenLimitReached(jsonResponse)){
 			return new JSONObject().put("error","token_limit_reached");
 		}
+		JSONObject usage = jsonResponse.optJSONObject(AITools.USAGE_KEY);
 		String response = AITools.parseJsonResponse(jsonResponse);
 		JSONObject json = AITools.getValidJson(response);
 		if(Tool.isEmpty(json)){	
@@ -369,6 +380,9 @@ public class AIData implements java.io.Serializable {
 					throw new PlatformException("Sorry AI do not return interpretable json: \n"+listResult.get(1));
 				}
 			}
+		}
+		if(getUsage){
+			json.put(AITools.USAGE_KEY, usage);
 		}
 		return json;
 	}
