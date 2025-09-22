@@ -10165,6 +10165,30 @@
     },
     {
      "object": "Resource",
+     "userkey": "ObjectExternal(AIProcessResource)~ANY~CONTEXT_INTERACTION_UPDATE_PROMPT",
+     "item": {
+      "res_object": {
+       "item": {"obe_name": "AIProcessResource"},
+       "icon": "img/system/external_object",
+       "label": "External object",
+       "userkeylabel": "AIProcessResource",
+       "object": "ObjectExternal"
+      },
+      "res_type": "OTHER",
+      "res_lang": "ANY",
+      "res_code": "CONTEXT_INTERACTION_UPDATE_PROMPT",
+      "res_cached": false,
+      "res_file": {
+       "path": "resources/ObjectExternal/AIProcessResource/CONTEXT_INTERACTION_UPDATE_PROMPT.text",
+       "mime": "application/octet-stream",
+       "name": "CONTEXT_INTERACTION_PROMPT.text"
+      },
+      "res_image": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Resource",
      "userkey": "ObjectExternal(AIProcessResource)~ANY~CROSSTABLE_PROMPT",
      "item": {
       "res_object": {

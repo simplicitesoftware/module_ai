@@ -94,6 +94,7 @@ public class AITools implements java.io.Serializable {
     private static String apiKey = getAIParam(API_KEY);
     private static String completionUrl = getAIParam(COMPLETION_KEY);
     public static String SPECIALISATION_NEED_JSON = "you help to create UML in json for application, your answers are automatically processed in java";
+    public static String SPECIALISATION_UPDATE_JSON = "you help to update an UML in json for application, your answers are automatically processed in java, this is actual UML please set action field on classe to delete or update class.!Important if you dont add object with action delete they will stay in the module ";
     public static String SPECIALISATION_HELP_UML_DESIGN = "You help design uml for object-oriented applications. Without function and whith relation description. Respond with a text";
     public static class AITypeException extends Exception {
         private static final long serialVersionUID = 1L;

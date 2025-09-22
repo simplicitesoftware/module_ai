@@ -128,6 +128,10 @@ public class AIModel implements java.io.Serializable {
 				.put("domainID", domainID)
 				.put("groupIds", groupIds);
 		}
+		public String getFormatedObjectName(String objName){
+			String nameWP = getNameWithoutPrefix(objName, this.mPrefix, "");
+			return SyntaxTool.join(SyntaxTool.PASCAL, new String[]{this.mPrefix,nameWP});
+		}
 
 		
 	}
