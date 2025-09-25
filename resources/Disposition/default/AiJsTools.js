@@ -534,6 +534,23 @@ var AiJsTools = AiJsTools || (function(param) {
 		return div;
 	}
 	/**
+	 * Creates a display element for user messages
+	 * @param {String} msg - The user message content
+	 * @returns {HTMLElement} The created user message display element
+	 */
+	function getDisplayCustomUserMessage(msg){
+		let div= document.createElement("div");
+		div.className ="user-messages";
+		let strong = document.createElement("strong");
+		strong.textContent = userName + ": ";
+		div.append(strong);
+		let span = document.createElement("span");
+		span.className = "msg";
+		span.textContent = msg;
+		div.append(span);
+		return div;
+	}
+	/**
 	 * Creates a display element for bot messages
 	 * @param {string} msg - The bot message content
 	 * @returns {HTMLElement} The created bot message display element
@@ -837,6 +854,13 @@ var AiJsTools = AiJsTools || (function(param) {
 		 * @returns {HTMLElement} The created user message display element
 		 */
 		getDisplayUserMessage: getDisplayUserMessage,
+		/**
+		 * Creates a display element for user messages
+		 * @function getDisplayCustomUserMessage
+		 * @param {String} msg - The user message content
+		 * @returns {HTMLElement} The created user message display element
+		 */
+		getDisplayCustomUserMessage: getDisplayCustomUserMessage,
 		/**
 		 * Creates a display element for bot messages
 		 * @function getDisplayBotMessage

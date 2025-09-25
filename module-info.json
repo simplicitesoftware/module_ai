@@ -1,9 +1,9 @@
 {
-    "date": "2025-09-22 14:23:40",
+    "date": "2025-09-25 08:27:46",
     "name": "AIBySimplicite",
     "format": "json",
     "files": ["AIBySimplicite.json"],
     "repository": {"origin": {"uri": "https://github.com/simplicitesoftware/module_ai.git"}},
     "version": "0.33",
-    "platform": "6.2.16"
+    "platform": "6.2.17-preview"
 }
