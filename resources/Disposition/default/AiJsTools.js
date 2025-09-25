@@ -514,6 +514,7 @@ var AiJsTools = AiJsTools || (function(param) {
 	function getDisplayUserMessage(ctn){
 		let inputCtn=$(ctn).find(".ai-chat-input-area");
 	    let msg = inputCtn.find(".user-message").val();
+		msg = escapeHtml(msg);
 	    let imgb64 = inputCtn.find("#input-img img").attr("src");
 		let div= document.createElement("div");
 		div.className ="user-messages";
@@ -529,9 +530,19 @@ var AiJsTools = AiJsTools || (function(param) {
 		}
 		let span = document.createElement("span");
 		span.className = "msg";
-		span.textContent = msg;
+		span.innerHTML = $view.markdownToHTML(msg).html();
 		div.append(span);
 		return div;
+	}
+	function escapeHtml(text) {
+		let map = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;',
+			"'": '&#039;'
+		};
+		return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 	}
 	/**
 	 * Creates a display element for user messages
