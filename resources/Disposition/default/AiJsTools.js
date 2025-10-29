@@ -315,9 +315,10 @@ var AiJsTools = AiJsTools || (function(param) {
 			historic.push(JSON.stringify(text));
 			
 		});
-		let inputCtn=$(ctn).find(".ai-chat-input-area");
+		let inputCtn = $(ctn).find(".ai-chat-input-area");
 	    let userMessage = inputCtn.find(".user-message").val();
-		let userImage = inputCtn.find("#input-img img").attr("src");
+	    let inputImage = $(ctn).find("#input-img");
+		let userImage = inputImage.find("img").attr("src");
 		let prompt =[];
 		prompt.push({"type":"text","text":userMessage});
 		if(userImage){
