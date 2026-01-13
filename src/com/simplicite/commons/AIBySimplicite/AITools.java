@@ -30,7 +30,7 @@ import com.simplicite.util.tools.*;
  * Shared code AITools
  */
 public class AITools implements java.io.Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     
     public static final  Boolean AI_DEBUG_LOGS ="true".equals(Grant.getSystemAdmin().getParameter("AI_DEBUG_LOGS"));
     private static final String AI_PING_ERROR="AI_PING_ERROR";
@@ -76,8 +76,8 @@ public class AITools implements java.io.Serializable {
     private static final String SWAGGER_COMPONENTS="components";
     private static final String SWAGGER_SHEMAS="schemas";
 
-	private static final String SYS_CODE = "sys_code";
-	private static final String SYS_VAL2 = "sys_value2";
+    private static final String SYS_CODE = "sys_code";
+    private static final String SYS_VAL2 = "sys_value2";
     private static final String DEFAULT_MODULE = "System";
     private static final String ROW_MLD_ID = "row_module_id";
 
@@ -393,23 +393,24 @@ public class AITools implements java.io.Serializable {
     public static List<String> importDatasets(String moduleID,boolean force){
         Grant g = Grant.getSystemAdmin();
         if(force){return applyDatasets(moduleID,g);}
-		g.addResponsibility("AI_ADMIN");
-		ObjectDB obj = g.getTmpObject("AIProvider");
-		obj.resetFilters();
-		if(obj.search().isEmpty()){
-			return applyDatasets(moduleID,g);
-		}
+        g.addResponsibility("AI_ADMIN");
+        g.changeAccess("AIProvider",true,true,true,true);
+        ObjectDB obj = g.getTmpObject("AIProvider");
+        obj.resetFilters();
+        if(obj.search().isEmpty()){
+            return applyDatasets(moduleID,g);
+        }
         return new ArrayList<>();
     }
     private static List<String> applyDatasets(String moduleID,Grant g){
         List<String> result = new ArrayList<>();
         ObjectDB datasets = g.getTmpObject("Dataset");
-		synchronized(datasets.getLock()){
-		    datasets.resetFilters();
-			datasets.setFieldFilter(ROW_MLD_ID, moduleID);
-			for(String[] row: datasets.search()){
+        synchronized(datasets.getLock()){
+            datasets.resetFilters();
+            datasets.setFieldFilter(ROW_MLD_ID, moduleID);
+            for(String[] row: datasets.search()){
                 datasets.resetFilters();
-				if(datasets.select(row[datasets.getRowIdFieldIndex()])){
+                if(datasets.select(row[datasets.getRowIdFieldIndex()])){
                     try {
                         datasets.invokeAction("Dataset-apply");
                         result.add(row[datasets.getFieldIndex("dt_name")]);
@@ -418,9 +419,9 @@ public class AITools implements java.io.Serializable {
                     }
                     
                 }
-				
-			}
-		}
+                
+            }
+        }
         return result;
     }
     private static JSONObject getOptAiApiParamByGrant(){
@@ -455,19 +456,19 @@ public class AITools implements java.io.Serializable {
         return provider;
     }
     public static JSONObject filterTokensJson(JSONObject original) {
-		JSONObject filtered = new JSONObject();
-		if (original.has("total_tokens")) {
-			filtered.put("total_tokens", original.get("total_tokens"));
-		}
-		if (original.has("prompt_tokens")) {
-			filtered.put("prompt_tokens", original.get("prompt_tokens"));
-		}
-		if (original.has("completion_tokens")) {
-			filtered.put("completion_tokens", original.get("completion_tokens"));
-		}
-		return filtered;
-	}
-	public static boolean isProvider(String provider,String key){
+        JSONObject filtered = new JSONObject();
+        if (original.has("total_tokens")) {
+            filtered.put("total_tokens", original.get("total_tokens"));
+        }
+        if (original.has("prompt_tokens")) {
+            filtered.put("prompt_tokens", original.get("prompt_tokens"));
+        }
+        if (original.has("completion_tokens")) {
+            filtered.put("completion_tokens", original.get("completion_tokens"));
+        }
+        return filtered;
+    }
+    public static boolean isProvider(String provider,String key){
         return (aiProvider.equals(provider) && apiKey.equals(key));
     }
     /**
@@ -754,14 +755,14 @@ public class AITools implements java.io.Serializable {
         }
     }
 
-	/**
+    /**
      * call aiCaller with specification for code usable in Simplicité.
-	 * @param g
-	 * @param prompt
-	 * @param historic
-	 * @return
-	 */
-	public static JSONObject aiCodeHelper(Grant g, String prompt,JSONArray historic){
+     * @param g
+     * @param prompt
+     * @param historic
+     * @return
+     */
+    public static JSONObject aiCodeHelper(Grant g, String prompt,JSONArray historic){
         try{
             JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, "you are java expert, optimize your function, answer only function")
                                                 .put(CALLER_PARAM_HISTORIC, historic)
@@ -824,61 +825,61 @@ public class AITools implements java.io.Serializable {
         return json;
     }
     public static Message checkJson(String json){
-		if (Tool.isEmpty(json)){
-			Message m = new Message();
-			m.raiseError(Message.formatError("AI_JSON_EMPTY_ERROR",null, null));
-			return m;
-		}
-		JSONObject jsonObject = AITools.getValidJson(json);
-		if(Tool.isEmpty(jsonObject)){
-			Message m = new Message();
-			m.raiseError(Message.formatError("AI_JSON_ERROR",null, null));
-			return m;
-		}
-		return null;
-	}
+        if (Tool.isEmpty(json)){
+            Message m = new Message();
+            m.raiseError(Message.formatError("AI_JSON_EMPTY_ERROR",null, null));
+            return m;
+        }
+        JSONObject jsonObject = AITools.getValidJson(json);
+        if(Tool.isEmpty(jsonObject)){
+            Message m = new Message();
+            m.raiseError(Message.formatError("AI_JSON_ERROR",null, null));
+            return m;
+        }
+        return null;
+    }
     /**
      * Format a NotePad Field to a AI Format Historic Array
      * @param data notepad value (old value to not consider the actual ask)
      * @return
      */
     public static JSONArray formatMessageHistoricFromNotePad(String data, String trigger){
-		Pattern p = Pattern.compile("\\[.{4}\\-.{2}\\-.{2} .{2}\\:.{2} - (.+)\\]");
-		JSONArray notePad = new JSONArray();
-		JSONObject text = new JSONObject();
-		String note="";
-		for(String l : data.split("\n")){
-			Matcher m =p.matcher(l);
-			if(m.matches()){
-				
-				if (text.has("role")){//if note first line
-					parseText(note, trigger, text, notePad);
+        Pattern p = Pattern.compile("\\[.{4}\\-.{2}\\-.{2} .{2}\\:.{2} - (.+)\\]");
+        JSONArray notePad = new JSONArray();
+        JSONObject text = new JSONObject();
+        String note="";
+        for(String l : data.split("\n")){
+            Matcher m =p.matcher(l);
+            if(m.matches()){
+                
+                if (text.has("role")){//if note first line
+                    parseText(note, trigger, text, notePad);
                     text= new JSONObject();
                         
-					
-				}
-				note="";
+                    
+                }
+                note="";
                 if("ChatAI".equals(m.group(1))){
-				    text.put("role",ASSISTANT_ROLE);// see AI doc
+                    text.put("role",ASSISTANT_ROLE);// see AI doc
                 }else{
                     text.put("role","user");// see AI doc
                 }
 
 
-			}else{
-				StringBuilder noteBuilder = new StringBuilder(note);
+            }else{
+                StringBuilder noteBuilder = new StringBuilder(note);
                 noteBuilder.append(l).append("\n");
                 note = noteBuilder.toString();
-			}
-				
-		}
+            }
+                
+        }
         if (text.has("role")){
             parseText(note,trigger,text,notePad);
-		}
+        }
        
         
-		return invertJsonArray(notePad);
-	}
+        return invertJsonArray(notePad);
+    }
     private static void parseText(String note,String trigger,JSONObject text,JSONArray notePad){
         Pattern pTrigger=Pattern.compile("(?i)^"+trigger+"((?:.|\\s)+)");
         if("\n\n".equals(note.length()>2 ? note.substring(note.length() - 2):note))
@@ -889,11 +890,11 @@ public class AITools implements java.io.Serializable {
             Matcher mTrigger = pTrigger.matcher(note);
             if (mTrigger.matches()){
                 text.put(CONTENT_KEY, normalize(mTrigger.group(1)));
-		        notePad.put(text);
+                notePad.put(text);
             }
         }else{
             text.put(CONTENT_KEY, normalize(note));
-		    notePad.put(text);
+            notePad.put(text);
         }
     }
     private static String normalize(String text){
@@ -1003,8 +1004,8 @@ public class AITools implements java.io.Serializable {
     }
 
     public static List<String> getJSONBlock(String txt, Grant g){
-		List<String> list = new ArrayList<>(); 
-		String regex = "^([^{}]*)(?:```)?(?:json)?\\s*(\\{[^`]+\\})(?:```)?([^}]*)$";//To check
+        List<String> list = new ArrayList<>(); 
+        String regex = "^([^{}]*)(?:```)?(?:json)?\\s*(\\{[^`]+\\})(?:```)?([^}]*)$";//To check
         if(!txt.matches("[\\s\\S]*\\{[\\s\\S]*\\}[\\s\\S]*")){
             return list;
         }
@@ -1023,24 +1024,24 @@ public class AITools implements java.io.Serializable {
             AppLog.error(e, g);
         }
                 return list ;
-	}
-	@SuppressWarnings("unused")
-	public static boolean isValidJson(String json){
-		try {
-			new JSONObject(json);
+    }
+    @SuppressWarnings("unused")
+    public static boolean isValidJson(String json){
+        try {
+            new JSONObject(json);
 
-		} catch (Exception e) {
+        } catch (Exception e) {
             return false;
-		}
-		return true;
-	}
-	@SuppressWarnings("unused")
+        }
+        return true;
+    }
+    @SuppressWarnings("unused")
     public static JSONObject getValidJson(String json){
         json =json.replace("...","");
         JSONObject res = null;
-		try {
+        try {
             res = new JSONObject(json);
-		} catch (Exception e) {
+        } catch (Exception e) {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, Object> map = mapper.readValue(json, new TypeReference<Map<String, Object>>(){});
@@ -1053,77 +1054,77 @@ public class AITools implements java.io.Serializable {
                     return null;
                 }
             }
-		}
-		return res;
-	}
+        }
+        return res;
+    }
     private static String removeComments(String json) {
         return json.replaceAll("\\/\\/[^\"]*?([\\]\"\\}\\n])", "$1");
     }
     /**
-	 * Removes the elements from the given list that are not creatable based on the provided name index and grant.
-	 * 
-	 * @param list The list of elements to filter.
-	 * @param nameIndex The index of the name field in each element of the list.
-	 * @param g The grant object containing the creatable information.
-	 * @return The filtered list containing only the creatable elements.
-	 */
-	private static List<String[]> removeNotCreatable(List<String[]> list,int nameIndex, Grant g){
-		Map<String, GrantObject> grantedObjects = g.getGrantedObjects();
-		List<String[]> res = new ArrayList<>();
-		for(String[] row : list){
-			if(grantedObjects.getOrDefault(row[nameIndex],new GrantObject()).canCreate()){
-				res.add(row);
-			}
-		}
-		return res;
+     * Removes the elements from the given list that are not creatable based on the provided name index and grant.
+     * 
+     * @param list The list of elements to filter.
+     * @param nameIndex The index of the name field in each element of the list.
+     * @param g The grant object containing the creatable information.
+     * @return The filtered list containing only the creatable elements.
+     */
+    private static List<String[]> removeNotCreatable(List<String[]> list,int nameIndex, Grant g){
+        Map<String, GrantObject> grantedObjects = g.getGrantedObjects();
+        List<String[]> res = new ArrayList<>();
+        for(String[] row : list){
+            if(grantedObjects.getOrDefault(row[nameIndex],new GrantObject()).canCreate()){
+                res.add(row);
+            }
+        }
+        return res;
 
-	}
+    }
    /**
-	 * Retrieves the object IDs for a given module.
-	 * 
-	 * @param moduleName the name of the module
-	 * @param g the Grant object
-	 * @return an array of object IDs
-	 * @throws PlatformException if the module is unknown
-	 */
-	public static String[] getObjectIdsModule(String moduleName, Grant g) throws PlatformException{
-		
-		String mdlId = ModuleDB.getModuleId(moduleName);
-		if(Tool.isEmpty(mdlId))throw new PlatformException("Unknow module: \n"+moduleName);
-		ObjectDB objI = g.getTmpObject("ObjectInternal");
-		int idIndex =objI.getRowIdFieldIndex();
-		int nameIndex =objI.getFieldIndex("obo_name");
-		String[]ids;
-		synchronized(objI.getLock()){
-			objI.resetFilters();
-			objI.setFieldFilter(ROW_MLD_ID, mdlId);
-			List<String[]> objIs = removeNotCreatable(objI.search(),nameIndex, g);
-			ids = new String[objIs.size()];
-			
-			int begin = 0;
-			int end = objIs.size()-1;
-			for(String[] row : objIs){
-				ObjectDB obj = g.getTmpObject(row[nameIndex]);
-				
-				if(Tool.isEmpty(obj.getRefObjects())){// process first the object without ref to empty ref
-					ids[begin] = row[idIndex];
-					begin++;
-				}else{
-					ids[end] = row[idIndex];
-					end--;
-				}
-				
-				
-			}
-		}
-		return ids;
-		
-	}
+     * Retrieves the object IDs for a given module.
+     * 
+     * @param moduleName the name of the module
+     * @param g the Grant object
+     * @return an array of object IDs
+     * @throws PlatformException if the module is unknown
+     */
+    public static String[] getObjectIdsModule(String moduleName, Grant g) throws PlatformException{
+        
+        String mdlId = ModuleDB.getModuleId(moduleName);
+        if(Tool.isEmpty(mdlId))throw new PlatformException("Unknow module: \n"+moduleName);
+        ObjectDB objI = g.getTmpObject("ObjectInternal");
+        int idIndex =objI.getRowIdFieldIndex();
+        int nameIndex =objI.getFieldIndex("obo_name");
+        String[]ids;
+        synchronized(objI.getLock()){
+            objI.resetFilters();
+            objI.setFieldFilter(ROW_MLD_ID, mdlId);
+            List<String[]> objIs = removeNotCreatable(objI.search(),nameIndex, g);
+            ids = new String[objIs.size()];
+            
+            int begin = 0;
+            int end = objIs.size()-1;
+            for(String[] row : objIs){
+                ObjectDB obj = g.getTmpObject(row[nameIndex]);
+                
+                if(Tool.isEmpty(obj.getRefObjects())){// process first the object without ref to empty ref
+                    ids[begin] = row[idIndex];
+                    begin++;
+                }else{
+                    ids[end] = row[idIndex];
+                    end--;
+                }
+                
+                
+            }
+        }
+        return ids;
+        
+    }
     public static JSONObject getSimplifyedSwagger(String moduleName,Grant g) throws PlatformException {
         String[] ids = getObjectIdsModule(moduleName, Grant.getSystemAdmin());
-		String mdlId = ModuleDB.getModuleId(moduleName);
+        String mdlId = ModuleDB.getModuleId(moduleName);
 
-		ObjectDB obj = g.getTmpObject("Module");
+        ObjectDB obj = g.getTmpObject("Module");
         synchronized(obj.getLock()){
             obj.resetFilters();
             obj.select(mdlId);
@@ -1158,33 +1159,33 @@ public class AITools implements java.io.Serializable {
         return obj;
     }
     public static JSONObject getSwagger(String moduleName,Grant g) throws PlatformException {
-		String[] ids = getObjectIdsModule(moduleName, Grant.getSystemAdmin());
-		String mdlId = ModuleDB.getModuleId(moduleName);
-		ObjectDB obj = g.getTmpObject("Module");
-		obj.select(mdlId);
-		ModuleDB module = new ModuleDB(obj);
-		JSONObject swagger = new JSONObject(module.openAPI(JSONTool.OPENAPI_OAS3,true));
-		JSONObject newSchemas = new JSONObject();
-		JSONObject schemas = swagger.getJSONObject(SWAGGER_COMPONENTS).getJSONObject(SWAGGER_SHEMAS);
-		for(String id : ids){
-			String name = ObjectCore.getObjectName(id);
-			newSchemas.put(name, new JSONObject(schemas.getJSONObject(name).toString()));
-		}
+        String[] ids = getObjectIdsModule(moduleName, Grant.getSystemAdmin());
+        String mdlId = ModuleDB.getModuleId(moduleName);
+        ObjectDB obj = g.getTmpObject("Module");
+        obj.select(mdlId);
+        ModuleDB module = new ModuleDB(obj);
+        JSONObject swagger = new JSONObject(module.openAPI(JSONTool.OPENAPI_OAS3,true));
+        JSONObject newSchemas = new JSONObject();
+        JSONObject schemas = swagger.getJSONObject(SWAGGER_COMPONENTS).getJSONObject(SWAGGER_SHEMAS);
+        for(String id : ids){
+            String name = ObjectCore.getObjectName(id);
+            newSchemas.put(name, new JSONObject(schemas.getJSONObject(name).toString()));
+        }
         
-		swagger.getJSONObject(SWAGGER_COMPONENTS).put(SWAGGER_SHEMAS, newSchemas);
-		JSONObject paths = swagger.getJSONObject("paths");
-		JSONObject newPaths = new JSONObject();
-		for(String key : paths.keySet()){
-			if(key.matches(".*\\{row_id\\}")) {
-				Object get = paths.getJSONObject(key).get("get");
-				newPaths.put(key, new JSONObject().put("get", get));
-			}else{
-				newPaths.put(key, paths.getJSONObject(key));
-			}
-		}
-		swagger.put("paths", newPaths);
-		return swagger;
-	}	
+        swagger.getJSONObject(SWAGGER_COMPONENTS).put(SWAGGER_SHEMAS, newSchemas);
+        JSONObject paths = swagger.getJSONObject("paths");
+        JSONObject newPaths = new JSONObject();
+        for(String key : paths.keySet()){
+            if(key.matches(".*\\{row_id\\}")) {
+                Object get = paths.getJSONObject(key).get("get");
+                newPaths.put(key, new JSONObject().put("get", get));
+            }else{
+                newPaths.put(key, paths.getJSONObject(key));
+            }
+        }
+        swagger.put("paths", newPaths);
+        return swagger;
+    }	
     public static JSONObject getformatedContentByType(String content,String type,boolean trusted){
         return getformatedContentByType(content,type,trusted,null);
     }
@@ -1216,41 +1217,41 @@ public class AITools implements java.io.Serializable {
         return "";
     }
     public static String createOrUpdateWithJson(String objName,JSONObject fields, Grant g){
-		JSONObject filters = getFKFilters(objName,fields, g);
-		ObjectDB obj = g.getTmpObject(objName);
-		try{
-			synchronized(obj.getLock()){
-				BusinessObjectTool objTool = obj.getTool();
-				if(!objTool.selectForCreateOrUpdate(filters)){
-					obj.setValuesFromJSONObject(fields, false, false,true);
-					obj.populate(true);
-					objTool.validateAndCreate();
-				}
-			}
-			return obj.getRowId();
-		}catch(GetException | ValidateException | SaveException e){
-			AppLog.error(null, e, g);
-		}
-		
-		return "0";
-	}
-	private static JSONObject getFKFilters(String objName,JSONObject fields, Grant g){
-		JSONObject filters = new JSONObject();
-		ObjectDB obj = g.getTmpObject(objName);
-		synchronized(obj.getLock()){
-			for(ObjectField fk : obj.getFunctId()){
-				String name = fk.getName();
-				if("map_order".equals(name)){//to avoid duplicate object in domain
-					continue;
-				}
-				if(fields.has(name) && !fields.isNull(name)){
-					filters.put(name, fields.get(name));
-				}
-			}
-		}
-		
-		return filters;
-	}
+        JSONObject filters = getFKFilters(objName,fields, g);
+        ObjectDB obj = g.getTmpObject(objName);
+        try{
+            synchronized(obj.getLock()){
+                BusinessObjectTool objTool = obj.getTool();
+                if(!objTool.selectForCreateOrUpdate(filters)){
+                    obj.setValuesFromJSONObject(fields, false, false,true);
+                    obj.populate(true);
+                    objTool.validateAndCreate();
+                }
+            }
+            return obj.getRowId();
+        }catch(GetException | ValidateException | SaveException e){
+            AppLog.error(null, e, g);
+        }
+        
+        return "0";
+    }
+    private static JSONObject getFKFilters(String objName,JSONObject fields, Grant g){
+        JSONObject filters = new JSONObject();
+        ObjectDB obj = g.getTmpObject(objName);
+        synchronized(obj.getLock()){
+            for(ObjectField fk : obj.getFunctId()){
+                String name = fk.getName();
+                if("map_order".equals(name)){//to avoid duplicate object in domain
+                    continue;
+                }
+                if(fields.has(name) && !fields.isNull(name)){
+                    filters.put(name, fields.get(name));
+                }
+            }
+        }
+        
+        return filters;
+    }
     private static JSONObject refactorAiResponseInGPT(String res){
         String resultText = "";
         switch (llm) {
@@ -1348,22 +1349,22 @@ public class AITools implements java.io.Serializable {
         }
         Grant g = Grant.getSystemAdmin();
         ObjectDB paramObj = g.getTmpObject("SystemParam");
-		BusinessObjectTool paramTool = paramObj.getTool();
-		synchronized(paramObj.getLock()){
-			try {
-				if(!paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, SYSPARAM_AI_API_PARAM))){
-					paramObj.setFieldValue(SYS_CODE, SYSPARAM_AI_API_PARAM);
-					paramObj.setFieldValue("sys_value", "{}");
+        BusinessObjectTool paramTool = paramObj.getTool();
+        synchronized(paramObj.getLock()){
+            try {
+                if(!paramTool.selectForUpsert(new JSONObject().put(SYS_CODE, SYSPARAM_AI_API_PARAM))){
+                    paramObj.setFieldValue(SYS_CODE, SYSPARAM_AI_API_PARAM);
+                    paramObj.setFieldValue("sys_value", "{}");
                     paramObj.setFieldValue("sys_type", "PRV");
-					paramObj.setFieldValue(ROW_MLD_ID,ModuleDB.getModuleId(DEFAULT_MODULE));
-				}
+                    paramObj.setFieldValue(ROW_MLD_ID,ModuleDB.getModuleId(DEFAULT_MODULE));
+                }
                 if(!Tool.isEmpty(setting)) paramObj.setFieldValue(SYS_VAL2, setting.toString(1));
-				paramTool.validateAndSave();
-			} catch (GetException | JSONException | ValidateException | SaveException e) {
-				AppLog.error( e, g);
+                paramTool.validateAndSave();
+            } catch (GetException | JSONException | ValidateException | SaveException e) {
+                AppLog.error( e, g);
 
-			}
-		}
+            }
+        }
         SystemParameters.clearCache();
         if(!Tool.isEmpty(setting)) reloadAIParams();
     }
@@ -1482,8 +1483,8 @@ public class AITools implements java.io.Serializable {
     private static Object checkPrivate(JSONObject params, String key){
         if(!params.has(PROVIDER_KEY)) return params.get(key);
         Grant g = Grant.getSystemAdmin();
-		g.addResponsibility("AI_ADMIN");
-		ObjectDB obj = g.getTmpObject("AIProvider");
+        g.addResponsibility("AI_ADMIN");
+        ObjectDB obj = g.getTmpObject("AIProvider");
         synchronized(obj.getLock()){
             obj.setFieldFilter("aiPrvProvider",params.getString(PROVIDER_KEY));
             List<String[]> res = obj.search();
@@ -1532,12 +1533,12 @@ public class AITools implements java.io.Serializable {
         }
     }
     public static String optLabel(String key,JSONObject defaultFields,String lang){
-		JSONObject fieldDefLabel = defaultFields.optJSONObject(key,new JSONObject()).optJSONObject(LABEL_KEY);
-		if(Tool.isEmpty(fieldDefLabel)) return key.replaceAll("[_-]", " ");
-		if(!fieldDefLabel.has(lang)) lang = "ENU";
-		String label = fieldDefLabel.optString(lang);
-		return  (Tool.isEmpty(fieldDefLabel)?key.replaceAll("[_-]", " "):label);
-	}
+        JSONObject fieldDefLabel = defaultFields.optJSONObject(key,new JSONObject()).optJSONObject(LABEL_KEY);
+        if(Tool.isEmpty(fieldDefLabel)) return key.replaceAll("[_-]", " ");
+        if(!fieldDefLabel.has(lang)) lang = "ENU";
+        String label = fieldDefLabel.optString(lang);
+        return  (Tool.isEmpty(fieldDefLabel)?key.replaceAll("[_-]", " "):label);
+    }
     public static boolean isConfigurable(){
         return !IS_ENV_SETUP;
     }
