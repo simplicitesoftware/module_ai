@@ -504,8 +504,9 @@ public class AIModel implements java.io.Serializable {
 		return class2;
 	}
 	public static JSONArray checkMisplacedLink(JSONObject jsonObj,String objName){
-		if(jsonObj.has(JSON_LINK_KEY)){
-			JSONArray links = jsonObj.getJSONArray(JSON_LINK_KEY);
+		if(jsonObj.has(JSON_LINK_KEY) || jsonObj.has("relations") ){
+			JSONArray links = jsonObj.optJSONArray(JSON_LINK_KEY);
+			if(Tool.isEmpty(links))links = jsonObj.getJSONArray("relations");
 			for (Object link : links){
 				if(link instanceof JSONObject){
 					JSONObject rel = (JSONObject) link;
@@ -516,10 +517,26 @@ public class AIModel implements java.io.Serializable {
 							String class2 = rel.getString("name");
 							rel.remove("name");
 							rel.put(JSON_LINK_CLASS_TO_KEY, class2);
+						}else if(rel.has("class")){
+							
+							String class2 = rel.getString("class");
+							rel.remove("class");
+							rel.put(JSON_LINK_CLASS_TO_KEY, class2);
+						}else if(rel.has("target")){
+							
+							String class2 = rel.getString("target");
+							rel.remove("target");
+							rel.put(JSON_LINK_CLASS_TO_KEY, class2);
+						}else if(rel.has("to")){
+							
+							String class2 = rel.getString("to");
+							rel.remove("to");
+							rel.put(JSON_LINK_CLASS_TO_KEY, class2);
 						}
 					}
 				}
 			}
+			
 			return links;
 		}
 		return new JSONArray();
@@ -531,9 +548,28 @@ public class AIModel implements java.io.Serializable {
 		}
 		
 		if (Tool.isEmpty(objPrefix)){// if not trigram in json or trigram in json is empty
-			objPrefix = objName.substring(0, 3).toLowerCase();
+			objPrefix = optSubString(0,3,objName).toLowerCase();
+		}
+		// check if objPrefix is already used
+		while(checkPrefix(objPrefix)){
+			objPrefix = objPrefix + "1";
 		}
 		return objPrefix;
+	}
+	private static boolean checkPrefix(String objPrefix){
+		AppLog.info("checkPrefix: "+objPrefix);
+		Grant g = Grant.getSystemAdmin();
+		ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
+		synchronized(obj.getLock()){
+			obj.resetFilters();
+			obj.setFieldFilter(OBJECT_PREFIX_FIELD, objPrefix);
+			List<String[]> search = obj.search();
+			if(!search.isEmpty()){
+				AppLog.info("Prefix already used: "+objPrefix);
+				return true;
+			}
+		}
+		return false;
 	}
 	public static String createObject(JSONObject jsonObj, String objName,  String objPrefix, int domainOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
 		JSONObject fields = new JSONObject();
@@ -739,7 +775,7 @@ public class AIModel implements java.io.Serializable {
 		for (DataFile data : act.getDataFiles("Data")) {
 			String name = data.getName();
 			if (name.startsWith("tsl")) {
-				String idAct = name.substring(6);
+				String idAct = optSubString(0,6,name);
 				String val = "";
 				synchronized (action.getLock()) {
 					action.select(idAct);
@@ -772,11 +808,12 @@ public class AIModel implements java.io.Serializable {
 	
 	public static JSONObject createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps,boolean returnMermaidLinks, Grant g) throws GetException, ValidateException, UpdateException {
 		int linkorder = 10;
+		links = cleanLinks(links);
 		List<String> mermaidLinks = new ArrayList<>();
 		JSONArray createdLinks = new JSONArray();
 		for (Object link : links) {
 			JSONObject jsonLink = (JSONObject) link;
-			String linksType = jsonLink.getString("type");
+			String linksType = jsonLink.optString("type", "");
 			String class1Name = getClassFromJsonLink(jsonLink, JSON_LINK_CLASS_FROM_KEY);
 			String class2Name = getClassFromJsonLink(jsonLink, JSON_LINK_CLASS_TO_KEY);
 
@@ -792,6 +829,7 @@ public class AIModel implements java.io.Serializable {
 					case "m2m":
 					case "manytomany":
 					case "many-to-many":
+					case "*..*":
 						mermaidLinks.add(class1Name+" \"*\" -- \"*\" "+class2Name);
 						String childId = createManyToManyLink(class1Name, class2Name, linkorder, mInfo, dataMaps, g);
 						if(childId != null){
@@ -803,6 +841,7 @@ public class AIModel implements java.io.Serializable {
 					case "m2o":
 					case "manytoone":
 					case "many-to-one":
+					case "*..0":
 						mermaidLinks.add(class1Name+" \"*\" --> "+class2Name);
 						createdLinks.put(new JSONObject().put("source", dataMaps.objCreate.get(class1Name.toLowerCase())).put("target", dataMaps.objCreate.get(class2Name.toLowerCase())));
 						createLink(class1Name, class2Name, linkorder, mInfo, dataMaps,true);
@@ -811,6 +850,7 @@ public class AIModel implements java.io.Serializable {
 					case "o2m":
 					case "onetomany":
 					case "one-to-many":
+					case "0..*":
 					default:
 						mermaidLinks.add(class1Name+" <-- \"*\" "+class2Name);
 						createdLinks.put(new JSONObject().put("source", dataMaps.objCreate.get(class2Name.toLowerCase())).put("target", dataMaps.objCreate.get(class1Name.toLowerCase())));
@@ -833,6 +873,34 @@ public class AIModel implements java.io.Serializable {
 			return childId;
 		}
 		return null;
+	}
+	private static JSONArray cleanLinks(JSONArray links){
+		JSONArray cleanLinks = new JSONArray();
+		for(Object link : links){
+			JSONObject jsonLink = (JSONObject) link;
+			if(!jsonLink.has("type") && jsonLink.has("multiplicity")){
+				jsonLink.put("type", jsonLink.getString("multiplicity"));
+				jsonLink.remove("multiplicity");
+			}else if(!jsonLink.has("type") && !jsonLink.has("multiplicity")){
+				jsonLink.put("type", "default");
+			}
+			if(!jsonLink.has("class1")){
+				if(jsonLink.has("from")){
+					jsonLink.put("class1", jsonLink.getString("from"));
+					jsonLink.remove("from");
+				}else{continue;}
+			}else if(!jsonLink.has("class2")){
+				if(jsonLink.has("to")){
+					jsonLink.put("class2", jsonLink.getString("to"));
+					jsonLink.remove("to");
+				}else if(jsonLink.has("target")){
+						jsonLink.put("class2", jsonLink.getString("target"));
+					jsonLink.remove("target");
+				}else{continue;}
+			}
+			cleanLinks.put(jsonLink);
+		}
+		return cleanLinks;
 	}
 
 	private static void createLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, boolean isManyToOne) throws GetException, ValidateException, UpdateException {
@@ -873,12 +941,18 @@ public class AIModel implements java.io.Serializable {
 		linkFields.put(OBJECT_NAME_FIELD, SyntaxTool.join(SyntaxTool.PASCAL, new String[]{mInfo.mPrefix,namewp}));
 		linkFields.put(OBJECT_DB_FIELD, SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,namewp}));
 		linkFields.put(MODULE_ID_FIELD, mInfo.moduleId);
-		linkFields.put(OBJECT_PREFIX_FIELD, namewp.substring(0, 3).toLowerCase());
+		linkFields.put(OBJECT_PREFIX_FIELD, optSubString(0,3,namewp).toLowerCase());
 		linkFields.put(OBJECT_ICON_FIELD, getIcon(""));
 		linkFields.put(OBJECTFIELD_EDIT_LIST, OBJECTFIELD_EDIT_LIST_VAL);
 		String oboId = AITools.createOrUpdateWithJson(OBJECT_INTERNAL_NAME,linkFields, g);
 		dataMaps.objCreate.put(name.toLowerCase(),oboId);			
 		
+	}
+	private static String optSubString(int begin,int end , String text){
+		if(begin < 0 || end < 0 || begin > end || begin > text.length() || end > text.length()){
+			return text;
+		}
+		return text.substring(begin, end);
 	}
 	private static void updateTradField(String tradId,String val,Grant g) throws GetException, UpdateException, ValidateException{
 		ObjectDB oTra = g.getTmpObject("Translate");

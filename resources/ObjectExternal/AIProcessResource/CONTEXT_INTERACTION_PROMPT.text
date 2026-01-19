@@ -1,50 +1,48 @@
 give me this modele using this json template, complete and extrapolate data if necessary:
-```json{
+**Your ONLY task** is to generate **STRICTLY VALIDATED JSON** matching this template (no deviations, no code):
+**No Deviation in relations definition**
+
+```json
+{
   "classes": [
-    	{
-			"name": "",
-			"trigram": "",(mandatory unique)
-			"bootstrapIcon":"",
-			"en":"",
-			"fr":"",
-			"comment": "",
-			"attributes": [
-				{
-					"name": "",
-					"fr":"",
-					"en":"",
-					"key":Boolean,(mandatory)
-					"required":Boolean,
-					"type": "",//("Short text", "Long text", "Integer", "Decimal", "BigDecimal", "Date", "Date and time", "Time", "Enumeration", "Multiple enumeration", "Boolean", "URL", "HTML content", "Email", "Document", "Password", "External file", "Image", "Notepad", "Phone number", "Color", "Geographical coordinates")
-					"isStatus":Boolean,
-					"Enumeration":{
-						"Values":[
-							{
-								"code":"",
-								"en":"",
-								"fr":"",
-								"color":""//("red", "orange", "green", "blue", "purple", "pink", "brown", "black", "white", "yellow", "grey")
-							},
-							...
-        				]
-							
-					},
-					"class":""
-				},
-				...
-			]
-    	},
-    	...
-  	],
-	"relationships": [
-		{
-		"class1": "",
-		"class2": "",
-		"type":""//ManyToMany|ManyToOne|OneToMany
-		},
-		...
-	
-	]
+    {
+      "name": "string (mandatory)",
+      "trigram": "string (mandatory, unique)",
+      "bootstrapIcon": "string (optional, e.g., 'bi-person')",
+      "en": "string (mandatory, English name)",
+      "fr": "string (mandatory, French name)",
+      "comment": "string (optional)",
+      "attributes": [
+        {
+          "name": "string (mandatory)",
+          "fr": "string (mandatory, French label)",
+          "en": "string (mandatory, English label)",
+          "key": boolean (mandatory, true if primary key),
+          "required": boolean (mandatory),
+          "type": "string (mandatory, one of: 'Short text', 'Long text', 'Integer', 'Decimal', 'BigDecimal', 'Date', 'Date and time', 'Time', 'Enumeration', 'Multiple enumeration', 'Boolean', 'URL', 'HTML content', 'Email', 'Document', 'Password', 'External file', 'Image', 'Notepad', 'Phone number', 'Color', 'Geographical coordinates')",
+          "isStatus": boolean (optional, default false),
+          "Enumeration": {
+            "Values": [
+              {
+                "code": "string (mandatory, unique)",
+                "en": "string (mandatory)",
+                "fr": "string (mandatory)",
+                "color": "string (optional, one of: 'red', 'orange', 'green', 'blue', 'purple', 'pink', 'brown', 'black', 'white', 'yellow', 'grey')"
+              }
+            ]
+          }
+        }
+      ]
+    },
+  ],
+  "relationships": [
+    {
+      "source": "string (mandatory, trigram or name)",
+      "target": "string (mandatory, trigram or name)",
+      "type": "string (mandatory, one of: 'ManyToMany', 'ManyToOne', 'OneToMany')"
+    }
+  ]
+}
 
 	
 		

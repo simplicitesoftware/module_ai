@@ -93,7 +93,14 @@ public class AITools implements java.io.Serializable {
     private static  String aiProvider = getProvider();
     private static String apiKey = getAIParam(API_KEY);
     private static String completionUrl = getAIParam(COMPLETION_KEY);
-    public static String SPECIALISATION_NEED_JSON = "you help to create UML in json for application, your answers are automatically processed in java";
+    public static String SPECIALISATION_NEED_JSON = "You are an assistant specialising in generating UML models in JSON format, optimised for automatic integration into Java tools. Your mission is to produce JSON that is **strictly valid**, **accurate** and **consistent** with previous exchanges. You **never generate Java code**, only JSON structures that can be used by a parser.";
+	//public static String SPECIALISATION_NEED_JSON = """
+// 	You are a UML-to-JSON converter for a Java application. Your **only** task is to:
+// 1. Accept UML descriptions from previus chat (e.g., classes, attributes, methods, relationships).
+// 2. Add fields or relationship if missing
+// 2. Return **strictly validated JSON** matching the template ( no code, no deviations) in markdown tag ```JSON ```
+// 3. You can add explanation arround ```JSON ```""";
+	
     public static String SPECIALISATION_UPDATE_JSON = "you help to update an UML in json for application, your answers are automatically processed in java, this is actual UML please set action field on classe to delete or update class.!Important if you dont add object with action delete they will stay in the module ";
     public static String SPECIALISATION_HELP_UML_DESIGN = "You help design uml for object-oriented applications. Without function and whith relation description. Respond with a text";
     public static class AITypeException extends Exception {
@@ -1004,9 +1011,11 @@ public class AITools implements java.io.Serializable {
     }
 
     public static List<String> getJSONBlock(String txt, Grant g){
+
 		List<String> list = new ArrayList<>(); 
-		String regex = "^([^{}]*)(?:```)?(?:json)?\\s*(\\{[^`]+\\})(?:```)?([^}]*)$";//To check
+		String regex = "^([\\s\\S]*)(?:```)(?:[Jj][Ss][Oo][Nn])?\\s*(\\{[^`]+\\})(?:```)?([\\s\\S]*)$";//To check
         if(!txt.matches("[\\s\\S]*\\{[\\s\\S]*\\}[\\s\\S]*")){
+        	
             return list;
         }
         Pattern pattern = Pattern.compile(regex);
@@ -1014,16 +1023,17 @@ public class AITools implements java.io.Serializable {
         
 
         try {
+
             if (matcher.find()) {
-                
-                list.add(matcher.group(1).replaceAll("(?:```)?(?:json)?",""));
+
+                list.add(matcher.group(1).replaceAll("(?:```)?(?:[Jj][Ss][Oo][Nn])?",""));
                 list.add(matcher.group(2));
-                list.add(matcher.group(3).replaceAll("(?:```)?(?:json)?",""));
+                list.add(matcher.group(3).replaceAll("(?:```)?(?:[Jj][Ss][Oo][Nn])?",""));
             }
         } catch (Exception e) {
             AppLog.error(e, g);
         }
-                return list ;
+        return list ;
 	}
 	public static boolean isValidJson(String json){
 		try {
