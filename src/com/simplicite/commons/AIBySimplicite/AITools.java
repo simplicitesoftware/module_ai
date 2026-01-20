@@ -388,13 +388,13 @@ public class AITools implements java.io.Serializable {
         return new JSONObject(env);
     }
     public static List<String> importDatasets(String moduleID){
-        return importDatasets(moduleID,false);
-    }
-    public static List<String> importDatasets(String moduleID,boolean force){
-        Grant g = Grant.getSystemAdmin();
-        if(force){return applyDatasets(moduleID,g);}
-        g.addResponsibility("AI_ADMIN");
+    	Grant g = Grant.getSystemAdmin();
+    	g.addResponsibility("AI_ADMIN");
         g.changeAccess("AIProvider",true,true,true,true);
+        return importDatasets(moduleID,false,g);
+    }
+    public static List<String> importDatasets(String moduleID,boolean force,Grant g){
+        if(force){return applyDatasets(moduleID,g);}
         ObjectDB obj = g.getTmpObject("AIProvider");
         obj.resetFilters();
         if(obj.search().isEmpty()){

@@ -7,7 +7,7 @@
     "jshint": "latest",
     "globals": "latest",
     "stylelint-config-standard": "latest",
-    "postcss-less": "latest"
+    "@stylistic/stylelint-plugin": "latest"
   },
   "name": "AIBySimplicite",
   "scripts": {
@@ -15,5 +15,5 @@
     "stylelint": "stylelint --config=.stylelint-configuration --no-color --allow-empty-input resources/**/*.css resources/**/*.less",
     "jshint": "jshint --config=.jshint-configuration --reporter=jslint resources"
   },
-  "version": "0.33"
+  "version": "0.4"
 }

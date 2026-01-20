@@ -4,7 +4,7 @@
  "item": {
   "mdl_name": "AIBySimplicite",
   "mdl_prefix": "ai",
-  "mdl_version": "0.33",
+  "mdl_version": "0.4",
   "mdl_type": "T",
   "mdl_icon": null,
   "mdl_url": "{\n    \"origin\": {\"uri\": \"https://github.com/simplicitesoftware/module_ai\"},\n    \"type\": \"git\",\n    \"branch\": \"6.3\"\n}",
@@ -384,7 +384,7 @@
     "userkey": "AIBot",
     "item": {
      "shc_name": "AIBot",
-     "shc_url": "javascript:let obj=$ui.getNav().getCurrentItem().object;$ui.loadURL($(\".modal-body\"),$ui.getApp().getExternalObjectURL(\"AIChatBot\",\"object=\"+(obj?obj.getName():\"\")+\"&row_id=\"+(obj?obj.getRowId():\"\"),true),null,null)",
+     "shc_url": "javascript:let oai=$ui.getNav().getCurrentItem().object;$ui.loadURL($(\".modal-body\"),$ui.getApp().getExternalObjectURL(\"AIChatBot\",\"object=\"+(oai?oai.getName():\"\")+\"&row_id=\"+(oai?oai.getRowId():\"\"),true),null,null)",
      "shc_target": "_popup",
      "shc_order": 15,
      "shc_visible": ["P"],
@@ -3591,11 +3591,7 @@
       "obo_updall": true,
       "obo_delall": true,
       "obo_listsearch": true,
-      "obo_list_edit": [
-       "N",
-       "L",
-       "E"
-      ],
+      "obo_list_edit": null,
       "obo_useform": true,
       "obo_title": null,
       "obo_icon": "img/color/cog_wheel",
@@ -5573,6 +5569,18 @@
     },
     {
      "object": "Function",
+     "userkey": "AI_PRV_CR",
+     "item": {
+      "fct_name": "AI_PRV_CR",
+      "fct_object_id__obo_name": "AIProvider",
+      "fct_function": "C",
+      "fct_action_id__act_name": null,
+      "fct_view_id__viw_name": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Function",
      "userkey": "AI_PRV_CRUD",
      "item": {
       "fct_name": "AI_PRV_CRUD",
@@ -5839,6 +5847,18 @@
       "grt_function_id__fct_name": "AI_PRV_A_I_PROVIDERS_IMPORT_A",
       "grt_function_id__fct_object_id__obo_name": "AIProvider",
       "grt_function_id__fct_action_id__act_name": "AIProvidersImport",
+      "grt_activ": true,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Grant",
+     "userkey": "AI_DESIGNER~AI_PRV_CR~AIProvider~",
+     "item": {
+      "grt_group_id__grp_name": "AI_DESIGNER",
+      "grt_function_id__fct_name": "AI_PRV_CR",
+      "grt_function_id__fct_object_id__obo_name": "AIProvider",
+      "grt_function_id__fct_action_id__act_name": null,
       "grt_activ": true,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
@@ -13586,6 +13606,40 @@
    "list": [
     {
      "object": "TranslateView",
+     "userkey": "View(AIChatVue)~ENU",
+     "item": {
+      "tsl_object": {
+       "object": "View",
+       "label": "View",
+       "userkeylabel": "AIChatVue",
+       "icon": "img/system/view",
+       "item": {"viw_name": "AIChatVue"}
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Chat vue",
+      "tsl_help": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateView",
+     "userkey": "View(AIChatVue)~FRA",
+     "item": {
+      "tsl_object": {
+       "object": "View",
+       "label": "View",
+       "userkeylabel": "AIChatVue",
+       "icon": "img/system/view",
+       "item": {"viw_name": "AIChatVue"}
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Chat vue",
+      "tsl_help": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateView",
      "userkey": "View(AIMonitoring)~ENU",
      "item": {
       "tsl_object": {
@@ -13685,40 +13739,6 @@
       "tsl_help": null,
       "row_module_id__mdl_name": "AIBySimplicite"
      }
-    },
-    {
-     "object": "TranslateView",
-     "userkey": "View(AIChatVue)~ENU",
-     "item": {
-      "tsl_object": {
-       "object": "View",
-       "label": "View",
-       "userkeylabel": "AIChatVue",
-       "icon": "img/system/view",
-       "item": {"viw_name": "AIChatVue"}
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Chat vue",
-      "tsl_help": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateView",
-     "userkey": "View(AIChatVue)~FRA",
-     "item": {
-      "tsl_object": {
-       "object": "View",
-       "label": "View",
-       "userkeylabel": "AIChatVue",
-       "icon": "img/system/view",
-       "item": {"viw_name": "AIChatVue"}
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Chat vue",
-      "tsl_help": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
     }
    ]
   },
@@ -13728,158 +13748,6 @@
    "icon": "img/system/translation",
    "field": "row_module_id",
    "list": [
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0400)~ENU",
-     "item": {
-      "tsl_object": {
-       "object": "BPMActivity",
-       "label": "Activity",
-       "userkeylabel": "AiSettingsProcess ASP-0400",
-       "icon": "img/system/activity",
-       "item": {
-        "acy_process_id__pcs_name": "AiSettingsProcess",
-        "acy_step": "ASP-0400"
-       }
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Other parameters",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0400)~FRA",
-     "item": {
-      "tsl_object": {
-       "object": "BPMActivity",
-       "label": "Activity",
-       "userkeylabel": "AiSettingsProcess ASP-0400",
-       "icon": "img/system/activity",
-       "item": {
-        "acy_process_id__pcs_name": "AiSettingsProcess",
-        "acy_step": "ASP-0400"
-       }
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Autres paramètres",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0500)~ENU",
-     "item": {
-      "tsl_object": {
-       "object": "BPMActivity",
-       "label": "Activity",
-       "userkeylabel": "AiSettingsProcess ASP-0500",
-       "icon": "img/system/activity",
-       "item": {
-        "acy_process_id__pcs_name": "AiSettingsProcess",
-        "acy_step": "ASP-0500"
-       }
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Add the chatbot to your header ?",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-0500)~FRA",
-     "item": {
-      "tsl_object": {
-       "object": "BPMActivity",
-       "label": "Activity",
-       "userkeylabel": "AiSettingsProcess ASP-0500",
-       "icon": "img/system/activity",
-       "item": {
-        "acy_process_id__pcs_name": "AiSettingsProcess",
-        "acy_step": "ASP-0500"
-       }
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Ajoutez le chatbot à votre en-tête ?",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-BEG)~ENU",
-     "item": {
-      "tsl_object": {
-       "object": "BPMActivity",
-       "label": "Activity",
-       "userkeylabel": "AiSettingsProcess ASP-BEG",
-       "icon": "img/system/activity",
-       "item": {
-        "acy_process_id__pcs_name": "AiSettingsProcess",
-        "acy_step": "ASP-BEG"
-       }
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Begin",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-BEG)~FRA",
-     "item": {
-      "tsl_object": {
-       "object": "BPMActivity",
-       "label": "Activity",
-       "userkeylabel": "AiSettingsProcess ASP-BEG",
-       "icon": "img/system/activity",
-       "item": {
-        "acy_process_id__pcs_name": "AiSettingsProcess",
-        "acy_step": "ASP-BEG"
-       }
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Begin",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-END)~ENU",
-     "item": {
-      "tsl_object": {
-       "object": "BPMActivity",
-       "label": "Activity",
-       "userkeylabel": "AiSettingsProcess ASP-END",
-       "icon": "img/system/activity",
-       "item": {
-        "acy_process_id__pcs_name": "AiSettingsProcess",
-        "acy_step": "ASP-END"
-       }
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "End",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateActivity",
-     "userkey": "BPMActivity(AiSettingsProcess ASP-END)~FRA",
-     "item": {
-      "tsl_object": {
-       "object": "BPMActivity",
-       "label": "Activity",
-       "userkeylabel": "AiSettingsProcess ASP-END",
-       "icon": "img/system/activity",
-       "item": {
-        "acy_process_id__pcs_name": "AiSettingsProcess",
-        "acy_step": "ASP-END"
-       }
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "End",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
     {
      "object": "TranslateActivity",
      "userkey": "BPMActivity(AIGenData GDD_SETTINGS_END)~ENU",
@@ -15057,6 +14925,158 @@
       "tsl_value": "Authentification",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-0400)~ENU",
+     "item": {
+      "tsl_object": {
+       "object": "BPMActivity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-0400",
+       "icon": "img/system/activity",
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-0400"
+       }
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Other parameters",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-0400)~FRA",
+     "item": {
+      "tsl_object": {
+       "object": "BPMActivity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-0400",
+       "icon": "img/system/activity",
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-0400"
+       }
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Autres paramètres",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-0500)~ENU",
+     "item": {
+      "tsl_object": {
+       "object": "BPMActivity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-0500",
+       "icon": "img/system/activity",
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-0500"
+       }
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Add the chatbot to your header ?",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-0500)~FRA",
+     "item": {
+      "tsl_object": {
+       "object": "BPMActivity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-0500",
+       "icon": "img/system/activity",
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-0500"
+       }
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Ajoutez le chatbot à votre en-tête ?",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-BEG)~ENU",
+     "item": {
+      "tsl_object": {
+       "object": "BPMActivity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-BEG",
+       "icon": "img/system/activity",
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-BEG"
+       }
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Begin",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-BEG)~FRA",
+     "item": {
+      "tsl_object": {
+       "object": "BPMActivity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-BEG",
+       "icon": "img/system/activity",
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-BEG"
+       }
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Begin",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-END)~ENU",
+     "item": {
+      "tsl_object": {
+       "object": "BPMActivity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-END",
+       "icon": "img/system/activity",
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-END"
+       }
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "End",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateActivity",
+     "userkey": "BPMActivity(AiSettingsProcess ASP-END)~FRA",
+     "item": {
+      "tsl_object": {
+       "object": "BPMActivity",
+       "label": "Activity",
+       "userkeylabel": "AiSettingsProcess ASP-END",
+       "icon": "img/system/activity",
+       "item": {
+        "acy_process_id__pcs_name": "AiSettingsProcess",
+        "acy_step": "ASP-END"
+       }
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "End",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
     }
    ]
   },
@@ -15066,38 +15086,6 @@
    "icon": "img/system/translation",
    "field": "row_module_id",
    "list": [
-    {
-     "object": "TranslateProcess",
-     "userkey": "BPMProcess(AIModuleCreate)~ENU",
-     "item": {
-      "tsl_object": {
-       "object": "BPMProcess",
-       "label": "Business process",
-       "userkeylabel": "AIModuleCreate",
-       "icon": "img/system/process",
-       "item": {"pcs_name": "AIModuleCreate"}
-      },
-      "tsl_lang": "ENU",
-      "tsl_value": "Module generation",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "TranslateProcess",
-     "userkey": "BPMProcess(AIModuleCreate)~FRA",
-     "item": {
-      "tsl_object": {
-       "object": "BPMProcess",
-       "label": "Business process",
-       "userkeylabel": "AIModuleCreate",
-       "icon": "img/system/process",
-       "item": {"pcs_name": "AIModuleCreate"}
-      },
-      "tsl_lang": "FRA",
-      "tsl_value": "Génération du module",
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
     {
      "object": "TranslateProcess",
      "userkey": "BPMProcess(AiSettingsProcess)~ENU",
@@ -15159,6 +15147,38 @@
       },
       "tsl_lang": "FRA",
       "tsl_value": "Génération de données",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateProcess",
+     "userkey": "BPMProcess(AIModuleCreate)~ENU",
+     "item": {
+      "tsl_object": {
+       "object": "BPMProcess",
+       "label": "Business process",
+       "userkeylabel": "AIModuleCreate",
+       "icon": "img/system/process",
+       "item": {"pcs_name": "AIModuleCreate"}
+      },
+      "tsl_lang": "ENU",
+      "tsl_value": "Module generation",
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "TranslateProcess",
+     "userkey": "BPMProcess(AIModuleCreate)~FRA",
+     "item": {
+      "tsl_object": {
+       "object": "BPMProcess",
+       "label": "Business process",
+       "userkeylabel": "AIModuleCreate",
+       "icon": "img/system/process",
+       "item": {"pcs_name": "AIModuleCreate"}
+      },
+      "tsl_lang": "FRA",
+      "tsl_value": "Génération du module",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     }
@@ -15251,6 +15271,32 @@
       "prm_req": false,
       "prm_prop": null,
       "prm_value": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "Permission",
+     "userkey": "AI_ADMIN~ObjectInternal(AIProvider)~Field(Create on list)",
+     "item": {
+      "prm_group_id__grp_name": "AI_ADMIN",
+      "prm_object": {
+       "object": "ObjectInternal",
+       "label": "Business object",
+       "userkeylabel": "AIProvider",
+       "icon": "img/system/business_object",
+       "item": {"obo_name": "AIProvider"}
+      },
+      "prm_perm": null,
+      "prm_upd": null,
+      "prm_req": null,
+      "prm_prop": {
+       "object": "Field",
+       "label": "Field",
+       "userkeylabel": "Create on list",
+       "icon": "img/system/field",
+       "item": {"fld_name": "obo_btn_listadd"}
+      },
+      "prm_value": "1",
       "row_module_id__mdl_name": "AIBySimplicite"
      }
     },

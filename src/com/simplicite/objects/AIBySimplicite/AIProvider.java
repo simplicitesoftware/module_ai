@@ -135,7 +135,7 @@ public class AIProvider extends ObjectDB {
 		return super.preValidate();
 	}
 	public String reImportDataSet(){
-		List<String> datasets = AITools.importDatasets(getModuleId(),true);
+		List<String> datasets = AITools.importDatasets(getModuleId(),true,getGrant());
 		if(Tool.isEmpty(datasets)) return Message.formatSimpleWarning("AI_NOTHING_IMPORT","");
 		return Message.formatSimpleInfo("AI_CONFIRM_IMPORT",String.join(", ",datasets));
 	}
