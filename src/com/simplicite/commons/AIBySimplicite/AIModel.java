@@ -506,7 +506,7 @@ public class AIModel implements java.io.Serializable {
 	public static JSONArray checkMisplacedLink(JSONObject jsonObj,String objName){
 		if(jsonObj.has(JSON_LINK_KEY) || jsonObj.has("relations") ){
 			JSONArray links = jsonObj.optJSONArray(JSON_LINK_KEY);
-			if(Tool.isEmpty(links))links = jsonObj.getJSONArray("relations");
+			if(Tool.isEmpty(links))links = jsonObj.optJSONArray("relations",new JSONArray());
 			for (Object link : links){
 				if(link instanceof JSONObject){
 					JSONObject rel = (JSONObject) link;
@@ -968,22 +968,31 @@ public class AIModel implements java.io.Serializable {
 		
 	}
 	private static void createOrUpdateTranslation(String obj,String objId,String lang,String val, String moduleId,Grant g) throws GetException, UpdateException, ValidateException{
-		ObjectDB oTra = g.getTmpObject("Translate");
-		synchronized(oTra.getLock()){
-			BusinessObjectTool oTraT = oTra.getTool();
-			if(!Tool.isEmpty(objId)){
-				String objectRef = Tool.toSQL(obj)+":"+Tool.toSQL(objId);
-				if(!Tool.isEmpty(val)){
-					if(!oTraT.selectForCreateOrUpdate(new JSONObject().put("tsl_object",objectRef).put("tsl_lang",lang))){
-						oTra.setFieldValue("tsl_object",objectRef);
-						oTra.setFieldValue("tsl_lang",lang);
-						oTra.setFieldValue(MODULE_ID_FIELD,moduleId);
+		try{
+			//AppLog.info("createOrUpdateTranslation: "+obj+ " "+objId+ " "+lang+ " "+val+ " "+moduleId);
+			ObjectDB oTra = g.getTmpObject("Translate");
+			synchronized(oTra.getLock()){
+				BusinessObjectTool oTraT = oTra.getTool();
+				if(!Tool.isEmpty(objId)){
+					String objectRef = Tool.toSQL(obj)+":"+Tool.toSQL(objId);
+					if(!Tool.isEmpty(val)){
+						boolean isUpdate = oTraT.selectForCreateOrUpdate(new JSONObject().put("tsl_object",objectRef).put("tsl_lang",lang));
+						if(!isUpdate){
+							oTra.setFieldValue("tsl_object",objectRef);
+							oTra.setFieldValue("tsl_lang",lang);
+							oTra.setFieldValue(MODULE_ID_FIELD,moduleId);
+						}
+						oTra.setFieldValue("tsl_value", val);
+						if(isUpdate)oTraT.validateAndUpdate();
+						else oTraT.validateAndCreate();
+						//AppLog.info("createOrUpdateTranslation: "+(isUpdate ? "update" : "create")+ " "+objectRef+ " "+lang+ " val "+val);
+
 					}
-					oTra.setFieldValue("tsl_value", val);
-					oTraT.validateAndUpdate();
+					
 				}
-				
 			}
+		}catch(CreateException e){
+			AppLog.warning("Error creating translation: "+e);
 		}
 		
 	}
@@ -1051,6 +1060,7 @@ public class AIModel implements java.io.Serializable {
 			linkIds.put(fkFieldName, refId);
 	}
 	private static void addJoinedField(String childId,String refId,LinkObject objectData,ModuleInfo mInfo, DataMapObject dataMaps,int fkOrder, Grant g) throws GetException, ValidateException, UpdateException{
+		//AppLog.info("addJoinedField: childId "+childId+ " refId "+refId+ " objectData.objId "+objectData.objId+ " mInfo.moduleId "+mInfo.moduleId+ " fkOrder "+fkOrder);
 		List<String> fks = getFonctionalKeys(objectData.objId,g);
 		if(!Tool.isEmpty(fks)){
 			for(String fkField: fks){
