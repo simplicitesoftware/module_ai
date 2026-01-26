@@ -3591,7 +3591,11 @@
       "obo_updall": true,
       "obo_delall": true,
       "obo_listsearch": true,
-      "obo_list_edit": null,
+      "obo_list_edit": [
+       "N",
+       "L",
+       "E"
+      ],
       "obo_useform": true,
       "obo_title": null,
       "obo_icon": "img/color/cog_wheel",

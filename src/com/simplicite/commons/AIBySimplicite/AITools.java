@@ -426,8 +426,9 @@ public class AITools implements java.io.Serializable {
     }
     private static JSONObject getOptAiApiParamByGrant(){
         Grant g = Grant.getSystemAdmin();
-        if (g.hasParameter(SYSPARAM_AI_API_PARAM)) {
-            JSONObject param = new JSONObject(g.getParameter(SYSPARAM_AI_API_PARAM));
+        String paramStr = g.getParameter(SYSPARAM_AI_API_PARAM);
+        if (!Tool.isEmpty(paramStr)) {
+            JSONObject param = new JSONObject(paramStr);
             if(g.hasParameter(SYSPARAM_AI_CHAT_BOT_NAME) || g.hasParameter(SYSPARAM_AI_API_KEY) || g.hasParameter(SYSPARAM_AI_API_URL)){
                 patchSysParamMerged(param);
             }
