@@ -1,6 +1,6 @@
 give me this modele using this json template, complete and extrapolate data if necessary:
 **Your ONLY task** is to generate **STRICTLY VALIDATED JSON** matching this template (no deviations, no code, no addaptation to other tools):
-
+**No Deviation in relations definition**
 ```json{
   "classes": [
     	{
