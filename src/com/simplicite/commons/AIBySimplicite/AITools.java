@@ -125,7 +125,7 @@ public class AITools implements java.io.Serializable {
             setSpecialisation(params.optString(CALLER_PARAM_SPE),isSafeSpe);
             historic = params.optJSONArray(CALLER_PARAM_HISTORIC, new JSONArray());
             providerParams = params.optJSONObject("providerParams", new JSONObject());
-            
+            AppLog.info("providerParams: "+providerParams.toString());
             
             if(!Tool.isEmpty(aiApiParam)) {
                 maxToken=aiApiParam.getInt(MAX_TOKEN_PARAM_KEY);
@@ -715,6 +715,21 @@ public class AITools implements java.io.Serializable {
                                                 .put(CALLER_PARAM_TOKEN,maxToken)
                                                 .put(CALLER_PARAM_HISTORIC,historic)
                                                 .put(CALLER_PARAM_SECURE, secure);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
+    }
+    public static JSONObject aiCaller(Grant g, String specialisation, Object prompt, JSONArray historic,JSONObject providerParams,boolean maxToken,boolean secure){
+        AppLog.info("ai coller with provider: "+providerParams.toString(1));
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
+                                                .put(CALLER_PARAM_TOKEN,maxToken)
+                                                .put(CALLER_PARAM_HISTORIC,historic)
+                                                .put(CALLER_PARAM_SECURE, secure)
+                                                .put("providerParams", providerParams);
             AICallerParams caller = new AICallerParams(prompt,params);
             return caller.aiCall(g);
         }catch (AITypeException e){
