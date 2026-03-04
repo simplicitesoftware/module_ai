@@ -176,7 +176,6 @@ public class AiSettingsProcess extends Processus {
 				String url = getContext(getActivity(AUTH_ACT)).getDataValue("Data", COMPLETION_URL_FLD);
 				param.put("completion_url",url);
 				String key = getContext(getActivity(AUTH_ACT)).getDataValue("Data", "key");
-				key = getEnvKeyIfEnv(key);
 				param.put("api_key", key);
 				AITools.setParameters(param);
 				break;

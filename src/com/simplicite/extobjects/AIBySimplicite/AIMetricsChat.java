@@ -24,6 +24,8 @@ public class AIMetricsChat extends com.simplicite.util.ExternalObject {
 		Grant g = getGrant();
 		try {
 			appendCSSInclude(HTMLTool.getResourceCSSURL(g, "AI_STYLE"));
+			appendJSInclude(HTMLTool.getResourceJSURL(g, "AiJsTools"));
+			addSimpliciteClient();
 			String moduleName = params.getParameter("module");
 			if(Tool.isEmpty(moduleName) || Tool.isEmpty(ModuleDB.getModuleId(moduleName))){
 				return javascript("$ui.alert("+Message.formatError("AI_MODULE_ERROR", null,null)+")");

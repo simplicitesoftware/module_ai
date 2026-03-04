@@ -32,7 +32,8 @@ var AiMonitoring = (function() {
 	}
 	function ping(){
 		let postParams = {"reqType":"ping"};
-		$ui.getApp()._call(useAsync, url, postParams, function callback(response){
+		AiJsTools.callApi("AIRestAPI","POST",postParams,function(response){
+		
 			renderPingBannerAndChatBot(response.msg);
 		});
 	}

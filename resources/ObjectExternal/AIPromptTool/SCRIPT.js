@@ -32,11 +32,11 @@ var AIPromptTool = AIPromptTool || (function() {
 			// Call Webservice (POST requests only)
 			ctn.text("");
 			$('#AIProcess').show();
-	
-			app._call(useAsync, url, postParams, function callback(rslt){
+			
+			AiJsTools.callApi("AIRestAPI","POST",postParams,function(rslt){
 				ctn.text(rslt.response.choices[0].message.content);
 				$('#AIProcess').hide();
-			 });
+			});
 	
 	}
 	return { render: render ,sendPrompt:sendPrompt,selected:selected};

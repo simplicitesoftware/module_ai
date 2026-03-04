@@ -24,6 +24,8 @@ public class AiMonitoring extends com.simplicite.util.ExternalObject {
 		try {
 			// Call the render Javascript method implemented in the SCRIPT resource
 			// ctn is the "div.extern-content" to fill on UI
+			addSimpliciteClient();
+			appendJSInclude(HTMLTool.getResourceJSURL(getGrant(), "AiJsTools"));
 			if(!AITools.isAIParam(false)){
 				return javascript(getName() + ".renderAINotParam(ctn);");
 			}

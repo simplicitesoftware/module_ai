@@ -30,6 +30,7 @@ import com.simplicite.util.tools.SyntaxTool;
 import com.simplicite.util.tools.BusinessObjectTool;
 import com.simplicite.util.tools.MustacheTool;
 import com.simplicite.webapp.ObjectContextWeb;
+import com.simplicite.webapp.web.WebPage;
 
 
 
@@ -176,7 +177,10 @@ public class AIModuleCreate extends Processus {
 		return obj.search();
 	}
 	private String getModuleChat(String response,Grant g,String moduleId){
-
+		WebPage page = new WebPage(g.getWindowTitle());
+		
+		page.appendSimpliciteClient();
+		page.appendJSInclude(HTMLTool.getResourceJSURL(g, "AiJsTools"));
 		String script =HTMLTool.jsBlock(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceJSContent("CHAT_BOT_SCRIPT"));
 		AppLog.info("moduleId: "+moduleId+(isAdaContext()?" true":" false"), g);
 		if(!Tool.isEmpty(moduleId) && isAdaContext()){
@@ -185,12 +189,14 @@ public class AIModuleCreate extends Processus {
 			script = script.replace("let moduleid;", "let moduleid = "+moduleId+";");
 			AppLog.info("after: "+script, g);
 		}
-		String css = HTMLTool.lessToCss(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceCSSContent("CHAT_BOT_CSS"));
+		
+		page.appendCSSInclude(g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceCSSURL("CHAT_BOT_CSS"));
+		page.appendJS(script);
 		String html = g.getExternalObject(PROCESS_RESOURCE_EXTERNAL_OBJECT).getResourceHTMLContent("CHAT_BOT_MODEL");
-		html = html.replace("{{{script}}}", script);
-		html = html.replace("{{css}}", css);
+		
 		html = html.replace("{{botMesage}}", Tool.isEmpty(response)?"":"<div class=\"bot-messages\" id=\"context\"><strong>"+AITools.getBotName()+": </strong><span class=\"msg\">"+response+"</span></div>");
-		return html;
+		page.appendHTML(html);
+		return page.toString();
 	}
 	private boolean isAdaContext(){
 		return !Tool.isEmpty(ModuleDB.getModuleId("AiDemonstrationAddon",false));

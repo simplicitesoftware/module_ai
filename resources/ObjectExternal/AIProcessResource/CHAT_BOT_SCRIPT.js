@@ -15,9 +15,11 @@ var AIWfChatBot = AIWfChatBot || (function() {
 	function resizeUp(){
 		if(!AiJsTools.hasOwnProperty("resizeUp")){
 			console.log("load AiJsTools");
-			$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ 
-				AiJsTools.resizeUp($(".ai-chat-input-area"),$("#module_chat_messages"),maxbodyH);}
-			});
+			if(AiJsTools){ 
+				AiJsTools.resizeUp($(".ai-chat-input-area"),$("#module_chat_messages"),maxbodyH);
+			}else{
+				console.log("cannot loaded AiJsTools");
+			}
 		}else{
 			console.log("resizeUp");
 			AiJsTools.resizeUp($(".ai-chat-input-area"),$("#module_chat_messages"),maxbodyH);
@@ -36,7 +38,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			resizeUp();
 		});
 		maxbodyH = $('#AIchatbotProcess').parent().height();
-		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ 
+		if(AiJsTools){ 
 			AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);
 			let msgs = $('#module_chat_messages');
 			let initMsg;
@@ -49,7 +51,10 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			msgs.append(initMsg);
 			
 			
-		}});
+		}else{
+			console.log("cannot loaded AiJsTools");
+			
+		}
 		console.log("isAdaContext: ",isAdaContext);
 		if(isAdaContext){
 			historicObject= app.getBusinessObject("AdaPromptHistory");
@@ -120,7 +125,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 		$('.btn[data-action="AIGenerate"]').attr("disabled", "disabled");
 		// Call Webservice (POST requests only)
-		app._call(useAsync, url, postParams, function callback(botResponse){
+		AiJsTools.callApi("AIRestAPI","POST",postParams,function(botResponse){
 			let text ={};
 			text.role = "user";
 			text.content = userMessage;

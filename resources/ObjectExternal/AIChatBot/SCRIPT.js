@@ -21,8 +21,14 @@ var AIChatBot = AIChatBot || (function() {
 			}
 		});
 		console.log("AIJSTooL");
-		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);console.log(AiJsTools.provider);}});
-
+		//$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);console.log(AiJsTools.provider);}});
+		if(AiJsTools){
+			AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);console.log(AiJsTools.provider);
+		
+		}else{
+			console.log("cannot loaded AiJsTools");
+			
+		}
 		ctn.querySelector('#chatbot_send_button').onclick = function() {
 			AIChatBot.chatbotSendMessage(ctn);
 		};
@@ -90,8 +96,7 @@ var AIChatBot = AIChatBot || (function() {
 		// Faites défiler vers le bas pour afficher les messages les plus récents
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 		// Call Webservice (POST requests only)
-
-		app._call(useAsync, url, postParams, function callback(botResponse){
+		AiJsTools.callApi("AIRestAPI","POST",postParams,function(botResponse){
 			if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
 				let result = botResponse.response.choices[0].message.content;
 				result = escapeHtml(result);
@@ -142,7 +147,8 @@ var AIChatBot = AIChatBot || (function() {
 			item.adaPlogCost = cost;
 			if(userImg)item.adaPlogImage =userImg;
 			console.log("item to create",item);
-			app._call(true, Simplicite.ROOT+"/ext/AdaSavePrompt", {obj:item}, function callback(botResponse){
+			
+			AiJsTools.callApi("AdaSavePrompt","POST",{obj:item},function(botResponse){
 				if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
 					console.log("prompt saved");
 				}else{

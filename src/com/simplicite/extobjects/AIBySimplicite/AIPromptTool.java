@@ -25,6 +25,8 @@ public class AIPromptTool extends ExternalObject { // or com.simplicite.webapp.w
 	public Object display(Parameters params) {
 		try {
 			addMustache();
+			addSimpliciteClient();
+			appendJSInclude(HTMLTool.getResourceJSURL(getGrant(), "AiJsTools"));
 			String id =params.getParameter("row_id");
 			String obj = params.getParameter("object");
 			List<ObjectField> fields = getGrant().getTmpObject(obj).getFields();

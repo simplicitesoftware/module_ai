@@ -7,6 +7,11 @@ var AiJsTools = AiJsTools || (function(param) {
 	let provider;//param;
 	let providerID;
 	let providerParams;
+	let authenticatedApp =simplicite.session({
+		endpoint: 'ui',
+		authtoken: $grant.authtoken,
+		timeout: 240 //seconds
+   });
 
 	
 	getProvider();
@@ -34,19 +39,17 @@ var AiJsTools = AiJsTools || (function(param) {
 		return providerParams;
 	}
 	function getProvider(){
-		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"provider"};
-		app._call(false, url, postParams, function callback(botResponse){
-			provider = botResponse.provider;
+		callApi("AIRestAPI","POST",postParams,function(botResponse){
+			provider = response.provider;
 			getProviderParams();
-			
 		});
 		return null;
 	}
 	function getBotName(){
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"BOT_NAME"};
-		app._call(false, url, postParams, function callback(botResponse){
+		callApi("AIRestAPI","POST",postParams,function(botResponse){
 			botName = botResponse.botName;
 		});
 		return null;
@@ -54,9 +57,9 @@ var AiJsTools = AiJsTools || (function(param) {
 	// used for speech recognition
 	async function checkSpeechRecognitionSupported() {
 		if(isSpeechRecognitionSupported != null)return;
-		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
+		//let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"CHECK_SPEECH_RECOGNITION"};
-		await app._call(false, url, postParams, function callback(botResponse){
+		await callApi("AIRestAPI","POST",postParams,function(botResponse){
 			isSpeechRecognitionSupported = botResponse?.isSpeechRecognitionSupported ?? false;
 		});
 	}
@@ -272,7 +275,8 @@ var AiJsTools = AiJsTools || (function(param) {
 			file: audio64,
 			reqType: 'audio'
 		};
-		app._call(useAsync, url, jsonData, function callback(botResponse){
+		callApi("AIRestAPI","POST",jsonData,function(botResponse){
+		
 			let json = JSON.parse(botResponse.msg);
 			messageCtn.val(json.text);
 			messageCtn.focus();
@@ -523,7 +527,7 @@ var AiJsTools = AiJsTools || (function(param) {
 				onload:() =>{
 					$view.showLoading($(".diff-body"));
 					if(!devMode){
-						app._call(true, url, postParams, function callback(botResponse){
+						callApi("AIRestAPI","POST",postParams,function(botResponse){
 							console.log("botResponse",botResponse,botResponse.choices[0],botResponse.choices[0]?.message,botResponse.choices[0]?.message?.content);
 							let newCode = botResponse.choices[0]?.message?.content;
 							console.log("newCode",newCode);
@@ -595,6 +599,10 @@ var AiJsTools = AiJsTools || (function(param) {
 			$(ctn).append(button); // Ajout du bouton à la barre d'édition
 		}
 	}
+	function  callApi(endpoint,method,datas,path="",callback){
+		const response = authenticatedApp.getExternalObject(endpoint).invoke(null,JSON.stringify(datas),{'method':method,'path':path,'accept':'application/json','contentType':'application/json'});
+		callback(response);
+	}
 		
 	return { 
 		useAsync: useAsync,
@@ -614,6 +622,7 @@ var AiJsTools = AiJsTools || (function(param) {
 		getUserProviderParams:getUserProviderParams,
 		checkMinMAx:checkMinMAx,
 		commentCode:commentCode,
-		addCommentCodeButton:addCommentCodeButton
+		addCommentCodeButton:addCommentCodeButton,
+		callApi:callApi
 	};
 })();

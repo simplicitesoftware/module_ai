@@ -52,9 +52,15 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			$('#metrics_cancel_button').text(cancelText);
 		},null);
 		swagger=s;
-		$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ 
+		// $ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ 
+		// 	AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible).then(() => {setShowWarn(ctn);});
+		// }});
+		if(AiJsTools){
 			AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible).then(() => {setShowWarn(ctn);});
-		}});
+		}else{
+			console.log("cannot loaded AiJsTools");
+			
+		}
 		resetChat();
 		
 		$('#metrics_user_text').keypress(function(e) {
@@ -92,7 +98,8 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		$('#metrics_user_text').prop('disabled', true);
 		let params = {prompt:input, reqType:"metrics",swagger:swagger,lang:app.grant.lang};
 		lastText = "";
-		app._call(useAsync, url, params, function callback(botResponse){
+		
+		AiJsTools.callApi("AIRestAPI","POST",params,function(botResponse){
 			processResponse(botResponse,true,isCancelled,params);
 			// Définir les options globales pour Chart.js
 			Chart.defaults.responsive = true;
@@ -144,7 +151,8 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		
 		let func = lastScript;
 		let params = {reqType:"saveMetrics",swagger:swagger,moduleName:moduleName,function:func,ctx:"$('#ia_html')"};
-		app._call(useAsync, url, params, function callback(botResponse){
+		
+		AiJsTools.callApi("AIRestAPI","POST",params,function(botResponse){
 			eval(botResponse.script);
 		});
 		
@@ -188,7 +196,8 @@ var AIMetricsChat = AIMetricsChat || (function() {
 					params.error = e.toString();
 					params.script = botResponse.js;
 					params.html = botResponse.html;
-					app._call(useAsync, url, params, function callback(botResponse){
+				
+					AiJsTools.callApi("AIRestAPI","POST",params,function(botResponse){
 						processResponse(botResponse,false,isCancelled);
 					});
 				}else{
