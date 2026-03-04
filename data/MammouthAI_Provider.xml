@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simplicite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.simplicite.fr/base" xsi:schemaLocation="http://www.simplicite.fr/base https://www.simplicite.io/resources/schemas/base.xsd">
+<object>
+	<name>AIProvider</name>
+	<action>upsert</action>
+	<data>
+		<aiPrvProvider>Mammouth AI</aiPrvProvider>
+		<aiPrvDefaultUrl><![CDATA[https://api.mammouth.ai/]]></aiPrvDefaultUrl>
+		<aiPrvDataModel><![CDATA[{}]]></aiPrvDataModel>
+		<aiPrvModelsUrl><![CDATA[https://api.mammouth.ai/v1/models]]></aiPrvModelsUrl>
+		<aiPrvHelp/>
+		<aiPrvCompletionUrl><![CDATA[https://api.mammouth.ai/v1/chat/completions]]></aiPrvCompletionUrl>
+		<aiPrvPingUrl><![CDATA[https://api.mammouth.ai/health]]></aiPrvPingUrl>
+		<aiPrvSttUrl/>
+		<aiPrvUserParameters/>
+	</data>
+</object>
+</simplicite>

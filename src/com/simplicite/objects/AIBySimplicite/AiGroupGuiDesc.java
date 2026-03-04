@@ -25,7 +25,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 	private  String zoneTemplate;
 	private  String domTemplate;
 	private static final String COMMENT_KEY = "comment";
-	
+
 	@Override
 	public String preCreate() {
 		Grant g = getGrant();
@@ -103,7 +103,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 					}
 				}
 			}
-			
+
 		}
 		return super.postCreate();
 	}
@@ -120,7 +120,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 			JSONObject domJSON = getDomainDescription(dom,g);
 			if(!Tool.isEmpty(domJSON))menus.put(domJSON);
 		}
-		
+
 		desc.put("domains",menus);
 		JSONArray objsJSON = new JSONArray();
 		List<String> objs = getObjects(groups, g);
@@ -135,19 +135,19 @@ public class AiGroupGuiDesc extends ObjectDB {
 					objsJSON.put(objDesc);
 				}
 			}
-			
+
 		}
 		desc.put("forms",objsJSON);
 		return MustacheTool.apply(domTemplate, desc);
 	}
 	private List<String> getDomains(List<String> groups,Grant g){
-		
+
 		List<String> domains = new ArrayList<>();
 		for (String group : groups) {
 			GroupDB grp = g.getGroup(group);
 			if(Tool.isEmpty(grp))continue;
 			domains.addAll(grp.getDomains());
-			
+
 		}
 		Set<String> uniqueDomains = new HashSet<>(domains);
 		return new ArrayList<>(uniqueDomains);
@@ -190,7 +190,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 				String desc = obj.getDesc();
 				if(!Tool.isEmpty(desc))item.put(COMMENT_KEY,formatDesc(desc));
 			}
-			
+
 		}else if(mi.isProcess() || mi.isWorkflow()){
 			item.put("type","proccess");
 			ObjectDB process = g.getProcessObject(objName);
@@ -201,7 +201,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 		}else if(mi.isView()){
 			item.put("type","view");
 		}else{
-			
+
 			AppLog.info("Unknown type for "+mi.getObjectDisplay(g.getLang())+" "+mi.getType(),g);
 			item.put("type","unknown");
 		}
@@ -238,7 +238,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 		List<String> constraints = describeConstraints(obj,g);
 		if(!Tool.isEmpty(constraints))rules.addAll(constraints);
 		if(!Tool.isEmpty(rules))objDesc.put("rules",String.join("  \n* ",rules));
-		
+
 		return objDesc;
 	}
 	private String describeZone(String dataArea, ObjectDB obj,int level,List<String> rules,Grant g){
@@ -258,7 +258,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 		}else{
 			zoneJSON = describeFldArea(obj,areaIDs[0],level,rules,g);
 			zoneJSON.put("isZone",true);
-			
+
 		}
 		zoneJSON.put("tabulation", tab);
 		return MustacheTool.apply(zoneTemplate, zoneJSON);
@@ -288,7 +288,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 			if(Tool.isEmpty(dataField))continue;
 			ObjectField fld = obj.getField(dataField, false);
 			describeField(obj,fld,visible,more,rules,dataField);
-			
+
 		}
 		optPut(areaJSON, "visible", visible);
 		optPut(areaJSON, "more", more);
@@ -347,7 +347,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 		synchronized(constraintObj.getLock()){
 			String id = ObjectCore.getObjectId(objName);
 			constraintObj.setFieldFilter("cst_object_id", id);
-			
+
 			for(String[] row : constraintObj.search()){
 				String cstId = row[constraintObj.getRowIdFieldIndex()];
 				constraintObj.select(cstId);
@@ -392,7 +392,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 							String desc = act.getFieldValue("act_comment");
 							if(!Tool.isEmpty(desc))csiObj += " ("+desc+")";
 						}
-						
+
 						return csiObj+" == "+csiCond;
 					case "Link":
 						ObjectDB linkObj = g.getTmpObject("Link");
@@ -420,7 +420,7 @@ public class AiGroupGuiDesc extends ObjectDB {
 					default:
 						return "";
 				}
-				
+
 			default: 
 				return "";
 		}

@@ -11,9 +11,9 @@
   },
   "name": "AIBySimplicite",
   "scripts": {
-    "eslint": "eslint --config=.eslint-configuration --no-color --no-error-on-unmatched-pattern resources/**/*.js",
-    "stylelint": "stylelint --config=.stylelint-configuration --no-color --allow-empty-input resources/**/*.css resources/**/*.less",
-    "jshint": "jshint --config=.jshint-configuration --reporter=jslint resources"
+    "eslint": "eslint --config=.eslint-configuration.mjs --no-color --no-error-on-unmatched-pattern resources/**/*.js",
+    "stylelint": "stylelint --config=.stylelint-configuration.mjs --no-color --allow-empty-input resources/**/*.css resources/**/*.less",
+    "jshint": "jshint --config=.jshint-configuration.json --reporter=jslint resources"
   },
-  "version": "0.4"
+  "version": "0.5"
 }
