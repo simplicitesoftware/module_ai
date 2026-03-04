@@ -49,11 +49,10 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			}
 			initMsg.className = "bot-first-messages";
 			msgs.append(initMsg);
-			
-			
+
 		}else{
 			console.log("cannot loaded AiJsTools");
-			
+
 		}
 		console.log("isAdaContext: ",isAdaContext);
 		if(isAdaContext){
@@ -96,12 +95,12 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			text.role = "assistant";
 			text.content = $(this).next(".bot-messages").find(".msg").text();
 			historic.push(JSON.stringify(text));
-			
+
 		});
 		chatMessages.append(AiJsTools.getDisplayUserMessage($("#AIchatbotProcess")));
 		chatMessages.append(AiJsTools.getDisplayBotMessage());
 		$("#send-button").attr("disabled", "disabled");
-		
+
 		let prompt =[];
 		prompt.push({"type":"text","text":userMessage});
 		if(userImage){
@@ -112,9 +111,9 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			providerParams =  AiJsTools.getUserProviderParams();
 		}
 		console.log(providerParams);
-			
+
 		let postParams = {prompt:JSON.stringify(prompt), specialisation: "You help design uml for object-oriented applications. Without function and whith relation description. Respond with a text", historic: JSON.stringify(historic),providerParams: providerParams,reqType:"chatBot"}; // post params
-	
+
 		// Efface le champ de saisie utilisateur
 		document.getElementById('module_user_message').value = '';
 		$("#input-img img").removeAttr("src");
@@ -132,19 +131,20 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			historic.push(JSON.stringify(text));
 			if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
 				let result = botResponse.response.choices[0].message.content;
-				result = $view.markdownToHTML(result).html();
-				$(".bot-messages:last-child span").html(result);
+				result = $view.markdownToHTML(result,htmlmd => {
+					$(".bot-messages:last-child span").html(htmlmd);
+				});
 				
+
 				text={};
 				text.role = "assistant";
 				text.content =result;
 				historic.push(JSON.stringify(text));
 				addHistoric(userMessage,result,$grant.getLogin());
-				
-				
+
 			}else{
 				$(".bot-messages:last-child span").text("Sorry, an error occurred");
-				
+
 				text={};
 				text.role = "assistant";
 				text.content ="Sorry, an error occurred";
@@ -156,7 +156,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 			$('.btn[data-action="AIGenerate"]').removeAttr('disabled', true);
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		});
-		
+
 	}
 	function addHistoric(userMessage,botMessage,login){
 		if(!historicObject) return;
@@ -173,7 +173,7 @@ var AIWfChatBot = AIWfChatBot || (function() {
 		historicObject.item[`adaPhyUserPrompts`] = userMessage;
 		historicObject.save();
 	}
-	
+
 	return {
 		sendModuleMessage: sendModuleMessage,
 		render: render,
@@ -182,5 +182,5 @@ var AIWfChatBot = AIWfChatBot || (function() {
 })();
 $(document).ready(function() {
 	AIWfChatBot.render();
-	
+
 });

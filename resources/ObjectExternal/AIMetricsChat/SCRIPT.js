@@ -41,8 +41,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		moduleId = id;
 		// set button text
 		moduleName = module;
-		
-		
+
 		app.getTexts(function(textes){
 			let actLabel = textes?.AiSaveAsCrosstableAction||"";
 			let sendText = textes?.AI_BUTTON_SEND ||"Send";
@@ -59,18 +58,18 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible).then(() => {setShowWarn(ctn);});
 		}else{
 			console.log("cannot loaded AiJsTools");
-			
+
 		}
 		resetChat();
-		
+
 		$('#metrics_user_text').keypress(function(e) {
 			if (e.which === 13) {
 				sendMetricsMessage();
 			}
 		});
-		
+
 	}
-	
+
 	function sendMetricsMessage(){
 		let isCancelled = false;
 		$('#metrics_cancel_button').show();
@@ -85,8 +84,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			let id = canvas[canva].id;
 			let graph = Chart.getChart(id);
 			if(graph) graph.destroy();
-			
-			
+
 		});
 		$('#metrics_messages').append(AiJsTools.getDisplayUserMessage($('#AIchatbotMetrics')));
 		$('#metrics_messages').append(AiJsTools.getDisplayBotMessage());
@@ -98,16 +96,15 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		$('#metrics_user_text').prop('disabled', true);
 		let params = {prompt:input, reqType:"metrics",swagger:swagger,lang:app.grant.lang};
 		lastText = "";
-		
+
 		AiJsTools.callApi("AIRestAPI","POST",params,function(botResponse){
 			processResponse(botResponse,true,isCancelled,params);
 			// Définir les options globales pour Chart.js
 			Chart.defaults.responsive = true;
 			Chart.defaults.maintainAspectRatio = false;
-			
-	
+
 		});
-		
+
 	}
 	function reOpenChat(){
 		$('#metrics_user_text').prop('disabled', false);
@@ -120,7 +117,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		$('#metrics_messages').html('');
 		$('#ia_html').html(defaultSchemaDiv);
 		reOpenChat();
-	
+
 	}
 	function setShowWarn(ctn){
 		ctn.querySelectorAll('.chat-icon-button').forEach(button => {
@@ -129,7 +126,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 				showWarn();
 			};
 		});
-		
+
 		$("#metrics_send_button").click(function() { AIMetricsChat.showWarn();});
 		$('#metrics_user_text').click(function() { showWarn();});
 	}
@@ -148,70 +145,71 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		});
 	}
 	function saveAsCrosstable(){
-		
+
 		let func = lastScript;
 		let params = {reqType:"saveMetrics",swagger:swagger,moduleName:moduleName,function:func,ctx:"$('#ia_html')"};
-		
+
 		AiJsTools.callApi("AIRestAPI","POST",params,function(botResponse){
 			eval(botResponse.script);
 		});
-		
+
 	}
 
 	function processResponse(botResponse,recall,isCancelled,params){
-		botResponse.text = $view.markdownToHTML(botResponse.text).html();
-		if(isCancelled){
-			return;
-		}
-		if(!hasJS(botResponse)){
-			return;
-		}
-		if(botResponse.text == null){
-			botResponse.text = "";
-		}else if(botResponse.text != "" && lastText == ""){
-			lastText = botResponse.text;
-		}
-		$('#ia_html').html(botResponse.html);
-		
-		if(botResponse.js != ""){
-			try {
-				eval(botResponse.js);
-				
-				//check if function is auto call
-				if(botResponse.js.indexOf(botResponse.function) == -1) {
-					eval(botResponse.function);
+		$view.markdownToHTML(botResponse.text,htmltext=>{botResponse.text=htmltext;
+			if(isCancelled){
+				return;
+			}
+			if(!hasJS(botResponse)){
+				return;
+			}
+			if(botResponse.text == null){
+				botResponse.text = "";
+			}else if(botResponse.text != "" && lastText == ""){
+				lastText = botResponse.text;
+			}
+			$('#ia_html').html(botResponse.html);
+	
+			if(botResponse.js != ""){
+				try {
+					eval(botResponse.js);
+	
+					//check if function is auto call
+					if(botResponse.js.indexOf(botResponse.function) == -1) {
+						eval(botResponse.function);
+					}
+					lastScript = botResponse.js;
+	
+					$('#metrics_messages .bot-messages:last .msg').html(lastText);
+					saveHist(botResponse,params.prompt);
+					reOpenChat();
+				}catch(e){
+					console.log("Error on script: "+botResponse.js);
+					console.log("Error: "+e);
+					if(recall){
+	
+						console.log("Recall process with errorMetricsSolver");
+						params.reqType = "errorMetricsSolver";
+						params.error = e.toString();
+						params.script = botResponse.js;
+						params.html = botResponse.html;
+	
+						AiJsTools.callApi("AIRestAPI","POST",params,function(botResponse){
+							processResponse(botResponse,false,isCancelled);
+						});
+					}else{
+						console.log("Error on script: "+botResponse.js);
+						$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
+						reOpenChat();
+					}
 				}
-				lastScript = botResponse.js;
-				
-				$('#metrics_messages .bot-messages:last .msg').html(lastText);
+			}else{
+				lastScript = $("#ia_html script").text();
 				saveHist(botResponse,params.prompt);
 				reOpenChat();
-			}catch(e){
-				console.log("Error on script: "+botResponse.js);
-				console.log("Error: "+e);
-				if(recall){
-					
-					console.log("Recall process with errorMetricsSolver");
-					params.reqType = "errorMetricsSolver";
-					params.error = e.toString();
-					params.script = botResponse.js;
-					params.html = botResponse.html;
-				
-					AiJsTools.callApi("AIRestAPI","POST",params,function(botResponse){
-						processResponse(botResponse,false,isCancelled);
-					});
-				}else{
-					console.log("Error on script: "+botResponse.js);
-					$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
-					reOpenChat();
-				}
 			}
-		}else{
-			lastScript = $("#ia_html script").text();
-			saveHist(botResponse,params.prompt);
-			reOpenChat();
-		}
-		
+		});
+
 	}
 	function hasJS(botResponse){
 		if(botResponse.error !=null || ((botResponse.js == null && !botResponse?.html?.includes("script")))){
@@ -219,7 +217,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			$('#metrics_messages .bot-messages:last .msg').text("Sorry, I can't understand your request. Please try again.");
 			return false;
 		}
-		
+
 		if(botResponse.html == null && botResponse.js == null && botResponse.text != null){
 			$('#metrics_messages .bot-messages:last .msg').html(botResponse.text);
 			return false;
@@ -228,7 +226,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		return true;
 	}
 	function saveHist(botResponse,prompt){
-		
+
 		let js = botResponse.js;
 		//check if function is auto call
 		if(botResponse.js.indexOf(botResponse.function) == -1) {
@@ -274,19 +272,19 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		};
 		histList.parentNode.appendChild(purgeButton);
 	}
-	
+
 	function addHist(res,histList){
 		prompt = res.aiMhPrompt;
 		let htmlListItems = document.createElement('li');
 		htmlListItems.id = "hist_"+res.row_id;
 		let viewicon = document.createElement('i');
 		let deleteicon = document.createElement('i');
-		
+
 		viewicon.className = "fa fa-eye";
 		viewicon.style.marginLeft = "10px";
 		deleteicon.className = "fa fa-trash";
 		deleteicon.style.marginLeft = "10px";
-		
+
 		viewicon.onclick = function(){
 			displayHistItem(res.aiMhPreview,res.aiMhMetrics);
 		};
@@ -297,13 +295,13 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			$ui.confirm({content:content,onOk:function(){
 				deleteObj(res.row_id);
 			}});
-				
+
 		};
-		
+
 		htmlListItems.innerHTML = prompt;
 		htmlListItems.appendChild(viewicon);
 		htmlListItems.appendChild(deleteicon);
-		
+
 		histList.insertBefore(htmlListItems, histList.firstChild);
 	}
 	function deleteObj(id){
@@ -324,7 +322,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 			displayHistItem(item.aiMhPreview,item.aiMhMetrics,ctn);
 		},id);
 	}
-	
+
 	return { 
 		render: render,
 		sendMetricsMessage: sendMetricsMessage,

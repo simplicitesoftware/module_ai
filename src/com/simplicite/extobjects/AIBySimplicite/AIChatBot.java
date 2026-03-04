@@ -37,11 +37,12 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			String rowId = params.getParameter("row_id"); //undefine or null with object context = list
 			String context = "";
 			String objectDys=Tool.isEmpty(object)?"":ObjectCore.getDisplay(object, g.getLang());
+			AppLog.info("object "+object);
 			if(!Tool.isEmpty(object) &&!Tool.isEmpty(rowId) && !"undefined".equals(rowId) && !"0".equals(rowId)){
-				
+
 				currentPage = objectDys+" form\n";
 				context = getContextFromObject(object,rowId,g).replace("\\\\\"","\\\\\\\\\"").replace("\"","\\\\\"");
-				
+				AppLog.info("context"+context);
 			}else{
 				if("0".equals(rowId)) currentPage = objectDys+" creation form\n";
 				else if("undefined".equals(rowId)) currentPage = objectDys+" list\n";
@@ -54,7 +55,7 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 				specialisation = specialisation.replace("'","\\'").replace("\n", "\\n");
 			 	return javascript(getName() + ".render(ctn,"+isAdaContext()+",'"+specialisation+"',\""+AITools.getDataDisclaimer(g)+"\");");
 			}
-			
+
 			return javascript(getName() + ".render(ctn,"+isAdaContext()+",\"\",\""+AITools.getDataDisclaimer(g)+"\");");
 		}
 		catch (Exception e) {
@@ -77,8 +78,7 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 				}catch(GetException e){
 					return "";
 				}
-				
-				
+
 			}
 		}
 		return "";
@@ -88,10 +88,10 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 		ArrayList<String> done = new ArrayList<>();
 		done.add(object+":"+rowId);
 	    JSONObject res = getObjectValueJSON(object,rowId,done,g);
-	        
+
 		return "```json "+res.toString()+"```";
 	}
-	
+
 	private JSONObject getObjectValueJSON(String name,String rowId,ArrayList<String> done,Grant g){
 		JSONObject objectJSON = new JSONObject();
 		ObjectDB obj = g.getTmpObject(name);
@@ -112,9 +112,9 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 					}else {
 						fields.put(field.getDisplay(), getFieldValueByType(field));
 					}
-					
+
 				}
-				
+
 			}
 			objectJSON.put("fields", fields);
 			objectJSON.put("linkedObjects", links);
@@ -126,7 +126,7 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 			return "Document";
 		}else if(field.isImage()){
 			return "Image";
-		
+
 		}else{	
 			return field.getValue();
 		}

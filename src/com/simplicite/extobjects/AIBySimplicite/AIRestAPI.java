@@ -34,14 +34,22 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			String prompt =params.getParameter(PARAMS_PROMPT_KEY);
 			String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
 			String type = params.getParameter(JSON_REQ_TYPE);
+			AppLog.info("type: "+type);
+			AppLog.info("prompt: "+prompt);
 			String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 			JSONObject req = params.getJSONObject();
+			if(!Tool.isEmpty(req)){
+				if(Tool.isEmpty(prompt) && req.has(PARAMS_PROMPT_KEY)) prompt = req.getString(PARAMS_PROMPT_KEY);
+				if(Tool.isEmpty(type) && req.has(JSON_REQ_TYPE)) type = req.getString(JSON_REQ_TYPE);
+				if(Tool.isEmpty(objectName) && req.has(JSON_OBJECT_NAME_KEY)) objectName = req.getString(JSON_OBJECT_NAME_KEY);
+				if(Tool.isEmpty(objectID) && req.has(JSON_OBJECT_ID_KEY)) objectID = req.getString(JSON_OBJECT_ID_KEY);
+			}
 			if (Tool.isEmpty(type)) type = "default";
-			if (Tool.isEmpty(prompt) && !Tool.isEmpty(req) && req.has(PARAMS_PROMPT_KEY)) type = "requestField";
 			else if (!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID) ) type = Tool.isEmpty(prompt)?"frontAiCall":"paramField";
 
 			
 			AppLog.info(type);
+
 			switch (type) { //use switch for future extension
 				case "provider":
 				 	return  new JSONObject().put("provider",AITools.provider());
@@ -77,12 +85,12 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 					AppLog.info("AI API ERROR: "+type+params.toJSON());
 					return error(400, "Call me with a predefined request type, prompt or a object param please!");
 			}
-			
+
 		} catch (Exception e) {
 			AppLog.error(null, e, getGrant());
 			return error(e);
 		}
-		
+
 	}
 	private Object commentCode(String code){
 		Grant g = Grant.getSystemAdmin();
@@ -137,7 +145,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 						.put("value", response)
 					);
 					fld.setValue(response);
-				
+
 				}
 			}
 		}
@@ -179,14 +187,14 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		String specialisation = params.getParameter("specialisation");
 		String historicString = params.getParameter("historic");
 		ObjectDB obj = null;
-		
+
 		if(!isJsonPrompt){
 			obj = Grant.getSystemAdmin().getTmpObject(objectName);
 			synchronized(obj.getLock()){
 				obj.select(objectID);
 				res = AITools.expresionAiCaller(g, specialisation, prompt, obj);
 			}
-			
+
 		}else{
 			JSONArray historic = optHistoric(historicString, histDepth);
 			res = AITools.aiCaller(g, specialisation, historic, jsonPrompt);
@@ -232,7 +240,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		}catch(JSONException e){
 			return new JSONObject();
 		}
-		
+
 	}
 	private JSONArray optHistoric(String historicString, int histDepth){
 		if (Tool.isEmpty(historicString)) return null;
@@ -248,7 +256,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		return historic;
 	}
 	private String saveMetricsAsCrosstable(String ctx,JSONObject swagger, String function, String mdlName){
-		
+
 		String mldId = ModuleDB.getModuleId(mdlName);
 		JSONObject jsonRes = AiMetrics.iaConvert(swagger.toString(), function);
 		if (Tool.isEmpty(jsonRes)) {
@@ -273,5 +281,4 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			return "javascript:"+js;
 	}
 
-		
 }

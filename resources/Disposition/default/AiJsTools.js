@@ -17,9 +17,9 @@ var AiJsTools = AiJsTools || (function(param) {
 	getProvider();
 	let botName= "SimpliBot";
 	getBotName();
-	let userName = app.getGrant().login;
-	if(app.getGrant().firstname ){
-		userName =app.getGrant().firstname;
+	let userName = $grant.login;
+	if($grant.firstname ){
+		userName = $grant.firstname;
 	}
 	async function getProviderParams() {
 		let obj = app.getBusinessObject("AIProvider");
@@ -46,11 +46,12 @@ var AiJsTools = AiJsTools || (function(param) {
 		});
 		return null;
 	}
-	function getBotName(){
+	async function getBotName(){
 		let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
 		let postParams = {"reqType":"BOT_NAME"};
-		callApi("AIRestAPI","POST",postParams,function(botResponse){
+		await callApi("AIRestAPI","POST",postParams,function(botResponse){
 			botName = botResponse.botName;
+			console.log(botName);
 		});
 		return null;
 	}

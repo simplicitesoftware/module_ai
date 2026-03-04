@@ -24,10 +24,10 @@ var AIChatBot = AIChatBot || (function() {
 		//$ui.loadScript({url: $ui.getApp().dispositionResourceURL("AiJsTools", "JS"),onload: function(){ AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);console.log(AiJsTools.provider);}});
 		if(AiJsTools){
 			AiJsTools.addChatOption(ctn.querySelector('.ai-user-input'),addImgVisible,takeImgVisible,SpeechVisible);console.log(AiJsTools.provider);
-		
+
 		}else{
 			console.log("cannot loaded AiJsTools");
-			
+
 		}
 		ctn.querySelector('#chatbot_send_button').onclick = function() {
 			AIChatBot.chatbotSendMessage(ctn);
@@ -100,11 +100,12 @@ var AIChatBot = AIChatBot || (function() {
 			if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
 				let result = botResponse.response.choices[0].message.content;
 				result = escapeHtml(result);
-				result = $view.markdownToHTML(result).html();
-				$(ctn).find(".bot-messages:last-child span").html(result);
-				console.log("botResponse",botResponse);
-				console.log("addHistoric(",userMessage,",",result,",",userImg,",",botResponse.response.usage,",",$grant.getLogin(),")");
-				addHistoric(userMessage,result,userImg,botResponse.response.usage,$grant.getLogin());
+				$view.markdownToHTML(result,resulthtml =>{
+					$(ctn).find(".bot-messages:last-child span").html(resulthtml);
+					console.log("botResponse",botResponse);
+					console.log("addHistoric(",userMessage,",",resulthtml,",",userImg,",",botResponse.response.usage,",",$grant.getLogin(),")");
+					addHistoric(userMessage,result,userImg,botResponse.response.usage,$grant.getLogin());
+				});
 			}else{
 				$(ctn).find(".bot-messages:last-child span").text("Sorry, an error occurred");
 				addHistoric(userMessage,"Sorry, an error occurred",null,null,$grant.getLogin());
@@ -147,7 +148,7 @@ var AIChatBot = AIChatBot || (function() {
 			item.adaPlogCost = cost;
 			if(userImg)item.adaPlogImage =userImg;
 			console.log("item to create",item);
-			
+
 			AiJsTools.callApi("AdaSavePrompt","POST",{obj:item},function(botResponse){
 				if(!(botResponse.hasOwnProperty('type') && botResponse.type == 'error')){
 					console.log("prompt saved");
