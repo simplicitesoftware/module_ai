@@ -11,6 +11,8 @@ import com.simplicite.commons.AIBySimplicite.AITools;
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.webapp.ObjectContextWeb;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Process AiSettingsProcess
@@ -69,7 +71,7 @@ public class AiSettingsProcess extends Processus {
 				AppLog.error(e, g);
 				speModel = new JSONObject();
 			}
-			
+
 			for(String d : speModel.keySet()){
 				context.addDataFile("Data", d);
 			}
@@ -92,7 +94,7 @@ public class AiSettingsProcess extends Processus {
 		}
 		return m;
 	}
-	
+
 	private Message formatURLError(boolean urlEmpty,boolean completionEmpty,Grant g){
 		Message m = new Message();
 		ObjectDB obj = g.getTmpObject(PROVIDER_OBJECT);
@@ -103,10 +105,10 @@ public class AiSettingsProcess extends Processus {
 				m.raiseError(Message.formatError(ERR_REQUIRED, obj.getField(MODEL_URL_FLD).getLabel(), MODEL_URL_FLD));
 			if(completionEmpty)
 				m.raiseError(Message.formatError(ERR_REQUIRED, obj.getField(COMPLETION_URL_FLD).getLabel(), COMPLETION_URL_FLD));
-			
+
 		}
 		return m;
-			
+
 	} 
 	@Override
 	public Message preValidate(ActivityFile context) {
@@ -122,6 +124,7 @@ public class AiSettingsProcess extends Processus {
 			Grant g = getGrant();
 			String url = context.getDataValue("Data", MODEL_URL_FLD);
 			String key = context.getDataValue("Data", "key");
+			key = getEnvKeyIfEnv(key);
 			String completion =context.getDataValue("Data", COMPLETION_URL_FLD);
 			if(Tool.isEmpty(url) || Tool.isEmpty(completion)) return formatURLError(Tool.isEmpty(url),Tool.isEmpty(completion),g);
 			try {
@@ -134,7 +137,6 @@ public class AiSettingsProcess extends Processus {
 					context.setDataFile("Data", "aiPrvModels", models);
 					context.setDataFile("Data", "Code","1");
 				}
-				
 
 			} catch (IOException | URISyntaxException e) {
 
@@ -143,7 +145,7 @@ public class AiSettingsProcess extends Processus {
 		}
 		return super.preValidate(context);
 	}
-	
+
 	@Override
 	public void postValidate(ActivityFile context) {
 		String step = context.getActivity().getStep();
@@ -155,12 +157,12 @@ public class AiSettingsProcess extends Processus {
 				synchronized(obj.getLock()){
 					String providerid = getContext(getActivity(PROVIDER_ACT)).getDataValue(FIELD_DATA, ROW_ID);
 					obj.select(providerid);
-					
+
 					JSONObject defaultParam = new JSONObject(g.T(AI_DEFAULT_PARAM));
 					JSONObject sepParam = new JSONObject(obj.getFieldValue("aiPrvDataModel"));
-					
+
 					for(String k : defaultParam.keySet()){
-						
+
 						String val = context.getDataValue("Data", k);
 						param.put(k, "showDataDisclaimer".equals(k)?("1".equals(val)):val);
 					}
@@ -174,6 +176,7 @@ public class AiSettingsProcess extends Processus {
 				String url = getContext(getActivity(AUTH_ACT)).getDataValue("Data", COMPLETION_URL_FLD);
 				param.put("completion_url",url);
 				String key = getContext(getActivity(AUTH_ACT)).getDataValue("Data", "key");
+				key = getEnvKeyIfEnv(key);
 				param.put("api_key", key);
 				AITools.setParameters(param);
 				break;
@@ -188,8 +191,16 @@ public class AiSettingsProcess extends Processus {
 				break;
 		}
 
-			
 		super.postValidate(context);
+	}
+	private String getEnvKeyIfEnv(String key){
+		String regex = "\\[ENV:([^]]+)\\]";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(key);
+		if(matcher.find()){
+			return System.getenv(matcher.group(1));
+		}
+		return key;
 	}
 
 }
