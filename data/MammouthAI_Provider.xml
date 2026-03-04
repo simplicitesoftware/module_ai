@@ -10,7 +10,7 @@
 		<aiPrvModelsUrl><![CDATA[https://api.mammouth.ai/v1/models]]></aiPrvModelsUrl>
 		<aiPrvHelp/>
 		<aiPrvCompletionUrl><![CDATA[https://api.mammouth.ai/v1/chat/completions]]></aiPrvCompletionUrl>
-		<aiPrvPingUrl><![CDATA[https://api.mammouth.ai/health]]></aiPrvPingUrl>
+		<aiPrvPingUrl><![CDATA[https://api.mammouth.ai/v1/models]]></aiPrvPingUrl>
 		<aiPrvSttUrl/>
 		<aiPrvUserParameters/>
 	</data>

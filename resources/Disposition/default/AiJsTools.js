@@ -1,4 +1,5 @@
 var AiJsTools = AiJsTools || (function(param) {
+	console.log("load AijsTool");
 	let devMode = false;
 	let useAsync = true; 
 	let url = Simplicite.ROOT+"/ext/AIRestAPI"; // authenticated webservice
@@ -13,7 +14,6 @@ var AiJsTools = AiJsTools || (function(param) {
 		timeout: 240 //seconds
    });
 
-	
 	getProvider();
 	let botName= "SimpliBot";
 	getBotName();
@@ -41,7 +41,7 @@ var AiJsTools = AiJsTools || (function(param) {
 	function getProvider(){
 		let postParams = {"reqType":"provider"};
 		callApi("AIRestAPI","POST",postParams,function(botResponse){
-			provider = response.provider;
+			provider = botResponse.provider;
 			getProviderParams();
 		});
 		return null;
@@ -90,18 +90,18 @@ var AiJsTools = AiJsTools || (function(param) {
                 }, "fa-microphone",$T("AI_ICON_SPEECH"));
                 break;
 			default:
-				
+
 				break;
         }
     }
-	
+
     async function addChatOption(ctn,addImg,takeImg,Speech){
 		if(!ctn){
 			return;
 		}
 
 		ctn.querySelector(".chat-button").innerHTML = $T("AI_BUTTON_SEND");
-		
+
         await checkSpeechRecognitionSupported();
 		if(addImg){
             defaultButton(ctn,"add-img");
@@ -117,11 +117,10 @@ var AiJsTools = AiJsTools || (function(param) {
 			resizeUp($(ctn).parent(),$(ctn).parent().parent().find(".chat-messages"));
 		});
 		resizeUp($(ctn).parent(),$(ctn).parent().parent().find(".chat-messages"));
-		
-		
+
     }
 	function addImage(inputCtn){
-		
+
 		inputCtn = $(inputCtn);
 		let input = document.createElement('input');
 		input.type = 'file';
@@ -160,10 +159,10 @@ var AiJsTools = AiJsTools || (function(param) {
 		}
 		let container = messagesArea.parent();
 		if(!isContainerFollowedByDiv(container)){
-			
+
 			container.css("height", bodyH);
 		}
-		
+
 		const maxHeight = bodyH - 250;
 		const minHeight = `40px`;
 		let usermsg = inputArea.find(".user-message");
@@ -171,7 +170,7 @@ var AiJsTools = AiJsTools || (function(param) {
 		let textheight = usermsg.prop('scrollHeight');
 		let isScrollbarVisible = textheight > usermsg.innerHeight();
 		if (!isScrollbarVisible) {
-			
+
 			textheight = usermsg.innerHeight();
 		}
 		let areaheight = messagesArea.parent().height();
@@ -188,10 +187,10 @@ var AiJsTools = AiJsTools || (function(param) {
 		}
 		inputArea.find("#send-button").css("height", textheight);
 		areaheight = areaheight - (textheight+30)-imgheight;
-        
+
         inputArea.css("height",  textheight+10+imgheight);
 		messagesArea.css("height", areaheight);
-		
+
 	}
 
 	function resetInput(ctn){
@@ -220,7 +219,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			text.role = "assistant";
 			text.content = $(this).next(".bot-messages").find(".msg").text();
 			historic.push(JSON.stringify(text));
-			
+
 		});
 		let inputCtn=$(ctn).find(".ai-chat-input-area");
 	    let userMessage = inputCtn.find(".user-message").val();
@@ -241,7 +240,7 @@ var AiJsTools = AiJsTools || (function(param) {
 	async function startRecording(messageCtn) {
 		messageCtn = $(messageCtn).parent().find(".user-message");
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-		
+
 		mediaRecorder = new MediaRecorder(stream);
 
 		mediaRecorder.ondataavailable = function(event) {
@@ -258,8 +257,7 @@ var AiJsTools = AiJsTools || (function(param) {
 				convertBlobToBase64(audioBlob).then(function(audio64) {
 					callSTTAi(messageCtn, audio64);
 				});
-				
-				
+
 			}else{
 				isCancelled = false;
 
@@ -276,7 +274,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			reqType: 'audio'
 		};
 		callApi("AIRestAPI","POST",jsonData,function(botResponse){
-		
+
 			let json = JSON.parse(botResponse.msg);
 			messageCtn.val(json.text);
 			messageCtn.focus();
@@ -298,7 +296,7 @@ var AiJsTools = AiJsTools || (function(param) {
 	function stopRecording() {
 		mediaRecorder.stop();
 	}
-	
+
 	function cancelRecording() {
 		isCancelled = true;
 		mediaRecorder.stop();
@@ -346,7 +344,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			};
 			sendButton.prop('disabled', false);
 	}
-	
+
 	function loadResultInAceEditor(ctn,divId){
 		$ui.loadAceEditor(function(){
 			let aceEditor = window.ace.edit(divId);
@@ -357,7 +355,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			   maxLines: 25,
 			   fontSize: "100%" // ensures that the editor fits in the environment
 			});
-			
+
 			// defines the style of the editor
 			aceEditor.setTheme("ace/theme/eclipse");
 			// hides line numbers (widens the area occupied by error and warning messages)
@@ -369,7 +367,7 @@ var AiJsTools = AiJsTools || (function(param) {
 				let val=aceEditor.getSession().getValue();
 				ctn.val(val);
 			});
-			
+
 		});
 	}
 	function getDisplayUserMessage(ctn){
@@ -403,7 +401,7 @@ var AiJsTools = AiJsTools || (function(param) {
 		div.append(strong);
 		let span = document.createElement("span");
 		span.className = "msg";
-		
+
 		if(msg){
 			span.innerHTML = msg;
 		}else{
@@ -442,7 +440,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			"onOk":() => {saveLLMParams();}
 		});
 	}
-	
+
 	function saveLLMParams(){
 		let formData = document.getElementById('llmParamsForm');
 		const updatedParams = {};
@@ -459,7 +457,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			input.value = min; // Limite à la valeur minimale
 		}
 	}
-	
+
 	function commentCode(){
 		// Implémentation de la fonction
 		let activeTab = $tools.getTabActive($('.code-editor')).data("data");
@@ -475,7 +473,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			console.log(e.active);
 			displayDiffCode(e,activeTab);
 		});
-		
+
 		function close(){
 			console.log("close",diff);
 			diff.destroy();
@@ -542,7 +540,7 @@ var AiJsTools = AiJsTools || (function(param) {
 						let newCode = code+"\n// AI Commented Code";
 						displayResult(code,newCode,activeTab);
 					}
-					
+
 				}
 			}).addClass("code-diff");
 		}
@@ -550,7 +548,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			console.log("displayResult activeTab",activeTab);
 			let aceMode = getAceModeOfTab(activeTab);
 			console.log("displayResult mime type",aceMode);
-			
+
 			diff =new AceDiff({
 				element: '.acediff',
 				theme: "ace/theme/eclipse",
@@ -586,7 +584,7 @@ var AiJsTools = AiJsTools || (function(param) {
 			return "ace/mode/"+mode;
 		}
 	}
-	
+
 	function addCommentCodeButton(ctn,nextAction){
 		let button = $('<button>Comment code</button>').addClass("btn btn-secondary btn-ai"); // Création d'un nouveau bouton avec jQuery
 		button.click(function() {
@@ -599,11 +597,11 @@ var AiJsTools = AiJsTools || (function(param) {
 			$(ctn).append(button); // Ajout du bouton à la barre d'édition
 		}
 	}
-	function  callApi(endpoint,method,datas,path="",callback){
-		const response = authenticatedApp.getExternalObject(endpoint).invoke(null,JSON.stringify(datas),{'method':method,'path':path,'accept':'application/json','contentType':'application/json'});
+	async function  callApi(endpoint,method,datas,callback,path=""){
+		const response = await authenticatedApp.getExternalObject(endpoint).invoke(null,JSON.stringify(datas),{'method':method,'path':path,'accept':'application/json','contentType':'application/json'});
 		callback(response);
 	}
-		
+
 	return { 
 		useAsync: useAsync,
 		url: url,

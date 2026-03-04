@@ -15340,7 +15340,7 @@
       "dt_file": {
        "path": "data/MammouthAI_Provider.xml",
        "mime": "text/xml",
-       "name": "AIBySimplicite-dataOrdered-20260304091321.xml"
+       "name": "AIBySimplicite-dataOrdered-20260304164926.xml"
       },
       "dt_desc": "Mammouth AI provider default parameters",
       "dt_exportdate_from": null,
@@ -15396,7 +15396,7 @@
     "object": "DatasetObject",
     "userkey": "MammouthAI_Provider~AIProvider",
     "item": {
-     "dto_order": 2,
+     "dto_order": 3,
      "dto_dt_id__dt_name": "MammouthAI_Provider",
      "dto_obo_id__obo_name": "AIProvider",
      "row_module_id__mdl_name": "AIBySimplicite"
@@ -15685,23 +15685,6 @@
    "list": [
     {
      "object": "PermGroup",
-     "userkey": "PUBLIC~AI_DESIGNER~ObjectExternal(AIRestAPI)~",
-     "item": {
-      "pmg_group_id__grp_name": "PUBLIC",
-      "pmg_perm_id__prm_group_id__grp_name": "AI_DESIGNER",
-      "pmg_perm_id__prm_object": {
-       "object": "ObjectExternal",
-       "label": "External object",
-       "userkeylabel": "AIRestAPI",
-       "icon": "img/system/external_object",
-       "item": {"obe_name": "AIRestAPI"}
-      },
-      "pmg_perm_id__prm_prop": null,
-      "row_module_id__mdl_name": "AIBySimplicite"
-     }
-    },
-    {
-     "object": "PermGroup",
      "userkey": "AI_DESIGNER~AI_BUSINESS~ShortCut(AIBot)~",
      "item": {
       "pmg_group_id__grp_name": "AI_DESIGNER",
@@ -15797,6 +15780,23 @@
        "userkeylabel": "AIChatBot",
        "icon": "img/system/external_object",
        "item": {"obe_name": "AIChatBot"}
+      },
+      "pmg_perm_id__prm_prop": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "PermGroup",
+     "userkey": "PUBLIC~AI_DESIGNER~ObjectExternal(AIRestAPI)~",
+     "item": {
+      "pmg_group_id__grp_name": "PUBLIC",
+      "pmg_perm_id__prm_group_id__grp_name": "AI_DESIGNER",
+      "pmg_perm_id__prm_object": {
+       "object": "ObjectExternal",
+       "label": "External object",
+       "userkeylabel": "AIRestAPI",
+       "icon": "img/system/external_object",
+       "item": {"obe_name": "AIRestAPI"}
       },
       "pmg_perm_id__prm_prop": null,
       "row_module_id__mdl_name": "AIBySimplicite"
