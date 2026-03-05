@@ -169,17 +169,17 @@ var AIMetricsChat = AIMetricsChat || (function() {
 				lastText = botResponse.text;
 			}
 			$('#ia_html').html(botResponse.html);
-	
+
 			if(botResponse.js != ""){
 				try {
 					eval(botResponse.js);
-	
+
 					//check if function is auto call
 					if(botResponse.js.indexOf(botResponse.function) == -1) {
 						eval(botResponse.function);
 					}
 					lastScript = botResponse.js;
-	
+
 					$('#metrics_messages .bot-messages:last .msg').html(lastText);
 					saveHist(botResponse,params.prompt);
 					reOpenChat();
@@ -187,13 +187,13 @@ var AIMetricsChat = AIMetricsChat || (function() {
 					console.log("Error on script: "+botResponse.js);
 					console.log("Error: "+e);
 					if(recall){
-	
+
 						console.log("Recall process with errorMetricsSolver");
 						params.reqType = "errorMetricsSolver";
 						params.error = e.toString();
 						params.script = botResponse.js;
 						params.html = botResponse.html;
-	
+
 						AiJsTools.callApi("AIRestAPI","POST",params,function(botResponse){
 							processResponse(botResponse,false,isCancelled);
 						});
@@ -232,7 +232,7 @@ var AIMetricsChat = AIMetricsChat || (function() {
 		if(botResponse.js.indexOf(botResponse.function) == -1) {
 			js+= "\n"+botResponse.function;
 		}
-		histObj.selectForCreate(item=>createHist(item,js,prompt,botResponse));
+		histObj.selectForCreate().then(item=>createHist(item,js,prompt,botResponse));
 	}
 	function createHist(item,js,prompt,botResponse){
 		item.aiMhModuleId = moduleId;
@@ -245,16 +245,16 @@ var AIMetricsChat = AIMetricsChat || (function() {
 	function displayHist(){
 		let histList = document.getElementById("metrics_hist_list");
 		histObj.resetFilters();
-		histObj.getFiltersForSearch(function(filters){
+		histObj.getFiltersForSearch().then(function(filters){
 			filters.aiMhSimpleuserId = ''+$grant.userid+'';
 			filters.order__aiMhCreateOn = 1;
 			filters.order__aiMhSimpleuserId = 0;
-			histObj.search(function(res){
+			histObj.search().then(function(res){
 				for(const item of res){
 					addHist(item, histList);
 				}
 
-			},filters);
+			});
 		});
 		let purgeButton = document.createElement('button');
 		purgeButton.className = "btn btn-secondary";

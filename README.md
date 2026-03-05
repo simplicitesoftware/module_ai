@@ -4,6 +4,8 @@
 ### Introduction
 Exploratory module on the use of AI in Simplicite
 
+This version is a first update for version 7.0, only the chat function is operational. Please note that these features will be migrated to use the new MCP.
+
 ---
 
 ### Import

@@ -5,7 +5,6 @@ import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 import com.simplicite.util.tools.*;
 
-
 import org.json.JSONObject;
 /**
  * Basic external object AIMetricsChat
@@ -23,9 +22,11 @@ public class AIMetricsChat extends com.simplicite.util.ExternalObject {
 	public Object display(Parameters params) {
 		Grant g = getGrant();
 		try {
+			appendChartjs();
+			addSimpliciteClient();
 			appendCSSInclude(HTMLTool.getResourceCSSURL(g, "AI_STYLE"));
 			appendJSInclude(HTMLTool.getResourceJSURL(g, "AiJsTools"));
-			addSimpliciteClient();
+
 			String moduleName = params.getParameter("module");
 			if(Tool.isEmpty(moduleName) || Tool.isEmpty(ModuleDB.getModuleId(moduleName))){
 				return javascript("$ui.alert("+Message.formatError("AI_MODULE_ERROR", null,null)+")");
@@ -38,6 +39,6 @@ public class AIMetricsChat extends com.simplicite.util.ExternalObject {
 			AppLog.error(e, g);
 		}
 		return javascript(getName() + ".render(ctn);");
-		
+
 	}
 }

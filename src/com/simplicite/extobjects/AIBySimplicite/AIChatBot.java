@@ -26,9 +26,10 @@ public class AIChatBot extends com.simplicite.util.ExternalObject {
 		try {
 			addMustache();
 			addMarkdown();
+			addSimpliciteClient();
 			appendCSSInclude(HTMLTool.getResourceCSSURL(g, "AI_STYLE"));
 			appendJSInclude(HTMLTool.getResourceJSURL(g, "AiJsTools"));
-			addSimpliciteClient();
+			
 			setTitle(false);
 			String currentPage = "";
 			String scopeDesc = getScopeDesc(getGrant().getHome());

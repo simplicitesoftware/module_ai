@@ -24,12 +24,12 @@ var AiJsTools = AiJsTools || (function(param) {
 	async function getProviderParams() {
 		let obj = app.getBusinessObject("AIProvider");
 		obj.resetFilters();
-		obj.search(function(r) {
+		obj.search( ).then(function(r) {
 			if (r && r.length > 0) {
-				obj.select(function(params) {
+				obj.select(r[0].row_id, null).then(function(params) {
 					providerID = obj.row_id;
 					providerParams=obj.getUserParameters();// Affiche les paramètres sélectionnés
-				}, r[0].row_id, null);
+				});
 			} else {
 				console.log("Aucun résultat trouvé.",provider);
 			}

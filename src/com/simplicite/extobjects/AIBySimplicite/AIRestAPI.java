@@ -31,36 +31,27 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	public Object post(Parameters params) throws HTTPException {
 		try {
 			AppLog.info("_____________________Test_________________");
-			String prompt =params.getParameter(PARAMS_PROMPT_KEY);
-			String objectName = params.getParameter(JSON_OBJECT_NAME_KEY);
-			String type = params.getParameter(JSON_REQ_TYPE);
-			AppLog.info("type: "+type);
-			AppLog.info("prompt: "+prompt);
-			String objectID = params.getParameter(JSON_OBJECT_ID_KEY);
 			JSONObject req = params.getJSONObject();
-			if(!Tool.isEmpty(req)){
-				if(Tool.isEmpty(prompt) && req.has(PARAMS_PROMPT_KEY)) prompt = req.getString(PARAMS_PROMPT_KEY);
-				if(Tool.isEmpty(type) && req.has(JSON_REQ_TYPE)) type = req.getString(JSON_REQ_TYPE);
-				if(Tool.isEmpty(objectName) && req.has(JSON_OBJECT_NAME_KEY)) objectName = req.getString(JSON_OBJECT_NAME_KEY);
-				if(Tool.isEmpty(objectID) && req.has(JSON_OBJECT_ID_KEY)) objectID = req.getString(JSON_OBJECT_ID_KEY);
-			}
+			String prompt = getParamOrreqParam(PARAMS_PROMPT_KEY,params,req);
+			String objectName = getParamOrreqParam(JSON_OBJECT_NAME_KEY,params,req);
+			String type = getParamOrreqParam(JSON_REQ_TYPE,params,req);
+			String objectID = getParamOrreqParam(JSON_OBJECT_ID_KEY,params,req);
 			if (Tool.isEmpty(type)) type = "default";
 			else if (!Tool.isEmpty(objectName) && !Tool.isEmpty(objectID) ) type = Tool.isEmpty(prompt)?"frontAiCall":"paramField";
 
-			
 			AppLog.info(type);
 
 			switch (type) { //use switch for future extension
 				case "provider":
 				 	return  new JSONObject().put("provider",AITools.provider());
 				case "chatBot":
-					return chatbotCaller(prompt,params);
+					return chatbotCaller(prompt,params,req);
 				case "metrics":
-					return metricsPost(params,prompt);
+					return metricsPost(params,prompt,req);
 				case "saveMetrics":
-					return saveMetrics(params);
+					return saveMetrics(params,req);
 				case "errorMetricsSolver":
-					return recallWithError(params,prompt);
+					return recallWithError(params,prompt,req);
 				case "reformulateMetrics":
 					return AiMetrics.getReformulatePrompt(prompt);
 				case "BOT_NAME":
@@ -70,16 +61,15 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 				case "ping":
 					return ping();
 				case "audio":
-					return audio(params);
+					return audio(params,req);
 				case "requestField":
 					return updateFieldByRequest(req);
 				case "paramField":
-					return updateFieldByParam(prompt,params,objectID,objectName);
+					return updateFieldByParam(prompt,params,objectID,objectName,req);
 				case "frontAiCall":
 					return frontAiCaller(objectName, objectID);
 				case "commentCode":
-					String content =params.getParameter(PARAMS_CONTENT_KEY);
-					return commentCode(content);
+					return commentCode(getParamOrreqParam(PARAMS_CONTENT_KEY,params,req));
 
 				default:
 					AppLog.info("AI API ERROR: "+type+params.toJSON());
@@ -98,25 +88,25 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		JSONObject commentedCode = AITools.aiCodeCaller(g,"You add comment on the code provided.e",code);
 		return commentedCode;
 	}
-	private Object metricsPost(Parameters params,String prompt){
-		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(params.getParameter(JSON_SWAGGER)):null;
-		String lang = params.getParameter("lang");
+	private Object metricsPost(Parameters params,String prompt,JSONObject req){
+		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(getParamOrreqParam(JSON_SWAGGER,params,req)):null;
+		String lang = getParamOrreqParam("lang",params,req);
 		return AiMetrics.getJavaScriptMetrics(prompt, swagger,lang).toString(1);
 	}
-	private Object saveMetrics(Parameters params){
-		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(params.getParameter(JSON_SWAGGER)):null;
+	private Object saveMetrics(Parameters params,JSONObject req){
+		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(getParamOrreqParam(JSON_SWAGGER,params,req)):null;
 		if(Tool.isEmpty(swagger)) return error(400,"No swagger provided");
-		String mdlName = params.getParameter("moduleName");
-		String function = params.getParameter("function");
-		String ctx = params.getParameter("ctx");
+		String mdlName = getParamOrreqParam("moduleName",params,req);
+		String function = getParamOrreqParam("function",params,req);
+		String ctx = getParamOrreqParam("ctx",params,req);
 		return saveMetricsAsCrosstable(ctx,swagger,function,mdlName);	
 	}
-	private Object recallWithError(Parameters params,String prompt){
-		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(params.getParameter(JSON_SWAGGER)):null;
-		String error = params.getParameter("error");
-		String lang = params.getParameter("lang");
-		String script = params.getParameter("script");
-		String html = params.getParameter("html");
+	private Object recallWithError(Parameters params,String prompt,JSONObject req){
+		JSONObject swagger = params.has(JSON_SWAGGER)?new JSONObject(getParamOrreqParam(JSON_SWAGGER,params,req)):null;
+		String error = getParamOrreqParam("error",params,req);
+		String lang = getParamOrreqParam("lang",params,req);
+		String script = getParamOrreqParam("script",params,req);
+		String html = getParamOrreqParam("html",params,req);
 		return AiMetrics.recallWithError(prompt, lang, swagger,script,html, error);
 	}
 	private Object ping(){
@@ -127,8 +117,8 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		}
 		return new JSONObject().put("msg",ping);
 	}
-	private Object audio(Parameters params){
-		String audio64 = params.getParameter("file");
+	private Object audio(Parameters params,JSONObject req){
+		String audio64 = getParamOrreqParam("file",params,req);
 		String text = AITools.speechToText(audio64);
 		return new JSONObject().put("msg",text);
 	}
@@ -175,7 +165,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		}
 		return prompt;
 	}
-	private Object updateFieldByParam(String prompt, Parameters params,String objectID,String objectName ){
+	private Object updateFieldByParam(String prompt, Parameters params,String objectID,String objectName,JSONObject req){
 		Grant g = getGrant();
 		boolean isJsonPrompt = true;
 		JSONArray jsonPrompt = optJSONArray(prompt);
@@ -184,8 +174,8 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		}
 		int histDepth = AITools.getHistDepth();
 		JSONObject res;
-		String specialisation = params.getParameter("specialisation");
-		String historicString = params.getParameter("historic");
+		String specialisation = getParamOrreqParam("specialisation",params,req);
+		String historicString = getParamOrreqParam("historic",params,req);
 		ObjectDB obj = null;
 
 		if(!isJsonPrompt){
@@ -204,7 +194,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 			.put("request", prompt)
 			.put("response", res);
 	}
-	private Object chatbotCaller(String prompt, Parameters params){
+	private Object chatbotCaller(String prompt, Parameters params,JSONObject req){
 		Grant g = getGrant();
 		boolean isJsonPrompt = true;
 		JSONArray jsonPrompt = optJSONArray(prompt);
@@ -213,9 +203,9 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 		}
 		int histDepth = AITools.getHistDepth();
 		JSONObject res;
-		String specialisation = params.getParameter("specialisation");
-		String historicString = params.getParameter("historic");
-		String providerParamsString = params.getParameter("providerParams");
+		String specialisation = getParamOrreqParam("specialisation",params,req);
+		String historicString = getParamOrreqParam("historic",params,req);
+		String providerParamsString = getParamOrreqParam("providerParams",params,req);
 		AppLog.info(providerParamsString);
 		JSONArray historic = optHistoric(historicString, histDepth);
 		JSONObject providerParams = optJSONObject(providerParamsString);
@@ -279,6 +269,13 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 				" \"zstcolor\": \"#D9D2E9\"\r\n" + //
 				"}},null);";
 			return "javascript:"+js;
+	}
+	private String getParamOrreqParam(String name, Parameters params, JSONObject req){
+
+		if(Tool.isEmpty(name)) return null;
+		String p = params.getParameter(name);
+		if(Tool.isEmpty(p) && req.has(name)) p = req.getString(name);
+		return p;
 	}
 
 }
