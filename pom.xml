@@ -7,13 +7,13 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.simplicite.modules</groupId>
-  <version>0.5-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <artifactId>AIBySimplicite</artifactId>
   <name>AIBySimplicite</name>
   <description>Simplicite module: AIBySimplicite</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <simplicite.url>https://test7.cbi.simplicite.io</simplicite.url>
+    <simplicite.url>http://localhost:8080</simplicite.url>
     <simplicite.version>7.0-SNAPSHOT</simplicite.version>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
@@ -21,7 +21,7 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
     <skipTests>true</skipTests>
     <sonar.projectKey>simplicite-modules-AIBySimplicite</sonar.projectKey>
     <sonar.projectName>AIBySimplicite</sonar.projectName>
-    <sonar.projectVersion>0.5</sonar.projectVersion>
+    <sonar.projectVersion>1.0</sonar.projectVersion>
     <sonar.sources>src,resources</sonar.sources>
     <sonar.exclusions>AIBySimplicite.xml,AIBySimplicite.json,AIBySimplicite-*.yml,configuration/**,**.min.js,**.min.css</sonar.exclusions>
     <sonar.coverage.exclusions>resources/**.js,src/**.java</sonar.coverage.exclusions>
@@ -29,6 +29,7 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
   <packaging>jar</packaging>
   <url>${simplicite.url}</url>
   <build>
+    <finalName>module-aibysimplicite</finalName>
     <sourceDirectory>${project.basedir}/src</sourceDirectory>
     <testSourceDirectory>${project.basedir}/test/src</testSourceDirectory>
     <resources>
@@ -43,6 +44,7 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.5.0</version>
         <configuration>
+          <outputDirectory>build</outputDirectory>
           <excludes>
             <exclude>.gitkeep</exclude>
             <exclude>Disposition/**</exclude>
@@ -69,7 +71,7 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>13.2.0</version>
+            <version>13.7.0</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -91,12 +93,6 @@ ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
       <groupId>com.simplicite</groupId>
       <artifactId>simplicite-api</artifactId>
       <version>${simplicite.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.simplicite</groupId>
-      <artifactId>simplicite-api</artifactId>
-      <version>${simplicite.version}</version>
-      <classifier>javadoc</classifier>
     </dependency>
   </dependencies>
 </project>

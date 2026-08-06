@@ -5,7 +5,6 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import java.util.*;
 
-
 import com.simplicite.util.*;
 import com.simplicite.util.exceptions.*;
 
@@ -20,19 +19,17 @@ import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.simplicite.util.tools.*;
-
-
+import java.nio.charset.StandardCharsets;
 /**
  * Shared code AITools
  */
 public class AITools implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
-    
-    public static final  Boolean AI_DEBUG_LOGS ="true".equals(Grant.getSystemAdmin().getParameter("AI_DEBUG_LOGS"));
+
+    public static final  boolean AI_DEBUG_LOGS ="true".equals(Grant.getSystemAdmin().getParameter("AI_DEBUG_LOGS"));
     private static final String AI_PING_ERROR="AI_PING_ERROR";
     private static final String SYSPARAM_AI_API_PARAM="AI_API_PARAM";
     private static final String SYSPARAM_AI_CHAT_BOT_NAME="AI_CHAT_BOT_NAME";
@@ -56,8 +53,6 @@ public class AITools implements java.io.Serializable {
     private static final String BOT_NAME_KEY = "bot_name";
     private static final String COMPLETION_KEY = "completion_url";
 
-
-
     private static final String MAX_TOKEN_PARAM_KEY = "default_max_token";
     private static final String ASSISTANT_ROLE="assistant";
     private static final String SYSTEM_ROLE= "system";
@@ -71,7 +66,7 @@ public class AITools implements java.io.Serializable {
     private static final String MAX_TOKEN = "max_tokens";
     public static final String TYPE_TEXT = "text";
     public static final String TYPE_IMAGE_URL = "image_url";
-   
+
     private static final String TRUSTED = "trusted";
     private static final String SWAGGER_COMPONENTS="components";
     private static final String SWAGGER_SHEMAS="schemas";
@@ -95,7 +90,7 @@ public class AITools implements java.io.Serializable {
     private static String completionUrl = getAIParam(COMPLETION_KEY);
     public static class AITypeException extends Exception {
         private static final long serialVersionUID = 1L;
-        
+
         public AITypeException(String object, String classname, String needClass) {
             super("Invalid type for "+object+": "+classname+" need "+needClass);
         }
@@ -106,6 +101,9 @@ public class AITools implements java.io.Serializable {
         private JSONArray prompt;
         private JSONArray historic;
         private JSONObject providerParams;
+        private JSONArray tools;
+        private JSONArray assistantToolsCalls;
+        private JSONArray userToolsResponse;
         private int maxToken = 1500;
         private AICallerParams(Object promptObject,JSONObject params) throws AITypeException{
             boolean secure = params.optBoolean(CALLER_PARAM_SECURE, false);
@@ -115,8 +113,7 @@ public class AITools implements java.io.Serializable {
             setSpecialisation(params.optString(CALLER_PARAM_SPE),isSafeSpe);
             historic = params.optJSONArray(CALLER_PARAM_HISTORIC, new JSONArray());
             providerParams = params.optJSONObject("providerParams", new JSONObject());
-            
-            
+
             if(!Tool.isEmpty(aiApiParam)) {
                 maxToken=aiApiParam.getInt(MAX_TOKEN_PARAM_KEY);
             }
@@ -128,6 +125,15 @@ public class AITools implements java.io.Serializable {
                     maxToken = 0;
                 }
             }
+        }
+        public void setTools(JSONArray tools){
+            this.tools = tools;
+        }
+        public void setAssistantToolsCalls(JSONArray assistantToolsCalls){
+            this.assistantToolsCalls = assistantToolsCalls;
+        }
+        public void setUserToolsResponse(JSONArray userToolsResponse){
+            this.userToolsResponse = userToolsResponse;
         }
         private void setSpecialisation(String spe,boolean isSafe){
             spe = removeAcent(spe);
@@ -146,7 +152,7 @@ public class AITools implements java.io.Serializable {
                     String strPrompt = normalize((String)promptObject,isSafe);
                     prompt.put(getformatedContentByType(strPrompt,TYPE_TEXT,false));
                 }
-                
+
             }else if(promptObject instanceof JSONArray){
                 prompt= (JSONArray)promptObject;
             }else{
@@ -155,7 +161,7 @@ public class AITools implements java.io.Serializable {
             }
             prompt = parsedPrompts(prompt,isSafe);
         }
-        
+
         /**
          * Function to format the call to chatAI API.
          * Need the api key parameter set up with your key.
@@ -180,7 +186,7 @@ public class AITools implements java.io.Serializable {
                 connection.setRequestProperty("Content-Type", "application/json");
                 connection.setDoOutput(true);
                 addSpecificHeaders(connection,apiKey);
-                
+
                 // format data
                 JSONObject postData = new JSONObject();
                 if(maxToken>0)
@@ -198,40 +204,50 @@ public class AITools implements java.io.Serializable {
                 if(!Tool.isEmpty(historic)){
                     messages.putAll(getCleanHistoric(historic));
                 }
-                
-                
+
                 messages.put(new JSONObject().put("role","user").put(CONTENT_KEY,prompt));
+                if(!Tool.isEmpty(assistantToolsCalls) && !Tool.isEmpty(userToolsResponse)){
+                    messages.put(new JSONObject().put("role","assistant").put("content","").put("tool_calls",assistantToolsCalls));
+                    messages.putAll(userToolsResponse);
+                }
+
                 postData.put(MESSAGES_KEY, messages);
-                
+                if(!Tool.isEmpty(tools)){
+                    /**
+                     * Add MCP TOOLS in call to AI API
+                     */
+                    postData.put("tools", tools);
+                    postData.put("tool_choice", "auto");
+                }
                 if(HUGGINGFACE_LLM.equals(llm)){
                     postData = getHuggingFormatData(postData);
                 }
                 if(isClaudeAPI){
                     postData = getClaudeFormatData(postData);
                 }
-                if(Boolean.TRUE.equals(AI_DEBUG_LOGS)){
+                if(AI_DEBUG_LOGS){
                     AppLog.info("post data :"+postData.toString(1),g);
                 }
                 try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
-                    outputStream.writeBytes(postData.toString());
-                    outputStream.flush();
+                     byte[] bytes = postData.toString().getBytes(StandardCharsets.UTF_8);
+    outputStream.write(bytes);
+    outputStream.flush();
                 }
-                
+
                 int responseCode = connection.getResponseCode();
                 if(responseCode!=200){
                     JSONObject error = readError(connection,responseCode,g);
                     return Tool.isEmpty(error)?"":error.toString();
-                    
+
                 }
-               
+
                return readResponse(connection,g);
-    
-                
+
             } catch (IOException | URISyntaxException e) {
                 AppLog.error(e,g);
             }
             return "";
-    
+
         }
         private void addProviderParamsToPost(JSONObject postData){
             for(String key : providerParams.keySet()) {
@@ -244,7 +260,7 @@ public class AITools implements java.io.Serializable {
                         AppLog.warning(e.getMessage());
                     }       
                 }
-                
+
             }
         }
         private static float parseFloatParam(Object param) throws AITypeException {
@@ -253,12 +269,12 @@ public class AITools implements java.io.Serializable {
             if(param instanceof String)
                 return Float.parseFloat((String)param);
             throw new AITypeException("provider parameters",param.getClass().getName(), "number");
-    
+
         }
         private static JSONObject getClaudeFormatData(JSONObject postData){
             JSONArray messages = postData.getJSONArray(MESSAGES_KEY);
             int toremove = -1;
-            
+
             for (int i = 0; i < messages.length(); i++) {
                 JSONObject message = messages.getJSONObject(i);
                 // Perform your condition here
@@ -266,7 +282,7 @@ public class AITools implements java.io.Serializable {
                     String content = message.optString(CONTENT_KEY);
                     postData.put(SYSTEM_ROLE, content);
                     toremove = i;
-                    
+
                 }else if("user".equals(message.optString("role")) && !Tool.isEmpty(message.optString(CONTENT_KEY))){// to clomplete
                     JSONArray contentArray = message.optJSONArray(CONTENT_KEY);
                     for(int j = 0; j < contentArray.length(); j++){
@@ -297,12 +313,12 @@ public class AITools implements java.io.Serializable {
                 source.put("type",matcher.group(2));
                 source.put("media_type",matcher.group(1));
                 source.put("data",matcher.group(3));
-                
+
             }
             if(!Tool.isEmpty(source)){
                 contentJson.put("source",source);
             }
-    
+
         }
         private static JSONObject getHuggingFormatData(JSONObject postData){
             JSONObject newPostData = new JSONObject();
@@ -327,7 +343,7 @@ public class AITools implements java.io.Serializable {
                         dialogBuilder.append(content+"\n");
                         break;
                 }
-    
+
             }
             newPostData.put("inputs",dialogBuilder.toString());
             newPostData.put("parameters",params);
@@ -417,9 +433,9 @@ public class AITools implements java.io.Serializable {
                     } catch (ActionException e) {
                         AppLog.error(e, g);
                     }
-                    
+
                 }
-                
+
             }
         }
         return result;
@@ -485,12 +501,12 @@ public class AITools implements java.io.Serializable {
         if(!Tool.isEmpty(param)){
             //bot name
             checkOldSysParam(SYSPARAM_AI_CHAT_BOT_NAME,BOT_NAME_KEY,param,g);
-            
+
             //api key
             checkOldSysParam(SYSPARAM_AI_API_KEY, API_KEY, param, g);
             //api completion url
             checkOldSysParam(SYSPARAM_AI_API_URL, COMPLETION_KEY, param, g);
-            
+
             setParameters(param);
         }
         return true;
@@ -518,7 +534,7 @@ public class AITools implements java.io.Serializable {
                     AppLog.error(e,g);
                     return false;
                 }
-                
+
             }
         }
         return true;
@@ -580,7 +596,7 @@ public class AITools implements java.io.Serializable {
             JSONObject errorMessage = formatErrorMsg(responseCode,response);
             AppLog.info("AI API error :["+responseCode+"]: "+errorMessage.getString(ERROR_KEY),g);
             connection.disconnect();
-            
+
             return errorMessage;
 
         } catch (IOException e) {
@@ -630,7 +646,7 @@ public class AITools implements java.io.Serializable {
         return "";
     }
     @SuppressWarnings("unused")
-    private static JSONArray optJSONArray(String array){
+    public static JSONArray optJSONArray(String array){
         try{
             return new JSONArray(array);
         }catch(Exception e){
@@ -648,6 +664,19 @@ public class AITools implements java.io.Serializable {
         try{
             JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation);
             AICallerParams caller = new AICallerParams(prompt,params);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
+    }
+    public static JSONObject aiCallerWithMCP(Grant g, String specialisation,  Object prompt, JSONArray tools){
+
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            caller.setTools(tools);
+           
             return caller.aiCall(g);
         }catch (AITypeException e){
             AppLog.error(e,g);
@@ -741,9 +770,24 @@ public class AITools implements java.io.Serializable {
             return new JSONObject();
         }
     }
+    public static JSONObject aiCallerWithMCP(Grant g, String specialisation, JSONArray historic, Object prompt, JSONArray tools,JSONArray assistantToolsCalls,JSONArray userToolsResponse){
+
+        try{
+            JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation).put(CALLER_PARAM_HISTORIC, historic);
+            AICallerParams caller = new AICallerParams(prompt,params);
+            caller.setTools(tools);
+            
+            caller.setAssistantToolsCalls(assistantToolsCalls);
+            caller.setUserToolsResponse(userToolsResponse);
+            return caller.aiCall(g);
+        }catch (AITypeException e){
+            AppLog.error(e,g);
+            return new JSONObject();
+        }
+    }
     public static JSONObject aiCaller(Grant g, String specialisation, JSONArray historic,JSONObject providerParams ,Object prompt){
         AppLog.info("ai coller with provider: "+providerParams.toString(1));
-        
+
         try{
             JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
                                             .put(CALLER_PARAM_HISTORIC, historic)
@@ -822,7 +866,7 @@ public class AITools implements java.io.Serializable {
         }else{
             json.put(CONTENT_KEY,normalize( json.getString(CONTENT_KEY)));
         }
-        
+
         return json;
     }
     public static Message checkJson(String json){
@@ -852,12 +896,11 @@ public class AITools implements java.io.Serializable {
         for(String l : data.split("\n")){
             Matcher m =p.matcher(l);
             if(m.matches()){
-                
+
                 if (text.has("role")){//if note first line
                     parseText(note, trigger, text, notePad);
                     text= new JSONObject();
-                        
-                    
+
                 }
                 note="";
                 if("ChatAI".equals(m.group(1))){
@@ -866,19 +909,17 @@ public class AITools implements java.io.Serializable {
                     text.put("role","user");// see AI doc
                 }
 
-
             }else{
                 StringBuilder noteBuilder = new StringBuilder(note);
                 noteBuilder.append(l).append("\n");
                 note = noteBuilder.toString();
             }
-                
+
         }
         if (text.has("role")){
             parseText(note,trigger,text,notePad);
         }
-       
-        
+
         return invertJsonArray(notePad);
     }
     private static void parseText(String note,String trigger,JSONObject text,JSONArray notePad){
@@ -922,8 +963,7 @@ public class AITools implements java.io.Serializable {
         text = Pattern.compile("(?u)ç",Pattern.CANON_EQ).matcher(text).replaceAll("c");
         text = Pattern.compile("(?u)ÿ",Pattern.CANON_EQ).matcher(text).replaceAll("y");
         return text;
-                    
-                    
+
     }
     private static String replaceSymboleBySafeHTML(String text){
         text = text.replace("\\n", "<br>")
@@ -956,7 +996,7 @@ public class AITools implements java.io.Serializable {
         return result;
     } 
     public static JSONObject actionAiCaller(Grant g, String specialisation, String prompt){
-        
+
         return aiCaller(g, specialisation,prompt);
     }
     public static JSONObject actionAiCaller(Grant g, String specialisation, String prompt,ObjectDB obj){
@@ -967,7 +1007,7 @@ public class AITools implements java.io.Serializable {
             AppLog.error(e, g);
             return new JSONObject();
         }
-        
+
     }
     //Call AI whith parsed expretion
     public static JSONObject expresionAiCaller(Grant g, String specialisation, String prompt,ObjectDB obj){
@@ -981,7 +1021,7 @@ public class AITools implements java.io.Serializable {
             AppLog.error(e, g);
             return new JSONObject();
         }
-        
+
     }
     public static String parseExpresion(String prompt,ObjectDB obj) throws ScriptException{
         String regex="(\\[[^\\[\\]]*\\])";
@@ -993,11 +1033,11 @@ public class AITools implements java.io.Serializable {
             String match = matcher.group();
             String replacement = match;
             Object evalExp=obj.prepareExpression(match, null, true, false);
-    
+
             if(evalExp instanceof String){
                 replacement = (String) evalExp;
             }
-            
+
             matcher.appendReplacement(sb, replacement);
         }
         matcher.appendTail(sb);
@@ -1012,11 +1052,10 @@ public class AITools implements java.io.Serializable {
         }
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(txt);
-        
 
         try {
             if (matcher.find()) {
-                
+
                 list.add(matcher.group(1).replaceAll("(?:```)?(?:json)?",""));
                 list.add(matcher.group(2));
                 list.add(matcher.group(3).replaceAll("(?:```)?(?:json)?",""));
@@ -1089,7 +1128,7 @@ public class AITools implements java.io.Serializable {
      * @throws PlatformException if the module is unknown
      */
     public static String[] getObjectIdsModule(String moduleName, Grant g) throws PlatformException{
-        
+
         String mdlId = ModuleDB.getModuleId(moduleName);
         if(Tool.isEmpty(mdlId))throw new PlatformException("Unknow module: \n"+moduleName);
         ObjectDB objI = g.getTmpObject("ObjectInternal");
@@ -1101,12 +1140,12 @@ public class AITools implements java.io.Serializable {
             objI.setFieldFilter(ROW_MLD_ID, mdlId);
             List<String[]> objIs = removeNotCreatable(objI.search(),nameIndex, g);
             ids = new String[objIs.size()];
-            
+
             int begin = 0;
             int end = objIs.size()-1;
             for(String[] row : objIs){
                 ObjectDB obj = g.getTmpObject(row[nameIndex]);
-                
+
                 if(Tool.isEmpty(obj.getRefObjects())){// process first the object without ref to empty ref
                     ids[begin] = row[idIndex];
                     begin++;
@@ -1114,12 +1153,11 @@ public class AITools implements java.io.Serializable {
                     ids[end] = row[idIndex];
                     end--;
                 }
-                
-                
+
             }
         }
         return ids;
-        
+
     }
     public static JSONObject getSimplifyedSwagger(String moduleName,Grant g) throws PlatformException {
         String[] ids = getObjectIdsModule(moduleName, Grant.getSystemAdmin());
@@ -1172,7 +1210,7 @@ public class AITools implements java.io.Serializable {
             String name = ObjectCore.getObjectName(id);
             newSchemas.put(name, new JSONObject(schemas.getJSONObject(name).toString()));
         }
-        
+
         swagger.getJSONObject(SWAGGER_COMPONENTS).put(SWAGGER_SHEMAS, newSchemas);
         JSONObject paths = swagger.getJSONObject("paths");
         JSONObject newPaths = new JSONObject();
@@ -1233,7 +1271,7 @@ public class AITools implements java.io.Serializable {
         }catch(GetException | ValidateException | SaveException e){
             AppLog.error(null, e, g);
         }
-        
+
         return "0";
     }
     private static JSONObject getFKFilters(String objName,JSONObject fields, Grant g){
@@ -1250,7 +1288,7 @@ public class AITools implements java.io.Serializable {
                 }
             }
         }
-        
+
         return filters;
     }
     private static JSONObject refactorAiResponseInGPT(String res){
@@ -1266,13 +1304,13 @@ public class AITools implements java.io.Serializable {
                 JSONObject gptFormat = formatJsonOpenAIFormat(resultText);
                 gptFormat.put(USAGE_KEY,resJson.optJSONObject(USAGE_KEY));
                 return gptFormat;
-        
+
             default:
                 return new JSONObject(res);
         }
     }
     public static String parseJsonResponse(JSONObject res){
-        if(Boolean.TRUE.equals(AI_DEBUG_LOGS))AppLog.info("AI response :"+res.toString(1),Grant.getSystemAdmin());
+        if(AI_DEBUG_LOGS)AppLog.info("AI response :"+res.toString(1),Grant.getSystemAdmin());
         return res.optJSONArray("choices",new JSONArray()).optJSONObject(0,new JSONObject()).optJSONObject(MESSAGE_KEY,new JSONObject()).optString(CONTENT_KEY,"");
     }
     public static JSONObject formatJsonOpenAIFormat(String result){
@@ -1304,9 +1342,7 @@ public class AITools implements java.io.Serializable {
             AppLog.error(e,g);
             return Message.formatError(AI_PING_ERROR,e.getMessage(),null);
         }
-       
 
-        
     }
     public static List<String> getModels(String url,String apiKey,Grant g) throws IOException, URISyntaxException{
         URI apiUrl = new URI(url);
@@ -1334,11 +1370,10 @@ public class AITools implements java.io.Serializable {
 
         } else {
             JSONObject error = readError(connection,responseCode,g);
-        
+
             res.add(ERROR_KEY);
             if(Tool.isEmpty(error)) error = new JSONObject();
             res.add(error.optString("code")+": "+error.optString(ERROR_KEY));
-            
 
         }
         connection.disconnect();
@@ -1432,13 +1467,13 @@ public class AITools implements java.io.Serializable {
 
                 // Fin du multipart/form-data
                 request.writeBytes("--" + boundary + "--\r\n");
-                
+
                 request.flush();
             }
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 return  readResponse(connection, g);
-               
+
             }else{
                 JSONObject error = readError(connection,responseCode,g);
                 if(Tool.isEmpty(error))
@@ -1551,4 +1586,5 @@ public class AITools implements java.io.Serializable {
     public static boolean isTokenLimitReached(JSONObject json){ // mistral and gpt
         return "length".equals(json.optJSONArray("choices").getJSONObject(0).optString("finish_reason"));
     }
+
 }

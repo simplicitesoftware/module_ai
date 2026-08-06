@@ -4,7 +4,9 @@
 @ai-button-color-text: var(--pal-primary-text);
 @ai-disabled-color-bg: var(--pal-base);
 @ai-disabled-color-text: var(--pal-text);
-
+@ai-icon-button-color-text: var(--pal-secondary-text);
+@ai-icon-button-color-border: var(--pal-secondary-dark1);
+@ai-icon-button-color-bg: var(--pal-secondary);
 @user-background-color: var(--pal-secondary);
 @user-text-color: var(--pal-secondary-text);
 @user-border-color: var(--pal-secondary-dark1);
@@ -65,8 +67,9 @@
 }
 .chat-icon-button{
 	padding: 5px;
-	color: @ai-button-color-text;
-	border: 1px solid @ai-button-color-bg;
+	color: @ai-icon-button-color-text;
+	border: 1px solid @ai-icon-button-color-border;
+	background-color: @ai-icon-button-color-bg;
 	border-radius: 3px;
 	cursor: pointer;
 	min-height: 40px;
@@ -141,7 +144,7 @@
 	min-height: 40px;
 }
 .ai-microphone-ellipsis{
-	
+
 	display: inline-block;
 	color: red; // Couleur initiale de l'icône
 	animation: blink 1s steps(1, start) infinite; // Animation répétée en boucle

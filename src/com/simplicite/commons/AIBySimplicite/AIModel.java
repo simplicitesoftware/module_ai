@@ -17,7 +17,8 @@ import com.simplicite.util.tools.*;
 
 
 /**
- * Shared code AIModel
+ * Tool for generating a Simplicité Module from a simplified JSON descrition for IA use
+ *
  */
 public class AIModel implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
@@ -63,6 +64,9 @@ public class AIModel implements java.io.Serializable {
 															.put("type",SHORT_TEXT)
 															.put(IS_STATUS,false)
 															.put(CLASS,"");
+	/**
+	 * Class for storing the style of an enumeration field
+	 */
 	private static class EnumFieldStyle {
 		private String bg;   //background color
 		private String hexa; //hexadecimal color
@@ -77,6 +81,9 @@ public class AIModel implements java.io.Serializable {
 			
 		}
 	}
+	/**
+	 * Class for storing the link object
+	 */
 	private static class LinkObject {
 		private String objId;
 		private String en;
@@ -90,6 +97,9 @@ public class AIModel implements java.io.Serializable {
 			this.linkorder = linkorder;
 		}
 	}
+	/**
+	 * Class for storing the module information
+	 */
 	private static class ModuleInfo {
 		private String moduleId;
 		private String mPrefix;
@@ -108,6 +118,9 @@ public class AIModel implements java.io.Serializable {
 		
 	}
 	
+	/**
+	 * Class for storing the history of the object creation
+	 */
 	private static class DataMapObject {
 		private HashMap<String, String> objCreate;
 		private HashMap<String, String> objFr;
@@ -133,6 +146,9 @@ public class AIModel implements java.io.Serializable {
 	private static List<String> listIcon;
 	private static List<String> linkType;
 	private static HashMap<String, EnumFieldStyle> enumColors;
+	/**
+	 * Static initialization of the type translation map from human readable names to Simplicité field types
+	 */
 	static {
 		typeTrad = new HashMap<>();
 		typeTrad.put("Short text < 4000", ObjectField.TYPE_STRING);
@@ -159,6 +175,9 @@ public class AIModel implements java.io.Serializable {
 		typeTrad.put("Phone number", ObjectField.TYPE_PHONENUM);
 		typeTrad.put("Color", ObjectField.TYPE_COLOR);
 		typeTrad.put("Geographical coordinates", ObjectField.TYPE_GEOCOORDS);
+		/**
+		 * Static initialization of the enum colors map from human readable names to Simplicité enum colors
+		 */
 		enumColors = new HashMap<>();
 		enumColors.put("red", new EnumFieldStyle("redbg", "#D9534F", HEXA_WHITE, "btn_red"));
 		enumColors.put("orange", new EnumFieldStyle("orangebg", "#F0AD4E", HEXA_WHITE, "btn_orange"));
@@ -171,7 +190,15 @@ public class AIModel implements java.io.Serializable {
 		enumColors.put("purple", new EnumFieldStyle("purplebg", "#8C6AC4", HEXA_WHITE, "btn_purple"));
 		enumColors.put("brown", new EnumFieldStyle("brownbg", "#CE8E67", HEXA_WHITE, "btn_brown"));
 		enumColors.put("grey", new EnumFieldStyle("greybg", "#D0D0D0", HEXA_WHITE, "btn_grey"));
+		/**
+		 * Static initialization of the short list of icons
+		 * This list is used for random selection of icons
+		 */
 		shortListIcon = Arrays.asList("star", "book", "arrow-up", "arrow-down", "clock", "envelope", "search", "folder", "list", "phone", "cloud", "key", "file", "calendar");
+		/**
+		 * Static initialization of the list of icons
+		 * This list is used to check if the icon exists in the list of icons
+		 */
 		listIcon = Arrays.asList("1-circle-fill","1-circle","1-square-fill","1-square","123","2-circle-fill","2-circle","2-square-fill","2-square","3-circle-fill",
 		"3-circle","3-square-fill","3-square","4-circle-fill","4-circle","4-square-fill","4-square","5-circle-fill","5-circle","5-square-fill",
 		"5-square","6-circle-fill","6-circle","6-square-fill","6-square","7-circle-fill","7-circle","7-square-fill","7-square","8-circle-fill",
@@ -354,9 +381,20 @@ public class AIModel implements java.io.Serializable {
 		"window","windows","wordpress","wrench-adjustable-circle-fill","wrench-adjustable-circle","wrench-adjustable","wrench","x-circle-fill","x-circle","x-diamond-fill",
 		"x-diamond","x-lg","x-octagon-fill","x-octagon","x-square-fill","x-square","x","xbox","yelp","yin-yang",
 		"youtube","zoom-in","zoom-out");
+	
 		linkType = Arrays.asList("ManyToMany","Many-to-many","ManyToOne","Many-to-one","OneToMany","One-to-many");
 	}
-	
+	/**
+	 * Main method to generate the module from the JSON description
+	 * @param moduleId The ID of the module in witch will be created the objects
+	 * @param groupIds The IDs of the groups to grant to the objects
+	 * @param domainID The ID of the domain in witch will be added the objects
+	 * @param json The JSON description of the module
+	 * @return The list of objects created
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws SaveException If there is an error saving the data to the database
+	 */
 	public static List<String> genModule(String moduleId,String[] groupIds, String domainID, JSONObject json) throws GetException, ValidateException, SaveException{
 		
 		int domainOrder=100;	
@@ -386,23 +424,38 @@ public class AIModel implements java.io.Serializable {
 			json.getJSONArray(JSON_LINK_KEY).putAll(checkMisplacedLink(jsonObj,objName));
 	
 		}
-		
+		// create the links between the objects
 		createLinks(json.getJSONArray(JSON_LINK_KEY),mInfo, dataMaps, g);
 		return new ArrayList<>(dataMaps.objCreate.values());
 	}
+	/**
+	 * Method to parse the fields of the object
+	 * @param jsonObj The JSON object containing the object description
+	 * @param json The JSON object containing the module
+	 * @param oboId The ID of the object
+	 * @param fieldOrder The order of the fields
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 */
 	private static List<String> parsefield(JSONObject jsonObj,JSONObject json, String oboId, int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
 
 		String objName = formatObjectNames(jsonObj.getString("name"));
 		String objPrefix = SyntaxTool.getObjectPrefix(oboId);
 		List<String> fKs = new ArrayList<>();
+		// for each field of the object
 		for(Object field:jsonObj.getJSONArray("attributes")){
 					
 			JSONObject jsonFld = (JSONObject) field;
 			String fldType =jsonFld.optString("type",SHORT_TEXT);
+			// if the field seam to be a link
 			if(linkType.contains(fldType)){
+				// get the class of the link
 				String class2 = getClassFromJson(jsonFld);
+				// add the link to the module definition
 				json.getJSONArray(JSON_LINK_KEY).put(new JSONObject().put(JSON_LINK_CLASS_FROM_KEY, objName).put(JSON_LINK_CLASS_TO_KEY,class2).put("type",fldType));
 			}else{
+				// create and add the field to the object
 				String fldId=addField(jsonFld, oboId, objPrefix, fieldOrder,mInfo, dataMaps, g);
 				if(jsonFld.optBoolean("key")){
 					fKs.add(fldId);
@@ -410,6 +463,7 @@ public class AIModel implements java.io.Serializable {
 				fieldOrder+=10;
 			}
 		}
+		// if no foreign key is found, create and add a default code field
 		if(Tool.isEmpty(fKs)){
 			
 			String fldId=addField(DEFAULT_CODE_FK, oboId, objPrefix, fieldOrder,mInfo, dataMaps, g);
@@ -418,6 +472,11 @@ public class AIModel implements java.io.Serializable {
 		return fKs;
 	}
 
+	/**
+	 * Method to get the class of the link from the JSON description
+	 * @param jsonFld The JSON object containing the field description
+	 * @return The class of the link
+	 */
 	private static String getClassFromJson(JSONObject jsonFld){
 		String class2 = jsonFld.getString("name");
 		if(jsonFld.has(CLASS)){
@@ -427,7 +486,14 @@ public class AIModel implements java.io.Serializable {
 		}
 		return class2;
 	}
+	/**
+	 * Method to check if the link is misplaced
+	 * @param jsonObj The JSON object containing the object description
+	 * @param objName The name of the object
+	 * @return The JSON array containing the links
+	 */
 	private static JSONArray checkMisplacedLink(JSONObject jsonObj,String objName){
+		// if the object has links
 		if(jsonObj.has(JSON_LINK_KEY)){
 			JSONArray links = jsonObj.getJSONArray(JSON_LINK_KEY);
 			for (Object link : links){
@@ -448,6 +514,12 @@ public class AIModel implements java.io.Serializable {
 		}
 		return new JSONArray();
 	}
+	/**
+	 * Method to get a prefix for the object in json or firts 3 letters of the name if no prefix is found in json
+	 * @param jsonObj The JSON object containing the object description
+	 * @param objName The name of the object
+	 * @return The prefix of the object
+	 */
 	private static String getOboPrefix(JSONObject jsonObj, String objName){
 		String objPrefix = "";
 		if (jsonObj.has(JSON_TRIGRAM_KEY) && jsonObj.get(JSON_TRIGRAM_KEY) instanceof String){
@@ -459,6 +531,20 @@ public class AIModel implements java.io.Serializable {
 		}
 		return objPrefix;
 	}
+	/**
+	 * Method to create the object
+	 * @param jsonObj The JSON object containing the object description
+	 * @param objName The name of the object
+	 * @param objPrefix The prefix of the object
+	 * @param domainOrder The order of the object in the domain
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 * @return The ID of the object
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws SaveException If there is an error saving the data to the database
+	 */
 	private static String createObject(JSONObject jsonObj, String objName,  String objPrefix, int domainOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException, ValidateException, SaveException{
 		JSONObject fields = new JSONObject();
 		String nameWP = getNameWithoutPrefix(objName, mInfo.mPrefix, "");
@@ -496,7 +582,11 @@ public class AIModel implements java.io.Serializable {
 		}
 		return oboId;
 	}
-	
+	/**
+	 * Method to get the icon link for the object or a random icon if no icon is found in json
+	 * @param icon The icon name
+	 * @return The icon name
+	 */
 	private static String getIcon(String icon){
 		if(!Tool.isEmpty(icon)){
 			icon = icon.replace("bi-","");
@@ -510,45 +600,83 @@ public class AIModel implements java.io.Serializable {
 	private static String getRandomIcon() {
 		return shortListIcon.get(rand.nextInt(shortListIcon.size()));
 	}
+	/**
+	 * Method create and add a field to the object
+	 * @param jsonFld The JSON object containing the field description
+	 * @param oboId The ID of the object
+	 * @param objPrefix The prefix of the object
+	 * @param fieldOrder The order of the field
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 * @return The ID of the field
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws SaveException If there is an error saving the data to the database
+	 */
 	private static String addField(JSONObject jsonFld,String oboId, String objPrefix,  int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g) throws GetException , ValidateException, SaveException{
+		
+		// get the name of the field
 		String fieldName = jsonFld.getString("name").replaceAll(NOT_WORD_CHAR_REGEX,"").replaceAll("\\s","");
+		// get the name of the object
 		String objName = getObjectNameById(oboId, g);
+		// get the type of the field
 		String fldType =jsonFld.optString("type",SHORT_TEXT);
+		// get the type of the field
 		int type = ObjectField.TYPE_STRING;
 		if(typeTrad.containsKey(fldType)){
 			type = typeTrad.get(fldType);
 		}
+		// create the field object
 		JSONObject field = new JSONObject();
+		// remove the prefix if IA add it in the name
 		String fldNameWP = getNameWithoutPrefix(fieldName, mInfo.mPrefix, objPrefix);
+		// get the name with good practices format
 		String fldName = SyntaxTool.join(SyntaxTool.CAMEL, new String[]{mInfo.mPrefix,objPrefix,fldNameWP});
+		// setup the field object json
 		field.put("fld_name", fldName);
 		field.put("fld_dbname", SyntaxTool.join(SyntaxTool.SNAKE, new String[]{mInfo.mPrefix,objPrefix,fldNameWP}));
 		field.put("fld_type", type);
 		field.put("fld_fonctid", jsonFld.optBoolean("key"));
 		field.put("fld_required", jsonFld.optBoolean("required"));
 		field.put(MODULE_ID_FIELD,	mInfo.moduleId);
+		// setup additional field properties for float and decimal
 		if(type == ObjectField.TYPE_FLOAT || type == ObjectField.TYPE_BIGDECIMAL ){
 			field.put("fld_precision", 2);
 			field.put("fld_size", 5);
 		}else{
 			field.put("fld_size", (type == ObjectField.TYPE_INT)?5:100);
 		}
+		// if the field is an enumeration, create the list of values and add the default code
 		if(type == ObjectField.TYPE_ENUM || type == ObjectField.TYPE_ENUM_MULTI){
+			// create the list of values
 			String enumId = createListOfValue(objPrefix, fieldName, mInfo, g);
 			field.put("fld_list_id",enumId);
+			// add the default code (good practices)
 			String defaultCode = completeList(enumId, jsonFld,objName,fldName, mInfo, g);
 			field.put("fld_dfault", defaultCode);
 		}
-		
+		// create the field
 		String fldId = AITools.createOrUpdateWithJson(OBJECTFIELD,field, g);
+		// add the field to the history of the object creation
 		dataMaps.fieldCreate.put(fieldName, fldId);
+		// translate the field	
 		translateField(jsonFld, fldId, dataMaps, g);
+		// create the object field
 		String oboFldId = createObjectField(oboId, fieldName, fieldOrder, mInfo, dataMaps, g);
 		if(type == ObjectField.TYPE_ENUM && ("status".equalsIgnoreCase(fieldName) || jsonFld.has(IS_STATUS) && jsonFld.getBoolean(IS_STATUS))){
+			// if the field is a status field, create the state 
+			// todo check if not already a state model for this object
 			addStateModel(oboId,  oboFldId,mInfo, g);
 		}
 		return fldId;
 	}
+	/**
+	 * Method to get the name of the object by its ID
+	 * @param oboId The ID of the object
+	 * @param g The grant object
+	 * @return The name of the object
+	 */
 	private static String getObjectNameById(String oboId,Grant g){
 		ObjectDB obj = g.getTmpObject(OBJECT_INTERNAL_NAME);
 		synchronized(obj.getLock()){
@@ -556,9 +684,20 @@ public class AIModel implements java.io.Serializable {
 			return obj.getFieldValue(OBJECT_NAME_FIELD);
 		}
 	}
+	/**
+	 * Method to translate the field
+	 * @param jsonFld The JSON object containing the field description
+	 * @param fldId The ID of the field
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 * @throws UpdateException If there is an error updating the field
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 */
 	private static void translateField(JSONObject jsonFld, String fldId, DataMapObject dataMaps,Grant g) throws UpdateException, GetException, ValidateException{
 		String en ="";
 		String fr="";
+		// get the English translation
 		if(jsonFld.has("en") && jsonFld.get("en") instanceof JSONObject){
 			JSONObject enJson = jsonFld.getJSONObject("en");
 			if(enJson.length()==1){	
@@ -567,6 +706,7 @@ public class AIModel implements java.io.Serializable {
 		}else{
 			en = jsonFld.optString("en", "");
 		}
+		// get the French translation
 		if(jsonFld.has("fr") && jsonFld.get("fr") instanceof JSONObject){
 			JSONObject frJson = jsonFld.getJSONObject("fr");
 			if(frJson.length()==1){
@@ -575,12 +715,23 @@ public class AIModel implements java.io.Serializable {
 		}else{
 			fr = jsonFld.optString("fr", "");
 		}
+		// update the translations of the field
 		updateTradField(Grant.getTranslateFieldId(fldId, Globals.LANG_ENGLISH),en, g);
+		// update the translations of the field
 		updateTradField(Grant.getTranslateFieldId(fldId, Globals.LANG_FRENCH), fr, g);
+		// add the translations to the history of the field creation
 		dataMaps.fldEn.put(fldId, en);
 		dataMaps.fldFr.put(fldId, fr);	
 	}
+	/**
+	 * Method to add the state model to the field
+	 * @param oboId The ID of the object
+	 * @param oboFldId The ID of the field
+	 * @param mInfo The module information
+	 * @param g The grant object
+	 */
 	private static void addStateModel(String oboId, String oboFldId,ModuleInfo mInfo, Grant g){
+		// auto create the state model through the system processus
 		String pcs = "CreateStateModel";
 		Processus p = g.getProcessus(pcs, null);
 		p.instantiate();
@@ -607,12 +758,28 @@ public class AIModel implements java.io.Serializable {
 			p.validate(act, null);
 		}
 	}
+	/**
+	 * Method to pass a select activity in 	a processus
+	 * @param rowId The ID of the object
+	 * @param object The name of the object
+	 * @param p The processus
+	 * @param act The activity file
+	 * @param g The grant object
+	 * @return The message
+	 */
 	private static Message activitySelect(String rowId,String object,Processus p,ActivityFile act,Grant g){
 		p.lock(act.getActivity(), act.getAID());
 		act.addDataFile(OBJECTFIELD, "row_id", rowId);
 		ObjectDB o = g.getProcessObject(object);
 		return p.validate(act, o);
 	}
+	/**
+	 * Method to pass the transition activity in the processus
+	 * @param p The processus
+	 * @param act The activity file
+	 * @param g The grant object
+	 * @return The message
+	 */
 	private static Message activityTransition(Processus p,ActivityFile act,Grant g){
 		p.lock(act.getActivity(), act.getAID());
 		try {
@@ -628,6 +795,14 @@ public class AIModel implements java.io.Serializable {
 		}
 		return p.validate(act, null);
 	}
+	/**
+	 * Method to pass the grant activity in the processus
+	 * @param groupIds The groups IDs
+	 * @param p The processus
+	 * @param act The activity file
+	 * @param g The grant object
+	 * @return The message
+	 */
 	private static Message activityGrant(String[] groupIds,Processus p,ActivityFile act,Grant g){
 		p.lock(act.getActivity(), act.getAID());
 		try {
@@ -650,6 +825,13 @@ public class AIModel implements java.io.Serializable {
 		}
 		return p.validate(act, null);
 	}
+	/**
+	 * Method to pass the translation activity in the processus
+	 * @param p The processus
+	 * @param act The activity file
+	 * @param g The grant object
+	 * @return The message
+	 */
 	private static Message activityTranslation(Processus p,ActivityFile act,Grant g){
 		ObjectDB action = g.getTmpObject("Action");
 		p.lock(act.getActivity(), act.getAID());
@@ -678,6 +860,16 @@ public class AIModel implements java.io.Serializable {
 		}
 		return p.validate(act, null);
 	}
+	/**
+	 * Method to create the object field (link between the object and the field)
+	 * @param oboId The ID of the object
+	 * @param fieldName The name of the field
+	 * @param fieldOrder The order of the field
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 * @return The ID of the object field
+	*/
 	private static String createObjectField(String oboId,String fieldName,int fieldOrder,ModuleInfo mInfo, DataMapObject dataMaps,Grant g){
 		JSONObject oboField = new JSONObject();
 		oboField.put(OBJECTFIELD_OBJECT_FIELD, oboId);
@@ -686,12 +878,30 @@ public class AIModel implements java.io.Serializable {
 		oboField.put(MODULE_ID_FIELD,mInfo.moduleId);
 		return AITools.createOrUpdateWithJson(OBJECT_FIELD_SYSTEM_NAME,oboField, g);
 	}
+	/**
+	 * Method to create the list of values for an enumeration field
+	 * @param objPrefix The prefix of the object
+	 * @param fieldName The name of the field
+	 * @param mInfo The module information
+	 * @param g The grant object
+	 * @return The ID of the list of values
+	 */
 	private static String createListOfValue(String objPrefix,String fieldName,ModuleInfo mInfo,Grant g){
 		JSONObject enumObject = new JSONObject();
 		enumObject.put("lov_name",SyntaxTool.join(SyntaxTool.UPPER, new String[]{mInfo.mPrefix,objPrefix,fieldName}));
 		enumObject.put(MODULE_ID_FIELD,mInfo.moduleId);
 		return AITools.createOrUpdateWithJson("FieldList",enumObject, g);
 	}
+	/**
+	 * Method to create the links between the objects
+	 * @param links The JSON array containing the links
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws UpdateException If there is an error updating the data
+	 */
 	private static void createLinks(JSONArray links, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, ValidateException, UpdateException {
 		int linkorder = 10;
 		for (Object link : links) {
@@ -732,7 +942,18 @@ public class AIModel implements java.io.Serializable {
 			}
 		}
 	}
-
+	/**
+	 * Method to create a many to many link between two objects
+	 * @param class1Name The name of the first object
+	 * @param class2Name The name of the second object
+	 * @param linkorder The order of the link in object
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws UpdateException If there is an error updating the data
+	 */
 	private static void createManyToManyLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, Grant g) throws GetException, ValidateException, UpdateException{
 		String oboId = dataMaps.objCreate.get(class1Name.toLowerCase());
 		String oboId2 = dataMaps.objCreate.get(class2Name.toLowerCase());
@@ -742,6 +963,18 @@ public class AIModel implements java.io.Serializable {
 		}
 	}
 
+	/**
+	 * Method to create a link between two objects
+	 * @param class1Name The name of the first object
+	 * @param class2Name The name of the second object
+	 * @param linkorder The order of the link in object
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws UpdateException If there is an error updating the data
+	 */
 	private static void createLink(String class1Name, String class2Name, int linkorder, ModuleInfo mInfo, DataMapObject dataMaps, boolean isManyToOne) throws GetException, ValidateException, UpdateException {
 		String oboId1 = dataMaps.objCreate.get(class1Name.toLowerCase());
 		String oboId2 = dataMaps.objCreate.get(class2Name.toLowerCase());
@@ -759,6 +992,12 @@ public class AIModel implements java.io.Serializable {
 		}
 	}
 
+	/**
+	 * Method to get the class name from the JSON link
+	 * @param jsonLink The JSON object containing the link
+	 * @param key The key of the class
+	 * @return The class name
+	 */
 	private static String getClassFromJsonLink(JSONObject jsonLink, String key) {
 		String className ="";
 		if (jsonLink.has(key)) {
@@ -774,6 +1013,13 @@ public class AIModel implements java.io.Serializable {
 		}
 		return formatObjectNames(className);
 	}
+	/**
+	 * Method to create an object if not exists for link purpose (not existing object in json description)
+	 * @param name The name of the object
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 */
 	private static void createLinkObject(String name,ModuleInfo mInfo, DataMapObject dataMaps,Grant g){
 		JSONObject linkFields = new JSONObject();
 		String namewp = getNameWithoutPrefix(name,mInfo.mPrefix,"");
@@ -786,6 +1032,15 @@ public class AIModel implements java.io.Serializable {
 		dataMaps.objCreate.put(name.toLowerCase(),oboId);			
 		
 	}
+	/**
+	 * Method to update the translation of a field (default translation are created by default by field creation)
+	 * @param tradId The ID of the translation
+	 * @param val The value of the translation
+	 * @param g The grant object
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws UpdateException If there is an error updating the data
+	 * @throws ValidateException If there is an error validating the data
+	 */
 	private static void updateTradField(String tradId,String val,Grant g) throws GetException, UpdateException, ValidateException{
 		ObjectDB oTra = g.getTmpObject("Translate");
 		synchronized(oTra.getLock()){
@@ -799,6 +1054,18 @@ public class AIModel implements java.io.Serializable {
 		}
 		
 	}
+	/**
+	 * Method to create or update the translation of an object
+	 * @param obj The name of the object
+	 * @param objId The ID of the object
+	 * @param lang The language of the translation
+	 * @param val The value of the translation
+	 * @param moduleId The ID of the module
+	 * @param g The grant object
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws UpdateException If there is an error updating the data
+	 * @throws ValidateException If there is an error validating the data
+	 */
 	private static void createOrUpdateTranslation(String obj,String objId,String lang,String val, String moduleId,Grant g) throws GetException, UpdateException, ValidateException{
 		ObjectDB oTra = g.getTmpObject("Translate");
 		synchronized(oTra.getLock()){
@@ -819,6 +1086,18 @@ public class AIModel implements java.io.Serializable {
 		}
 		
 	}
+	/**
+	 * Method to create a many to many link between two objects
+	 * Will create a new object for n-n link with a many to one link to the first object and a many to one link to the second object
+	 * @param objectData1 The data of the first object
+	 * @param objectData2 The data of the second object
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws UpdateException If there is an error updating the data
+	 */
 	private static void manyToManyLink(LinkObject objectData1,LinkObject objectData2, ModuleInfo mInfo,DataMapObject dataMaps,Grant g) throws GetException, ValidateException, UpdateException{
 		String childId="";
 		String prefix1=SyntaxTool.getObjectPrefix(objectData1.objId);
@@ -843,6 +1122,17 @@ public class AIModel implements java.io.Serializable {
 		manyToOneLink(childId, objectData2, mInfo, dataMaps,ObjectCore.DEL_CASCAD,true,objectData1.objId.equals(objectData2.objId));
 	}
 	private static HashMap<String, String> linkIds = new HashMap<>();
+	/**
+	 * Method to create a many to one link between two objects
+	 * @param childId The ID of the child object
+	 * @param objectData The data of the object
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param g The grant object
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws UpdateException If there is an error updating the data
+	 */
 	private static void manyToOneLink(String childId,LinkObject objectData, ModuleInfo mInfo, DataMapObject dataMaps,char del,Boolean key,boolean recursive) throws GetException, ValidateException, UpdateException{
 			Grant g = mInfo.g;
 			String triObj = SyntaxTool.getObjectPrefix(objectData.objId);
@@ -880,6 +1170,19 @@ public class AIModel implements java.io.Serializable {
 			addJoinedField(childId, refId, objectData, mInfo, dataMaps, objectData.linkorder, g);
 			linkIds.put(fkFieldName, refId);
 	}
+	/**
+	 * Method to add a joined field to the object through the foreign key for links
+	 * @param childId The ID of the child object
+	 * @param refId The ID of the reference field
+	 * @param objectData The data of the object
+	 * @param mInfo The module information
+	 * @param dataMaps History of the object creation
+	 * @param fkOrder The order of the foreign key
+	 * @param g The grant object
+	 * @throws GetException If there is an error getting the data from the database
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws UpdateException If there is an error updating the data
+	 */
 	private static void addJoinedField(String childId,String refId,LinkObject objectData,ModuleInfo mInfo, DataMapObject dataMaps,int fkOrder, Grant g) throws GetException, ValidateException, UpdateException{
 		List<String> fks = getFonctionalKeys(objectData.objId,g);
 		if(!Tool.isEmpty(fks)){
@@ -905,6 +1208,12 @@ public class AIModel implements java.io.Serializable {
 			
 		}
 	}
+	/**
+	 * Method to get the functional keys of an object
+	 * @param objId The ID of the object
+	 * @param g The grant object
+	 * @return The list of the functional keys
+	 */
 	private static List<String> getFonctionalKeys(String objId,Grant g) {
 		List<String> fks = new ArrayList<>();
 		String objName =  ObjectCore.getObjectName(objId);
@@ -914,6 +1223,16 @@ public class AIModel implements java.io.Serializable {
 		}
 		return fks;
 	}
+	/**
+	 * Method to add values to an enumeration list
+	 * @param enumId The ID of the enumeration
+	 * @param jsonFld The JSON object containing the field description
+	 * @param objName The name of the object
+	 * @param fldName The name of the field
+	 * @param mInfo The module information
+	 * @param g The grant object
+	 * @return The list of the values
+	 */
 	private static String completeList(String enumId,JSONObject jsonFld,String objName,String fldName,ModuleInfo mInfo,Grant g) throws GetException, ValidateException, UpdateException{
 		if(hasJsonArray(jsonFld,JSON_VALUES_UPPER_KEY,JSON_VALUES_LOWER_KEY)){
 			return completeList(mInfo.moduleId, enumId, jsonFld.has(JSON_VALUES_LOWER_KEY)?jsonFld.getJSONArray(JSON_VALUES_LOWER_KEY):jsonFld.getJSONArray(JSON_VALUES_UPPER_KEY),objName,fldName, g);
@@ -932,15 +1251,39 @@ public class AIModel implements java.io.Serializable {
 			return completeList(mInfo.moduleId, enumId, values,objName,fldName, g);
 		}
 	}
+	/**
+	 * Method to check if the JSON object has an array
+	 * @param json The JSON object
+	 * @param upperkey The upper key
+	 * @param lowerkey The lower key
+	 * @return True if the JSON object has an array
+	 */
 	private static boolean hasJsonArray(JSONObject json, String upperkey, String lowerkey){
 		return json.has(upperkey) && json.get(upperkey) instanceof JSONArray || json.has(lowerkey) && json.get(lowerkey) instanceof JSONArray;
 	}
+	/**
+	 * Method to check if the JSON object has a key in case insensitive
+	 * @param json The JSON object
+	 * @param upperKey The upper key
+	 * @param lowerKey The lower key
+	 * @return True if the JSON object has a key in case insensitive
+	 */
 	private static boolean hasNotCaseSensitibve(JSONObject json, String upperKey, String lowerKey){
 		if(Tool.isEmpty(json)){
 			return false;
 		}
 		return json.has(upperKey) || json.has(lowerKey);
 	}
+	/**
+	 * Method to complete the list of values for an enumeration
+	 * @param moduleId The ID of the module
+	 * @param listId The ID of the list
+	 * @param values The list of values
+	 * @param objName The name of the object
+	 * @param fldName The name of the field
+	 * @param g The grant object
+	 * @return The list of the values
+	 */
 	private static String completeList(String moduleId,String listId,JSONArray values,String objName,String fldName,Grant g) throws GetException, ValidateException, UpdateException{
 		int order = 1;
 		String defaultCode = "";
@@ -978,6 +1321,17 @@ public class AIModel implements java.io.Serializable {
 		}
 		return defaultCode;
 	}
+	/**
+	 * Method to translate the items of an enumeration list
+	 * @param jsonValue The JSON object containing the value
+	 * @param enumId The ID of the enumeration list
+	 * @param lang The language of the value
+	 * @param filterLang The language of the filter
+	 * @param g The grant object
+	 * @throws UpdateException If there is an error updating the data
+	 * @throws ValidateException If there is an error validating the data
+	 * @throws GetException If there is an error getting the list of items
+	 */
 	private static void traductListItems(JSONObject jsonValue,String enumId,String lang,String filterLang,Grant g) throws UpdateException, ValidateException, GetException{
 		ObjectDB oTra = g.getTmpObject("FieldListValue");
 		BusinessObjectTool oTraT = oTra.getTool();
@@ -986,6 +1340,15 @@ public class AIModel implements java.io.Serializable {
 			oTraT.validateAndUpdate();
 		} 
 	}
+	/**
+	 * Method to add a style for a enum field 
+	 * @param objName The name of the object
+	 * @param fldName The name of the field
+	 * @param code The code of the value
+	 * @param style The style of the value
+	 * @param moduleId The ID of the module
+	 * @param g The grant object
+	 */
 	private static void addFieldStyle(String objName,String fldName,String code,String style,String moduleId,Grant g){
 		JSONObject fieldStyle= new JSONObject();
 		fieldStyle.put("sty_object", objName);
@@ -996,6 +1359,12 @@ public class AIModel implements java.io.Serializable {
 		AITools.createOrUpdateWithJson("FieldStyle",fieldStyle, g);
 
 	}
+	/**
+	 * Method to get the JSON object containing the value
+	 * @param value The value
+	 * @param g The grant object
+	 * @return The JSON object containing the value
+	 */
 	private static JSONObject getJsonValue(Object value, Grant g){
 		if(value instanceof String){
 			return new JSONObject()
@@ -1008,6 +1377,14 @@ public class AIModel implements java.io.Serializable {
 			return new JSONObject();
 		}
 	}
+	/**
+	 * Method to add an object to a domain
+	 * @param domainID The ID of the domain
+	 * @param objectId The ID of the object
+	 * @param moduleId The ID of the module
+	 * @param domainOrder The order of the object in the domain
+	 * @param g The grant object
+	 */
 	private static void addToDomain(String domainID,String objectId,String moduleId,int domainOrder,Grant g){
 		if(Tool.isEmpty(domainID)){
 			return;
@@ -1019,6 +1396,13 @@ public class AIModel implements java.io.Serializable {
 		domain.put(MODULE_ID_FIELD,moduleId);
 		AITools.createOrUpdateWithJson("Map",domain, g);
 	}	
+	/**
+	 * Method to grant a group to an object
+	 * @param groupId The ID of the group
+	 * @param objectId The ID of the object
+	 * @param moduleId The ID of the module
+	 * @param g The grant object
+	 */
 	private static void grantGroup(String groupId,String objectId,String moduleId,Grant g){
 		ObjectDB funcObj = g.getTmpObject("Function");
 		String funcId="";
@@ -1042,6 +1426,11 @@ public class AIModel implements java.io.Serializable {
 		grant.put("grt_function_id",funcId);
 		AITools.createOrUpdateWithJson("Grant",grant, g);
 	}
+	/**
+	 * Method to format the name of the object
+	 * @param name The name of the object
+	 * @return The formatted name of the object
+	 */
 	private static String formatObjectNames(String name){
 		String regex="\\s(\\w)";
 		Pattern p = Pattern.compile(regex);	
@@ -1054,6 +1443,13 @@ public class AIModel implements java.io.Serializable {
 		name = sb.toString();
 		return name.replaceAll(NOT_WORD_CHAR_REGEX,"");
 	}
+	/**
+	 * Method to get the name of the field or object without the module or/and object prefix
+	 * @param name The name of the object
+	 * @param mdlPrefix The prefix of the module
+	 * @param objprefix The prefix of the object
+	 * @return The name of the object without the prefix
+	 */
 	private static String getNameWithoutPrefix(String name, String mdlPrefix, String objprefix){
 		String regex = "^(?i)"+(Tool.isEmpty(mdlPrefix)?"":"(?:"+mdlPrefix+")?")+(Tool.isEmpty(objprefix)?"":"(?:"+objprefix+")?")+"(.*)$";
 
@@ -1066,6 +1462,12 @@ public class AIModel implements java.io.Serializable {
 		m.appendTail(sb);
 		return sb.toString();
 	}
+	/**
+	 * Method to copy a theme to a module
+	 * @param theme The name of the theme
+	 * @param mld The ID of the module
+	 * @param g The grant object
+	 */
 	public static void copyTheme(String theme,String mld,Grant g){
 		if( Tool.isEmpty(mld)){
 			return;

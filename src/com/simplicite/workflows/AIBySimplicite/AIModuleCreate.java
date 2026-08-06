@@ -479,7 +479,7 @@ public class AIModuleCreate extends Processus {
 					}
 				}
 			}catch(Exception ex){
-				if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)) AppLog.error(ex, admin);
+				if(AITools.AI_DEBUG_LOGS) AppLog.error(ex, admin);
 			}
 		}
 	}

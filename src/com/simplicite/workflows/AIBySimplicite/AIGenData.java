@@ -29,7 +29,7 @@ public class AIGenData extends Processus {
 		switch (step) {
 			case ACTIVITY_IS_PARAM:
 				context.setDataFile("Return","Code", AITools.isAIParam()?"1":"0");
-				if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(context.getDataValue("Return","Code"), getGrant());
+				if(AITools.AI_DEBUG_LOGS)AppLog.info(context.getDataValue("Return","Code"), getGrant());
 				break;
 			case ACTIVITY_PARAMS:
 				String moduleName = getContext(getActivity(ACTIVITY_SELECT_MODULE)).getDataValue(DATA_FIELD, MODULE_NAME_FIELD);

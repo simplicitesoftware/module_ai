@@ -345,7 +345,7 @@ public class AIData implements java.io.Serializable {
 	*/
 	private static JSONObject callIADataOnModule(String[] ids,String mldId,int nbData, Grant g) throws PlatformException{
 		JSONObject data = getJsonModel(ids, g);
-		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)) AppLog.info("module uml: "+data.toString(1), g);
+		if(AITools.AI_DEBUG_LOGS) AppLog.info("module uml: "+data.toString(1), g);
 		String dataNumber = nbData > 0 ? String.valueOf(nbData) : AITools.getAIParam("data_number","5");
 		JSONObject jsonResponse = AITools.aiCaller(g, /* "module uml: "+json */"", " generates consistent data in json according to the model: ```json "+data.toString(1)+"``` with at least "+dataNumber+" entries per class",true,true);
 		devSaveGenerationDataCost(mldId,jsonResponse.optJSONObject(AITools.USAGE_KEY));
@@ -458,7 +458,7 @@ public class AIData implements java.io.Serializable {
 						objT.validateAndCreate();
 					}else if(!objT.selectForCreateOrUpdate(filters)){
 						obj.setValuesFromJSONObject(objectToCreate.objectCreate, true, false,true);
-						if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("create object: "+obj.getName()+" with values: "+objectToCreate.objectCreate.toString(1), g);
+						if(AITools.AI_DEBUG_LOGS)AppLog.info("create object: "+obj.getName()+" with values: "+objectToCreate.objectCreate.toString(1), g);
 						obj.populate(true);
 						objT.validateAndCreate();
 					}
@@ -481,7 +481,7 @@ public class AIData implements java.io.Serializable {
 		for(ObjectField fld : obj.getFields()){
 			List<String> err = fld.validate(obj);
 			if(!Tool.isEmpty(err)){
-				if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("error on field: "+fld.getName()+" with values: "+fld.getValue()+" | "+String.join(",",err), g);
+				if(AITools.AI_DEBUG_LOGS)AppLog.info("error on field: "+fld.getName()+" with values: "+fld.getValue()+" | "+String.join(",",err), g);
 				if(ObjectField.TYPE_EMAIL == fld.getType()){
 					fld.setValue(DEFAULT_EMAIL);
 				}else if(ObjectField.TYPE_PHONENUM == fld.getType()){

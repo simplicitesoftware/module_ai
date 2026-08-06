@@ -18,41 +18,14 @@ Javadoc
 mvn javadoc:javadoc
 ```
 
-Sonar analysis
---------------
+Typescript
+==========
 
-``` text
-mvn sonar:sonar
-```
-
-Checkstyle (optional)
----------------------
-
-``` text
-mvn checkstyle:check
-```
-
-JSHint (optional, requires node.js)
------------------------------------
+Compile (optional, requires node.js)
+------------------------------------
 
 ``` text
 npm install
-npm run jshint
-```
-
-ESLint (optional, requires node.js)
------------------------------------
-
-``` text
-npm install
-npm run eslint
-```
-
-StyleLint (optional, requires node.js)
---------------------------------------
-
-``` text
-npm install
-npm run stylelint
+npm run tsc
 ```
 

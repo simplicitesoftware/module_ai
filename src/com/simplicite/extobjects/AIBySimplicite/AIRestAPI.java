@@ -30,7 +30,7 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 	@Override
 	public Object post(Parameters params) throws HTTPException {
 		try {
-			AppLog.info("_____________________Test_________________");
+			AppLog.info("_____________________POST of REST API without MCP_________________");
 			JSONObject req = params.getJSONObject();
 			String prompt = getParamOrreqParam(PARAMS_PROMPT_KEY,params,req);
 			String objectName = getParamOrreqParam(JSON_OBJECT_NAME_KEY,params,req);
@@ -274,7 +274,18 @@ public class AIRestAPI extends com.simplicite.webapp.services.RESTServiceExterna
 
 		if(Tool.isEmpty(name)) return null;
 		String p = params.getParameter(name);
-		if(Tool.isEmpty(p) && req.has(name)) p = req.getString(name);
+		if(Tool.isEmpty(p) && req.has(name)){
+			Object op = req.get(name);
+			if(op instanceof  JSONArray arr) {
+
+				p= arr.toString();
+				
+			}
+			if(op instanceof  JSONObject obj){
+				p=obj.toString();
+			} 
+			p= req.optString(name,"");
+		} 
 		return p;
 	}
 

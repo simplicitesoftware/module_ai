@@ -60,7 +60,7 @@ public class AiMetrics implements java.io.Serializable {
 		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
 		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
 		JSONObject res = AITools.aiCaller(null, "\n ```OpenAPI "+swagger+"```",arrayPrompts,false,true,true);
-		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("AI response: "+res.toString(), null);
+		if(AITools.AI_DEBUG_LOGS)AppLog.info("AI response: "+res.toString(), null);
 		JSONObject resultJS = splitRes(AITools.parseJsonResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
 		
 		if (resultJS.has(AITools.ERROR_KEY)) {
@@ -350,7 +350,7 @@ public class AiMetrics implements java.io.Serializable {
 		prompt =  "give me Script js to display: "+prompt+("FRA".equals(lang)?FR:"")+" using chart.js, add to your answer a description of the charts in ```text ```for Business user"+("FRA".equals(lang)?FR:"")+". Do not create data use search";
 		arrayPrompts.put(AITools.getformatedContentByType(EXEMPLE, AITools.TYPE_TEXT, true));
 		arrayPrompts.put(AITools.getformatedContentByType(prompt, AITools.TYPE_TEXT,true));
-		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info(arrayPrompts.toString(1), null);
+		if(AITools.AI_DEBUG_LOGS)AppLog.info(arrayPrompts.toString(1), null);
 		hist.put(new JSONObject().put("role","user").put(AITools.CONTENT_KEY,arrayPrompts));
 		String response = "```javascript\n"+script+MD_BALISE+"\n```html\n"+html+MD_BALISE;
 		response = AITools.normalize(response,true);
@@ -358,7 +358,7 @@ public class AiMetrics implements java.io.Serializable {
 		hist.put(new JSONObject().put("role","assistant").put(AITools.CONTENT_KEY,response));
 		String spe = " ```OpenAPI "+swagger+"```";
 		prompt = "this script is not valid, please correct it.I got this error: "+error+"\n correct only the script response in ```javascript```";
-		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS)){
+		if(AITools.AI_DEBUG_LOGS){
 			AppLog.info("spe: "+spe, null);
 			AppLog.info("prompt: "+prompt, null);
 			AppLog.info("hist: "+hist.toString(1), null);
@@ -366,7 +366,7 @@ public class AiMetrics implements java.io.Serializable {
 		JSONObject res = AITools.aiCaller(null, spe,prompt,hist,false);
 		if(res.has(AITools.ERROR_KEY)) return res.toString();
 		JSONObject resultJS = splitRes(AITools.parseJsonResponse(res),swagger.optJSONObject("components").getJSONObject("schemas"));
-		if(Boolean.TRUE.equals(AITools.AI_DEBUG_LOGS))AppLog.info("res recall: "+resultJS.toString(1), null);
+		if(AITools.AI_DEBUG_LOGS)AppLog.info("res recall: "+resultJS.toString(1), null);
 		
 		return resultJS.toString();
 	}
