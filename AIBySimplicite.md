@@ -178,8 +178,8 @@ _No description._
 
 ### Implemented hooks
 
-* `preCreate`
 * `postCreate`
+* `preCreate`
 
 `AiGroupView` (Described group) business object definition
 ----------------------------------------------------------

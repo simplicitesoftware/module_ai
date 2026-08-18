@@ -2165,6 +2165,16 @@ declare class Bootstrap5 {
      */
     buttonHelp(name: string, help: string, title?: string, btn?: JQuery): JQuery | undefined;
     /**
+     * Return a compliance hint icon with a popover or a dialog when the hint is too long
+     * Works exactly as HELP but with `field.complianceHint` as source
+     * @param {string} name Button name
+     * @param {string} hint Text or html
+     * @param {string} title Optional title of dialog
+     * @param {jQuery} btn Optional button to complete
+     * @function
+     */
+    buttonComplianceHint(name: string, hint: string, title?: string, btn?: JQuery): JQuery | undefined;
+    /**
      * Simple tabs
      * @param {Object} params Parameters
      * @param {string} params.id Tab ID
@@ -2385,7 +2395,7 @@ declare class Bootstrap5 {
      * @param {function} suggestCallback a suggestion callback, sets new value, returns old value
      * @function
      */
-    formGroup(name: string, label: AnyContent | null, inp: AnyContent, msg?: MessageJSON, suggestCallback?: (v: string) => string): JQuery;
+    formGroup(name: string, label: AnyContent | null, inp: AnyContent, msg?: MessageJSON, suggestCallback?: (v: string) => string, msgId?: string): JQuery;
     /**
      * Form group for search form
      * @param cls Class
@@ -4118,6 +4128,64 @@ declare class Widget {
      * @function
      */
     contextMenu(_element: JQuery, e: JQuery.ContextMenuEvent, items: (DropdownItem | JQuery)[]): JQuery<HTMLElement> | undefined;
+}
+
+type Addon$1 = {
+    /** Unique name within the host bar (data-addon + .addon-<name>) */
+    name: string;
+    /** Accessible name: mandatory, no faked buttons */
+    label: string;
+    /** Icon, see $view.icon */
+    icon?: string;
+    /** Ascending left-to-right order (default 50) */
+    weight?: number;
+    /** Click handler (ignored when 'element' is given) */
+    click?: (e: JQuery.Event) => void;
+    /** Prebuilt element (dropdown, gotoDefinition...) */
+    element?: JQuery;
+};
+/**
+ * Addon bar renderer: collects the floating controls (gotodef, copylink, guides, ...)
+ * of a whole view or a single view item
+ * @class
+ */
+declare class AddonBar {
+    static enabled(): boolean;
+    /**
+     * Closest element that can host a bar
+     * @function
+     */
+    hostOf(el: AnyContainer): JQuery;
+    /**
+     * Get (or create) the bar for a host
+     * @param {jQuery}
+     */
+    bar(host: AnyContainer, create?: boolean): JQuery;
+    /**
+     * Reorder addons by ascending weight
+     * @function
+     */
+    sort(items: JQuery): void;
+    /**
+     * Apply the expanded/collapsed state to a toggle button
+     * @function
+     */
+    static toggleState(tgl: JQuery, open: boolean): void;
+    /**
+     * Add an addon to the bar
+     * @function
+     */
+    add(host: AnyContainer, addon: Addon$1): JQuery | undefined;
+    /**
+     * Remove an addon by name
+     * @function
+     */
+    remove(host: AnyContainer, name: string): void;
+    /**
+     * Collapse the bar when empty
+     * @function
+     */
+    refresh(bar: JQuery): void;
 }
 
 /**
@@ -5969,6 +6037,7 @@ declare const UI: {
         compact: boolean;
         splitter: SplitterOptions;
         a11y: A11yOptions;
+        viewAddons: ViewAddonsOptions;
         defaultContentLoad: JQueryHandler | null;
         defaultContentUnload: JQueryHandler | null;
         onload: CallableFunction | null;
@@ -6066,6 +6135,7 @@ declare const UI: {
         Bootstrap5: typeof Bootstrap5;
         Main: typeof UIViewer;
         Widget: typeof Widget;
+        Addons: typeof AddonBar;
         Menu: typeof Menu;
         Board: typeof Board;
         List: typeof List;
@@ -8567,6 +8637,13 @@ declare class CodeEditor {
     saveAll(cbk?: Callback, err?: (log: KeyObject) => void): void;
     compiled(r: KeyObject, cbk?: Callback, err?: (log: KeyObject) => void): void;
     private tsTimer;
+    private selTimer;
+    /**
+     * Persist the current tab as a user preference (debounced)
+     * @param {string} key tab unique key
+     * @function
+     */
+    private persistSelected;
     applyAnnotations(e: EditorTab, annotations: Annotation[]): void;
     /**
      * Validate Typescript code and set annotations in the editor
@@ -12348,6 +12425,11 @@ declare class UIViewer {
      */
     readonly timesheet: Timesheet;
     /**
+     * Addon bar renderer
+     * @member
+     */
+    readonly addons: AddonBar;
+    /**
      * Color helpers
      * @member
      */
@@ -13090,6 +13172,7 @@ declare class ObjectField {
     rightToLeft?: boolean;
     case?: FieldCase;
     compliance?: "NA" | "C" | "NC" | "PC" | "NE";
+    complianceHint?: string;
     regexp?: string;
     regexpmsg?: string;
     calcExpr?: string;
@@ -18316,6 +18399,9 @@ type A11yOptions = {
     toggle?: boolean;
     save?: boolean | "auto";
 };
+type ViewAddonsOptions = {
+    enabled?: boolean;
+};
 /**
  * UI globals options (shorthand $ui.options or Simplicite.UI.Globals).
  * Each UI object gets a copy in obj.locals.ui to override the default behaviors.
@@ -18437,6 +18523,12 @@ declare const Globals: {
      * @static
      */
     a11y: A11yOptions;
+    /**
+     * @prop {Object} viewAddons Group the floating view controls in an addon bar
+     * @memberof Simplicite.UI.Globals
+     * @static
+     */
+    viewAddons: ViewAddonsOptions;
     /**
      * @prop {function} defaultContentLoad Optional handler when a content is loaded
      * @memberof Simplicite.UI.Globals
@@ -18671,4 +18763,4 @@ declare class StringExtension {
 var Simplicite$1 = Simplicite;
 
 export { $app, $console, $factory, $grant, $nav, $tools, $ui, $view, Ajax, AsyncFunction, Bam, Board, Bootstrap5, BusinessObject, BusinessProcess, CSSCOLORS, Charts, ColorPicker, Crosstab, EventWebSocket, External, ExternalObject, Factory, Feedback, Form, Globals, Grant, GridEditor, Guide, Import, IndexSearch, JQueryExtension, List, Menu, Merge, OCR, ObjectField, Prefs, Search, Session, SimpliciteColors, Social, StringExtension, SyncQueue, Timesheet, Tray, TreeView, UI, UIAction, UIArea, UIBusinessObject, UIBusinessProcess, UICalendar, UIColor, UIComponent, UIEngine, UIExternalObject, UIField, UIFieldDateTime, UILoader, UIMap, UINavigator, UIRender, UISplitter, UITray, UIUtil, UIView, UIViewer, UIWorkflow, Update, View, WebPush, Widget, Workflow, ZIP, buttonsPlugin, Simplicite$1 as default, yearPlugin };
-export type { A11yOptions, Action, ActionGroup, ActionHandler, ActionHandlers, ActionLevel, ActionSize, ActionType, ActivityFile, ActivityMetadata, ActivityStatus, Addon, Agenda, AlertCallback, AlertLevel, AlertParam, AlertType, AnyAddon, AnyContainer, AnyContent, Area, AreaParam, Associate, BackendConstants, Bookmark, BookmarkParam, Bookmarks, Button, CSSColors, CalendarParam, CallResponse, Callback, ColorPickerHandler, ColorSet, ConfirmRun, ConstraintFunction, Container, Contrast, CounterParam, CreateLink, CrosstabAxis, CrosstabAxisType, CrosstabData, CrosstabMetadata, CrosstabNavParam, CrosstabNode, CrosstabParam, Datamap, DevOptions, DialogAction, DialogParam, DocumentDB, DropdownItem, EnumItem, EventCloseParam, ExternalData, ExternalMetadata, ExternalParam, FeedbackData, FeedbackParam, FieldAddon, FieldCase, FieldDisplay, FieldFilter, FieldLinkMap, FieldNumFormat, FieldSearch, FieldSearchFixed, FieldValue, Filters, FollowLink, Font, FormActions, FormParam, GetParam, GoogleParam, GridEditorJson, GridEditorOptions, GridEditorParam, GuideMetadata, HSV, IconsMetadata, IndexMetadata, IndexParam, InlineObject, InlineParam, InputAddon, JQueryHandler, JSVG, Job, JobFunction, KeyBoolean, KeyBusinessObjectHook, KeyBusinessProcessHook, KeyConstraint, KeyExternalObject, KeyHash, KeyNumber, KeyObject, KeyObjectHook, KeyString, KeyStrings, Link, ListActions, ListEditMode, ListLayout, ListParam, ListRowsActions, ListSearchMode, ListSelection, LoadParam, LoadPart, LoadPartOnload, LoadTarget, LoadTargetArea, MainMenu, MapParam, MapSettings, MenuGridOptions, MenuItem, MenuParam, MenuSettings, MergeParam, MergeSaveParam, MessageAny, MessageFromBack, MessageJSON, MessageSaveRows, MessageText, MessagesPerRow, MetaObject, ModuleAjax, MonthSelectConfig, MousePos, NavAction, NavFocus, NavHistItem, NavItem, NavParam, NavType, NewTabPosition, News, NotifyObject, NotifyObjectType, OKLAB, ObjectHookFunction, ObjectMetadata, Palette, PaletteColors, PaletteName, ParentObject, PillboxParam, Place, Placemap, Point, Position, PredefSearch, PrefItem, PrefType, PrefefSearch, PrefsParam, PrintTemplate, ProcessAction, ProcessActionType, ProcessMetadata, ProcessParam, ProgressHandler, RGB, RGBA, Rect, RenderFunction, Resource, RoadRender, RowActions, RowData, RowDataMeta, RowGroupBy, RowGroupByKey, RowItem, RowPartial, RowTree, Scope, ScratchPadParam, SearchAjax, SearchAjaxGroupBy, SearchAjaxList, SearchAjaxMetadata, SearchAjaxPartial, SearchAjaxTree, SearchParam, SearchPredefParam, SessionGlobals, Shortcut, ShortcutKey, ShortcutKeys, ShowViewsMode, SimpliciteInterface, Size, SliderParam, SocialParam, SocialPost, SocialStatus, SocialUser, SplitPart, SplitterOptions, SubMenu, SummaryParam, Tab, Tabs, TargetObject, TempPillbox, TempPillboxes, TemplateEntity, TemplateTarget, Theme, ThemeBase, TimesheetData, TimesheetGanttData, TimesheetGanttParam, TimesheetLine, TimesheetMetadata, TimesheetOptions, TimesheetParam, TimesheetPeriod, TimesheetShift, TimesheetTotal, ToastParam, TrackerCallback, TrackerData, TrackerParam, TrackerTask, Transition, TrayActor, TrayCard, TrayColumn, TreeNode, TreeNodeList, TreeParam, UpdateFormParam, UsageUser, UserFilterParam, VIEW_TYPE, ViewFilter, ViewItem, ViewItemContent, ViewItemContentData, ViewItemType, ViewParam, WorkAreaOptions, WorkAreaSize, WorkTabContextMenu, WorkTabInfos, WorkTabOptions };
+export type { A11yOptions, Action, ActionGroup, ActionHandler, ActionHandlers, ActionLevel, ActionSize, ActionType, ActivityFile, ActivityMetadata, ActivityStatus, Addon, Agenda, AlertCallback, AlertLevel, AlertParam, AlertType, AnyAddon, AnyContainer, AnyContent, Area, AreaParam, Associate, BackendConstants, Bookmark, BookmarkParam, Bookmarks, Button, CSSColors, CalendarParam, CallResponse, Callback, ColorPickerHandler, ColorSet, ConfirmRun, ConstraintFunction, Container, Contrast, CounterParam, CreateLink, CrosstabAxis, CrosstabAxisType, CrosstabData, CrosstabMetadata, CrosstabNavParam, CrosstabNode, CrosstabParam, Datamap, DevOptions, DialogAction, DialogParam, DocumentDB, DropdownItem, EnumItem, EventCloseParam, ExternalData, ExternalMetadata, ExternalParam, FeedbackData, FeedbackParam, FieldAddon, FieldCase, FieldDisplay, FieldFilter, FieldLinkMap, FieldNumFormat, FieldSearch, FieldSearchFixed, FieldValue, Filters, FollowLink, Font, FormActions, FormParam, GetParam, GoogleParam, GridEditorJson, GridEditorOptions, GridEditorParam, GuideMetadata, HSV, IconsMetadata, IndexMetadata, IndexParam, InlineObject, InlineParam, InputAddon, JQueryHandler, JSVG, Job, JobFunction, KeyBoolean, KeyBusinessObjectHook, KeyBusinessProcessHook, KeyConstraint, KeyExternalObject, KeyHash, KeyNumber, KeyObject, KeyObjectHook, KeyString, KeyStrings, Link, ListActions, ListEditMode, ListLayout, ListParam, ListRowsActions, ListSearchMode, ListSelection, LoadParam, LoadPart, LoadPartOnload, LoadTarget, LoadTargetArea, MainMenu, MapParam, MapSettings, MenuGridOptions, MenuItem, MenuParam, MenuSettings, MergeParam, MergeSaveParam, MessageAny, MessageFromBack, MessageJSON, MessageSaveRows, MessageText, MessagesPerRow, MetaObject, ModuleAjax, MonthSelectConfig, MousePos, NavAction, NavFocus, NavHistItem, NavItem, NavParam, NavType, NewTabPosition, News, NotifyObject, NotifyObjectType, OKLAB, ObjectHookFunction, ObjectMetadata, Palette, PaletteColors, PaletteName, ParentObject, PillboxParam, Place, Placemap, Point, Position, PredefSearch, PrefItem, PrefType, PrefefSearch, PrefsParam, PrintTemplate, ProcessAction, ProcessActionType, ProcessMetadata, ProcessParam, ProgressHandler, RGB, RGBA, Rect, RenderFunction, Resource, RoadRender, RowActions, RowData, RowDataMeta, RowGroupBy, RowGroupByKey, RowItem, RowPartial, RowTree, Scope, ScratchPadParam, SearchAjax, SearchAjaxGroupBy, SearchAjaxList, SearchAjaxMetadata, SearchAjaxPartial, SearchAjaxTree, SearchParam, SearchPredefParam, SessionGlobals, Shortcut, ShortcutKey, ShortcutKeys, ShowViewsMode, SimpliciteInterface, Size, SliderParam, SocialParam, SocialPost, SocialStatus, SocialUser, SplitPart, SplitterOptions, SubMenu, SummaryParam, Tab, Tabs, TargetObject, TempPillbox, TempPillboxes, TemplateEntity, TemplateTarget, Theme, ThemeBase, TimesheetData, TimesheetGanttData, TimesheetGanttParam, TimesheetLine, TimesheetMetadata, TimesheetOptions, TimesheetParam, TimesheetPeriod, TimesheetShift, TimesheetTotal, ToastParam, TrackerCallback, TrackerData, TrackerParam, TrackerTask, Transition, TrayActor, TrayCard, TrayColumn, TreeNode, TreeNodeList, TreeParam, UpdateFormParam, UsageUser, UserFilterParam, VIEW_TYPE, ViewAddonsOptions, ViewFilter, ViewItem, ViewItemContent, ViewItemContentData, ViewItemType, ViewParam, WorkAreaOptions, WorkAreaSize, WorkTabContextMenu, WorkTabInfos, WorkTabOptions };

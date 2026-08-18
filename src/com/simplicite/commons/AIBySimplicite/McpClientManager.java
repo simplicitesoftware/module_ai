@@ -62,7 +62,8 @@ public class McpClientManager implements java.io.Serializable {
             .preserveContext() // keep the instance definition to be restored on close
             .forCreateOrUpdate(Map.of(
                 "utk_usr_id", g.getUserUniqueId(),
-                "utk_type", "API"))
+                "utk_type", "API","utk_expirydate",">=[DATETIME]"))
+            .withValue("utk_expirydate","")
             .validateAndSave(msg -> AppLog.info("save = "+msg))
             .returns(msg -> AppLog.info("msg = "+msg));
             return bo.getObject().getFieldValue("utk_token");
