@@ -260,7 +260,7 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
         logs.append("isToolCall: "+isToolCall+"\n");
         Grant g = getGrant();
         JSONObject json = g.getJSONObjectParameter("AI_CHAT_HIST","{}");
-        if(!json.has(id))return;
+        if(!json.has(id))json.put(id,new JSONArray());
         JSONArray hist = json.getJSONArray(id);
         String usermsg = "not found";
 

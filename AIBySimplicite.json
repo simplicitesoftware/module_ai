@@ -17,24 +17,6 @@
  },
  "links": [
   {
-   "object": "SystemParam",
-   "label": "System parameters",
-   "icon": "img/system/system_param",
-   "field": "row_module_id",
-   "list": [{
-    "object": "SystemParam",
-    "userkey": "AI_CHAT_HIST",
-    "item": {
-     "sys_code": "AI_CHAT_HIST",
-     "sys_value": "{}",
-     "sys_type": null,
-     "sys_event": false,
-     "sys_desc": null,
-     "row_module_id__mdl_name": "AIBySimplicite"
-    }
-   }]
-  },
-  {
    "object": "Disposition",
    "label": "Dispositions",
    "icon": "img/system/disposition",
