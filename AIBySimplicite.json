@@ -17,6 +17,24 @@
  },
  "links": [
   {
+   "object": "SystemParam",
+   "label": "System parameters",
+   "icon": "img/system/system_param",
+   "field": "row_module_id",
+   "list": [{
+    "object": "SystemParam",
+    "userkey": "AI_CHAT_HIST",
+    "item": {
+     "sys_code": "AI_CHAT_HIST",
+     "sys_value": "{}",
+     "sys_type": null,
+     "sys_event": false,
+     "sys_desc": null,
+     "row_module_id__mdl_name": "AIBySimplicite"
+    }
+   }]
+  },
+  {
    "object": "Disposition",
    "label": "Dispositions",
    "icon": "img/system/disposition",
@@ -864,6 +882,19 @@
     },
     {
      "object": "ListOfValue",
+     "userkey": "TEXT~AI_TOOL_ASK~ENU",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_TOOL_ASK",
+      "lov_lang": "ENU",
+      "lov_value": "Use [TOOL] [PARAMS?:on [PARAMS]]?",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
      "userkey": "TEXT~AI_WARN_EMPTY_PREFIX~ENU",
      "item": {
       "lov_name": "TEXT",
@@ -1325,6 +1356,19 @@
       "lov_code": "AI_TOKEN_LIMIT_REACHED",
       "lov_lang": "FRA",
       "lov_value": "Vous avez atteint la limite de jetons, veuillez relancer avec un nombre inférieur de données ou demander la modification du nombre maximum de jetons.",
+      "lov_order_by": 1,
+      "lov_event_id__lev_code": null,
+      "row_module_id__mdl_name": "AIBySimplicite"
+     }
+    },
+    {
+     "object": "ListOfValue",
+     "userkey": "TEXT~AI_TOOL_ASK~FRA",
+     "item": {
+      "lov_name": "TEXT",
+      "lov_code": "AI_TOOL_ASK",
+      "lov_lang": "FRA",
+      "lov_value": "Utiliser [TOOL] [PARAMS?:sur [PARAMS]]?",
       "lov_order_by": 1,
       "lov_event_id__lev_code": null,
       "row_module_id__mdl_name": "AIBySimplicite"
@@ -3225,7 +3269,7 @@
      "obd_view_id__viw_name": "AIMonitoring",
      "obd_nohome": false,
      "obd_icon": "fas/robot",
-     "obd_order": 10,
+     "obd_order": 15,
      "obd_domain_id__obd_name": null,
      "row_module_id__mdl_name": "AIBySimplicite"
     }

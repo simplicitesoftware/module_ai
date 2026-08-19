@@ -370,9 +370,21 @@ public class AITools implements java.io.Serializable {
             if( len< aiHistDepth*2){
                 return historic;
             }else{
+                // to redo for skip tools
                 JSONArray newHistoric = new JSONArray();
-                for(int i = len - 2*aiHistDepth; i < len;i++ )
-                    newHistoric.put(historic.getJSONObject(i));
+                int nbUsrMsg = 0;
+                int begin=-1;
+                int index = len -1;
+                while(nbUsrMsg < aiHistDepth && index > 0){
+                    if("user".equals(historic.getJSONObject(index).optString("role"))){
+                        nbUsrMsg+=1;
+                        begin = index;
+                    }
+                    index-=1;
+                }
+                for(int i = begin; i < len;i++ )
+                   newHistoric.put(historic.getJSONObject(i));
+                AppLog.info("newhist "+newHistoric.toString());
                 return newHistoric;
             }
         }
@@ -676,7 +688,7 @@ public class AITools implements java.io.Serializable {
             JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation);
             AICallerParams caller = new AICallerParams(prompt,params);
             caller.setTools(tools);
-           
+
             return caller.aiCall(g);
         }catch (AITypeException e){
             AppLog.error(e,g);
@@ -776,7 +788,7 @@ public class AITools implements java.io.Serializable {
             JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation).put(CALLER_PARAM_HISTORIC, historic);
             AICallerParams caller = new AICallerParams(prompt,params);
             caller.setTools(tools);
-            
+
             caller.setAssistantToolsCalls(assistantToolsCalls);
             caller.setUserToolsResponse(userToolsResponse);
             return caller.aiCall(g);
@@ -786,7 +798,7 @@ public class AITools implements java.io.Serializable {
         }
     }
     public static JSONObject aiCaller(Grant g, String specialisation, JSONArray historic,JSONObject providerParams ,Object prompt){
-        AppLog.info("ai coller with provider: "+providerParams.toString(1));
+        if (AI_DEBUG_LOGS) AppLog.info("ai coller with provider: "+providerParams.toString(1));
 
         try{
             JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
@@ -824,7 +836,7 @@ public class AITools implements java.io.Serializable {
             JSONObject params =  new JSONObject().put(CALLER_PARAM_SPE, specialisation)
                                                 .put(CALLER_PARAM_TOKEN, aiApiParam.getInt("code_max_token"))
                                                 .put(CALLER_PARAM_CODE_SECURE,true);
-            AppLog.info("CODE "+code);
+            if (AI_DEBUG_LOGS) AppLog.info("CODE "+code);
             AICallerParams caller = new AICallerParams(code,params);
             return caller.aiCall(g);
         }catch (AITypeException e){
@@ -1580,7 +1592,7 @@ public class AITools implements java.io.Serializable {
     }
 
     public static String provider(){
-        AppLog.info(aiProvider);
+        if (AI_DEBUG_LOGS) AppLog.info(aiProvider);
         return aiProvider;
     }
     public static boolean isTokenLimitReached(JSONObject json){ // mistral and gpt

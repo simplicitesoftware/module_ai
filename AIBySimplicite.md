@@ -125,6 +125,13 @@ _Domains organize the application's main navigation menu. Each domain groups the
   * `AiSettingsProcess` _(workflow)_
   * `AIProvider` _(object)_
 
+System parameters
+-----------------
+
+| Code | Value | Type | Description |
+|---|---|---|---|
+| `AI_CHAT_HIST` | `{}` |  |  |
+
 `AiGroupGuiDesc` (Group gui description) business object definition
 -------------------------------------------------------------------
 
@@ -178,8 +185,8 @@ _No description._
 
 ### Implemented hooks
 
-* `postCreate`
 * `preCreate`
+* `postCreate`
 
 `AiGroupView` (Described group) business object definition
 ----------------------------------------------------------

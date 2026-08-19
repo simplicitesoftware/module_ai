@@ -29,12 +29,14 @@ import org.json.JSONObject;
 @SuppressWarnings("unused")
 public class McpClientManager implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
+    private static final  boolean AI_DEBUG_LOGS ="true".equals(Grant.getSystemAdmin().getParameter("AI_DEBUG_LOGS"));
     private static McpClientManager instance;
     private McpSyncClient client;
     private String token ;
     private String baseUrl;
     private McpClientManager(Grant g) {
         init(g);
+
     }
 
 
@@ -49,7 +51,7 @@ public class McpClientManager implements java.io.Serializable {
         String jwt = AuthTool.createJWTToken(g);
         token = getBearerToken(g);
         baseUrl=g.getContextURL();
-        AppLog.info("baseUrl "+baseUrl);
+        if (AI_DEBUG_LOGS) AppLog.info("baseUrl "+baseUrl);
         initHttpClient(g);
         //initStdioClient();
         initHttpClientUi(g);
@@ -64,7 +66,7 @@ public class McpClientManager implements java.io.Serializable {
                 "utk_usr_id", g.getUserUniqueId(),
                 "utk_type", "API","utk_expirydate",">=[DATETIME]"))
             .withValue("utk_expirydate","")
-            .validateAndSave(msg -> AppLog.info("save = "+msg))
+            .validateAndSave(msg ->  AppLog.info("save = "+msg))
             .returns(msg -> AppLog.info("msg = "+msg));
             return bo.getObject().getFieldValue("utk_token");
         }
@@ -141,6 +143,9 @@ public class McpClientManager implements java.io.Serializable {
     public ListToolsResult listTools() {
         return client.listTools();
     }
+    public String  getServerInstructions() {
+        return client.getServerInstructions();
+    }
     public JSONArray listToolsAsOpenAIFormat() {
         return mcpToolsToOpenAIFormat(listTools().tools());
     }
@@ -177,7 +182,7 @@ public class McpClientManager implements java.io.Serializable {
             tool.put("function", function);
             tools.put(tool);
         }
-        AppLog.info("tools: "+tools.toString(1));
+        if (AI_DEBUG_LOGS) AppLog.info("tools: "+tools.toString(1));
         return tools;
     }
     public CallToolResult callWithPrompt(String toolName, JSONObject arguments) {

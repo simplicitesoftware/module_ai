@@ -19,6 +19,7 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
     private static McpClientManager
             manager; // = McpClientManager.getInstance(Grant.getSystemAdmin());
     private static JSONArray tools; // = manager.listToolsAsOpenAIFormat();
+    private static String serverInstructions;
 
     private static final String JSON_OBJECT_NAME_KEY = "objectName";
     private static final String JSON_OBJECT_ID_KEY = "objectID";
@@ -28,9 +29,10 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
     @Override
     public void init(Parameters params) {
         Grant g = getGrant();
-        AppLog.info("init API with GRANT " + g.getLogin());
+        if (AITools.AI_DEBUG_LOGS) AppLog.info("init API with GRANT " + g.getLogin());
         manager = McpClientManager.getInstance(g);
         tools = manager.listToolsAsOpenAIFormat();
+        serverInstructions = manager.getServerInstructions();
     }
 
     /** GET : liste les outils MCP disponibles */
@@ -140,6 +142,7 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
             JSONObject req,
             JSONArray acceptedTools,
             JSONArray refusedTools) {
+        boolean istool = false;
         try {
             prompt = prompt.trim();
             if (Tool.isEmpty(prompt)) {
@@ -148,16 +151,21 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
             if (AITools.AI_DEBUG_LOGS) {
                 AppLog.info("McpClientApi POST request: " + req.toString(1), getGrant());
             }
-            JSONArray historic = AITools.optJSONArray(getParamOrreqParam("historic", params, req));
+            String id = getParamOrreqParam("id",params,req);
+            JSONArray historic = Tool.isEmpty(id)?AITools.optJSONArray(getParamOrreqParam("historic", params, req)):getHistoric(id);
             if (tools.length() == 0) {
                 AppLog.warning("NO MCP TOOLS FOUND, Call api without tools");
-                return AITools.aiCaller(getGrant(), null, historic, prompt);
+                JSONObject result = AITools.aiCaller(getGrant(), serverInstructions, historic, prompt);
+                addHist(id,result,prompt,null,null);
+                return result;
             } else {
+
                 JSONArray assistantToolsCalls = new JSONArray();
                 JSONArray userToolsResponse = new JSONArray();
                 JSONArray p = AITools.optJSONArray(prompt);
                 if (acceptedTools != null && acceptedTools.length() > 0
                         || refusedTools != null && refusedTools.length() > 0) {
+                   // istool = true;
 
                     for (int i = 0; i < acceptedTools.length(); i++) {
                         JSONObject tool = acceptedTools.getJSONObject(i);
@@ -172,7 +180,7 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
                         JSONObject userToolResponse = new JSONObject();
                         userToolResponse.put("tool_call_id", tool.optString("id"));
                         userToolResponse.put("role", "tool");
-                        userToolResponse.put("content", getToolResponse(tool));
+                        userToolResponse.put(AITools.CONTENT_KEY, getToolResponse(tool));
                         userToolsResponse.put(userToolResponse);
                     }
                     for (int i = 0; i < refusedTools.length(); i++) {
@@ -189,14 +197,19 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
                         JSONObject userToolResponse = new JSONObject();
                         userToolResponse.put("tool_call_id", tool.optString("id"));
                         userToolResponse.put("role", "tool");
-                        userToolResponse.put("content", "Tool execution denied by user. Ask the user what they would like to do now");
+                        userToolResponse.put(AITools.CONTENT_KEY, "Tool execution denied by user. Ask the user what they would like to do now");
                         userToolsResponse.put(userToolResponse);
                     }
+                }
+                if(istool ){
+                    int index = historic.length() -1;
+                    if("assistant".equals(historic.getJSONObject(index).getString("role"))) historic.remove(index);
+
                 }
                 JSONObject response =
                         AITools.aiCallerWithMCP(
                                 getGrant(),
-                                null,
+                                serverInstructions,
                                 historic,
                                 Tool.isEmpty(p) ? prompt : p,
                                 tools,
@@ -206,13 +219,6 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
                     AppLog.info("McpClientApi POST response: " + response.toString(1), getGrant());
                 }
                 JSONArray toolCall = new JSONArray();
-                AppLog.info(
-                        "McpClientApi POST response finish reason: "
-                                + response.optJSONArray("choices", new JSONArray())
-                                        .optJSONObject(0, new JSONObject())
-                                        .optString("finish_reason", ""),
-                        getGrant());
-
                 if ("tool_calls"
                         .equals(
                                 response.optJSONArray("choices", new JSONArray())
@@ -233,16 +239,74 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
                         tool.put("description", toolDescription);
                     }
                 }
-                return new JSONObject()
+
+                JSONObject result = new JSONObject()
                         .put("tools", toolCall)
                         .put("request", prompt)
                         .put("response", response);
+                addHist(id,result,Tool.isEmpty(p) ? prompt : p,userToolsResponse,assistantToolsCalls);
+                return result;
             }
         } catch (Exception e) {
             AppLog.error("McpClientApi POST error: " + e.getMessage(), e, getGrant());
             return error(e);
         }
     }
+
+    private void addHist(String id, JSONObject response, Object prompt,JSONArray toolsRep, JSONArray toolsCall){
+        StringBuilder logs = new StringBuilder();
+        logs.append("-------------DEBUG add Hist---------------\n");
+        boolean isToolCall ="tool_calls".equals(response.optJSONObject("response",new JSONObject()).optJSONArray("choices", new JSONArray()).optJSONObject(0, new JSONObject()).optString("finish_reason", ""));
+        logs.append("isToolCall: "+isToolCall+"\n");
+        Grant g = getGrant();
+        JSONObject json = g.getJSONObjectParameter("AI_CHAT_HIST","{}");
+        if(!json.has(id))return;
+        JSONArray hist = json.getJSONArray(id);
+        String usermsg = "not found";
+
+        if(prompt instanceof  String){
+            usermsg=(String)prompt;
+        }else if(prompt instanceof  JSONArray arr){
+            for(Object o: arr){
+                JSONObject j = (JSONObject)o;
+                if("text".equals(j.optString("type",""))){
+                    usermsg=j.optString("text","not found");
+                     break; 
+                }
+            }
+        }
+        usermsg = usermsg.replaceAll("^\"|\"$", "");
+        logs.append("on user message: "+usermsg+"\n");
+        if(isToolCall || !Tool.isEmpty(toolsCall)){
+            logs.append("isToolCall check last Hist\n");
+
+            JSONObject lastHist = hist.getJSONObject(hist.length()-1);
+             logs.append(lastHist.toString(1)+"\n");
+            if(!"tool".equals(lastHist.optString("role","")) && !("user".equals(lastHist.optString("role","")) && usermsg.equals(lastHist.optString(AITools.CONTENT_KEY,""))))hist.put(new JSONObject().put("role","user").put(AITools.CONTENT_KEY,usermsg));
+
+        }else {
+            logs.append("is not ToolCall append usrmsg\n");
+            hist.put(new JSONObject().put("role","user").put(AITools.CONTENT_KEY,usermsg));
+
+        }
+        if(!Tool.isEmpty(toolsCall) && !Tool.isEmpty(toolsRep)){
+            JSONObject calls = new JSONObject().put("role","assistant").put("tool_calls",toolsCall).put(AITools.CONTENT_KEY,JSONObject.NULL);
+            hist.put(calls);
+            for (Object o:toolsRep) {
+                hist.put(o);  
+            }
+        }
+        if(!isToolCall){ 
+            String botResponse = response.optJSONObject("response",new JSONObject()).optJSONArray("choices",new JSONArray()).optJSONObject(0,new JSONObject()).optJSONObject("message",new JSONObject()).optString(AITools.CONTENT_KEY,"not found");
+            hist.put(new JSONObject().put("role","assistant").put(AITools.CONTENT_KEY,Tool.isEmpty(botResponse)?"not found":botResponse));
+       }
+        g.setParameter("AI_CHAT_HIST",json.toString(1));
+        g.setUserSystemParam("AI_CHAT_HIST",json.toString(1),false);
+        logs.append("-------------END DEBUG add Hist---------------\n");
+        AppLog.info("\n"+logs.toString());
+
+    }
+
 
     private String getToolResponse(JSONObject tool) {
         JSONObject toolfunc = tool.optJSONObject("function", new JSONObject());
@@ -283,7 +347,11 @@ public class AiMcpClientApi extends com.simplicite.webapp.services.RESTServiceEx
 
         return sb.toString().trim();
     }
-
+    private JSONArray getHistoric(String id){
+        JSONObject json = getGrant().getJSONObjectParameter("AI_CHAT_HIST","{}");
+        if(json.has(id)) return json.optJSONArray(id);
+        return new JSONArray();
+    }
     private String getParamOrreqParam(String name, Parameters params, JSONObject req) {
 
         if (Tool.isEmpty(name)) return null;

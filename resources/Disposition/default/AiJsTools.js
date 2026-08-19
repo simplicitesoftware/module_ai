@@ -200,10 +200,10 @@ var AiJsTools = AiJsTools || (function(param) {
         ctn.find("#input-img").hide();
         resizeUp(ctn,$(ctn).parent().find(".chat-messages"));
     }
-    function getPostParams(ctn,specialisation){
+    function getPostParams(ctn,specialisation,id){
         console.log(" get post params begin");
         let historic = [];
-        $(ctn).find(".user-messages").each(function() {
+        if(!id)$(ctn).find(".user-messages").each(function() {
             let text ={};
             text.role = "user";
             let contents =[];
@@ -221,7 +221,7 @@ var AiJsTools = AiJsTools || (function(param) {
              // Following siblings may include .tools: use the first .bot-messages after this user turn
              text.content = $(this).nextAll(".bot-messages").first().find(".msg").text();
 
-           
+
             historic.push(text);
 
         });
@@ -235,7 +235,7 @@ var AiJsTools = AiJsTools || (function(param) {
             prompt.push({"type":"image_url","image_url":{"url":userImage}});
         }
         console.log(" get post params prompt",prompt);
-        let param = {prompt:prompt, specialisation:specialisation, historic: historic, providerParams: providerParams,reqType:"chatBot"};
+        let param = {prompt:prompt, specialisation:specialisation, historic: historic, providerParams: providerParams,reqType:"chatBot",id:id};
         console.log(" get post params end",param);
 
         return  param;// post params

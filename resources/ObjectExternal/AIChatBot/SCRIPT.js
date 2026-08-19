@@ -8,11 +8,13 @@ var AIChatBot = AIChatBot || (function() {
     let SpeechVisible = true;
     let historicObject;
     let currentTools = null;
+    let id=null;
 
-    function render(params, isAdaContext, spe, dataDisclaimer) {
+    function render(params, isAdaContext, spe, dataDisclaimer,convId) {
 
         let ctn = params[0];
-        if(!ctn)ctn = $('#AIchatbot');
+        id = convId;
+        if (!ctn) ctn = $('#AIchatbot');
         if (dataDisclaimer) {
             $(ctn).find('#data_warn').html(dataDisclaimer);
             $(ctn).find('#data_warn').show();
@@ -54,7 +56,7 @@ var AIChatBot = AIChatBot || (function() {
         desableChatbot(ctn);
 
         let historic = [];
-        $(ctn).find(".user-messages").each(function() {
+        if(!id)(ctn).find(".user-messages").each(function() {
             let text = {};
             text.role = "user";
             text.content = $(this).find(".msg").text();
@@ -67,6 +69,7 @@ var AIChatBot = AIChatBot || (function() {
             historic.push(JSON.stringify(text));
 
         });
+        console.log("historic",historic);
 
         // Params
         let useAsync; // use async callback pattern
@@ -78,7 +81,7 @@ var AIChatBot = AIChatBot || (function() {
 
         let postParams;
         if (AiJsTools) {
-            postParams = AiJsTools.getPostParams(ctn, specialisation);
+            postParams = AiJsTools.getPostParams(ctn, specialisation,id);
         } else {
             console.log("ERROR no AiJsTools");
         }
@@ -119,7 +122,7 @@ var AIChatBot = AIChatBot || (function() {
             } else {
                 let result = botResponse.response.choices[0].message.content;
                 result = escapeHtml(result);
-                $view.markdownToHTML(result, 0,resulthtml => {
+                $view.markdownToHTML(result, 0, resulthtml => {
                     displayAnswer(resulthtml, ctn);
                     console.log("addHistoric(", userMessage, ",", resulthtml, ",", userImg, ",", botResponse.response.usage, ",", $grant.getLogin(), ")");
                     addHistoric(userMessage, result, userImg, botResponse.response.usage, $grant.getLogin());
@@ -171,8 +174,8 @@ var AIChatBot = AIChatBot || (function() {
                 response: null,
                 tool: tool
             };
-            console.log("toolName", toolName);
-            const detailText = tool?.function?.description || tool?.description || toolName || "";
+            console.log("toolName", toolName, currentTools[toolName]);
+            const detailText = formatToolAsk($T("AI_TOOL_ASK"),tool?.function?.arguments,toolName); //tool?.function?.description || tool?.description || toolName || "";
 
             const $bar = $("<div/>").addClass("ai-tool-bar");
             const $label = $("<div/>").addClass("ai-tool-bar-label");
@@ -209,10 +212,10 @@ var AIChatBot = AIChatBot || (function() {
             $bar.append($label, $actions);
             $toolsBox.append($bar);
         });
-        console.log("ctn: ",ctn);
-      const $lastBot = $(ctn).find(".bot-messages").last();
+        console.log("ctn: ", ctn);
+        const $lastBot = $(ctn).find(".bot-messages").last();
         const $toolsAfterLastBot = $lastBot.nextAll(".tools").last();
-        console.log("last ",$lastBot, "tools ",$toolsAfterLastBot);
+        console.log("last ", $lastBot, "tools ", $toolsAfterLastBot);
         if ($lastBot.length && $toolsAfterLastBot.length > 0) {
             const $lastToolBlock = $(ctn).find(".tools").last();
             $toolsBox.addClass("tools-below");
@@ -313,6 +316,30 @@ var AIChatBot = AIChatBot || (function() {
         $(ctn).find("#chatbot_input_message").prop("disabled", false);
     }
 
+    function formatToolAsk(template, param, toolName) {
+    let formattedParam = param;
+
+    if (param) {
+        try {
+            const json = JSON.parse(param);
+            // Vérifie si c'est un objet JSON valide (pas un tableau, pas null)
+            if (typeof json === 'object' && json !== null && !Array.isArray(json)) {
+                formattedParam = Object.entries(json)
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join(', ');
+            }
+        } catch (e) {
+            console.error("param is not valid JSON", e);
+            // Si ce n'est pas du JSON valide, on garde la valeur originale
+        }
+    }
+
+    return template
+        .replace(/\[TOOL\]/, toolName)
+        .replace(/\[PARAMS\]/g, formattedParam)
+        .replace(/\[PARAMS\?:(.*)\]/, formattedParam ? '$1': '');
+}
+
     function addHistoric(userMessage, botMessage, userImg, cost, login) {
         if (!historicObject) return;
         let botn = "bot";
@@ -339,17 +366,7 @@ var AIChatBot = AIChatBot || (function() {
                 }
             });
         });
-        /*oldhist
-        let message = "";
-        if(historicObject.item.adaPhyChat){
-            message = historicObject.item.adaPhyChat;
-        }
 
-        message += `\n# ${login}\n${userMessage}\n\n# ${botn}\n${botMessage}\n\n`;
-        historicObject.item.adaPhyChat = message;
-        historicObject.item[`adaPhyUserPrompts`] = userMessage;
-        historicObject.save();
-        */
     }
     return {
         render: render,
