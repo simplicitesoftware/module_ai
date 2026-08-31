@@ -4116,6 +4116,7 @@ declare class Widget {
         addon?: AnyContent;
         button?: {
             style?: string;
+            label?: string;
             onclick?: JQueryHandler;
         };
         onclick?: boolean | JQueryHandler;
@@ -4167,6 +4168,14 @@ declare class AddonBar {
      */
     sort(items: JQuery): void;
     /**
+     * Set the bar title (host type and name)
+     * @param {jQuery} host bar host
+     * @param {string} label host name
+     * @param {string} type optional object type (View, ObjectExternal...)
+     * @function
+     */
+    hostTitle(host: AnyContainer, label: string, type?: string): void;
+    /**
      * Apply the expanded/collapsed state to a toggle button
      * @function
      */
@@ -4182,7 +4191,7 @@ declare class AddonBar {
      */
     remove(host: AnyContainer, name: string): void;
     /**
-     * Collapse the bar when empty
+     * Collapse the bar when empty, bypass the toggle for a single addon
      * @function
      */
     refresh(bar: JQuery): void;
@@ -12547,7 +12556,7 @@ declare class UIViewer {
      * @param {function} cbk text or HTML compiled with marked plugin
      * @function
      */
-    markdownToHTML(v: string, h: number, cbk?: (html: JQuery) => void): Promise<void>;
+    markdownToHTML(v: string, h: number, cbk?: (html: JQuery) => void, label?: string): Promise<void>;
     /**
      * Find the first .content element if exists in container (or #work)
      * @param {jQuery} ctn container, null = #work
@@ -16148,14 +16157,12 @@ declare class IndexSearch {
     searchBox(ctn: JQuery): void;
     private handleSearchInput;
     /**
-     * Handle arrow key navigation in search results
-     * @param {JQuery.Event} e The jQuery keyboard event
-     * @param {jQuery} $items The result items collection
-     * @param {number} currentIndex Optional current item index (for result items navigation)
-     * @param {number} cursorPos Optional cursor position in input (for input field navigation)
-     * @param {number} textLength Optional text length in input (for input field navigation)
+     * Move the virtual cursor in the listbox (APG combobox pattern)
+     * @param {jQuery} input the combobox input
+     * @param {jQuery} $items the option items collection
+     * @param {number} idx target index, or -1 to clear the selection
      */
-    private handleArrowsNavigation;
+    private setActive;
 }
 
 type SessionGlobals = {

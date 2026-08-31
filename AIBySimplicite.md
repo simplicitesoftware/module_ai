@@ -125,8 +125,8 @@ _Domains organize the application's main navigation menu. Each domain groups the
   * `AiSettingsProcess` _(workflow)_
   * `AIProvider` _(object)_
 
-`AiGroupGuiDesc` (Group gui description) business object definition
--------------------------------------------------------------------
+`AiGroupGuiDesc` (Description de l'IHM du groupe) business object definition
+----------------------------------------------------------------------------
 
 _No description._
 
@@ -159,6 +159,11 @@ _No description._
 
 ### Constraints
 
+* **canCreateOnList**
+    - Condition: `true`
+    - Effects: back, front
+    - Impacts:
+        - object.create = `[PANELOF:ViewHome]`
 * **CreateSpe**
     - Condition: `true`
     - Effects: back, front
@@ -166,11 +171,6 @@ _No description._
         - aiGgdDescription.mandatory = `![ISNEW]`
         - aiGgdDescription.visible = `![ISNEW]`
         - aiGgdLang.updatable = `[ISNEW]`
-* **canCreateOnList**
-    - Condition: `true`
-    - Effects: back, front
-    - Impacts:
-        - object.create = `[PANELOF:ViewHome]`
 
 ### Description (from code)
 
@@ -181,8 +181,8 @@ _No description._
 * `preCreate`
 * `postCreate`
 
-`AiGroupView` (Described group) business object definition
-----------------------------------------------------------
+`AiGroupView` (Groupe decrit) business object definition
+--------------------------------------------------------
 
 _No description._
 
@@ -214,8 +214,8 @@ _No description._
         - aiGroupGuiDescId.updatable = `[ISNEW]`
         - aiGgdViewhomeId.updatable = `[ISNEW]`
 
-`AiMetricsHist` (History of generated graphs) business object definition
-------------------------------------------------------------------------
+`AiMetricsHist` (Historique des graphique généré) business object definition
+----------------------------------------------------------------------------
 
 _No description._
 
@@ -239,8 +239,8 @@ _No description._
 | `aiMhPreview`                                                | html(10000)                              | ai_mh_preview                  |          |           |          | -                                                                                |
 | `aiMhPrompt`                                                 | char(1000)                               | ai_mh_prompt                   |          | yes       |          | -                                                                                |
 
-`AIProvider` (Provider) business object definition
---------------------------------------------------
+`AIProvider` (Editeur) business object definition
+-------------------------------------------------
 
 _No description._
 
